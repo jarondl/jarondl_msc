@@ -1,0 +1,5 @@
+AuthUserFile /etc/httpd/conf/physics
+AuthGroupFile /dev/null
+AuthName EnterPassword
+AuthType Basic
+require valid-user 
