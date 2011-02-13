@@ -1,0 +1,24 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+
+%My commands (Jarondl)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+\newcommand{\aket}[1]{\left| #1 \right\rangle}
+\newcommand{\abra}[1]{\left\langle #1 \right|}
+\newcommand{\abraket}[2]{\left\langle #1 | #2   \right\rangle}
+\newcommand{\sandwich}[3]{\left\langle #1 | #2 | #3  \right\rangle}
+\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
+
+\begin{document}
+\title{notes}
+\section{Terminology}
+Sparsity characterization \cite{Stotland:2010:PRB} 
+\begin{align}
+s &= \frac{\avg{x}^2}{\avg{x^2}}  \\
+p &= Prob(x>\avg{x})  \\
+q &= \frac{\avg{\avg{x}}_{median}}{\avg{x}}
+\end{align}
+\bibliographystyle{plain}
+\bibliography{jarondl}
+\end{document}
