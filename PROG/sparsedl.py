@@ -2,8 +2,8 @@
 import scipy 
 from scipy import linalg, optimize
 
-def NN_matrix(N):
-    hop_values = scipy.random.lognormal(size=(N-1))
+def NN_matrix(N, random_function = scipy.random.lognormal):
+    hop_values = random_function(size=(N-1))
     diag_values = scipy.zeros(N)
     diag_values[1:] -= hop_values
     diag_values[:-1] -= hop_values

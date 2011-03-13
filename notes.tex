@@ -79,6 +79,11 @@
 \newcommand{\Rmrk}[1]{\textcolor{blue}{\LARGE\bf #1}}
 \newcommand{\hide}[1]{\rmrk{[hidden text]}}
 
+% extra math commands by jarondl
+\newcommand{\aket}[1]{\left| #1 \right\rangle}
+\newcommand{\abra}[1]{\left\langle #1 \right|}
+\newcommand{\abraket}[2]{\left\langle #1 | #2   \right\rangle}
+\newcommand{\sandwich}[3]{\left\langle #1 | #2 | #3  \right\rangle}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -98,7 +103,18 @@ We consider the relation between two sets of work, by Stotland et al., and by Am
 
 The works of Stotland \cite{Stotland:2010:PRB} \cite{Stotland:2009:EPL}, describe semi linear response by the use of sparse matrices. They focus mainly on the rate of energy absorption.
 
-
+Some random unordered notes.
+\begin{align}
+\dot{\aket{\rho}}&=W\aket{\rho} \\
+\aket{\rho(t)} &= e^{Wt}\aket{\rho_0} \\
+\aket{\rho(t)} &= \sum_i e^{Wt}\aket{i}\abraket{i}{\rho_0} \\
+&= \sum_i e^{\lambda_i t}\aket{i}\abraket{i}{\rho_0}
+\end{align}
+The survival probability is averaging over the exponent of the hamiltonian:
+\begin{align}
+\abraket{\rho_0}{\rho} &= \abra{\rho_0}e^{Wt}\aket{\rho_0} \\
+&= \sum_i \abs{\abraket{i}{\rho_0}}^2e^{\lambda_it}
+\end{align}
 
 \bibliographystyle{plain}
 \bibliography{jarondl}
