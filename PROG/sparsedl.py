@@ -1,23 +1,8 @@
 #!/usr/bin/python
 import scipy 
-from scipy import sparse
 from scipy import linalg, optimize
 
-def mk_banded_sparse(N,b):
-    random_values = scipy.random.random((2*b-1,N))
-    offsets = scipy.array(range(1-b,b))
-    return sparse.dia_matrix((random_values,offsets), shape=(N,N))
-
-def NN_sparse(N):
-    A = scipy.zeros((3,N))
-    A[0,:-1] = scipy.random.lognormal(size=(N-1))
-    A[2,:] = A[0,:]
-    A[1,:] = -A[0,:] 
-    A[1,1:] -= A[0,:-1]
-    offsets = scipy.array((-1,0,1))
-    return sparse.dia_matrix((A,offsets), shape=(N,N))
-
-def NN_dense(N):
+def NN_matrix(N):
     hop_values = scipy.random.lognormal(size=(N-1))
     diag_values = scipy.zeros(N)
     diag_values[1:] -= hop_values
@@ -47,11 +32,21 @@ def strexp(x,a,b):
 
 def mean(x,y):
     """  Returns the mean of a ditribution with x as location and y as value """
-    return sum(x*y)/sum(y)
+    return scipy.sum(x*y)/scipy.sum(y)
 
 def var(x,y):
-    mu = mean(x,y)
-    return sum((x-mu)**2*y)/sum(y)
+    """  Returns the Variance of a ditribution with x as location and y as value """
+    return mean(x**2,y) - mean(x,y)**2
+
+def initial(nodes):
+    """  Some convient initial values, usefull for an interactive session. 
+        e.g   >>>  rho0, A, xcoord = initial(200)  """
+    rho0 = scipy.zeros(nodes)
+    rho0[nodes//2] =1
+    A = NN_matrix(nodes)
+    xcoord = scipy.linspace(-nodes/2,nodes/2-1,nodes)
+    return rho0,A,xcoord
+
     
     
 
