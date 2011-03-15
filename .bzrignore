@@ -1,4 +1,4 @@
-sparse.bbl
-sparse.aux
-sparse.blg
-sparse.log
+*.aux
+*.log
+*.blg
+*.bbl
