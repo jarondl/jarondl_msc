@@ -24,7 +24,7 @@ def survival2(t): #Using decomposition
     return scipy.dot(decr**2, scipy.exp(eigvals*t))
 
 vecsurvival1 = pylab.np.vectorize(survival1)
-vecsurvival2 = pylab.np.vectorize(survival2)
+#vecsurvival2 = pylab.np.vectorize(survival2)
 y1 = vecsurvival1(t)
 y2 = vecsurvival2(t)
 #a,b = sparsedl.cvfit(sparsedl.strexp,t,y,[1,1])
