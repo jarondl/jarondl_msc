@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import matplotlib
 matplotlib.use('agg')
-import pylab
+import pylab, scipy
 import sparsedl
 from scipy import stats
 

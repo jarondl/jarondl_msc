@@ -1,9 +1,9 @@
 #!/usr/bin/python
 import scipy 
-from scipy import linalg, optimize
+from scipy import linalg, optimize, special
 
-def NN_matrix(N, random_function = scipy.random.lognormal):
-    hop_values = random_function(size=(N-1))
+def NN_matrix(N):
+    hop_values = lognormal_construction(N-1)
     diag_values = scipy.zeros(N)
     diag_values[1:] -= hop_values
     diag_values[:-1] -= hop_values
@@ -46,6 +46,18 @@ def initial(nodes):
     A = NN_matrix(nodes)
     xcoord = scipy.linspace(-nodes/2,nodes/2-1,nodes)
     return rho0,A,xcoord
+
+def lognormal_construction(N, mu=0, sigma=1):
+    """ Create log-normal distribution, with N elements, mu average and sigma width.
+        The construction begins with a lineary spaced vector from 0 to 1. Then
+          the inverse CDF of a normal distribution is applied to the vector. 
+        The result is permutated, and its piecewise exponent is returned."""
+    uniform = scipy.linspace(0.0001,0.9999,N)
+    y = -scipy.sqrt(2)*special.erfcinv(2*uniform)
+    rescaled_y = mu+sigma*y
+    perm_y = scipy.random.permutation(rescaled_y)
+    return scipy.exp(perm_y)
+
 
     
     
