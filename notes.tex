@@ -84,6 +84,7 @@
 \newcommand{\abra}[1]{\left\langle #1 \right|}
 \newcommand{\abraket}[2]{\left\langle #1 | #2   \right\rangle}
 \newcommand{\sandwich}[3]{\left\langle #1 | #2 | #3  \right\rangle}
+\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -99,10 +100,47 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Introduction}
-We consider the relation between two sets of work, by Stotland et al., and by Amir et al.
+Many physical systems have a random matrix Hamiltonian. The mathematical properties of these Hamiltonians may offer interesting insight for the physical properties. Such physical properties include the diffusion and the Survival Probability, while the mathematical properties include the sparsity of the matrix and its spectrum. These aspects have been widely researched for euclidean distance matrices \cite{Mezard:1999:NPB}, [insert more refs..], and for their element-wise exponents \cite{Amir:2010:PRL}. 
+
+We shall consentrate on sparse matrices with log-normally distributed values. At first, we will work on a Nearest-Neighbor model as described in section \ref{sec:our_model}. One can think of this model as a one dimensional chain of sites, where transition rates between the sites vary log-normally.
+
+
+Another method we apply is the SLRT - Semi Linear Response Theorem \cite{Stotland:2010:PRB}. Which maps the transition rate problem to a resistor network one. According to this theorem, the diffusion coefficient is simply the harmonic mean of the transition rates .
+\begin{align}
+D=\avg{\omega}_{harmonic} =(\avg{\omega^{-1}})^{-1}
+\end{align}
+
 
 The works of Stotland \cite{Stotland:2010:PRB} \cite{Stotland:2009:EPL}, describe semi linear response by the use of sparse matrices. They focus mainly on the rate of energy absorption.
 
+
+
+\section{Our Model}\label{sec:our_model}
+We define a "Nearest Neighbor" Hamiltonian :
+\begin{align}
+H = (\aket{n}\abra{n-1}+\aket{n-1}\abra{n})\omega_n - \aket{n}\abra{n}(\omega_{n} + \omega_{n+1})
+\end{align}
+Which in the node basis has the matrix elements:
+\begin{align}
+A_{i,i-1} = A_{i-1,i} = \omega_i \\
+A_{ii} = -\omega_i - \omega_{i+1}
+\end{align}
+The different $\omega_i$s are chosen from a log-normal distribution (by a special construction, see section \ref{sec:matrix_construction})
+
+The harmonic mean of the log normal distribution with normal width $\sigma$ is given by:
+\begin{align}
+\avg{\omega}_{harmonic}^{-1} &= \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{x^2}{2\sigma^2}} \frac{1}{e^x} dx  = \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{x^2}{2\sigma^2}-x} dx \\
+&= \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{\left(x-\sigma^2\right)^2}{2\sigma^2}+\frac{\sigma^2}{2}} dx = e^{\frac{\sigma^2}{2}}\\
+\avg{\omega}_{harmonic} = e^{-\frac{\sigma^2}{2}}
+\end{align}
+The generalization for $\mu\neq 0$ is :
+\begin{align}
+\avg{\omega}_{harmonic} = e^{-2\sigma^2+\mu}
+\end{align}
+
+
+
+\section{unordered notes}
 Some random unordered notes.
 \begin{align}
 \dot{\aket{\rho}}&=W\aket{\rho} \\
@@ -110,18 +148,21 @@ Some random unordered notes.
 \aket{\rho(t)} &= \sum_i e^{Wt}\aket{i}\abraket{i}{\rho_0} \\
 &= \sum_i e^{\lambda_i t}\aket{i}\abraket{i}{\rho_0}
 \end{align}
-The survival probability is averaging over the exponent of the hamiltonian:
+The survival probability is averaging over the exponent of the Hamiltonian:
 \begin{align}
 \abraket{\rho_0}{\rho} &= \abra{\rho_0}e^{Wt}\aket{\rho_0} \\
 &= \sum_i \abs{\abraket{i}{\rho_0}}^2e^{\lambda_it}
 \end{align}
-
-\section{Our Model}
-We define a "Nearest Neighbour" hamiltonian :
+If $\aket{\rho_0}$ is defined as a specific site $\aket{n}$, one can average over all the sites to obtain the average survival probability per site $P(t)$: 
 \begin{align}
-H = (\aket{n}\abra{n-1}+\aket{n-1}\abra{n})\omega_n - \aket{n}\abra{n}(\omega_n-1 + \omega_n+1)
+\avg{ P(t) } &= \sum_n\sum_i \frac{1}{N}\abs{\abraket{i}{n}}^2e^{\lambda_it}= \sum_i e^{\lambda_i t}
 \end{align}
 
+\section{Random Matrix Construction}\label{sec:matrix_construction}
+To create a $N\times N$ matrix, we have to choose $N-1$ random numbers. To make sure our distribution is truly log-normal, we create $N-1$ numbers forming a log-normal distribution, and permute them. In order to create the numbers, first we create a vector of $N-1$ linearly spaced values between $0$ and $1$. Then we apply element-wise the inverse cumulative distribution function of the normal distribution \ref{eq:invcdf}, using the inverse complementary error function. This gives a $N-1$ vector with normal distributed values. The vector is then scaled ($\tilde{y} = \mu+\sigma\cdot y$) to the appropriate width and mean [of the normal distribution]. The last step is to permute the vector, and apply an exponent element-wise.
+\begin{align}\label{eq:invcdf}
+y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x) 
+\end{align}
 \bibliographystyle{plain}
 \bibliography{jarondl}
 \end{document}
