@@ -1,4 +1,10 @@
 #!/usr/bin/python
+"""  This module includes all of the functions that I use. It can be imported in two ways:
+        The recomended way:
+            import sparsedl
+        or the other way:
+            from sparsedl import *
+"""
 import scipy 
 from scipy import linalg, optimize, special
 

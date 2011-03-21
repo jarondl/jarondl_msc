@@ -1,7 +1,4 @@
 #!/usr/bin/python
-import sparsedl
-import numpy
-import sys
 """
     A module to create a npz file with sparsedl.NN_matrix. 
     INPUT: number of nodes, and filename.
@@ -14,6 +11,10 @@ import sys
 
     If no arguments are given, the default values are: 200 nodes, and 'data/mat200.1.npz' as filename.
 """
+import sparsedl
+import numpy
+import sys
+
 
 def mk_NN_file(nodes=200, filename='data/mat200.1.npz'): 
     print('debug : ',nodes,filename)

@@ -158,11 +158,22 @@ If $\aket{\rho_0}$ is defined as a specific site $\aket{n}$, one can average ove
 \avg{ P(t) } &= \sum_n\sum_i \frac{1}{N}\abs{\abraket{i}{n}}^2e^{\lambda_it}= \sum_i e^{\lambda_i t}
 \end{align}
 
+\section{Interesting toy models}
+There are several different toy models we may examine in order to gain insight to our problem.
+\subsection{alternating transition rates}
+We can think of a model where every second transition is different, so the transitions are a,b,a,b,a,b...
+\subsection{The Original Model, with less nodes}
+Perhaps a model similar to the original model but with a small finite number of nodes is easier to solve analytically.
+
 \section{Random Matrix Construction}\label{sec:matrix_construction}
 To create a $N\times N$ matrix, we have to choose $N-1$ random numbers. To make sure our distribution is truly log-normal, we create $N-1$ numbers forming a log-normal distribution, and permute them. In order to create the numbers, first we create a vector of $N-1$ linearly spaced values between $0$ and $1$. Then we apply element-wise the inverse cumulative distribution function of the normal distribution \ref{eq:invcdf}, using the inverse complementary error function. This gives a $N-1$ vector with normal distributed values. The vector is then scaled ($\tilde{y} = \mu+\sigma\cdot y$) to the appropriate width and mean [of the normal distribution]. The last step is to permute the vector, and apply an exponent element-wise.
 \begin{align}\label{eq:invcdf}
 y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x) 
 \end{align}
+
+\section{graphs}
+These are plots of 
+\includegraphics[width=0.41\hsize]{graphs/m2_and_surv_of_sigma}
 \bibliographystyle{plain}
 \bibliography{jarondl}
 \end{document}
