@@ -2,12 +2,20 @@
 import scipy 
 from scipy import linalg, optimize, special
 
-def NN_matrix(N):
-    hop_values = lognormal_construction(N-1)
+def NN_matrix(N,hop_values=None,**kwargs):
+    """ Build a NxN matrix.
+        Input: - N :  the size of the matrix
+               - hop_values: the omegas. If none are supplied, creates them with lognormal distribution
+               - **kwargs : the rest of the keyworded arguments are passed to the lognormal function,
+                                so you can define sigma and mu.
+          log normal construction (e.g. mu=0, sigma=7)."""
+    if hop_values==None: 
+        hop_values = lognormal_construction(N-1,**kwargs)
     diag_values = scipy.zeros(N)
     diag_values[1:] -= hop_values
     diag_values[:-1] -= hop_values
     return scipy.diagflat(diag_values) +  scipy.diagflat(hop_values,-1) +  scipy.diagflat(hop_values,1)
+
     
 
 def rho(t,rho0,W, index=None):

@@ -2,13 +2,26 @@
 import matplotlib
 matplotlib.use('agg')
 import pylab
-import sparsedl
 import subprocess
+import numpy
+import sys
 
-nodes = 200
-A = sparsedl.NN_matrix(nodes)
-rho0 = pylab.zeros(nodes)
-rho0[nodes//2] = 1
+import sparsedl
+""" Input:  filename of the data set (should be something with a npz suffix, 
+                created by create_data.py)
+            e.g.:
+                ./mk_figs.py  data/mat200.1.npz
+    Output: - 500 figures of rho as a function of t (called figs/rhoxxx.png)
+            - 1 movie of rho as a function of t (called rho.mpg)
+            - 1 figure with 3 subplots: second moment as a function of t  ("second_moment_and_survival.eps")
+                                        survival as a function of t
+                                        logarithmic survival as a function of t
+"""
+data = numpy.load(sys.argv[1])
+A = data['A']
+rho0 = data['rho0']
+nodes = len(rho0)
+
 pylab.hold(False)
 upper_ylim = max(rho0)
 
@@ -24,14 +37,17 @@ for t in range(500):
     pylab.ylim(0,upper_ylim)
     pylab.savefig('figs/rho{0:03}.png'.format(t))
 
-# Plot the second moment
-pylab.subplot(2,1,1)
+# Plot the second moments and the survival
+pylab.subplot(3,1,1)
 pylab.plot(range(500),m2,'r.',label="second moment")
 pylab.legend()
-pylab.subplot(2,1,2)
+pylab.subplot(3,1,2)
 pylab.plot(range(500),surv,'r.',label="Survival")
 pylab.legend()
-pylab.savefig("second_moments.png")
+pylab.subplot(3,1,3)
+pylab.semilogy(range(500),surv,'r.',label="Survival")
+pylab.legend()
+pylab.savefig("second_moment_and_survival.eps")
 
 
 # make a movie
