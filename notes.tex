@@ -142,7 +142,7 @@ The generalization for $\mu\neq 0$ is :
 
 \section{unordered notes}
 Some random unordered notes.
-\begin{align}
+\begin{align}\label{eq:rho_of_t}
 \dot{\aket{\rho}}&=W\aket{\rho} \\
 \aket{\rho(t)} &= e^{Wt}\aket{\rho_0} \\
 \aket{\rho(t)} &= \sum_i e^{Wt}\aket{i}\abraket{i}{\rho_0} \\
@@ -172,8 +172,8 @@ y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x)
 \end{align}
 
 \section{graphs}
-These are plots of 
-\includegraphics[width=0.41\hsize]{graphs/m2_and_surv_of_sigma}
+I have created a random matrix as prescribed in section \ref{sec:matrix_construction}, with size $N=200$. With an initial state of $\aket{\rho_0}=\aket{n=100}$, several calculations have been made by matrix exponentiation as in eq. \ref{eq:rho_of_t}. A movie of rho as a function of t for $\sigma=1$ was produced ("rho.mpg"). Now, I have taken the initial transition rates, and rescaled them to recieve results with different $\sigma$'s. The rescaling was done by taking a power sigma of the initial values. ($e^{\sigma x} = {(e^x)}^\sigma$). Both plots are at t=500 for different $\sigma$'s. The first plot is of the second moment (where the 200 nodes are spread equally over the range (-1,1), while the second plot is of the survival.
+\includegraphics[width=0.70\hsize]{graphs/m2_and_surv_of_sigma}
 \bibliographystyle{plain}
 \bibliography{jarondl}
 \end{document}
