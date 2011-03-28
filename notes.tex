@@ -117,9 +117,50 @@ D=\overline{w}_{harmonic} =(\overline{w^{-1}})^{-1}=\left(\frac{1}{N}\sum\frac{1
 The works of Stotland \cite{Stotland:2010:PRB} \cite{Stotland:2009:EPL}, describe semi linear response by the use of sparse matrices. They focus mainly on the rate of energy absorption.
 
 \section{Master equation}
+The equation governing the time developement in a transition rate problem is:
 \begin{align}
 \frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t)
 \end{align}
+Where $P_n(t) \ge 0$ is the probability to be at site $n$ at time $t$ and $W$ is the transition matrix.
+
+The matrix has eigenmodes $V_\lambda$ with eigenvalues $\lambda$. 
+We define a standard inner product :
+\begin{align}
+\inner{A}{B} = \sum_{ii} A_iB_i
+\end{align}
+Then we can write the probability vector $P$ as a sum of the normalized eigenmodes.
+\begin{align}
+P_n(t) = \sum_\lambda \inner{P(t)}{V_\lambda}{V_\lambda }_n = \sum_\lambda C_\lambda(t) {V_\lambda}_n
+\end{align}
+Where we have defined $C_\lambda(t)\equiv \inner{P(t)}{V_\lambda}$.
+
+
+The master equation becomes
+\begin{align}
+&\sum_\lambda \left( \frac{dC_\lambda(t)}{dt}{V_\lambda}_n - C_\lambda(t)\sum_m W_{nm}{V_\lambda}_n \right)= \sum_\lambda \left( \frac{dC_\lambda(t)}{dt} - \lambda C_\lambda(t)\right){V_\lambda}_n =0\\
+&C_\lambda(t) = C_\lambda(0)e^{\lambda t}\\
+&P_n(t) = \sum_\lambda C_\lambda(t) {V_\lambda}_n = \sum_\lambda  C_\lambda(0)e^{\lambda t} {V_\lambda}_n 
+\end{align}
+The survival probability is defined as the probability to remain in specific site. If we begin with a probabilty vector whose only non zero element is $P_i(0)=1$, the corresponding $C_\lambda(0)$s will be:
+\begin{align}
+C_\lambda(0) = \inner{P(0)}{V_\lambda}= {V_\lambda}_i
+\end{align}
+And then the survival probability will be:
+\begin{align}
+\mathcal{P}_i(t) = P_i(t) = \sum_\lambda  C_\lambda(0)e^{\lambda t} {V_\lambda}_i=\sum_\lambda ({V_\lambda}_i)^2 e^{\lambda t} 
+\end{align}
+The mean survival probability will be:
+\begin{align}
+\mathcal{P}(t) = \sum_i \frac{1}{N} P_i(t)=\sum_i \frac{1}{N} \sum_\lambda ({V_\lambda}_i)^2 e^{\lambda t}  =\frac{1}{N}\sum_\lambda e^{\lambda t}
+\end{align}
+
+\section{Eigenvalue distribution}
+In the supplementary material of \cite{Amir:2010:PRL} the moments of the distribution of the eigenvalues are found. 
+
+
+\begin{align}
+\sum_\lambda \lambda^k = Tr
+
 
 \section{Our Model}\label{sec:our_model}
 The model consists of a chain of connected sites. Our point of intereset are the transition rates between those sites. One can define a master equation:
@@ -128,7 +169,7 @@ The model consists of a chain of connected sites. Our point of intereset are the
 W_{n,n-1} = W_{n-1,n} = w_n \\
 W_{nn} = -w_n - w_{n+1}
 \end{align}
-Where $P_n(t) \ge 0$ is the probability to be at site $n$ at time $t$,$W$ is the transition matrix, and the $w_n$s are the individual transition rates.
+Where the $w_n$s are the individual transition rates.
 
 Less abstractly, the transition matrix is:
 \begin{align}
@@ -156,11 +197,27 @@ The generalization for $\mu\neq 0$ is :
 \end{align}
 
 \subsection{Alternating transition rates}
-We can think of a model where every second transition is different, so the transitions are a,b,a,b,a,b...
+We can think of a model where every second transition is different, so the transitions are a,b,a,b,a,b... And the matrix is:
+\begin{align}
+W = 
+\begin{pmatrix}
+-a  & a \\
+a  & -a-b &  b \\
+ & b & -a-b &  a \\
+& & a & -a-b & \; b \\
+& & & \ddots &\ddots&\;\;\ddots
+\end{pmatrix}
+\end{align}
+The eigenvalues for this model can be found analytically, using bloch's theorem. The solution for a periodic structure with a unit cell is ${V_\lambda}_n = e^{ikn} u(x)$ where $u(x)$ is a function with the periodicity of the unit cell. In our case this simplifies to:
+\begin{align}
+{V_\lambda}_n = \begin{cases}e^{ik\frac{n+1}{2}} c_1 \;, n odd \\ e^{ik\frac{n}{2}} c_2 \;, n even \end{cases}
+\end{align}
 \subsection{Log normal, but with less nodes}
 Perhaps a model similar to the original model but with a small finite number of nodes is easier to solve analytically.
 \subsection{Euclidean distance rates, or functions of it}
 Random Euclidean distance matrices were widely researched \cite{Mezard:1999:NPB}, [insert more refs..]. Amir et al \cite{Amir:2010:PRL} have studied a model with the exponents of euclidean distances. 
+
+In one dimension, the transition rates are related to the distance between points distributed uniformly. The nearest neighbor distance can thought of as a "Poisson Process" and then the distance is distributed exponentialy.
 
 
 $\inner{1}{2}$
@@ -193,7 +250,6 @@ y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x)
 
 \section{graphs}
 I have created a random matrix as prescribed in section \ref{sec:matrix_construction}, with size $N=200$. With an initial state of $\rho_0=n=100$, several calculations have been made by matrix exponentiation as in eq. \ref{eq:rho_of_t}. A movie of rho as a function of t for $\sigma=1$ was produced ("rho.mpg"). Now, I have taken the initial transition rates, and rescaled them to recieve results with different $\sigma$'s. The rescaling was done by taking a power sigma of the initial values. ($e^{\sigma x} = {(e^x)}^\sigma$). Both plots are at t=500 for different $\sigma$'s. The first plot is of the second moment (where the 200 nodes are spread equally over the range (-1,1), while the second plot is of the survival.
-\includegraphics[width=0.70\hsize]{graphs/m2_and_surv_of_sigma}
 \bibliographystyle{plain}
 \bibliography{jarondl}
 \end{document}
