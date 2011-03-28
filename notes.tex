@@ -4,6 +4,8 @@
 
 \documentclass[onecolumn,fleqn]{revtex4}
 
+%by jarondl
+\usepackage{verbatim} % for multiline comments
 % special 
 \usepackage{ifthen}
 \usepackage{ifpdf}
@@ -80,11 +82,12 @@
 \newcommand{\hide}[1]{\rmrk{[hidden text]}}
 
 % extra math commands by jarondl
-\newcommand{\aket}[1]{\left| #1 \right\rangle}
-\newcommand{\abra}[1]{\left\langle #1 \right|}
-\newcommand{\abraket}[2]{\left\langle #1 | #2   \right\rangle}
-\newcommand{\sandwich}[3]{\left\langle #1 | #2 | #3  \right\rangle}
-\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
+%\newcommand{\aket}[1]{\left| #1 \right\rangle}
+%\newcommand{\abra}[1]{\left\langle #1 \right|}
+%\newcommand{\abraket}[2]{\left\langle #1 | #2   \right\rangle}
+%\newcommand{\sandwich}[3]{\left\langle #1 | #2 | #3  \right\rangle}
+%\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
+\newcommand{\inner}[2]{\left \langle #1 \middle| #2\right\rangle} % Inner product
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -100,46 +103,69 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Introduction}
-Many physical systems have a random matrix Hamiltonian. The mathematical properties of these Hamiltonians may offer interesting insight for the physical properties. Such physical properties include the diffusion and the Survival Probability, while the mathematical properties include the sparsity of the matrix and its spectrum. These aspects have been widely researched for euclidean distance matrices \cite{Mezard:1999:NPB}, [insert more refs..], and for their element-wise exponents \cite{Amir:2010:PRL}. 
+The mathematical properties of random matrices may offer interesting insight for the physical properties. Such physical properties include the diffusion and the Survival Probability, while the mathematical properties include the sparsity of the matrix and its spectrum. 
 
 We shall consentrate on sparse matrices with log-normally distributed values. At first, we will work on a Nearest-Neighbor model as described in section \ref{sec:our_model}. One can think of this model as a one dimensional chain of sites, where transition rates between the sites vary log-normally.
 
 
 Another method we apply is the SLRT - Semi Linear Response Theorem \cite{Stotland:2010:PRB}. Which maps the transition rate problem to a resistor network one. According to this theorem, the diffusion coefficient is simply the harmonic mean of the transition rates .
 \begin{align}
-D=\avg{\omega}_{harmonic} =(\avg{\omega^{-1}})^{-1}
+D=\overline{w}_{harmonic} =(\overline{w^{-1}})^{-1}=\left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1}
 \end{align}
 
 
 The works of Stotland \cite{Stotland:2010:PRB} \cite{Stotland:2009:EPL}, describe semi linear response by the use of sparse matrices. They focus mainly on the rate of energy absorption.
 
-
+\section{Master equation}
+\begin{align}
+\frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t)
+\end{align}
 
 \section{Our Model}\label{sec:our_model}
-We define a "Nearest Neighbor" Hamiltonian :
+The model consists of a chain of connected sites. Our point of intereset are the transition rates between those sites. One can define a master equation:
 \begin{align}
-H = (\aket{n}\abra{n-1}+\aket{n-1}\abra{n})\omega_n - \aket{n}\abra{n}(\omega_{n} + \omega_{n+1})
+\frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t) \\
+W_{n,n-1} = W_{n-1,n} = w_n \\
+W_{nn} = -w_n - w_{n+1}
 \end{align}
-Which in the node basis has the matrix elements:
+Where $P_n(t) \ge 0$ is the probability to be at site $n$ at time $t$,$W$ is the transition matrix, and the $w_n$s are the individual transition rates.
+
+Less abstractly, the transition matrix is:
 \begin{align}
-A_{i,i-1} = A_{i-1,i} = \omega_i \\
-A_{ii} = -\omega_i - \omega_{i+1}
+W = 
+\begin{pmatrix}
+-w_1  & w_1 \\
+w_1  & -w_1-w_2 &  w_2 \\
+ & w_2 & -w_2-w_3 &  w_3 \\
+& & w_3 & -w_3-w_4 & \; w_4 \\
+& & & \ddots &\ddots&\;\;\ddots
+\end{pmatrix}
 \end{align}
-The different $\omega_i$s are chosen from a log-normal distribution (by a special construction, see section \ref{sec:matrix_construction})
+\subsection{Log-normal}
+The different $w_n$s are chosen from a log-normal distribution (by a special construction, see section \ref{sec:matrix_construction})
 
 The harmonic mean of the log normal distribution with normal width $\sigma$ is given by:
 \begin{align}
-\avg{\omega}_{harmonic}^{-1} &= \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{x^2}{2\sigma^2}} \frac{1}{e^x} dx  = \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{x^2}{2\sigma^2}-x} dx \\
+\left(\frac{1}{N}\sum\frac{1}{w_n}\right)&= \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{x^2}{2\sigma^2}} \frac{1}{e^x} dx  = \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{x^2}{2\sigma^2}-x} dx \\
 &= \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{\left(x-\sigma^2\right)^2}{2\sigma^2}+\frac{\sigma^2}{2}} dx = e^{\frac{\sigma^2}{2}}\\
-\avg{\omega}_{harmonic} = e^{-\frac{\sigma^2}{2}}
+\left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1} = e^{-\frac{\sigma^2}{2}}
 \end{align}
 The generalization for $\mu\neq 0$ is :
 \begin{align}
-\avg{\omega}_{harmonic} = e^{-\frac{\sigma^2}{2}+\mu}
+\overline{w}_{harmonic} = e^{-\frac{\sigma^2}{2}+\mu}
 \end{align}
 
+\subsection{Alternating transition rates}
+We can think of a model where every second transition is different, so the transitions are a,b,a,b,a,b...
+\subsection{Log normal, but with less nodes}
+Perhaps a model similar to the original model but with a small finite number of nodes is easier to solve analytically.
+\subsection{Euclidean distance rates, or functions of it}
+Random Euclidean distance matrices were widely researched \cite{Mezard:1999:NPB}, [insert more refs..]. Amir et al \cite{Amir:2010:PRL} have studied a model with the exponents of euclidean distances. 
 
 
+$\inner{1}{2}$
+
+\begin{comment}
 \section{unordered notes}
 Some random unordered notes.
 \begin{align}\label{eq:rho_of_t}
@@ -157,13 +183,7 @@ If $\aket{\rho_0}$ is defined as a specific site $\aket{n}$, one can average ove
 \begin{align}
 \avg{ P(t) } &= \sum_n\sum_i \frac{1}{N}\abs{\abraket{i}{n}}^2e^{\lambda_it}= \sum_i e^{\lambda_i t}
 \end{align}
-
-\section{Interesting toy models}
-There are several different toy models we may examine in order to gain insight to our problem.
-\subsection{alternating transition rates}
-We can think of a model where every second transition is different, so the transitions are a,b,a,b,a,b...
-\subsection{The Original Model, with less nodes}
-Perhaps a model similar to the original model but with a small finite number of nodes is easier to solve analytically.
+\end{comment}
 
 \section{Random Matrix Construction}\label{sec:matrix_construction}
 To create a $N\times N$ matrix, we have to choose $N-1$ random numbers. To make sure our distribution is truly log-normal, we create $N-1$ numbers forming a log-normal distribution, and permute them. In order to create the numbers, first we create a vector of $N-1$ linearly spaced values between $0$ and $1$. Then we apply element-wise the inverse cumulative distribution function of the normal distribution \ref{eq:invcdf}, using the inverse complementary error function. This gives a $N-1$ vector with normal distributed values. The vector is then scaled ($\tilde{y} = \mu+\sigma\cdot y$) to the appropriate width and mean [of the normal distribution]. The last step is to permute the vector, and apply an exponent element-wise.
@@ -172,7 +192,7 @@ y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x)
 \end{align}
 
 \section{graphs}
-I have created a random matrix as prescribed in section \ref{sec:matrix_construction}, with size $N=200$. With an initial state of $\aket{\rho_0}=\aket{n=100}$, several calculations have been made by matrix exponentiation as in eq. \ref{eq:rho_of_t}. A movie of rho as a function of t for $\sigma=1$ was produced ("rho.mpg"). Now, I have taken the initial transition rates, and rescaled them to recieve results with different $\sigma$'s. The rescaling was done by taking a power sigma of the initial values. ($e^{\sigma x} = {(e^x)}^\sigma$). Both plots are at t=500 for different $\sigma$'s. The first plot is of the second moment (where the 200 nodes are spread equally over the range (-1,1), while the second plot is of the survival.
+I have created a random matrix as prescribed in section \ref{sec:matrix_construction}, with size $N=200$. With an initial state of $\rho_0=n=100$, several calculations have been made by matrix exponentiation as in eq. \ref{eq:rho_of_t}. A movie of rho as a function of t for $\sigma=1$ was produced ("rho.mpg"). Now, I have taken the initial transition rates, and rescaled them to recieve results with different $\sigma$'s. The rescaling was done by taking a power sigma of the initial values. ($e^{\sigma x} = {(e^x)}^\sigma$). Both plots are at t=500 for different $\sigma$'s. The first plot is of the second moment (where the 200 nodes are spread equally over the range (-1,1), while the second plot is of the survival.
 \includegraphics[width=0.70\hsize]{graphs/m2_and_surv_of_sigma}
 \bibliographystyle{plain}
 \bibliography{jarondl}
