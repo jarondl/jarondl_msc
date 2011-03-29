@@ -157,10 +157,11 @@ The mean survival probability will be:
 \section{Eigenvalue distribution}
 In the supplementary material of \cite{Amir:2010:PRL} the moments of the distribution of the eigenvalues are found. 
 
-
+If we define $D$ as the diagonalized matrix $W$ as in $W=UDU^{-1}$, we have
 \begin{align}
-\sum_\lambda \lambda^k = Tr
-
+\sum_\lambda \lambda^k = Tr (D^k) = Tr(UDU^{-1}UDU^{-1}UDU^{-1}UDU^{-1}...) = Tr (W^k)
+\end{align}
+So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the distribution of the eigenvalues.
 
 \section{Our Model}\label{sec:our_model}
 The model consists of a chain of connected sites. Our point of intereset are the transition rates between those sites. One can define a master equation:
@@ -210,7 +211,17 @@ a  & -a-b &  b \\
 \end{align}
 The eigenvalues for this model can be found analytically, using bloch's theorem. The solution for a periodic structure with a unit cell is ${V_\lambda}_n = e^{ikn} u(x)$ where $u(x)$ is a function with the periodicity of the unit cell. In our case this simplifies to:
 \begin{align}
-{V_\lambda}_n = \begin{cases}e^{ik\frac{n+1}{2}} c_1 \;, n odd \\ e^{ik\frac{n}{2}} c_2 \;, n even \end{cases}
+{V_\lambda}_n = \begin{cases}e^{ikn} c_1 \; &, \text{n odd} \\ e^{ikn} c_2 \; &, \text{n even} \end{cases}
+\end{align}
+When we apply the eignenvalue equation to this vector ($WV_\lambda = \lambda V_\lambda$), we obtain two linear equations:
+\begin{align}
+ac_1e^{-ik}   -(a+b)c_2 +bc_1e^{ik} &= \lambda c_2 \\
+bc_2e^{-ik}   -(a+b)c_1 +ac_2e^{ik} &= \lambda c_1 
+\end{align}
+The solution for $\lambda$ is
+\begin{align}
+(a+b+\lambda)^2 = a^2+b^2+2ab\cos 2k \\
+\lambda = -(a + b) \pm \sqrt{a^2+b^2+2ab\cos 2k}
 \end{align}
 \subsection{Log normal, but with less nodes}
 Perhaps a model similar to the original model but with a small finite number of nodes is easier to solve analytically.
