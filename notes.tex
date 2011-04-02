@@ -108,7 +108,7 @@ The mathematical properties of random matrices may offer interesting insight for
 We shall consentrate on sparse matrices with log-normally distributed values. At first, we will work on a Nearest-Neighbor model as described in section \ref{sec:our_model}. One can think of this model as a one dimensional chain of sites, where transition rates between the sites vary log-normally.
 
 
-Another method we apply is the SLRT - Semi Linear Response Theorem \cite{Stotland:2010:PRB}. Which maps the transition rate problem to a resistor network one. According to this theorem, the diffusion coefficient is simply the harmonic mean of the transition rates .
+Another method we apply is the SLRT - Semi Linear Response Theorem \cite{Stotland:2010:PRB}. Which maps the transition rate problem to a resistor network one. A known solution for the diffusion constant in a nearest neighbor network is \cite{Derrida:1983}:
 \begin{align}
 D=\overline{w}_{harmonic} =(\overline{w^{-1}})^{-1}=\left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1}
 \end{align}
@@ -116,6 +116,7 @@ D=\overline{w}_{harmonic} =(\overline{w^{-1}})^{-1}=\left(\frac{1}{N}\sum\frac{1
 
 The works of Stotland \cite{Stotland:2010:PRB} \cite{Stotland:2009:EPL}, describe semi linear response by the use of sparse matrices. They focus mainly on the rate of energy absorption.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Master equation}
 The equation governing the time developement in a transition rate problem is:
 \begin{align}
@@ -141,7 +142,7 @@ The master equation becomes
 &C_\lambda(t) = C_\lambda(0)e^{\lambda t}\\
 &P_n(t) = \sum_\lambda C_\lambda(t) {V_\lambda}_n = \sum_\lambda  C_\lambda(0)e^{\lambda t} {V_\lambda}_n 
 \end{align}
-The survival probability is defined as the probability to remain in specific site. If we begin with a probabilty vector whose only non zero element is $P_i(0)=1$, the corresponding $C_\lambda(0)$s will be:
+The survival probability is defined as the probability to remain in a specific site. If we begin with a probabilty vector whose only non zero element is $P_i(0)=1$, the corresponding $C_\lambda(0)$s will be:
 \begin{align}
 C_\lambda(0) = \inner{P(0)}{V_\lambda}= {V_\lambda}_i
 \end{align}
@@ -154,6 +155,7 @@ The mean survival probability will be:
 \mathcal{P}(t) = \sum_i \frac{1}{N} P_i(t)=\sum_i \frac{1}{N} \sum_\lambda ({V_\lambda}_i)^2 e^{\lambda t}  =\frac{1}{N}\sum_\lambda e^{\lambda t}
 \end{align}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Eigenvalue distribution}
 In the supplementary material of \cite{Amir:2010:PRL} the moments of the distribution of the eigenvalues are found. 
 
@@ -163,6 +165,7 @@ If we define $D$ as the diagonalized matrix $W$ as in $W=UDU^{-1}$, we have
 \end{align}
 So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the distribution of the eigenvalues.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Our Model}\label{sec:our_model}
 The model consists of a chain of connected sites. Our point of intereset are the transition rates between those sites. One can define a master equation:
 \begin{align}
@@ -183,6 +186,7 @@ w_1  & -w_1-w_2 &  w_2 \\
 & & & \ddots &\ddots&\;\;\ddots
 \end{pmatrix}
 \end{align}
+%%%%%%%
 \subsection{Log-normal}
 The different $w_n$s are chosen from a log-normal distribution (by a special construction, see section \ref{sec:matrix_construction})
 
@@ -196,7 +200,7 @@ The generalization for $\mu\neq 0$ is :
 \begin{align}
 \overline{w}_{harmonic} = e^{-\frac{\sigma^2}{2}+\mu}
 \end{align}
-
+%%%%%
 \subsection{Alternating transition rates}
 We can think of a model where every second transition is different, so the transitions are a,b,a,b,a,b... And the matrix is:
 \begin{align}
@@ -209,6 +213,12 @@ a  & -a-b &  b \\
 & & & \ddots &\ddots&\;\;\ddots
 \end{pmatrix}
 \end{align}
+This gives us two inidical equations, for even and odd $n$'s. If we take an odd $n$ the equations are:
+\begin{align}
+a {V_\lambda}_n - (a+b+\lambda){V_\lambda}_{n+1} + b {V_\lambda}_{n+2} =0  \\
+b {V_\lambda}_{n+1} - (a+b+\lambda){V_\lambda}_{n+2} + a {V_\lambda}_{n+3} =0 
+\end{align}
+\begin{comment}    The eigenmodes have to be real... so this treatment is false, although the eigenmodes seem to be correct
 The eigenvalues for this model can be found analytically, using bloch's theorem. The solution for a periodic structure with a unit cell is ${V_\lambda}_n = e^{ikn} u(x)$ where $u(x)$ is a function with the periodicity of the unit cell. In our case this simplifies to:
 \begin{align}
 {V_\lambda}_n = \begin{cases}e^{ikn} c_1 \; &, \text{n odd} \\ e^{ikn} c_2 \; &, \text{n even} \end{cases}
@@ -223,6 +233,7 @@ The solution for $\lambda$ is
 (a+b+\lambda)^2 = a^2+b^2+2ab\cos 2k \\
 \lambda = -(a + b) \pm \sqrt{a^2+b^2+2ab\cos 2k}
 \end{align}
+\end{comment}
 \subsection{Log normal, but with less nodes}
 Perhaps a model similar to the original model but with a small finite number of nodes is easier to solve analytically.
 \subsection{Euclidean distance rates, or functions of it}
