@@ -105,7 +105,7 @@
 \section{Introduction}
 The mathematical properties of random matrices may offer interesting insight for the physical properties. Such physical properties include the diffusion and the Survival Probability, while the mathematical properties include the sparsity of the matrix and its spectrum. 
 
-We shall consentrate on sparse matrices with log-normally distributed values. At first, we will work on a Nearest-Neighbor model as described in section \ref{sec:our_model}. One can think of this model as a one dimensional chain of sites, where transition rates between the sites vary log-normally.
+We shall concentrate on sparse matrices with log-normally distributed values. At first, we will work on a Nearest-Neighbor model as described in section \ref{sec:our_model}. One can think of this model as a one dimensional chain of sites, where transition rates between the sites vary log-normally.
 
 
 Another method we apply is the SLRT - Semi Linear Response Theorem \cite{Stotland:2010:PRB}. Which maps the transition rate problem to a resistor network one. A known solution for the diffusion constant in a nearest neighbor network is \cite{Derrida:1983}:
@@ -146,7 +146,7 @@ The master equation becomes
 \subsection{Survival probability}
 The survival probability is defined as the probability to remain in a specific site. If we begin with a probabilty vector whose only non zero element is $P_i(0)=1$, the corresponding $C_\lambda(0)$s will be:
 \begin{align}
-C_\lambda(0) = \inner{P(0)}{V_\lambda}= {V_\lambda}_i
+C_\lambda(0) = \inner{P(0)}{V_\lambda}= {V_\lambda}_ito
 \end{align}
 And then the survival probability will be:
 \begin{align}
@@ -166,11 +166,33 @@ Alexander \cite{Alexander:1981:RMP} has shown that if the average of inverse tra
 \begin{align}
 S(t) \approx 2Dt 
 \end{align}
-With a diffusion coefficient $D = \left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1}$ .
+With a diffusion coefficient 
+\begin{align}\label{eq:diff}
+D = \left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1}
+\end{align}
 
 %%%%%%%%%%%%%%
 \subsection{The relation between the spreading and the survival probability}
+We have two known quantities, one is the survival probability $\mathcal{P}(t)$, which is obtained by the use of eigenmode decomposition, and the other is the spreading $S(t)$, which was derived from the harmonic mean. The relation between them is not always clear. 
 
+The scaling hypothesis ??? shows that
+\begin{align}
+\mathcal{P}(t)\sqrt{S(t)}=1
+\end{align}
+On the other hand, we may be able to derive the spreading using the same methods we have used for the survival probability, i.e. eigenmode decomposition.
+
+By definition:
+\begin{align}
+S(t) = \sum_n n^2 P_n -\left(\sum_n n P_n\right)^2 = \sum_n\sum_\lambda C_\lambda(0)e^{\lambda t}n^2 {V_\lambda}_n - (\sum_n\sum_\lambda C_\lambda(0)e^{\lambda t}n {V_\lambda}_n)^2
+\end{align}
+If we at start a specific site $i$, so that the only non zero probability is $P_i(0)=1$, the spreading will become:
+\begin{align}
+S_i(t) = \sum_n\sum_\lambda e^{\lambda t}n^2 {V_\lambda}_n{V_\lambda}_i - (\sum_n\sum_\lambda e^{\lambda t}n {V_\lambda}_n{V_\lambda}_i)^2
+\end{align}
+Averaging over the initial state $i$ we have:
+\begin{align}
+\overline{S}(t) = \frac{1}{N}\sum_i\sum_n\sum_\lambda e^{\lambda t}n^2 {V_\lambda}_n{V_\lambda}_i - \frac{1}{N}\sum_i(\sum_n\sum_\lambda e^{\lambda t}n {V_\lambda}_n{V_\lambda}_i)^2
+\end{align}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -178,10 +200,12 @@ With a diffusion coefficient $D = \left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1}
 In the supplementary material of \cite{Amir:2010:PRL} the moments of the distribution of the eigenvalues are found. 
 
 If we define $D$ as the diagonalized matrix $W$ as in $W=UDU^{-1}$, we have
-\begin{align}
+\begin{align}\label{eq:eig_moments}
 \sum_\lambda \lambda^k = Tr (D^k) = Tr(UDU^{-1}UDU^{-1}UDU^{-1}UDU^{-1}...) = Tr (W^k)
 \end{align}
-So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the distribution of the eigenvalues.
+So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the distribution of the eigenvalues. If one can find the exponents of the matrix, he can find the moments of the distribution, and hopefuly the distribution itself. 
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Models}\label{sec:our_model}
@@ -231,7 +255,12 @@ a  & -a-b &  b \\
 & & & \ddots &\ddots&\;\;\ddots
 \end{pmatrix}
 \end{align}
-This gives us two inidical equations, for even and odd $n$'s. If we take an odd $n$ the equations are:
+The diffusion coefficient according to \ref{eq:diff} should be:
+\begin{align}
+D = \left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1} = \frac{2}{\frac{1}{a} + \frac{1}{b}} = \frac{2ab}{a+b}
+\end{align}
+
+Applying the eigenvalue equation to this matrix gives us two inidical equations, for even and odd $n$'s. If we take an odd $n$ the equations are:
 \begin{align}
 a {V_\lambda}_n - (a+b+\lambda){V_\lambda}_{n+1} + b {V_\lambda}_{n+2} =0  \\
 b {V_\lambda}_{n+1} - (a+b+\lambda){V_\lambda}_{n+2} + a {V_\lambda}_{n+3} =0 
@@ -261,32 +290,12 @@ Now that we have the eigenvalues, we may use equation \ref{eq:surv_eigenvalues} 
 \subsection{Log normal, but with less nodes}
 Perhaps a model similar to the original model but with a small finite number of nodes is easier to solve analytically.
 \subsection{Euclidean distance rates, or functions of it}
-Random Euclidean distance matrices were widely researched \cite{Mezard:1999:NPB}, [insert more refs..]. Amir et al \cite{Amir:2010:PRL} have studied a model with the exponents of euclidean distances. 
+Random Euclidean distance matrices were widely researched \cite{Mezard:1999:NPB}, [insert more refs..]. Amir et al \cite{Amir:2010:PRL} have studied a model with the exponents of euclidean distances. They obtain the survival probability by finding the distribution of the eigenvalues, using the idea of \ref{eq:eig_moments}. 
 
 In one dimension, the transition rates are related to the distance between points distributed uniformly. The nearest neighbor distance can thought of as a "Poisson Process" and then the distance is distributed exponentialy.
 
+The exponential distribution does not fit case $(a)$ of Alexander's review \cite{Alexander:1981:RMP}, so the diffusion coefficient cannot be derived with the same method.
 
-$\inner{1}{2}$
-
-\begin{comment}
-\section{unordered notes}
-Some random unordered notes.
-\begin{align}\label{eq:rho_of_t}
-\dot{\aket{\rho}}&=W\aket{\rho} \\
-\aket{\rho(t)} &= e^{Wt}\aket{\rho_0} \\
-\aket{\rho(t)} &= \sum_i e^{Wt}\aket{i}\abraket{i}{\rho_0} \\
-&= \sum_i e^{\lambda_i t}\aket{i}\abraket{i}{\rho_0}
-\end{align}
-The survival probability is averaging over the exponent of the Hamiltonian:
-\begin{align}
-\abraket{\rho_0}{\rho} &= \abra{\rho_0}e^{Wt}\aket{\rho_0} \\
-&= \sum_i \abs{\abraket{i}{\rho_0}}^2e^{\lambda_it}
-\end{align}
-If $\aket{\rho_0}$ is defined as a specific site $\aket{n}$, one can average over all the sites to obtain the average survival probability per site $P(t)$: 
-\begin{align}
-\avg{ P(t) } &= \sum_n\sum_i \frac{1}{N}\abs{\abraket{i}{n}}^2e^{\lambda_it}= \sum_i e^{\lambda_i t}
-\end{align}
-\end{comment}
 
 \section{Random Matrix Construction}\label{sec:matrix_construction}
 To create a $N\times N$ matrix, we have to choose $N-1$ random numbers. To make sure our distribution is truly log-normal, we create $N-1$ numbers forming a log-normal distribution, and permute them. In order to create the numbers, first we create a vector of $N-1$ linearly spaced values between $0$ and $1$. Then we apply element-wise the inverse cumulative distribution function of the normal distribution \ref{eq:invcdf}, using the inverse complementary error function. This gives a $N-1$ vector with normal distributed values. The vector is then scaled ($\tilde{y} = \mu+\sigma\cdot y$) to the appropriate width and mean [of the normal distribution]. The last step is to permute the vector, and apply an exponent element-wise.
