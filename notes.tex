@@ -142,6 +142,8 @@ The master equation becomes
 &C_\lambda(t) = C_\lambda(0)e^{\lambda t}\\
 &P_n(t) = \sum_\lambda C_\lambda(t) {V_\lambda}_n = \sum_\lambda  C_\lambda(0)e^{\lambda t} {V_\lambda}_n 
 \end{align}
+%%%%%%%%%%%%%
+\subsection{Survival probability}
 The survival probability is defined as the probability to remain in a specific site. If we begin with a probabilty vector whose only non zero element is $P_i(0)=1$, the corresponding $C_\lambda(0)$s will be:
 \begin{align}
 C_\lambda(0) = \inner{P(0)}{V_\lambda}= {V_\lambda}_i
@@ -151,9 +153,25 @@ And then the survival probability will be:
 \mathcal{P}_i(t) = P_i(t) = \sum_\lambda  C_\lambda(0)e^{\lambda t} {V_\lambda}_i=\sum_\lambda ({V_\lambda}_i)^2 e^{\lambda t} 
 \end{align}
 The mean survival probability will be:
-\begin{align}
+\begin{align} \label{eq:surv_eigenvalues}
 \mathcal{P}(t) = \sum_i \frac{1}{N} P_i(t)=\sum_i \frac{1}{N} \sum_\lambda ({V_\lambda}_i)^2 e^{\lambda t}  =\frac{1}{N}\sum_\lambda e^{\lambda t}
 \end{align}
+%%%%%%%%%%%%%%%
+\subsection{Spreading}
+The spreading of the probabilities is defined as the second moment of the locations:
+\begin{align}
+S(t) = \sum_n n^2 P_n -\left(\sum_n n P_n\right)^2
+\end{align}
+Alexander \cite{Alexander:1981:RMP} has shown that if the average of inverse transition rates is bounded ($\left(\frac{1}{N}\sum\frac{1}{w_n}\right) < \infty$) then the a spreading at $t\rightarrow \infty$ behaves like in an ordered chain:
+\begin{align}
+S(t) \approx 2Dt 
+\end{align}
+With a diffusion coefficient $D = \left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1}$ .
+
+%%%%%%%%%%%%%%
+\subsection{The relation between the spreading and the survival probability}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Eigenvalue distribution}
@@ -166,7 +184,7 @@ If we define $D$ as the diagonalized matrix $W$ as in $W=UDU^{-1}$, we have
 So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the distribution of the eigenvalues.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Our Model}\label{sec:our_model}
+\section{Models}\label{sec:our_model}
 The model consists of a chain of connected sites. Our point of intereset are the transition rates between those sites. One can define a master equation:
 \begin{align}
 \frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t) \\
@@ -218,8 +236,10 @@ This gives us two inidical equations, for even and odd $n$'s. If we take an odd 
 a {V_\lambda}_n - (a+b+\lambda){V_\lambda}_{n+1} + b {V_\lambda}_{n+2} =0  \\
 b {V_\lambda}_{n+1} - (a+b+\lambda){V_\lambda}_{n+2} + a {V_\lambda}_{n+3} =0 
 \end{align}
-\begin{comment}    The eigenmodes have to be real... so this treatment is false, although the eigenmodes seem to be correct
-The eigenvalues for this model can be found analytically, using bloch's theorem. The solution for a periodic structure with a unit cell is ${V_\lambda}_n = e^{ikn} u(x)$ where $u(x)$ is a function with the periodicity of the unit cell. In our case this simplifies to:
+The solution with real eigenmodes is rather cumbersome, but the eigenvalues found by any set of orthogonal eigenmodes have to be the same. So for purely analytical reasons we find the eigenvalues with complex eigenmodes, although they have no meaning in our model.
+
+
+The eigenvalues for this matrix can be found analytically, using bloch's theorem. The solution for a periodic structure with a unit cell is ${V_\lambda}_n = e^{ikn} u(x)$ where $u(x)$ is a function with the periodicity of the unit cell. In our case this simplifies to:
 \begin{align}
 {V_\lambda}_n = \begin{cases}e^{ikn} c_1 \; &, \text{n odd} \\ e^{ikn} c_2 \; &, \text{n even} \end{cases}
 \end{align}
@@ -231,9 +251,13 @@ bc_2e^{-ik}   -(a+b)c_1 +ac_2e^{ik} &= \lambda c_1
 The solution for $\lambda$ is
 \begin{align}
 (a+b+\lambda)^2 = a^2+b^2+2ab\cos 2k \\
-\lambda = -(a + b) \pm \sqrt{a^2+b^2+2ab\cos 2k}
+\lambda = -(a + b) \pm \sqrt{a^2+b^2+2ab\cos 2k}  \label{eq:abab_eigenvals}
 \end{align}
-\end{comment}
+Now that we have the eigenvalues, we may use equation \ref{eq:surv_eigenvalues} to find the survival probability as a function of time:
+\begin{align}
+\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t} 
+\end{align}
+
 \subsection{Log normal, but with less nodes}
 Perhaps a model similar to the original model but with a small finite number of nodes is easier to solve analytically.
 \subsection{Euclidean distance rates, or functions of it}
@@ -270,8 +294,6 @@ To create a $N\times N$ matrix, we have to choose $N-1$ random numbers. To make 
 y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x) 
 \end{align}
 
-\section{graphs}
-I have created a random matrix as prescribed in section \ref{sec:matrix_construction}, with size $N=200$. With an initial state of $\rho_0=n=100$, several calculations have been made by matrix exponentiation as in eq. \ref{eq:rho_of_t}. A movie of rho as a function of t for $\sigma=1$ was produced ("rho.mpg"). Now, I have taken the initial transition rates, and rescaled them to recieve results with different $\sigma$'s. The rescaling was done by taking a power sigma of the initial values. ($e^{\sigma x} = {(e^x)}^\sigma$). Both plots are at t=500 for different $\sigma$'s. The first plot is of the second moment (where the 200 nodes are spread equally over the range (-1,1), while the second plot is of the survival.
 \bibliographystyle{plain}
 \bibliography{jarondl}
 \end{document}

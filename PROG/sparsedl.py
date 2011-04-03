@@ -6,6 +6,7 @@
             from sparsedl import *
 """
 import scipy 
+import numpy
 from scipy import linalg, optimize, special
 
 def NN_matrix(N,hop_values=None,**kwargs):
@@ -72,6 +73,11 @@ def lognormal_construction(N, mu=0, sigma=1):
     perm_y = scipy.random.permutation(rescaled_y)
     return scipy.exp(perm_y)
 
+def surv(eigen_values, times):
+    """ Calcultae survival probability by the sum of exponents equation"""
+    op = numpy.outer(eigen_values,times)
+    exps = numpy.exp(op)
+    return exps.sum(axis=0) / len(eigen_values)
 
     
     
