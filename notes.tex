@@ -4,8 +4,7 @@
 
 \documentclass[onecolumn,fleqn]{revtex4}
 
-%by jarondl
-\usepackage{verbatim} % for multiline comments
+
 % special 
 \usepackage{ifthen}
 \usepackage{ifpdf}
@@ -27,6 +26,11 @@
 \usepackage{graphicx}
 \usepackage{epsfig}
 \fi
+
+%by jarondl
+\usepackage{verbatim} % for multiline comments
+\usepackage{natbib}
+\usepackage{hyperref}  % for hyperlinks in biblio. should be called last?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -303,6 +307,6 @@ To create a $N\times N$ matrix, we have to choose $N-1$ random numbers. To make 
 y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x) 
 \end{align}
 
-\bibliographystyle{plain}
+\bibliographystyle{plainnat}
 \bibliography{jarondl}
 \end{document}
