@@ -41,3 +41,5 @@ def wexp_plot():
 def savefig(fig, fname):
     canvas = FigureCanvasAgg(fig)
     canvas.print_figure(fname)
+
+
