@@ -111,18 +111,20 @@ The mathematical properties of random matrices may offer interesting insight for
 
 We shall concentrate on sparse matrices with log-normally distributed values. At first, we will work on a Nearest-Neighbor model as described in section \ref{sec:our_model}. One can think of this model as a one dimensional chain of sites, where transition rates between the sites vary log-normally.
 
-
-Another method we apply is the SLRT - Semi Linear Response Theorem \cite{Stotland:2010:PRB}. Which maps the transition rate problem to a resistor network one. A known solution for the diffusion constant in a nearest neighbor network is \cite{Derrida:1983}:
+In regular diffusion there is a known relation between the survival probability and the diffusion. 
+A known solution for the diffusion constant in a nearest neighbor network is \cite{Derrida:1983}:
 \begin{align}
 D=\overline{w}_{harmonic} =(\overline{w^{-1}})^{-1}=\left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1}
 \end{align}
+A major problem with this solution is that not all distributions have a defined harmonic average. The question is whether those other distributions show regular diffusion, and if so, does the relation between survival probability and diffusion hold?
 
 
-The works of Stotland \cite{Stotland:2010:PRB} \cite{Stotland:2009:EPL}, describe semi linear response by the use of sparse matrices. They focus mainly on the rate of energy absorption.
+Another interesting issue is that of dimensions higher than 1. Inherently, higher dimensions offer different transition rate distributions. What is not clear is whether the dimensionality of the system adds other complexities or not. 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Master equation}
-The equation governing the time developement in a transition rate problem is:
+The equation governing the time development in a transition rate problem is:
 \begin{align}
 \frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t)
 \end{align}
@@ -148,7 +150,7 @@ The master equation becomes
 \end{align}
 %%%%%%%%%%%%%
 \subsection{Survival probability}
-The survival probability is defined as the probability to remain in a specific site. If we begin with a probabilty vector whose only non zero element is $P_i(0)=1$, the corresponding $C_\lambda(0)$s will be:
+The survival probability is defined as the probability to remain in a specific site. If we begin with a probability vector whose only non zero element is $P_i(0)=1$, the corresponding $C_\lambda(0)$s will be:
 \begin{align}
 C_\lambda(0) = \inner{P(0)}{V_\lambda}= {V_\lambda}_ito
 \end{align}
@@ -207,13 +209,13 @@ If we define $D$ as the diagonalized matrix $W$ as in $W=UDU^{-1}$, we have
 \begin{align}\label{eq:eig_moments}
 \sum_\lambda \lambda^k = Tr (D^k) = Tr(UDU^{-1}UDU^{-1}UDU^{-1}UDU^{-1}...) = Tr (W^k)
 \end{align}
-So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the distribution of the eigenvalues. If one can find the exponents of the matrix, he can find the moments of the distribution, and hopefuly the distribution itself. 
+So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the distribution of the eigenvalues. If one can find the exponents of the matrix, he can find the moments of the distribution, and hopefully the distribution itself. 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Models}\label{sec:our_model}
-The model consists of a chain of connected sites. Our point of intereset are the transition rates between those sites. One can define a master equation:
+The model consists of a chain of connected sites. Our point of interest are the transition rates between those sites. One can define a master equation:
 \begin{align}
 \frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t) \\
 W_{n,n-1} = W_{n-1,n} = w_n \\
@@ -276,7 +278,7 @@ The eigenvalues for this matrix can be found analytically, using bloch's theorem
 \begin{align}
 {V_\lambda}_n = \begin{cases}e^{ikn} c_1 \; &, \text{n odd} \\ e^{ikn} c_2 \; &, \text{n even} \end{cases}
 \end{align}
-When we apply the eignenvalue equation to this vector ($WV_\lambda = \lambda V_\lambda$), we obtain two linear equations:
+When we apply the eigenvalue equation to this vector ($WV_\lambda = \lambda V_\lambda$), we obtain two linear equations:
 \begin{align}
 ac_1e^{-ik}   -(a+b)c_2 +bc_1e^{ik} &= \lambda c_2 \\
 bc_2e^{-ik}   -(a+b)c_1 +ac_2e^{ik} &= \lambda c_1 
@@ -296,9 +298,44 @@ Perhaps a model similar to the original model but with a small finite number of 
 \subsection{Euclidean distance rates, or functions of it}
 Random Euclidean distance matrices were widely researched \cite{Mezard:1999:NPB}, [insert more refs..]. Amir et al \cite{Amir:2010:PRL} have studied a model with the exponents of euclidean distances. They obtain the survival probability by finding the distribution of the eigenvalues, using the idea of \ref{eq:eig_moments}. 
 
-In one dimension, the transition rates are related to the distance between points distributed uniformly. The nearest neighbor distance can thought of as a "Poisson Process" and then the distance is distributed exponentialy.
+In one dimension, the transition rates are related to the distance between points distributed uniformly, with density $n$. The nearest neighbor distribution can be considered as the probability for no neighbor at $x'<x$, and a neighbor at $x<x'<x+dx$. Because the points are distributed uniformly, the probability for no neighbors at a small interval $\Delta x$ is :
+\[P_0(\Delta x) = (1-n\Delta x) \]
+So for a larger interval, we can divide $x$ to $N$ parts:
+\[P_0(x) = \lim_{N\rightarrow \infty}(1-\frac{nx}{N})^N = e^{-n x} \]
+The probability for a neighbor at $x<x'<x+dx$ is:
+\[P_1(x<x'<x+dx) = n dx \]
+So the probability for a nearest neighbor between $x$ and $x+dx$ is:
+\[P_{NN}(x< x'<x+dx) = P_0(x'<x)\cdot P_1(x<x'<x+dx) = e^{-n x}ndx \]
+And the distribution density functions is:
+\[ f(x) = e^{-n x}n\]
 
-The exponential distribution does not fit case $(a)$ of Alexander's review \cite{Alexander:1981:RMP}, so the diffusion coefficient cannot be derived with the same method.
+For higher dimensions, if we assume that site density is constant (denoted $n$), then the probability for no neighbors in volume $V(r)$ is:
+\[ P_0( V(r)) = e^{-nV(r)}\]
+So the cumulative probability for the nearest neighbor distance to be more than $r$ is:
+\[ F (r) = 1-P_0(V(r)) = 1- e^{-nV(r)} \]
+The probability density is the derivative of the cumulative probability:
+\[ f(r) = \frac{dF(r)}{dr} =   e^{-nV(r)} n \frac{dV(r)}{dr} \]
+For two dimensions:
+\[ f(r) = e^{-n \pi r^2}n2\pi r \]
+For three dimensions:
+\[ f(r) = e^{-n \frac{4\pi}{3} r^3}n4\pi r^2 \]
+
+\section{S. Alexander's treatment}
+This is copied from Alexander's paper for easier referencing. 
+
+
+S. Alexander provided a general solution for the problem \cite{Alexander:1981:RMP}. In his equation (2.4) three classes are classified:
+\begin{align} 
+    &\mathrm{(a) : }\qquad (\overline{w^{-1}})^{-1} < \infty  \\
+    &\mathrm{(b) : }\qquad P(w)\rightarrow 0 \qquad\mathrm{as}\qquad w \rightarrow 0 \\
+    &\mathrm{(c) : }\qquad P(w) = 
+        \begin{cases} 
+            (1-\alpha)w^{-\alpha} , & 0\le w \le 1 \\
+            0, & \mathrm{otherwise}
+        \end{cases}
+        \qquad\mathrm{with}\qquad 0<\alpha<1
+\end{align}
+
 
 
 \section{Random Matrix Construction}\label{sec:matrix_construction}
