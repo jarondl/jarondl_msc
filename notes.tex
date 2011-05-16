@@ -122,6 +122,7 @@ A major problem with this solution is that not all distributions have a defined 
 Another interesting issue is that of dimensions higher than 1. Inherently, higher dimensions offer different transition rate distributions. What is not clear is whether the dimensionality of the system adds other complexities or not. 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Master equation}
 The equation governing the time development in a transition rate problem is:
@@ -210,8 +211,6 @@ If we define $D$ as the diagonalized matrix $W$ as in $W=UDU^{-1}$, we have
 \sum_\lambda \lambda^k = Tr (D^k) = Tr(UDU^{-1}UDU^{-1}UDU^{-1}UDU^{-1}...) = Tr (W^k)
 \end{align}
 So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the distribution of the eigenvalues. If one can find the exponents of the matrix, he can find the moments of the distribution, and hopefully the distribution itself. 
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Models}\label{sec:our_model}
@@ -346,16 +345,30 @@ For two of the three classes the survival at $w\rightarrow 0$ and $t\rightarrow 
 &\mathrm{(a) : }\qquad \mathcal{P}(t) \approx \sqrt{\frac{(\overline{w^{-1}})}{4\pi}}\frac{1}{\sqrt{t}}  \\
 &\mathrm{(c) : }\qquad \mathcal{P}(t) \propto t^{-\frac{1-\alpha}{2-\alpha}}
 \end{align}
-And the diffusion (7.18):
-\begin{align}
-&\mathrm{(a) : }\qquad S(t) \approx 2(\overline{w^{-1}})^{-1}t  \\
-&\mathrm{(b) : }\qquad S(t) \propto \frac{t}{\ln t}  \\
-&\mathrm{(c) : }\qquad S(t) \propto t^{2\frac{1-\alpha}{2-\alpha}}
+The spreading is defined by (7.3):
+\begin{align}\label{eq:spreading}
+     S(t) = \overline{x^2(t)} = \sum_n n^2 P_n(t) 
 \end{align}
-Using a scaling hypothesis , he obtains:
+And it is solved (7.18):
 \begin{align}
+    &\mathrm{(a) : }\qquad S(t) \approx 2(\overline{w^{-1}})^{-1}t  \\
+    &\mathrm{(b) : }\qquad S(t) \propto \frac{t}{\ln t}  \\
+    &\mathrm{(c) : }\qquad S(t) \propto t^{2\frac{1-\alpha}{2-\alpha}}
+\end{align}
+Using a scaling hypothesis , he claims:
+\begin{align}\label{eq:scaling_hypo}
 S(t) \propto \left(\mathcal{P}(t)\right)^{-2} \qquad \mathrm{as}\qquad t\rightarrow \infty
 \end{align}
+
+%%%%%%%%%%
+\section{Higher dimension considerations}
+To solve the problem in higher dimensions, we label the sites with a 1d coordinate, and solve the matrix.
+
+The claim in \eqref{eq:eig_moments} that $\sum_\lambda \lambda^k = Tr (W^k)$, is still be valid in higher dimensions. Therefore, the survival probability should stay the same.
+
+The interesting question regards the spreading. If the hypothesis $S(t) \propto \left(\mathcal{P}(t)\right)^{-2}$ \eqref{eq:scaling_hypo} holds, the spreading should also stay the same. 
+
+The definition of spreading Alexander uses \eqref{eq:spreading} ($\sum_n n^2 P_n(t)$) does match the average distance squared in 1D, but not in higher dimensions. The question is whether we can enumerate the sites in such a way that the methods presented so far apply.
 
 
 \section{Random Matrix Construction}\label{sec:matrix_construction}
