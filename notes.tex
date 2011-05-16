@@ -293,6 +293,7 @@ Now that we have the eigenvalues, we may use equation \ref{eq:surv_eigenvalues} 
 \mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t} 
 \end{align}
 
+%%%%%%%%%%%
 \subsection{Log normal, but with less nodes}
 Perhaps a model similar to the original model but with a small finite number of nodes is easier to solve analytically.
 \subsection{Euclidean distance rates, or functions of it}
@@ -311,7 +312,7 @@ And the distribution density functions is:
 
 For higher dimensions, if we assume that site density is constant (denoted $n$), then the probability for no neighbors in volume $V(r)$ is:
 \[ P_0( V(r)) = e^{-nV(r)}\]
-So the cumulative probability for the nearest neighbor distance to be more than $r$ is:
+So the cumulative probability for the nearest neighbor distance to be less than $r$ is:
 \[ F (r) = 1-P_0(V(r)) = 1- e^{-nV(r)} \]
 The probability density is the derivative of the cumulative probability:
 \[ f(r) = \frac{dF(r)}{dr} =   e^{-nV(r)} n \frac{dV(r)}{dr} \]
@@ -319,6 +320,11 @@ For two dimensions:
 \[ f(r) = e^{-n \pi r^2}n2\pi r \]
 For three dimensions:
 \[ f(r) = e^{-n \frac{4\pi}{3} r^3}n4\pi r^2 \]
+Amir et al. \cite{Amir:2010:PRL} come to the same equation in their supplementary material:
+\[P_{nn}(r)=\frac{d
+V_d}{r_{nn}} {(r/r_{nn})}^{d-1} e^{-V_d {(r/r_{nn})}^d}\] 
+"where $V_d$ is the volume of a $d$ dimensional sphere and $r_{nn}$ is the
+average nearest-neighbor distance." 
 
 \section{S. Alexander's treatment}
 This is copied from Alexander's paper for easier referencing. 
@@ -335,7 +341,21 @@ S. Alexander provided a general solution for the problem \cite{Alexander:1981:RM
         \end{cases}
         \qquad\mathrm{with}\qquad 0<\alpha<1
 \end{align}
-
+For two of the three classes the survival at $w\rightarrow 0$ and $t\rightarrow \infty$ are (6.13):
+\begin{align}
+&\mathrm{(a) : }\qquad \mathcal{P}(t) \approx \sqrt{\frac{(\overline{w^{-1}})}{4\pi}}\frac{1}{\sqrt{t}}  \\
+&\mathrm{(c) : }\qquad \mathcal{P}(t) \propto t^{-\frac{1-\alpha}{2-\alpha}}
+\end{align}
+And the diffusion (7.18):
+\begin{align}
+&\mathrm{(a) : }\qquad S(t) \approx 2(\overline{w^{-1}})^{-1}t  \\
+&\mathrm{(b) : }\qquad S(t) \propto \frac{t}{\ln t}  \\
+&\mathrm{(c) : }\qquad S(t) \propto t^{2\frac{1-\alpha}{2-\alpha}}
+\end{align}
+Using a scaling hypothesis , he obtains:
+\begin{align}
+S(t) \propto \left(\mathcal{P}(t)\right)^{-2} \qquad \mathrm{as}\qquad t\rightarrow \infty
+\end{align}
 
 
 \section{Random Matrix Construction}\label{sec:matrix_construction}
