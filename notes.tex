@@ -30,7 +30,9 @@
 %by jarondl
 \usepackage{verbatim} % for multiline comments
 \usepackage{natbib}
+\usepackage{fancybox}
 \usepackage{hyperref}  % for hyperlinks in biblio. should be called last?
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -92,6 +94,12 @@
 %\newcommand{\sandwich}[3]{\left\langle #1 | #2 | #3  \right\rangle}
 %\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
 \newcommand{\inner}[2]{\left \langle #1 \middle| #2\right\rangle} % Inner product
+
+%fminipage using fancybox package
+\newenvironment{fminipage}%
+  {\begin{Sbox}\begin{minipage}}%
+  {\end{minipage}\end{Sbox}\fbox{\TheSbox}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -295,6 +303,9 @@ Now that we have the eigenvalues, we may use equation \ref{eq:surv_eigenvalues} 
 %%%%%%%%%%%
 \subsection{Log normal, but with less nodes}
 Perhaps a model similar to the original model but with a small finite number of nodes is easier to solve analytically.
+
+
+%%%%%%%%%%%%%%
 \subsection{Euclidean distance rates, or functions of it}
 Random Euclidean distance matrices were widely researched \cite{Mezard:1999:NPB}, [insert more refs..]. Amir et al \cite{Amir:2010:PRL} have studied a model with the exponents of euclidean distances. They obtain the survival probability by finding the distribution of the eigenvalues, using the idea of \ref{eq:eig_moments}. 
 
@@ -320,10 +331,25 @@ For two dimensions:
 For three dimensions:
 \[ f(r) = e^{-n \frac{4\pi}{3} r^3}n4\pi r^2 \]
 Amir et al. \cite{Amir:2010:PRL} come to the same equation in their supplementary material:
+
+%%
+\begin{fminipage}{\textwidth}
 \[P_{nn}(r)=\frac{d
 V_d}{r_{nn}} {(r/r_{nn})}^{d-1} e^{-V_d {(r/r_{nn})}^d}\] 
 "where $V_d$ is the volume of a $d$ dimensional sphere and $r_{nn}$ is the
 average nearest-neighbor distance." 
+\end{fminipage}
+
+In our notation we can write it as:
+\[ f(r) = e^{-n V_d r^d} ndV_d r^{d-1} \]
+
+%%%
+
+We can change the random variable from $r$ to $w= e^{-r/ \xi}$:
+\begin{align*}
+    |f_w(w)dw| = |f_r(r)dr| \\
+    f_w(w) = f_r(r)|\frac{dw}{dr}| = f_r(-\xi \ln w)\frac{w}{\xi} = e^{-nV_d (-\xi\ln w)^d} ndV_d (-\xi\ln w)^{d-1}
+\end{align*}
 
 \section{S. Alexander's treatment}
 This is copied from Alexander's paper for easier referencing. 
