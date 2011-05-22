@@ -31,7 +31,8 @@
 \usepackage{verbatim} % for multiline comments
 \usepackage{natbib}
 \usepackage{fancybox}
-\usepackage{hyperref}  % for hyperlinks in biblio. should be called last?
+\usepackage{cmap}  % for making pdf mathmode searchable
+\usepackage[pdftitle={Notes by Jarondl}]{hyperref}  % for hyperlinks in biblio. should be called last?
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -340,17 +341,24 @@ V_d}{r_{nn}} {(r/r_{nn})}^{d-1} e^{-V_d {(r/r_{nn})}^d}\]
 average nearest-neighbor distance." 
 \end{fminipage}
 
-In our notation we can write it as:
+In our notation (still keeping $V_d$ for a $d$ dimensional unit sphere ), we can write it as:
 \[ f(r) = e^{-n V_d r^d} ndV_d r^{d-1} \]
 
 %%%
 
 We can change the random variable from $r$ to $w= e^{-r/ \xi}$:
 \begin{align*}
-    |f_w(w)dw| = |f_r(r)dr| \\
-    f_w(w) = f_r(r)|\frac{dw}{dr}| = f_r(-\xi \ln w)\frac{w}{\xi} = e^{-nV_d (-\xi\ln w)^d} ndV_d (-\xi\ln w)^{d-1}
+    &|f_w(w)dw| = |f_r(r)dr| \\
+    &f_w(w) = f_r(r)\left|\frac{dr}{dw}\right| = f_r(-\xi \ln w)\frac{\xi}{w} = e^{-nV_d (-\xi\ln w)^d} ndV_d (-\xi\ln w)^{d-1}\frac{\xi}{w}
 \end{align*}
+In $1d$ that becomes:
+\[ f(w)= e^{n \xi\ln w} \frac{n\xi}{w} = w^{n\xi-1}n\xi\]
+Which matches Alexander's $\alpha = 1-n\xi$, and therefore should have survival of $\mathcal{P}(t)\propto t^{-\frac{1-\alpha}{2-\alpha}}= t^{-\frac{n\xi}{1+n\xi}}$. This result appears also in Amir's article.
 
+For $2d$:
+\[ f(w) = e^{-n \pi (-\xi\ln w)^2} n 2\pi  (-\xi\ln w)\frac{\xi}{w}\]
+
+%%%%%%%%%%%%%%%%%%%%%%
 \section{S. Alexander's treatment}
 This is copied from Alexander's paper for easier referencing. 
 
@@ -358,7 +366,7 @@ This is copied from Alexander's paper for easier referencing.
 S. Alexander provided a general solution for the problem \cite{Alexander:1981:RMP}. In his equation (2.4) three classes are classified:
 \begin{align} 
     &\mathrm{(a) : }\qquad (\overline{w^{-1}})^{-1} < \infty  \\
-    &\mathrm{(b) : }\qquad P(w)\rightarrow 0 \qquad\mathrm{as}\qquad w \rightarrow 0 \\
+    &\mathrm{(b) : }\qquad P(w)\rightarrow \mathrm{const} \qquad\mathrm{as}\qquad w \rightarrow 0 \\
     &\mathrm{(c) : }\qquad P(w) = 
         \begin{cases} 
             (1-\alpha)w^{-\alpha} , & 0\le w \le 1 \\
@@ -396,7 +404,39 @@ The interesting question regards the spreading. If the hypothesis $S(t) \propto 
 
 The definition of spreading Alexander uses \eqref{eq:spreading} ($\sum_n n^2 P_n(t)$) does match the average distance squared in 1D, but not in higher dimensions. The question is whether we can enumerate the sites in such a way that the methods presented so far apply.
 
+%%%%%%%%
+\section{Quasi 1D}\label{sec:quasi1d}
+A quasi $1d$ network is similar to a $1d$ network, but transitions beyond nearest neighbor are possible. The transition rate matrix $W$ will be a sparse, banded matrix. 
 
+We define the band width $b$ as the farthest off-diagonal containing non zero elements, or as the largest distance between neighbors with non zero transition rates. The sparisity of a matrix has no accepted definition,
+
+
+Stotland's \cite{Stotland:2010:PRB}  sparsity characterization is:
+
+%%%%%%%%%%%%%%%% minipage
+\begin{fminipage}{\textwidth}
+The sparsity of a matrix that consists of 
+uncorrelated realizations can be characterized 
+by a parameter~$s$ or optionally 
+by the parameters~$p$ and~$q$ that 
+are defined as follows: 
+%
+\begin{align*}
+s \ \ &=& \ \ \langle x \rangle^2 / \langle x^2 \rangle \\
+p \ \ &=& \ \ \mbox{Prob}(x {>} \langle x\rangle) \\
+q \ \ &=& \ \ \langle\langle x \rangle\rangle_{\tbox{median}}/\langle x \rangle
+\end{align*}
+%
+By this definition $p$ is the fraction of the elements that 
+are larger than the algebraic average and $q$ is the ratio between the median
+and the algebraic average.
+We regard a matrix as sparse if $s\ll1$  
+or equivalently if $p \ll 1$ or $q \ll 1$. 
+\end{fminipage}
+
+
+
+%%%%%%%%
 \section{Random Matrix Construction}\label{sec:matrix_construction}
 To create a $N\times N$ matrix, we have to choose $N-1$ random numbers. To make sure our distribution is truly log-normal, we create $N-1$ numbers forming a log-normal distribution, and permute them. In order to create the numbers, first we create a vector of $N-1$ linearly spaced values between $0$ and $1$. Then we apply element-wise the inverse cumulative distribution function of the normal distribution \ref{eq:invcdf}, using the inverse complementary error function. This gives a $N-1$ vector with normal distributed values. The vector is then scaled ($\tilde{y} = \mu+\sigma\cdot y$) to the appropriate width and mean [of the normal distribution]. The last step is to permute the vector, and apply an exponent element-wise.
 \begin{align}\label{eq:invcdf}

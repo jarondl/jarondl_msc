@@ -17,7 +17,6 @@ import sys
 
 
 def mk_NN_file(nodes=200, filename='data/mat200.1.npz'): 
-    print('debug : ',nodes,filename)
     """ Crates a file with a NxN Nearest Neighbor matrix called A, and an initial rho0.
         If no values are supplied, the defaults are used.  """
     A = sparsedl.NN_matrix(nodes)

@@ -7,22 +7,39 @@
 """
 import scipy 
 import numpy
-from scipy import linalg, optimize, special
+from numpy import linalg
+from scipy import optimize, special
+from scipy.sparse import spdiags
 
-def NN_matrix(N,hop_values=None,**kwargs):
+def NN_matrix(N,b=1,seed=None,**kwargs):
     """ Build a NxN matrix.
         Input: - N :  the size of the matrix
-               - hop_values: the omegas. If none are supplied, creates them with lognormal distribution
+               - b : bandwidth
                - **kwargs : the rest of the keyworded arguments are passed to the lognormal function,
                                 so you can define sigma and mu.
           log normal construction (e.g. mu=0, sigma=7)."""
-    if hop_values==None: 
-        hop_values = lognormal_construction(N-1,**kwargs)
-    diag_values = scipy.zeros(N)
-    diag_values[1:] -= hop_values
-    diag_values[:-1] -= hop_values
-    return scipy.diagflat(diag_values) +  scipy.diagflat(hop_values,-1) +  scipy.diagflat(hop_values,1)
+    numpy.random.seed(seed) # Used to create pseudo random values
+    matrix = numpy.zeros([N,N])
+    for diag in range(1,b+1):
+        off_diag_values =  lognormal_construction(N-diag,**kwargs)
+        matrix += numpy.diagflat(off_diag_values,diag) + numpy.diagflat(off_diag_values,-diag)
+    diag_values = matrix.sum(axis=1)  # the diagonal should contain minus the sum of rows
+    matrix -= numpy.diagflat(diag_values)
+    return matrix
 
+def lognormal_sparse_matrix(N,b=1, seed=None, **kwargs):
+    """ Build a NxN matrix.
+    Input: - N :  the size of the matrix
+           - b : bandwidth
+           - **kwargs : the rest of the keyworded arguments are passed to the lognormal function,
+                            so you can define sigma and mu.
+      log normal construction (e.g. mu=0, sigma=7)."""
+    numpy.random.seed(seed) # Used to create pseudo random values
+    diag_data =  lognormal_construction(N*b,**kwargs).reshape([b,N])
+    sp = spdiags(diag_data, range(1,b+1),N,N)  # create the above the diagonal lines
+    sp = sp+ sp.transpose()
+    sp = sp- spdiags ( sp.sum(axis=0) , 0,N,N)
+    return sp
     
 
 def rho(t,rho0,W, index=None):
@@ -74,7 +91,7 @@ def lognormal_construction(N, mu=0, sigma=1):
     return scipy.exp(perm_y)
 
 def surv(eigen_values, times):
-    """ Calcultae survival probability by the sum of exponents equation"""
+    """ Calculate survival probability by the sum of exponents equation"""
     op = numpy.outer(eigen_values,times)
     exps = numpy.exp(op)
     return exps.sum(axis=0) / len(eigen_values)

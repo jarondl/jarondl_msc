@@ -1,5 +1,5 @@
 #!/usr/bin/python
-"""  
+"""  A module containing several plot functions.
 """
 from matplotlib.backends.backend_agg import FigureCanvasAgg  
 from matplotlib.figure import Figure
@@ -37,6 +37,7 @@ def wexp_plot():
     ax_b09_log.set_title( r"$\beta = {0}$".format(beta))
     
     savefig(fig, "expw.png")
+
 
 def savefig(fig, fname):
     canvas = FigureCanvasAgg(fig)
