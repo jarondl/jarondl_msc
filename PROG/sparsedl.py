@@ -7,8 +7,7 @@
 """
 import scipy 
 import numpy
-from numpy import linalg
-from scipy import optimize, special
+from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
 
 def NN_matrix(N,b=1,seed=None,**kwargs):

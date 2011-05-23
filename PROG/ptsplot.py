@@ -6,6 +6,7 @@ import sparsedl
 import plotdl
 from scipy.sparse import linalg as splinalg
 from numpy import linalg
+import numpy
 
 def surv_lognormal_band(t,N=100,b=1,seed=None,**kwargs):
     """ Creates a lognormal banded matrix and calculates the survival.
@@ -48,6 +49,25 @@ def p_s_lognormal_band(ax_p,ax_s,**kwargs):
     ax_s.set_title(r"Spreading")
     ax_s.legend()
 
+def spreading_without_scaling(N=100):
+    fig = plotdl.Figure()
+    ax = fig.add_subplot(111)
+    t= sparsedl.numpy.linspace(0,4,100)
+    rho0 = numpy.zeros(N)
+    rho0[N//2] =1
+    xcoord = numpy.linspace(-N,N,N)
+    
+    for b in range(1,10):
+        W = sparsedl.lognormal_sparse_matrix(N,b).todense()
+        S = []
+        for time in t:
+            S += [sparsedl.var(xcoord, sparsedl.rho(time, rho0, W))]
+        ax.semilogy(t,S,label= r"$b = {0}$".format(b))
+    ax.set_xlabel("$t$")
+    ax.set_ylabel(r"$S(t)$")
+    ax.set_title(r"Spreading")
+    ax.legend()
+    plotdl.savefig(fig,"s_without_scaling")
 
 
 def spread_surv_subplots():

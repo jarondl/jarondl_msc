@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 """  A module containing several plot functions.
 """
-from matplotlib.backends.backend_agg import FigureCanvasAgg  
+from matplotlib.backends.backend_agg import FigureCanvasAgg  # For raster rendering, e.g. png
+#from matplotlib.backends.backend_cairo import FigureCanvasCairo # For vector rendering e.g. pdf, eps  ###Doesn't have tex
+from matplotlib.backends.backend_pdf import FigureCanvasPdf
+from matplotlib.backends.backend_ps import FigureCanvasPS
 from matplotlib.figure import Figure
 from matplotlib import rc
 import numpy
@@ -57,9 +60,10 @@ def wexp_plot():
 
 def savefig(fig, fname, size=[latex_width_inch,latex_height_inch]):
     fig.set_size_inches(size)
-    canvas = FigureCanvasAgg(fig)
-    canvas.print_figure(fname+".pdf")
-    canvas.print_figure(fname+".eps")
+    canvas_pdf = FigureCanvasPdf(fig)
+    canvas_ps = FigureCanvasPS(fig)    
+    canvas_pdf.print_figure(fname+".pdf")
+    canvas_ps.print_figure(fname+".eps")
     #canvas.print_figure(fname+".png",dpi=100)
 
 
