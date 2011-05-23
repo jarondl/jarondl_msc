@@ -6,7 +6,22 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 from matplotlib import rc
 import numpy
-rc('text', usetex=True)
+
+
+## I use some latex info to derive optimial default sizes
+latex_width_pt = 460
+latex_height_pt = latex_width_pt * (numpy.sqrt(5)-1.0)/2.0  #Golden mean. idea by:http://www.scipy.org/Cookbook/Matplotlib/LaTeX_Examples
+latex_dpi = 72.27
+latex_width_inch = latex_width_pt/latex_dpi
+latex_height_inch = latex_height_pt/latex_dpi
+
+params = {'axes.labelsize': 10, 'text.fontsize': 10,
+          'legend.fontsize': 10,
+          'text.usetex': True, 'figure.figsize': [latex_width_inch,latex_height_inch]}
+rc('text', usetex=True, fontsize=10)
+rc('figure', figsize=[latex_width_inch,latex_height_inch])
+rc('legend', fontsize=10)
+
 
 def wexp_plot():
     fig = Figure()
@@ -40,7 +55,7 @@ def wexp_plot():
     savefig(fig, "expw.png")
 
 
-def savefig(fig, fname, size=[6,4]):
+def savefig(fig, fname, size=[latex_width_inch,latex_height_inch]):
     fig.set_size_inches(size)
     canvas = FigureCanvasAgg(fig)
     canvas.print_figure(fname+".pdf")

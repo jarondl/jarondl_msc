@@ -60,7 +60,7 @@ def spread_surv_subplots():
     ax_survs = fig.add_subplot(1,2,1)
     ax_spread = fig.add_subplot(1,2,2)
     p_s_lognormal_band(ax_survs, ax_spread)
-    plotdl.savefig(fig,"p_s_lognormal_band",size=[8,4])
+    plotdl.savefig(fig,"p_s_lognormal_band")
 
 
 if __name__ ==  "__main__":

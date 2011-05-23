@@ -410,11 +410,10 @@ The definition of spreading Alexander uses \eqref{eq:spreading} ($\sum_n n^2 P_n
 \section{Quasi 1D}\label{sec:quasi1d}
 A quasi $1d$ network is similar to a $1d$ network, but transitions beyond nearest neighbor are possible. The transition rate matrix $W$ will be a sparse, banded matrix. 
 
-We define the band width $b$ as the farthest off-diagonal containing non zero elements, or as the largest distance between neighbors with non zero transition rates. The sparisity of a matrix has no accepted definition,
+We define the band width $b$ as the farthest off-diagonal containing non zero elements, or as the largest distance between neighbors with non zero transition rates. The sparisity of a matrix has no accepted definition, but there are some measures available.
 
 
-Stotland's \cite{Stotland:2010:PRB}  sparsity characterization is:
-
+Stotland's \cite{Stotland:2010:PRB}  sparsity characterization is:\\*
 %%%%%%%%%%%%%%%% minipage
 \begin{fminipage}{\textwidth}
 The sparsity of a matrix that consists of 
@@ -435,11 +434,16 @@ and the algebraic average.
 We regard a matrix as sparse if $s\ll1$  
 or equivalently if $p \ll 1$ or $q \ll 1$. 
 \end{fminipage}
+%%
 
+The direct calculation for the survival in a log normal banded matrix is depicted in figure \ref{fig:p_s_lognormal_band}. For each value of $b$, a matrix (curently $100
+\times 100$) with a band b filled with lognormally distributed ($\sigma=1$) values was constructed. Then, the eigenvalues were numerically calculated, and then the laplace sum $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$.
+%%%
 \begin{figure}
 \includegraphics[clip, width=0.9\hsize]{figures/p_s_lognormal_band.pdf}
-\caption{$\mathcal{P}(t)$ and $S(t)$ for constant sparisity, and variable bandwidth. The survival was calculated using $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$ \eqref{eq:surv_eigenvalues} with numerical diagonalization of the transition matrix.
+\caption{$\mathcal{P}(t)$ and $S(t)$ for constant sparisity, and variable bandwidth. The survival was calculated using $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$ \eqref{eq:surv_eigenvalues} with numerical diagonalization of the transition matrix. The spreading was obtained via the scaling hypothesis, $S(t) = \mathcal{P}(t)^{-2}$.
 }
+\label{fig:p_s_lognormal_band}
 \end{figure}
 
 
