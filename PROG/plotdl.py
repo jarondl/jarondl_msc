@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """  A module containing several plot functions.
 """
 from matplotlib.backends.backend_agg import FigureCanvasAgg  
@@ -39,8 +40,11 @@ def wexp_plot():
     savefig(fig, "expw.png")
 
 
-def savefig(fig, fname):
+def savefig(fig, fname, size=[6,4]):
+    fig.set_size_inches(size)
     canvas = FigureCanvasAgg(fig)
-    canvas.print_figure(fname)
+    canvas.print_figure(fname+".pdf")
+    canvas.print_figure(fname+".eps")
+    #canvas.print_figure(fname+".png",dpi=100)
 
 

@@ -34,6 +34,8 @@
 \usepackage{cmap}  % for making pdf mathmode searchable
 \usepackage[pdftitle={Notes by Jarondl}]{hyperref}  % for hyperlinks in biblio. should be called last?
 
+\graphicspath{figures/}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -434,6 +436,11 @@ We regard a matrix as sparse if $s\ll1$
 or equivalently if $p \ll 1$ or $q \ll 1$. 
 \end{fminipage}
 
+\begin{figure}
+\includegraphics[clip, width=0.9\hsize]{figures/p_s_lognormal_band.pdf}
+\caption{$\mathcal{P}(t)$ and $S(t)$ for constant sparisity, and variable bandwidth. The survival was calculated using $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$ \eqref{eq:surv_eigenvalues} with numerical diagonalization of the transition matrix.
+}
+\end{figure}
 
 
 %%%%%%%%
