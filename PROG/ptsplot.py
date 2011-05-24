@@ -82,8 +82,30 @@ def spread_surv_subplots():
     p_s_lognormal_band(ax_survs, ax_spread)
     plotdl.savefig(fig,"p_s_lognormal_band")
 
+def eigenvalue_plots(N=100,b=1):
+    fig = plotdl.Figure()
+    
+    lognormal_plot = {"title" : "lognormal"}
+    lognormal_plot["W"] = sparsedl.lognormal_sparse_matrix(N,b).todense()
+    lognormal_plot["ax"] = fig.add_subplot(1,2,1)
+    
+    uniform_plot = {"title":r"uniform, $[-1,1]$"}
+    uniform_plot["W"] = numpy.random.uniform(-1,1,N**2).reshape([N,N])
+    uniform_plot["ax"] = fig.add_subplot(1,2,2)
 
-if __name__ ==  "__main__":
-    spread_surv_subplots()
+    for plotset in [uniform_plot, lognormal_plot] :
+        eigvals = linalg.eigvalsh(plotset["W"])
+        eigvals.sort()
+        ax =plotset["ax"]
+        ax.plot(eigvals,numpy.linspace(0,100,100))
+        ax.set_title(plotset["title"])
+    plotdl.savefig(fig, "eigvals")
+
     
 
+
+if __name__ ==  "__main__":
+    #numpy.random.seed(1)
+    #spread_surv_subplots()
+    
+    pass

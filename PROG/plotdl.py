@@ -62,8 +62,8 @@ def savefig(fig, fname, size=[latex_width_inch,latex_height_inch]):
     fig.set_size_inches(size)
     canvas_pdf = FigureCanvasPdf(fig)
     canvas_ps = FigureCanvasPS(fig)    
-    canvas_pdf.print_figure(fname+".pdf")
-    canvas_ps.print_figure(fname+".eps")
+    canvas_pdf.print_figure("figures/" + fname+".pdf")
+    canvas_ps.print_figure("figures/" +fname+".eps")
     #canvas.print_figure(fname+".png",dpi=100)
 
 
