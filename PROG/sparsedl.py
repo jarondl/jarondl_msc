@@ -78,7 +78,7 @@ def initial(nodes):
     xcoord = scipy.linspace(-nodes/2,nodes/2-1,nodes)
     return rho0,A,xcoord
 
-def lognormal_construction(N, mu=0, sigma=1):
+def lognormal_construction(N, mu=0, sigma=1,**kwargs):
     """ Create log-normal distribution, with N elements, mu average and sigma width.
         The construction begins with a lineary spaced vector from 0 to 1. Then
           the inverse CDF of a normal distribution is applied to the vector. 

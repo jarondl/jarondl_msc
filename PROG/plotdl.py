@@ -9,6 +9,7 @@ from matplotlib.backends.backend_ps import FigureCanvasPS
 from matplotlib.figure import Figure
 from matplotlib import rc
 import numpy
+import os
 
 
 ## I use some latex info to derive optimial default sizes
@@ -35,9 +36,13 @@ def set_all(ax, title=None, xlabel=None, ylabel=None, legend=False):
 def savefig(fig, fname, size=[latex_width_inch,latex_height_inch]):
     fig.set_size_inches(size)
     canvas_pdf = FigureCanvasPdf(fig)
-    canvas_ps = FigureCanvasPS(fig)    
-    canvas_pdf.print_figure("figures/" + fname+".pdf")
-    canvas_ps.print_figure("figures/" +fname+".eps")
+    canvas_ps = FigureCanvasPS(fig)
+    pdfname = os.path.join("figures" , fname + ".pdf")
+    epsname = os.path.join("figures" , fname + ".eps")
+    canvas_pdf.print_figure(pdfname)
+    canvas_ps.print_figure(epsname)
+    print("Created:\n\t {0} \n\t {1}".format(pdfname,epsname))
+
     #canvas.print_figure(fname+".png",dpi=100)
 
 
