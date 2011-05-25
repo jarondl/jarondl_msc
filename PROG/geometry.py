@@ -18,8 +18,8 @@ class Torus(object):
     def distance(self, point1, point2):
         x1,y1 = point1
         x2,y2 = point2
-        ydiff = np.min( (np.abs(y2-y1), np.abs(y2+self.b-y1))  )
-        xdiff = np.min( (np.abs(x2-x1), np.abs(x2+self.a-x1))  )
+        ydiff = np.min( (np.abs(y2-y1), self.b - np.abs(y2-y1))  )
+        xdiff = np.min( (np.abs(x2-x1), self.a - np.abs(x2-x1))  )
         return np.sqrt(xdiff**2 + ydiff**2)
     
     def generate_points(self, N):
@@ -28,14 +28,11 @@ class Torus(object):
         self.points = numpy.vstack((self.xpoints,self.ypoints)).T
         return self.points
 
-    def distance_matrix(self):
-        N = len(self.xpoints)
-        S = numpy.zeros([N,N])
-        for i in range(N):
-            for j in range(N):
-                S[i,j] = self.distance(self.points[i], self.points[j])
-        return S
-    
-    def exp_matrix(self,xi=1):
-        return np.exp(-self.distance_matrix() /xi)
-            
+def distance_matrix(metric, points):
+    N = len(points)
+    S = numpy.zeros([N,N])
+    for i in range(N):
+        for j in range(N):
+            S[i,j] = metric.distance(points[i], points[j])
+    return S
+        

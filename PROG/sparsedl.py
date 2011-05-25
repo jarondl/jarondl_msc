@@ -78,6 +78,18 @@ def initial(nodes):
     xcoord = scipy.linspace(-nodes/2,nodes/2-1,nodes)
     return rho0,A,xcoord
 
+def zero_sum(mat,tol=1E-12):
+    """  Change the diagonal elements of mat so that the sum of each row becomes 0 
+    """
+    row_sum = mat.sum(axis=1)
+    if numpy.max(row_sum) < tol :
+        return True
+    else:
+        mat -= numpy.diagflat(row_sum)
+        if numpy.max((mat.sum(axis=0),mat.sum(axis=1))) > tol:
+            raise Exception("Failed to make sums zero, is the matrix symmetric?")
+        return False
+
 def lognormal_construction(N, mu=0, sigma=1,**kwargs):
     """ Create log-normal distribution, with N elements, mu average and sigma width.
         The construction begins with a lineary spaced vector from 0 to 1. Then
