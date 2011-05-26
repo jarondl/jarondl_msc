@@ -42,7 +42,3 @@ def savefig(fig, fname, size=[latex_width_inch,latex_height_inch]):
     canvas_pdf.print_figure(pdfname)
     canvas_ps.print_figure(epsname)
     print("Created:\n\t {0} \n\t {1}".format(pdfname,epsname))
-
-    #canvas.print_figure(fname+".png",dpi=100)
-
-

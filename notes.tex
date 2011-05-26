@@ -456,6 +456,21 @@ To create a $N\times N$ matrix, we have to choose $N-1$ random numbers. To make 
 y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x) 
 \end{align}
 
+To check ourselves, we have plotted the eigenvalue distribution for the lognoraml banded matrix, and a uniform random matrix in figure \ref{fig:eigenvalue_distribution}
+\begin{figure}
+    \includegraphics[clip, width=0.9\hsize]{eigvals}
+    \caption{Cummulative eigenvalue distribution for lognoraml banded matrix ($\sigma=1$, $b=4$) , and uniform distribution $[-1,1]$}
+    \label{fig:eigenvalue_distribution}
+\end{figure}
+
+\section{Prelimanary, no statement yet}
+We have also plotted the eigenvalue and survival for points on a torus in figure \ref{fig:distance}.
+\begin{figure}
+    \includegraphics[clip, width=0.9\hsize]{distance}
+    \caption{Survival probability and cummulative eigenvalue distribution for points on a torus with $W_{ij} = e^{-r_{ij}}$}
+    \label{fig:distance}
+\end{figure}
+
 \bibliographystyle{plainnat}
 \bibliography{jarondl}
 \end{document}
