@@ -1,6 +1,6 @@
 """
-There is one module acting as a "library" containing all of the shared functions:
-    sparsedl.py
+There is one module acting as a "library" containing all of the shared functions
+sparsedl.py
 This module is always imported into other python scripts, and does nothing when run stand-alone.
 
 The rest of the files are scripts that create data and figures.

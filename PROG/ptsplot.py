@@ -5,6 +5,7 @@
 from scipy.sparse import linalg as splinalg
 from numpy import linalg, random
 from argparse import ArgumentParser
+
 import numpy
 
 import sparsedl
@@ -45,7 +46,7 @@ def spreading_plots(N=100,filename="spreading"):
         S = []
         for time in t:
             S += [sparsedl.var(xcoord, sparsedl.rho(time, rho0, W))]
-        ax.semilogy(t,S,label= r"$b = {0}$".format(b))non_ergodic_vals
+        ax.semilogy(t,S,label= r"$b = {0}$".format(b))
     plotdl.set_all(ax, xlabel = "$t$", ylabel = r"$S(t)$", title = r"Spreading", legend=True)
     plotdl.savefig(fig,filename)
     return fig
@@ -71,9 +72,12 @@ def eigenvalue_plots(N=100,b=4,filename="eigvals", **kwargs):
     plotdl.savefig(fig, filename)
     return fig
 
-def torus_plots(N_points=100,dimensions=(10,10),endtime=10,ergodic_end=True,filename="distance", **kwargs):
-    """  Create A_ij for points on a torus via e^(-r_ij). The torus dimensions
-         are defined by "dimensions".
+def torus_plots(N_points=100,dimensions=(10,10),endtime=1,ergodic_end=True,filename="distance"):
+    """  Create A_ij for points on a torus via e^(-r_ij). 
+        :param N_points: Number of points, defaults to 100
+        :type N_points: int
+        :param dimensions: The 2d dimensions, as a 2-tuple. defaults to (10,10)
+
     """
     fig = plotdl.Figure()
     ax_torus_surv = fig.add_subplot(1,2,1)
@@ -81,26 +85,36 @@ def torus_plots(N_points=100,dimensions=(10,10),endtime=10,ergodic_end=True,file
     
     torus = geometry.Torus(dimensions)
     points = torus.generate_points(N_points)
-    dis =  geometry.distance_matrix(points, torus.distance)
+    #dis =  geometry.distance_matrix(points, torus.distance)
+    dis = geometry.distance_matrix(points, geometry.euclid)
     ex = numpy.exp(-dis)
     sparsedl.zero_sum(ex)
     eigvals = linalg.eigvalsh(ex)
     eigvals.sort()
     
-    t= numpy.linspace(0.1,endtime,100,endpoint=False)
+    t= numpy.logspace(-2,endtime,100,endpoint=False)
     survs = sparsedl.surv(eigvals,t)
-
+   
     if ergodic_end:
-        non_ergodic_vals = (abs(survs-1/N_points) > 1E-10
-        survs.compress(non_ergodic_vals)
-        t.compress(non_ergodic_vals)
+        clip_idx = clip(survs, 1.01/(N_points))
+        while clip_idx < (0.8*N_points):
+                t= numpy.logspace(-2,numpy.log(t[clip_idx]),100,endpoint=False)
+                survs = sparsedl.surv(eigvals,t)
+                clip_idx = clip(survs, 1.01/(N_points))
+    diffusion = numpy.sqrt(t)**(-1)
     ax_torus_surv.loglog(t, survs)
+    ax_torus_surv.loglog(t,diffusion)
     plotdl.set_all(ax_torus_surv, xlabel = "$t$", ylabel = r"$\mathcal{P}(t)$", title = "Survival")
     ax_torus_eigvals.plot(eigvals,numpy.linspace(0,N_points,N_points))
     plotdl.set_all(ax_torus_eigvals, xlabel="Eigenvalue", title="Cummulative eigenvalue distribution")
     
     plotdl.savefig(fig,filename)
-    return fig
+    return fig,survs
+
+def clip(nparray,lower_bound):
+    """  """
+    return numpy.max((nparray > lower_bound).nonzero())
+    
     
     
     
