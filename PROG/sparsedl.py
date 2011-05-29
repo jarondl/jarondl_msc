@@ -1,10 +1,7 @@
 #!/usr/bin/python
-"""  This module includes all of the functions that I use. It can be imported
-     in two ways:
-        The recomended way:
+"""  This module includes all of the functions that I use. To import use:
             import sparsedl
-        or the other way:
-            from sparsedl import *
+
 """
 import scipy
 import numpy
@@ -12,15 +9,19 @@ from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
 
 
-def NN_matrix(N, b=1, seed=None, **kwargs):
+def NN_matrix(N, b=1, **kwargs):
     """ Build a NxN matrix.
-        Input: - N :  the size of the matrix
-               - b : bandwidth
-               - **kwargs : the rest of the keyworded arguments are passed
-                            to the lognormal function, so you can define sigma
-                            and mu.
-          log normal construction (e.g. mu=0, sigma=7)."""
-    numpy.random.seed(seed)  # Used to create pseudo random values
+
+    :param N: The size of the matrix
+    :param b: The Bandwidth
+    :param **kwargs: The rest of the keyworded arguments are passed
+                        to the lognormal function, so you can define
+                        sigma and mu.
+    :returns: a NxN numpy array
+
+    Uses :py:func:`lognormal_construction`.
+
+    """
     matrix = numpy.zeros([N, N])
     for diag in range(1, b + 1):
         off_diag_values = lognormal_construction(N - diag, **kwargs)
@@ -31,14 +32,19 @@ def NN_matrix(N, b=1, seed=None, **kwargs):
     return matrix
 
 
-def lognormal_sparse_matrix(N, b=1, seed=None, **kwargs):
-    """ Build a NxN matrix.
-    Input: - N :  the size of the matrix
-           - b : bandwidth
-           - **kwargs : the rest of the keyworded arguments are passed
-                    to the lognormal function, so you can define sigma and mu.
-      log normal construction (e.g. mu=0, sigma=7)."""
-    numpy.random.seed(seed)  # Used to create pseudo random values
+def lognormal_sparse_matrix(N, b=1, **kwargs):
+    """ Build a NxN matrix, using sparse matrices.
+
+    :param N: The size of the matrix
+    :param b: The Bandwidth
+    :param **kwargs: The rest of the keyworded arguments are passed
+                        to the lognormal function, so you can define
+                        sigma and mu.
+    :returns: a NxN numpy array
+
+    Uses :py:func:`lognormal_construction`.
+
+    """
     diag_data = lognormal_construction(N * b, **kwargs).reshape([b, N])
     sp = spdiags(diag_data, range(1, b + 1), N, N)  # create the above the diagonal lines
     sp = sp + sp.transpose()
@@ -47,6 +53,14 @@ def lognormal_sparse_matrix(N, b=1, seed=None, **kwargs):
 
 
 def rho(t, rho0, W, index=None):
+    """ Calculate the probability vector at time t.
+
+    :param t: The time
+    :param rho0: Initial condition
+    :param W: Transition matrix
+    :type rho0: numpy 1d array
+    :type W: numpy 2d array
+    """
     if index == None:
         return scipy.dot(linalg.expm2(W * t), rho0)
     else:
@@ -59,21 +73,31 @@ def _general_function(params, xdata, ydata, function):
 
 
 def cvfit(f, xdata, ydata, p0):
-    """  Fit a curve. p0 is the initial guess (put ones if uncertain),
-     f should accept len(p0)+1 arguments.
+    """  Fit data to a function.
+
+    :param f: A function that accepts 1+len(p0) arguments, first one will be x
+    :param xdata: X values
+    :param ydata: Y values
+    :param p0: The initial guess, put [1,1,1,..] if uncertain.
+
     """
     res = optimize.leastsq(_general_function, p0, args=(xdata, ydata, f))
     return res[0]
 
 
 def strexp(x, a, b):
-    return scipy.exp(-(x / a) ** b)
+    """ The streched exponential function, :math:`e^{-(\\frac{x}{a})^b}`
+
+    >>> strexp(1,2,2)
+    0.77880078307140488
+    """
+    return numpy.exp(-(x / float(a)) ** b)
 
 
 def mean(x, y):
     """  Returns the mean of a ditribution with x as location and y as value
     """
-    return scipy.sum(x * y) / scipy.sum(y)
+    return numpy.sum(x * y) / numpy.sum(y)
 
 
 def var(x, y):

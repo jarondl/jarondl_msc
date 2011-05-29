@@ -27,6 +27,8 @@ rc('legend', fontsize=10)
 
 
 def set_all(ax, title=None, xlabel=None, ylabel=None, legend=False):
+    """ Set several attributes for an ax at once
+    """
     if title: ax.set_title(title)
     if xlabel: ax.set_xlabel(xlabel)
     if ylabel: ax.set_ylabel(ylabel)
@@ -34,6 +36,8 @@ def set_all(ax, title=None, xlabel=None, ylabel=None, legend=False):
 
 
 def savefig(fig, fname, size=[latex_width_inch,latex_height_inch]):
+    """ Save figure to pdf and eps 
+    """
     fig.set_size_inches(size)
     canvas_pdf = FigureCanvasPdf(fig)
     canvas_ps = FigureCanvasPS(fig)
