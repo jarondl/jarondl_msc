@@ -62,6 +62,19 @@ def plot_2subplots_to_file(plot_func1, plot_func2, filename, suptitle=None, **kw
     savefig(fig, filename)
     return fig
 
+def plot_twin_subplots_to_file(plot_func_twin, filename, suptitle=None, **kwargs):
+    """  plot_func_twin should accept two axes to draw on. 
+    """
+    fig = Figure()
+    if suptitle:
+        fig.suptitle(suptitle)
+    ax1 = fig.add_subplot(1,2,1)
+    ax2 = fig.add_subplot(1,2,2)
+    
+    savefig(fig, filename)
+    return fig
+
+
 def plot_to_screen(plot_func, **kwargs):
     if X_AVAILABLE:
         fig = pyplot.figure()
@@ -72,10 +85,11 @@ def plot_to_screen(plot_func, **kwargs):
         print("X is not available")
 
 
-def savefig(fig, fname, size=[latex_width_inch,latex_height_inch]):
+def savefig(fig, fname, size=[latex_width_inch,latex_height_inch], size_factor=(1,1)):
     """ Save figure to pdf and eps 
     """
-    fig.set_size_inches(size)
+    
+    fig.set_size_inches((size[0]*size_factor[0], size[1]*size_factor[1]))
     canvas_pdf = FigureCanvasPdf(fig)
     canvas_ps = FigureCanvasPS(fig)
     pdfname = os.path.join("figures" , fname + ".pdf")

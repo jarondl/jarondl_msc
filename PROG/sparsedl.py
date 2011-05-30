@@ -141,6 +141,20 @@ def lognormal_construction(N, mu=0, sigma=1, **kwargs):
     return scipy.exp(perm_y)
 
 
+def permute_tri(mat):
+    """  Radnomly permutes the upper triangle of mat, and then transposes it to the lower triangle
+    """
+    upper_triangle_indices = numpy.triu(numpy.ones(mat.shape),k=1).nonzero()
+    new_upper = numpy.random.permutation( mat[upper_triangle_indices] )
+    retval = numpy.zeros(mat.shape)
+    retval[upper_triangle_indices]  = new_upper
+    retval += retval.T
+    zero_sum(retval)
+    return retval
+    
+    
+
+
 def surv(eigen_values, times):
     """ Calculate survival probability by the sum of exponents equation"""
     op = numpy.outer(eigen_values, times)

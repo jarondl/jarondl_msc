@@ -5,6 +5,7 @@
 from scipy.sparse import linalg as splinalg
 from numpy import linalg, random
 #from argparse import ArgumentParser
+from matplotlib.colors import LogNorm
 
 import numpy
 
@@ -66,52 +67,79 @@ def eigenvalues_uniform(ax, N=100, b=4):
 
     
 
-def torus_plots(N_points=100,dimensions=(10,10),endtime=1,ergodic_end=True,filename="distance"):
+def torus_plots(ax_eig,ax_surv, N_points=100,dimensions=(10,10),end_log_time=1):
     """  Create A_ij for points on a torus via e^(-r_ij). 
         :param N_points: Number of points, defaults to 100
         :type N_points: int
         :param dimensions: The 2d dimensions, as a 2-tuple. defaults to (10,10)
 
     """
-    fig = plotdl.Figure()
-    ax_torus_surv = fig.add_subplot(1,2,1)
-    ax_torus_eigvals = fig.add_subplot(1,2,2)
+
     
     torus = geometry.Torus(dimensions)
     points = torus.generate_points(N_points)
-    #dis =  geometry.distance_matrix(points, torus.distance)
-    dis = geometry.distance_matrix(points, geometry.euclid)
-    ex = numpy.exp(-dis)
-    sparsedl.zero_sum(ex)
-    eigvals = linalg.eigvalsh(ex)
-    eigvals.sort()
+    dis =  geometry.distance_matrix(points, torus.distance)
     
-    t= numpy.logspace(-2,endtime,100,endpoint=False)
-    survs = sparsedl.surv(eigvals,t)
+    ex1 = numpy.exp(-dis)
+    sparsedl.zero_sum(ex1)
+    ex2 = sparsedl.permute_tri(ex1)
+    eigvals1 = linalg.eigvalsh(ex1)
+    eigvals2 = linalg.eigvalsh(ex2)
+    eigvals1.sort()
+    eigvals2.sort()
+    
+    ax_eig.plot(eigvals1, numpy.linspace(0,N_points,N_points), label="original")
+    ax_eig.plot(eigvals2, numpy.linspace(0,N_points,N_points), label="permuted")
+    #plotdl.set_all(ax_eig, xlabel="Eigenvalue", ylabel="Cummulative distribution")
+    ax_eig.legend(loc='lower right')
+    ax_eig.set_xlim(right=0)
+
+    
+    t= numpy.logspace(-2,end_log_time,100,endpoint=False)
+    survs1 = sparsedl.surv(eigvals1,t)
+    survs2 = sparsedl.surv(eigvals2,t)
    
-    if ergodic_end:
-        clip_idx = clip(survs, 1.01/(N_points))
-        while clip_idx < (0.8*N_points):
-                t= numpy.logspace(-2,numpy.log(t[clip_idx]),100,endpoint=False)
-                survs = sparsedl.surv(eigvals,t)
-                clip_idx = clip(survs, 1.01/(N_points))
-    diffusion = numpy.sqrt(t)**(-1)
-    ax_torus_surv.loglog(t, survs)
-    ax_torus_surv.loglog(t,diffusion)
-    plotdl.set_all(ax_torus_surv, xlabel = "$t$", ylabel = r"$\mathcal{P}(t)$", title = "Survival")
-    ax_torus_eigvals.plot(eigvals,numpy.linspace(0,N_points,N_points))
-    plotdl.set_all(ax_torus_eigvals, xlabel="Eigenvalue", title="Cummulative eigenvalue distribution")
+    ax_surv.loglog(t, survs1)
+    ax_surv.loglog(t, survs2)
+    ax_surv.set_ylim(bottom=0.01)
     
-    plotdl.savefig(fig,filename)
-    return fig,survs
+    #plotdl.set_all(ax_torus_surv, xlabel = "$t$", ylabel = r"$\mathcal{P}(t)$", title = "Survival")
+    #ax_torus_eigvals.plot(eigvals,numpy.linspace(0,N_points,N_points))
+    #plotdl.set_all(ax_torus_eigvals, xlabel="Eigenvalue", title="Cummulative eigenvalue distribution")
+
 
 def clip(nparray,lower_bound):
     """  """
     return numpy.max((nparray > lower_bound).nonzero())
     
     
+def loop_torus():
+    fig = plotdl.Figure()
+    fig.subplots_adjust(top=0.99, bottom=0.05)
+    for i in range(1,10,2):
+        random.seed(i)
+        torus_plots(fig.add_subplot(5,2,i), fig.add_subplot(5,2,i+1))
+    plotdl.savefig(fig, "8tori", size_factor=(1,2))
     
+
+def torus_permutation_noax(N_points=100,dimensions=(10,10),filename="torus_perm"):
+    torus = geometry.Torus(dimensions)
+    points = torus.generate_points(N_points)
+    dis =  geometry.distance_matrix(points, torus.distance)
+
+    fig = plotdl.Figure()
+    ax1 = fig.add_subplot(1,2,1)
+    ax2 = fig.add_subplot(1,2,2)
     
+    ex1 = numpy.exp(-dis)
+    sparsedl.zero_sum(ex1)
+    ex2 = sparsedl.permute_tri(ex1)
+    mat1 = ax1.matshow(ex1) #, norm=LogNorm(vmin=numpy.min(ex1), vmax=numpy.max(ex1))
+    mat2 = ax2.matshow(ex2)
+    #fig.colorbar(mat1)
+    #fig.colorbar(mat2)
+    plotdl.savefig(fig, filename)
+
 
 def all_plots(seed= 1, **kwargs):
     random.seed(seed)
@@ -120,13 +148,11 @@ def all_plots(seed= 1, **kwargs):
     plotdl.plot_to_file( spreading_plots, "spreading")
     random.seed(seed)
     plotdl.plot_2subplots_to_file( eigenvalues_lognormal, eigenvalues_uniform, "eigvals", suptitle="Cummulative eigenvalue distribution")
-    #eigenvalue_plots()
-    #random.seed(seed)
-    #spreading_plots()
-    #random.seed(seed)
-    #p_lognormal_band()
-    #random.seed(seed)
-    #torus_plots()
+    loop_torus( )
+    random.seed(1)
+    plotdl.plot_twin_subplots_to_file( torus_permutation)
+
+
     
     
 
