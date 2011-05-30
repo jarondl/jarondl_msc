@@ -150,7 +150,7 @@ def all_plots(seed= 1, **kwargs):
     plotdl.plot_2subplots_to_file( eigenvalues_lognormal, eigenvalues_uniform, "eigvals", suptitle="Cummulative eigenvalue distribution")
     loop_torus( )
     random.seed(1)
-    plotdl.plot_twin_subplots_to_file( torus_permutation)
+    #plotdl.plot_twin_subplots_to_file( torus_permutation)
 
 
     

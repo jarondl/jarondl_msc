@@ -18,8 +18,10 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-.. automodule:: sparsedl
-   :members:
+Modules:
+========
+* :py:mod:`sparsedl`
+* :py:mod:`plotdl`
 
 .. automodule:: plotdl
    :members:
