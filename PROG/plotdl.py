@@ -8,6 +8,13 @@ from matplotlib.backends.backend_pdf import FigureCanvasPdf
 from matplotlib.backends.backend_ps import FigureCanvasPS
 from matplotlib.figure import Figure
 from matplotlib import rc
+try :
+    from matplotlib import pyplot
+    X_AVAILABLE = True
+except RuntimeError:
+    X_AVAILABLE = False
+    print("X is not available, non interactive use only")
+
 import numpy
 import os
 
@@ -33,6 +40,36 @@ def set_all(ax, title=None, xlabel=None, ylabel=None, legend=False):
     if xlabel: ax.set_xlabel(xlabel)
     if ylabel: ax.set_ylabel(ylabel)
     if legend: ax.legend()
+
+
+def plot_to_file(plot_func, filename, **kwargs):
+    fig = Figure()
+    ax = fig.add_subplot(1,1,1)
+    plot_func(ax, **kwargs)
+    savefig(fig, filename)
+    return fig
+
+
+def plot_2subplots_to_file(plot_func1, plot_func2, filename, suptitle=None, **kwargs):
+    fig = Figure()
+    if suptitle:
+        fig.suptitle(suptitle)
+    ax1 = fig.add_subplot(1,2,1)
+    ax2 = fig.add_subplot(1,2,2)
+    
+    plot_func1(ax1, **kwargs)
+    plot_func2(ax2, **kwargs)
+    savefig(fig, filename)
+    return fig
+
+def plot_to_screen(plot_func, **kwargs):
+    if X_AVAILABLE:
+        fig = pyplot.figure()
+        ax = fig.add_subplot(1,1,1)
+        plot_func(ax, **kwargs)
+        pyplot.show()
+    else:
+        print("X is not available")
 
 
 def savefig(fig, fname, size=[latex_width_inch,latex_height_inch]):
