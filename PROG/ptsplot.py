@@ -32,6 +32,8 @@ def p_lognormal_band(ax, N=100, b=1, **kwargs):
 
 
 def spreading_plots(ax, N=100):
+    """
+    """
     t= sparsedl.numpy.linspace(0,4,100)
     rho0 = numpy.zeros(N)
     rho0[N//2] =1
@@ -113,7 +115,9 @@ def clip(nparray,lower_bound):
     return numpy.max((nparray > lower_bound).nonzero())
     
     
-def loop_torus():
+def loop_torus():   
+    """
+    """
     fig = plotdl.Figure()
     fig.subplots_adjust(top=0.99, bottom=0.05)
     for i in range(1,10,2):
@@ -123,6 +127,8 @@ def loop_torus():
     
 
 def torus_permutation_noax(N_points=100,dimensions=(10,10),filename="torus_perm"):
+    """
+    """
     torus = geometry.Torus(dimensions)
     points = torus.generate_points(N_points)
     dis =  geometry.distance_matrix(points, torus.distance)
@@ -142,6 +148,8 @@ def torus_permutation_noax(N_points=100,dimensions=(10,10),filename="torus_perm"
 
 
 def all_plots(seed= 1, **kwargs):
+    """
+    """
     random.seed(seed)
     plotdl.plot_to_file( p_lognormal_band, "P_lognormal_band")
     random.seed(seed)

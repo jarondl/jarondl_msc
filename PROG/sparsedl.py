@@ -3,6 +3,7 @@
             import sparsedl
 
 """
+from __future__ import division  ##  makes true division instead of integer division
 import scipy
 import numpy
 from scipy import optimize, special, linalg
@@ -91,7 +92,7 @@ def strexp(x, a, b):
     >>> strexp(1,2,2)
     0.77880078307140488
     """
-    return numpy.exp(-(x / float(a)) ** b)
+    return numpy.exp(-(x / a) ** b)
 
 
 def mean(x, y):
@@ -102,8 +103,13 @@ def mean(x, y):
 
 def var(x, y):
     """  Returns the Variance of a ditribution with x as location and y as value
+
+    >>> sparsedl.var([1,2,3,4,5,6],[1,1,2,1,1,2])
+    2.9375
     """
-    return mean(x ** 2, y) - mean(x, y) ** 2
+    xarr = numpy.array(x)  # Make sure we have numpy arrays and not lists
+    yarr = numpy.array(y) 
+    return mean(xarr ** 2, yarr) - mean(xarr, yarr) ** 2
 
 
 def initial(nodes):

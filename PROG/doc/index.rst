@@ -11,6 +11,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   module_ref
+   ptsplot
+
 Indices and tables
 ==================
 
@@ -23,7 +26,8 @@ Modules:
 * :py:mod:`sparsedl`
 * :py:mod:`plotdl`
 
-.. automodule:: plotdl
-   :members:
+Making plots:
+=============
+* :py:mod:`ptsplot`
 
 

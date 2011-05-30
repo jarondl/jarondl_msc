@@ -43,6 +43,8 @@ def set_all(ax, title=None, xlabel=None, ylabel=None, legend=False):
 
 
 def plot_to_file(plot_func, filename, **kwargs):
+    """
+    """
     fig = Figure()
     ax = fig.add_subplot(1,1,1)
     plot_func(ax, **kwargs)
@@ -51,6 +53,8 @@ def plot_to_file(plot_func, filename, **kwargs):
 
 
 def plot_2subplots_to_file(plot_func1, plot_func2, filename, suptitle=None, **kwargs):
+    """
+    """
     fig = Figure()
     if suptitle:
         fig.suptitle(suptitle)
@@ -76,6 +80,8 @@ def plot_twin_subplots_to_file(plot_func_twin, filename, suptitle=None, **kwargs
 
 
 def plot_to_screen(plot_func, **kwargs):
+    """
+    """
     if X_AVAILABLE:
         fig = pyplot.figure()
         ax = fig.add_subplot(1,1,1)
