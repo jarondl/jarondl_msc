@@ -3,7 +3,7 @@
             import sparsedl
 
 """
-from __future__ import division  ##  makes true division instead of integer division
+from __future__ import division  # makes true division instead of integer division
 import scipy
 import numpy
 from scipy import optimize, special, linalg
@@ -108,7 +108,7 @@ def var(x, y):
     2.9375
     """
     xarr = numpy.array(x)  # Make sure we have numpy arrays and not lists
-    yarr = numpy.array(y) 
+    yarr = numpy.array(y)
     return mean(xarr ** 2, yarr) - mean(xarr, yarr) ** 2
 
 
@@ -150,15 +150,13 @@ def lognormal_construction(N, mu=0, sigma=1, **kwargs):
 def permute_tri(mat):
     """  Radnomly permutes the upper triangle of mat, and then transposes it to the lower triangle
     """
-    upper_triangle_indices = numpy.triu(numpy.ones(mat.shape),k=1).nonzero()
-    new_upper = numpy.random.permutation( mat[upper_triangle_indices] )
+    upper_triangle_indices = numpy.triu(numpy.ones(mat.shape), k=1).nonzero()
+    new_upper = numpy.random.permutation(mat[upper_triangle_indices])
     retval = numpy.zeros(mat.shape)
-    retval[upper_triangle_indices]  = new_upper
+    retval[upper_triangle_indices] = new_upper
     retval += retval.T
     zero_sum(retval)
     return retval
-    
-    
 
 
 def surv(eigen_values, times):
