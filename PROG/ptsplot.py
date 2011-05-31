@@ -48,14 +48,16 @@ def spreading_plots(ax, N=100):
     plotdl.set_all(ax, xlabel = "$t$", ylabel = r"$S(t)$", title = r"Spreading", legend=True)
 
 
-def eigenvalues_lognormal(ax, N=100, b=4):
+def eigenvalues_lognormal(ax, N=100, b=1):
     """  Plot the eigenvalues for a lognormal sparse banded matrix
     """
     W = sparsedl.lognormal_sparse_matrix(N,b).todense()
-    eigvals = linalg.eigvalsh(W)  #  eigvalsh works for real symmetric matrices
+    eigvals = - linalg.eigvalsh(W)[1:]  #  eigvalsh works for real symmetric matrices
     eigvals.sort()
-    ax.plot(eigvals, numpy.linspace(0,N,N))
-    plotdl.set_all(ax, title="lognormal")
+    diffusion = 0.1 * numpy.logspace(0,2,N-1)
+    ax.loglog(eigvals, numpy.logspace(0,2,N-1))
+    ax.loglog(diffusion, numpy.logspace(0,2,N-1))
+    plotdl.set_all(ax, title="lognormal, $b=1$")
 
 
 def eigenvalues_uniform(ax, N=100, b=4):
@@ -64,7 +66,7 @@ def eigenvalues_uniform(ax, N=100, b=4):
     W = numpy.random.uniform(-1,1,N**2).reshape([N,N])
     eigvals = linalg.eigvalsh(W)  #  eigvalsh works for real symmetric matrices
     eigvals.sort()
-    ax.plot(eigvals, numpy.linspace(0,N,N))
+    ax.loglog(eigvals, numpy.logspace(0,2,N))
     plotdl.set_all(ax, title=r"uniform, $[-1,1]$")
 
     
