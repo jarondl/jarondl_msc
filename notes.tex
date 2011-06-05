@@ -129,7 +129,16 @@ A major problem with this solution is that not all distributions have a defined 
 
 Another interesting issue is that of dimensions higher than 1. Inherently, higher dimensions offer different transition rate distributions. What is not clear is whether the dimensionality of the system adds other complexities or not. 
 
-
+\section{Tentative working plan}
+\begin{itemize}
+    \item 2d diffusion and survival \ref{sec:2d}
+        \begin{description}
+        \item[The matrix $W_{ij}$ versus the distribution $P(w)$ : ] The $W_{ij}$ matrix governs the diffusion and survival probability. The question is whether the information is stored in the distribution of transition rates ($P(w)$) alone, or is there more information needed. 
+        \item[The eigenvalue spectrum $P(\lambda)$ : ] How can we find the eigenvalue spectrum, besides direct diagonalization? Can we deduce its characteristics?
+        \item[The diffusion $D$, and survival $\mathcal{P}$ : ] Knowing the eigenvalue spectrum we can find the survival probability. Can we obtain the diffusion coefficient directly from that? 
+        \end{description}
+    \item VRH
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Master equation}

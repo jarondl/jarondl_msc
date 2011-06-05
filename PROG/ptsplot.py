@@ -52,12 +52,14 @@ def eigenvalues_lognormal(ax, N=100, b=1):
     """  Plot the eigenvalues for a lognormal sparse banded matrix
     """
     W = sparsedl.lognormal_sparse_matrix(N,b).todense()
-    eigvals = - linalg.eigvalsh(W)[1:]  #  eigvalsh works for real symmetric matrices
+    eigvals = - linalg.eigvalsh(W)  #  eigvalsh works for real symmetric matrices
     eigvals.sort()
-    diffusion = 0.1 * numpy.logspace(0,2,N-1)
-    ax.loglog(eigvals, numpy.logspace(0,2,N-1))
-    ax.loglog(diffusion, numpy.logspace(0,2,N-1))
-    plotdl.set_all(ax, title="lognormal, $b=1$")
+    eigvals = eigvals[1:]  ## The first eigenvalue is zero, which does problems with loglog plots
+    diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),N-1)
+    diffusion = numpy.sqrt( diffusion_space)
+    ax.loglog(eigvals, numpy.logspace(0,2,N-1),marker='.',linestyle='')
+    ax.loglog(diffusion_space,diffusion, linestyle='--')
+    plotdl.set_all(ax, title="lognormal, $b={0}$".format(b))
 
 
 def eigenvalues_uniform(ax, N=100, b=4):
@@ -66,8 +68,16 @@ def eigenvalues_uniform(ax, N=100, b=4):
     W = numpy.random.uniform(-1,1,N**2).reshape([N,N])
     eigvals = linalg.eigvalsh(W)  #  eigvalsh works for real symmetric matrices
     eigvals.sort()
-    ax.loglog(eigvals, numpy.logspace(0,2,N))
+    ax.plot(eigvals, numpy.linspace(0,N,N), label="Cummulative eigenvalue distribution")
+    
+    R=numpy.max(eigvals)
+    semicircle = numpy.sqrt(numpy.ones(N)*R**2 - numpy.linspace(-R,R,N)**2)/(2*numpy.pi)
+    cum_semicircle = numpy.cumsum(semicircle) 
+    cum_semicircle = cum_semicircle / numpy.max(cum_semicircle)*N
+    ax.plot(numpy.linspace(-R,R,N), cum_semicircle,linestyle="--", label = r"Cummulative semicircle, with $R \approx {0:.2}$".format(R))
+
     plotdl.set_all(ax, title=r"uniform, $[-1,1]$")
+    ax.legend(loc="lower right")
 
     
 
