@@ -28,6 +28,7 @@
 \fi
 
 %by jarondl
+\usepackage{subfig}
 \usepackage{verbatim} % for multiline comments
 \usepackage{natbib}
 \usepackage{fancybox}
@@ -131,13 +132,17 @@ Another interesting issue is that of dimensions higher than 1. Inherently, highe
 
 \section{Tentative working plan}
 \begin{itemize}
-    \item 2d diffusion and survival \ref{sec:2d}
+    \item A one dimensional system with nearest neighbor transitions only,($d=1$, $b=1$), with the transition rates distributed widely (e.g. $P(w) \sim \textrm{log wide}$). What are the survival $\mathcal{P}(t)$ and spreading $S(t)$, and how are they related?
+    \item $2d$ \ref{subsec:euclid}. Two dimensions, uniform points, but transition rates decay exponentialy (Amir's system). 
         \begin{description}
-        \item[The matrix $W_{ij}$ versus the distribution $P(w)$ : ] The $W_{ij}$ matrix governs the diffusion and survival probability. The question is whether the information is stored in the distribution of transition rates ($P(w)$) alone, or is there more information needed. 
+        \item[The matrix $W_{ij}$ versus the distribution $P(w)$ : ] The $W_{ij}$ matrix governs the diffusion and survival probability. The question is whether the information is stored in the distribution of transition rates ($P(w)$) alone, or is there more information needed? For example, we see that the geometry of the points does matter \ref{sec:geometry}.
         \item[The eigenvalue spectrum $P(\lambda)$ : ] How can we find the eigenvalue spectrum, besides direct diagonalization? Can we deduce its characteristics?
         \item[The diffusion $D$, and survival $\mathcal{P}$ : ] Knowing the eigenvalue spectrum we can find the survival probability. Can we obtain the diffusion coefficient directly from that? 
         \end{description}
-    \item VRH
+    \item Quasi 1D \ref{sec:quasi1d}. The system is one dimensional, but with non zero transition rates to sites beyond the nearest neighbors.
+    \item VRH: Variable-Range-Hopping. 
+    \item Resistor network calculation \ref{sec:res_net}. Could a resistor network calculation be the generalization of Alexander's solution for more than $1d$ (Quasi $1d$ or even $d>1$?
+
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -315,7 +320,7 @@ Perhaps a model similar to the original model but with a small finite number of 
 
 
 %%%%%%%%%%%%%%
-\subsection{Euclidean distance rates, or functions of it}
+\subsection{Euclidean distance rates, or functions of it} \label{subsec:euclid}
 Random Euclidean distance matrices were widely researched \cite{Mezard:1999:NPB}, [insert more refs..]. Amir et al \cite{Amir:2010:PRL} have studied a model with the exponents of euclidean distances. They obtain the survival probability by finding the distribution of the eigenvalues, using the idea of \ref{eq:eig_moments}. 
 
 In one dimension, the transition rates are related to the distance between points distributed uniformly, with density $n$. The nearest neighbor distribution can be considered as the probability for no neighbor at $x'<x$, and a neighbor at $x<x'<x+dx$. Because the points are distributed uniformly, the probability for no neighbors at a small interval $\Delta x$ is :
@@ -451,7 +456,7 @@ or equivalently if $p \ll 1$ or $q \ll 1$.
 %%
 \\
 
-The direct calculation for the survival in a log normal banded matrix is depicted in figure \ref{fig:p_s_lognormal_band}. For each value of $b$, a matrix (curently $100
+The direct calculation for the survival in a log normal banded matrix is depicted in figure \ref{fig:p_lognormal_band}. For each value of $b$, a matrix (curently $100
 \times 100$) with a band b filled with lognormally distributed ($\sigma=1$) values was constructed. Then, the eigenvalues were numerically calculated, and then the laplace sum $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$.
 %%%
 \begin{figure}
@@ -461,6 +466,12 @@ The direct calculation for the survival in a log normal banded matrix is depicte
 \label{fig:p_lognormal_band}
 \end{figure}
 
+%%%%%%%%%%
+\section{Resistor Network Calculation} \label{sec:res_net}
+Our basic equation is 
+\[ \boldsymbol{ \dot P } = W \boldsymbol{P} \]
+It can be rewritten as:
+\[  \boldsymbol{P} = W^{-1}\boldsymbol{ \dot P } \]
 
 %%%%%%%%
 \section{Random Matrix Construction}\label{sec:matrix_construction}
@@ -471,16 +482,17 @@ y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x)
 
 To check ourselves, we have plotted the eigenvalue distribution for the lognoraml banded matrix, and a uniform random matrix in figure \ref{fig:eigenvalue_distribution}
 \begin{figure}
-    \includegraphics[clip, width=0.9\hsize]{eigvals}
-    \caption{Cummulative eigenvalue distribution for lognoraml banded matrix ($\sigma=1$, $b=4$) , and uniform distribution $[-1,1]$}
+    \subfloat[Uniform distribution ]{\includegraphics[clip, width=0.9\hsize]{eigvals_uniform}}
+    \\ \subfloat[Lognoraml banded matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal}}
+    \caption{Cummulative eigenvalue distribution.}
     \label{fig:eigenvalue_distribution}
 \end{figure}
 
-\section{Geometry's role}
-Random points were chosen on a torus. A matrix with transition rates $W_{ij} = e^{-r_{ij}}$ was constructed, for which eigenvalues and survival were calculated. Later, the matrix elements were permuted, and the same calculations were made. \ref{fig:distance}.
+\section{Geometry's role} \label{sec:geometry}
+Random points were chosen on a torus. A matrix with transition rates $W_{ij} = e^{-r_{ij}}$ was constructed, for which eigenvalues and survival were calculated. Later, the matrix elements were permuted, and the same calculations were made. \ref{fig:distance}. Since the matrix should remain symmetric, the elements distribution should stay the same, and the sum of each row should stay $0$, the permutation was done on the upper triangle of the matrix only. (And then transposed to the other triangle, and the diagonal set match the zero sum demand).
 \begin{figure}
-    \includegraphics[clip]{8tori}
-    \caption{Survival probability and cummulative eigenvalue distribution for points on a torus with $W_{ij} = e^{-r_{ij}}$, and with permuted matrices}
+    \includegraphics[clip]{8tori_eig}
+    \caption{Cummulative eigenvalue distribution for points on a torus with $W_{ij} = e^{-r_{ij}}$, and with permuted matrices.}
     \label{fig:distance}
 \end{figure}
 

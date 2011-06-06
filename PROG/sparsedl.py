@@ -143,9 +143,20 @@ def lognormal_construction(N, mu=0, sigma=1, **kwargs):
     uniform = scipy.linspace(0.0001, 0.9999, N)
     y = -scipy.sqrt(2) * special.erfcinv(2 * uniform)
     rescaled_y = mu + (sigma * y)
-    perm_y = scipy.random.permutation(rescaled_y)
-    return scipy.exp(perm_y)
+    perm_y = scipy.random.permutation(rescaled_y) 
+    return scipy.exp(perm_y)  # Element-wise exponentiation. 
 
+
+def exponent_minus1(N,nxi = 0.5):
+    """ """
+    uniform = numpy.linspace(0.0001,0.9999, N)
+    y = uniform**(1/nxi)
+    perm_y = numpy.random.permutation(y)
+    sp = spdiags(perm_y, 1, N, N)  # create the above the diagonal line
+    sp = sp + sp.transpose()
+    sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
+    return sp
+    
 
 def permute_tri(mat):
     """  Radnomly permutes the upper triangle of mat, and then transposes it to the lower triangle
@@ -157,6 +168,17 @@ def permute_tri(mat):
     retval += retval.T
     zero_sum(retval)
     return retval
+
+def sparsity(mat):
+    """  Calculate the sparsity parameters of a matrix
+    """
+    matsum =  mat.sum()
+    avg = matsum / mat.size
+    sqr_avg = (mat**2).sum() / mat.size
+    s = avg**2 / sqr_avg
+    p = ((mat > avg).sum())/mat.size
+    #q = mat.flatten()[mat.size//2] / avg
+    return s,p#,q
 
 
 def surv(eigen_values, times):

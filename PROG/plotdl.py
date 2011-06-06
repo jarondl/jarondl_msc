@@ -85,6 +85,7 @@ def plot_to_screen(plot_func, **kwargs):
     """
     """
     if X_AVAILABLE:
+        pyplot.ion()
         fig = pyplot.figure()
         ax = fig.add_subplot(1, 1, 1)
         plot_func(ax, **kwargs)
