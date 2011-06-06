@@ -71,8 +71,10 @@ def eigenvalues_uniform(ax, N=100, b=4):
     ax.plot(eigvals, numpy.linspace(0,N,N), label="Cummulative eigenvalue distribution")
     
     R=numpy.max(eigvals)
+    #R=2.0
     semicircle = numpy.sqrt(numpy.ones(N)*R**2 - numpy.linspace(-R,R,N)**2)/(2*numpy.pi)
     cum_semicircle = numpy.cumsum(semicircle) 
+    print(numpy.max(cum_semicircle))
     cum_semicircle = cum_semicircle / numpy.max(cum_semicircle)*N
     ax.plot(numpy.linspace(-R,R,N), cum_semicircle,linestyle="--", label = r"Cummulative semicircle, with $R \approx {0:.2}$".format(R))
 
