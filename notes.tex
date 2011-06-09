@@ -146,7 +146,7 @@ Another interesting issue is that of dimensions higher than 1. Inherently, highe
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Master equation}
+\section{Rate equation}
 The equation governing the time development in a transition rate problem is:
 \begin{align}
 \frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t)
@@ -165,7 +165,7 @@ P_n(t) = \sum_\lambda \inner{P(t)}{V_\lambda}{V_\lambda }_n = \sum_\lambda C_\la
 Where we have defined $C_\lambda(t)\equiv \inner{P(t)}{V_\lambda}$.
 
 
-The master equation becomes
+The rate equation becomes
 \begin{align}
 &\sum_\lambda \left( \frac{dC_\lambda(t)}{dt}{V_\lambda}_n - C_\lambda(t)\sum_m W_{nm}{V_\lambda}_n \right)= \sum_\lambda \left( \frac{dC_\lambda(t)}{dt} - \lambda C_\lambda(t)\right){V_\lambda}_n =0\\
 &C_\lambda(t) = C_\lambda(0)e^{\lambda t}\\
@@ -351,7 +351,7 @@ Amir et al. \cite{Amir:2010:PRL} come to the same equation in their supplementar
 \[P_{nn}(r)=\frac{d
 V_d}{r_{nn}} {(r/r_{nn})}^{d-1} e^{-V_d {(r/r_{nn})}^d}\] 
 where $V_d$ is the volume of a $d$ dimensional sphere and $r_{nn}$ is the
-average nearest-neighbor distance."
+average nearest-neighbor distance.
 \end{fminipage}
 
 In our notation (replacing $V_d$ with the more conventional $\frac{\Omega_d}{d}$ ), we can write it as:
@@ -369,15 +369,34 @@ In $1d$ that becomes:
 \[ f(w)= e^{n \xi\ln w} \frac{n\xi}{w} = w^{n\xi-1}n\xi\]
 Which matches Alexander's $\alpha = 1-n\xi$, and therefore should have survival of $\mathcal{P}(t)\propto t^{-\frac{1-\alpha}{2-\alpha}}= t^{-\frac{n\xi}{1+n\xi}}$. This result appears also in Amir's article.
 
+
+
 For $2d$:
 \[ f(w) = e^{-n \pi (-\xi\ln w)^2} n 2\pi  (-\xi\ln w)\frac{\xi}{w}\]
 
 The diffusion coefficient is given by $\left(\overline{(w^{-1})}\right)^{-1}$:
 \begin{align*}
-    & \overline{(w^{-1})} = \int_0^\infty \frac{1}{w} e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1} dr = \int_0^\infty e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1}e^{r/\xi} dr \\
-    & = \int_0^\infty e^{-n \frac{\Omega_d}{d} r^d + r/\xi}(n \Omega_d r^{d-1} - 1/\xi + 1/\xi) dr = - \left. e^{-n \frac{\Omega_d}{d} r^d + r/\xi}\right|_0^\infty + \int_0^\infty e^{-n \frac{\Omega_d}{d} r^d + r/\xi}\frac{1}{\xi} dr 
+    & \overline{(w^{-1})} = \int_0^\infty \frac{1}{w} e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1} dr = \int_0^\infty e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1}e^{r/\xi} dr 
 \end{align*}
 For $d>1$ this integral converges, so normal diffusion should occur.
+
+Amir also finds the eigenvalue distribution (using the idea of equation \eqref{eq:eig_moments} ):
+
+%%
+\begin{fminipage}{\textwidth}
+\[ P(\lambda)=  \frac{\epsilon^d d V_d /2
+(-\rm{log}(-\lambda/2))^{d-1} e^{-\frac{V_d}{2} \epsilon^d
+(-\rm{log}(-\lambda/2))^d}}{\lambda} \]
+
+
+The cumulative $C(\lambda)$ of this distribution takes a
+particularly simple form: 
+\[ C(\lambda)\equiv \int_\lambda^0
+P(\lambda)d\lambda= e^{-\frac{V_d}{2} \epsilon^d
+(-\rm{log}(-\lambda/2))^d} \]
+\end{fminipage}
+Or in our notation:
+\[ C(\lambda)= e^{-\frac{\Omega_d}{2d} (n\xi)^d \left( -\log(-\frac{\lambda}{2})\right)^d} \]
 %%%%%%%%%%%%%%%%%%%%%%
 \section{S. Alexander's treatment}
 This is copied from Alexander's paper for easier referencing. 
@@ -469,9 +488,16 @@ The direct calculation for the survival in a log normal banded matrix is depicte
 %%%%%%%%%%
 \section{Resistor Network Calculation} \label{sec:res_net}
 Our basic equation is 
-\[ \boldsymbol{ \dot P } = W \boldsymbol{P} \]
+\[ \boldsymbol{ \dot P } = \boldsymbol{W} \boldsymbol{P} \]
 It can be rewritten as:
-\[  \boldsymbol{P} = W^{-1}\boldsymbol{ \dot P } \]
+\[  \boldsymbol{P} = \boldsymbol{W}^{-1}\boldsymbol{ \dot P } \]
+Which resembles resistivity calculations:
+\[ \boldsymbol{V} = \boldsymbol{R}\boldsymbol{ I } \]
+If we define the inverse resistivity as:
+\[ \boldsymbol{R} = \boldsymbol{W}^{-1} \]
+So our calclutions become similar to those of resistors, whose rules are well known.
+
+The resistor network calculation has been used by Stotland to find the diffusion of quasi one dimensional systems.
 
 %%%%%%%%
 \section{Random Matrix Construction}\label{sec:matrix_construction}
@@ -480,12 +506,18 @@ To create a $N\times N$ matrix, we have to choose $N-1$ random numbers. To make 
 y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x) 
 \end{align}
 
-To check ourselves, we have plotted the eigenvalue distribution for the lognoraml banded matrix, and a uniform random matrix in figure \ref{fig:eigenvalue_distribution}
+To check ourselves, we have plotted the eigenvalue distribution for the lognoraml banded matrix, and a uniform random matrix in figure \ref{fig:eigenvalue_distribution}, and also compared between $b=5$ and $b=10$ in figure \ref{fig:eigenvalue_distribution_5_10}
 \begin{figure}
     \subfloat[Uniform distribution ]{\includegraphics[clip, width=0.9\hsize]{eigvals_uniform}}
-    \\ \subfloat[Lognoraml banded matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal}}
+    \\ \subfloat[Lognoraml nearest neighbor matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal}}
     \caption{Cummulative eigenvalue distribution.}
     \label{fig:eigenvalue_distribution}
+\end{figure}
+\begin{figure}
+    \subfloat[Lognoraml banded matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_b_5}}
+    \\ \subfloat[Lognoraml banded matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_b_10}}
+    \caption{Cummulative eigenvalue distribution.}
+    \label{fig:eigenvalue_distribution_5_10}
 \end{figure}
 
 \section{Geometry's role} \label{sec:geometry}

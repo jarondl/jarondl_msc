@@ -34,13 +34,14 @@ rc('figure', figsize=[latex_width_inch, latex_height_inch])
 rc('legend', fontsize=10)
 
 
-def set_all(ax, title=None, xlabel=None, ylabel=None, legend=False):
+def set_all(ax, title=None, xlabel=None, ylabel=None, legend_loc=False):
     """ Set several attributes for an ax at once
+        :param:`legend_loc` sets the location of the legend. Use "best" for defualt location
     """
     if title: ax.set_title(title)
     if xlabel: ax.set_xlabel(xlabel)
     if ylabel: ax.set_ylabel(ylabel)
-    if legend: ax.legend()
+    if legend_loc: ax.legend(loc=legend_loc)
 
 
 def plot_to_file(plot_func, filename, **kwargs):
