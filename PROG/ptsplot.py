@@ -60,6 +60,21 @@ def eigenvalues_lognormal(ax, N=100, b=1):
     ax.loglog(eigvals, numpy.linspace(0,1,N-1),marker='.',linestyle='', label="Normalized cummulative eigenvalues (divided by N)")
     ax.loglog(diffusion_space,diffusion, linestyle='--',label = "Square root")
     plotdl.set_all(ax, title="lognormal, $b={0}$".format(b), legend_loc="upper left")
+    
+def eigenvalues_NN(ax, N=100, NN_data=None):
+    """  Plot the eigenvalues for a Nearest neighbor matrix
+    """
+    if NN_data is None:
+        NN_data = numpy.ones(N)
+    W = sparsedl.create_sparse_matrix(N,NN_data,b=1).todense()
+    eigvals = - linalg.eigvalsh(W)  #  eigvalsh works for real symmetric matrices
+    eigvals.sort()
+    eigvals = eigvals[1:]  ## The first eigenvalue is zero, which does problems with loglog plots
+    diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),N-1)
+    diffusion = numpy.sqrt( diffusion_space)
+    ax.loglog(eigvals, numpy.linspace(0,1,N-1),marker='.',linestyle='', label="Normalized cummulative eigenvalues (divided by N)")
+    ax.loglog(diffusion_space,diffusion, linestyle='--',label = "Square root")
+    plotdl.set_all(ax, title="lognormal, $b={0}$".format(b), legend_loc="upper left")
 
 
 def eigenvalues_exponent_minus1(ax, N=100, nxi=0.3):
@@ -74,6 +89,8 @@ def eigenvalues_exponent_minus1(ax, N=100, nxi=0.3):
     ax.loglog(eigvals, numpy.linspace(0,1,N-2),marker='.',linestyle='', label="Cummulative eigenvalues (divided by N)")
     ax.loglog(power_law_space, power_law, linestyle='--',label=r"\lambda^{n\xi}")
     plotdl.set_all(ax, title=r"$p(w) = w^{n\xi-1}n\xi $ Where $n\xi=$"+str(nxi), legend_loc="lower right")
+    
+    
 
 
 def eigenvalues_uniform(ax, N=100):

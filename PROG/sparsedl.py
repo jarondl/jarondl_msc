@@ -8,6 +8,7 @@ import scipy
 import numpy
 from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
+from scipy.sparse.linalg import spsolve
 
 
 def NN_matrix(N, b=1, **kwargs):
@@ -48,6 +49,27 @@ def lognormal_sparse_matrix(N, b=1, **kwargs):
     """
     diag_data = lognormal_construction(N * b, **kwargs).reshape([b, N])
     sp = spdiags(diag_data, range(1, b + 1), N, N)  # create the above the diagonal lines
+    sp = sp + sp.transpose()
+    sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
+    return sp
+   
+  
+def resnet(W, N, N_low, N_high):
+    """
+    http://mail.scipy.org/pipermail/scipy-user/2007-October/013936.html
+    """
+    I = numpy.zeros(N)
+    I[[N_low,N_high]] =  [-1,1]
+    v = spsolve(W,I)
+    return v
+
+def create_sparse_matrix(N, rates, b=1):
+    """  Creates a sparse matrix out of the rates. 
+
+    :param rates: Should be flat with N*b elements
+    """
+    
+    sp = spdiags(rates.reshape([b,N]), range(1, b + 1), N, N)  # create the above the diagonal lines
     sp = sp + sp.transpose()
     sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
     return sp
