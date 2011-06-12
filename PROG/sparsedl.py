@@ -11,6 +11,7 @@ from scipy.sparse import spdiags
 from scipy.sparse.linalg import spsolve
 
 
+
 def NN_matrix(N, b=1, **kwargs):
     """ Build a NxN matrix.
 
@@ -59,9 +60,13 @@ def resnet(W, N, N_low, N_high):
     http://mail.scipy.org/pipermail/scipy-user/2007-October/013936.html
     """
     I = numpy.zeros(N)
-    I[[N_low,N_high]] =  [-1,1]
-    v = spsolve(W,I)
-    return v
+    I[[N_low,N_high]] =  [1,-1]
+    #v = spsolve(W,I)
+    #v= linalg.solve(W.todense(),I)
+    invW = linalg.pinv(W)
+    v = numpy.dot(invW, I)
+    return (N_high- N_low)/(v[N_high] - v[N_low])
+
 
 def create_sparse_matrix(N, rates, b=1):
     """  Creates a sparse matrix out of the rates. 
@@ -121,6 +126,7 @@ def mean(x, y):
     """  Returns the mean of a ditribution with x as location and y as value
     """
     return numpy.sum(x * y) / numpy.sum(y)
+
 
 
 def var(x, y):

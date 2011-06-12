@@ -56,9 +56,11 @@ def eigenvalues_lognormal(ax, N=100, b=1):
     eigvals.sort()
     eigvals = eigvals[1:]  ## The first eigenvalue is zero, which does problems with loglog plots
     diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),N-1)
-    diffusion = numpy.sqrt( diffusion_space)
+    D = sparsedl.resnet(W,N,b,N-(b+1))
+    print(D)
+    diffusion = numpy.sqrt( diffusion_space) * D
     ax.loglog(eigvals, numpy.linspace(0,1,N-1),marker='.',linestyle='', label="Normalized cummulative eigenvalues (divided by N)")
-    ax.loglog(diffusion_space,diffusion, linestyle='--',label = "Square root")
+    ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $D\sqrt{{\lambda}}$ where $D = {0}$".format(D))
     plotdl.set_all(ax, title="lognormal, $b={0}$".format(b), legend_loc="upper left")
     
 def eigenvalues_NN(ax, N=100, NN_data=None):
