@@ -90,7 +90,7 @@ def plot_to_screen(plot_func, **kwargs):
         fig = pyplot.figure()
         ax = fig.add_subplot(1, 1, 1)
         plot_func(ax, **kwargs)
-        pyplot.show()
+        #pyplot.show()
     else:
         print("X is not available")
 
