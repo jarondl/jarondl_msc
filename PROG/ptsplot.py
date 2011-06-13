@@ -4,7 +4,7 @@
 """
 from __future__ import division
 #from scipy.sparse import linalg as splinalg
-from numpy import linalg, random
+from numpy import linalg, random, pi
 #from argparse import ArgumentParser
 from matplotlib.colors import LogNorm
 
@@ -54,28 +54,65 @@ def eigenvalues_lognormal(ax, N=100, b=1):
     """
     W = sparsedl.lognormal_sparse_matrix(N,b).todense()
     eigvals = eigenvalues_cummulative(ax,W, "Cummulative eigenvalues")  ## Plots the eigenvalues.    
-    diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),N-1)
-    D = sparsedl.resnet(W,N,b,N-(b+1))
-    print(D)
-    diffusion = numpy.sqrt(diffusion_space/D)
-    ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $D\sqrt{{\lambda}}$ where $D = {0}$".format(D))
-    plotdl.set_all(ax, title="lognormal, $b={0}$".format(b), legend_loc="upper left")
+    D = sparsedl.resnet(W,b)
+    diffusion_plot(ax,D,eigvals)
+    plotdl.set_all(ax, title="lognormal, $b={0}$, $D={1}$".format(b,D), legend_loc="upper left")
 
-
-def eigenvalues_NN(ax, N=100, NN_data=None):
-    """  Plot the eigenvalues for a Nearest neighbor matrix
+def diffusion_plot(ax,D,eigvals):
+    """ """
+    diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),100)
+    diffusion = numpy.sqrt(2*pi*diffusion_space/(D))
+    ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{2\pi\lambda/D}}$")
+    
+def eigenvalues_multiple():
     """
-    if NN_data is None:
-        NN_data = numpy.ones(N)
-    W = sparsedl.create_sparse_matrix(N,NN_data,b=1).todense()
-    eigvals = - linalg.eigvalsh(W)  #  eigvalsh works for real symmetric matrices
-    eigvals.sort()
-    eigvals = eigvals[1:]  ## The first eigenvalue is zero, which does problems with loglog plots
-    diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),N-1)
-    diffusion = numpy.sqrt( diffusion_space)
-    ax.loglog(eigvals, numpy.linspace(0,1,N-1),marker='.',linestyle='', label="Normalized cummulative eigenvalues (divided by N)")
-    ax.loglog(diffusion_space,diffusion, linestyle='--',label = "Square root")
-    plotdl.set_all(ax, title="lognormal, $b={0}$".format(b), legend_loc="upper left")
+    """
+    fig,ax = plotdl.new_fig_ax()
+    N=200
+    for b in (1,5,10):
+        rates = numpy.ones(N*b)
+        W = sparsedl.create_sparse_matrix(N,rates,b).todense()
+        D = sparsedl.resnet(W, b)
+        label = "b = {0}, D = {1}".format(b,D)
+        eigvals = eigenvalues_cummulative(ax, W, label)
+        diffusion_plot(ax,D,eigvals)
+
+    plotdl.set_all(ax, title="All ones, N = {N}".format(N=N), legend_loc="best")
+    plotdl.savefig(fig, "eigvals_ones")
+    
+    fig,ax = plotdl.new_fig_ax()
+    N=200
+    for b in (1,5,10):
+        rates = numpy.zeros(N*b)
+        rates[::2] = 3
+        rates[1::2] = 8
+        W = sparsedl.create_sparse_matrix(N,rates,b).todense()
+        D = sparsedl.resnet(W, b)
+        label = "b = {0}, D = {1}".format(b,D)
+        eigvals = eigenvalues_cummulative(ax, W, label)
+        diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),N-1)
+        diffusion = numpy.sqrt(2*pi*diffusion_space/(D))
+        ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{2\pi\lambda/D}}$")
+    plotdl.set_all(ax, title="Alternating 3-8, N = {N}".format(N=N), legend_loc="best")
+    plotdl.savefig(fig, "eigvals_alter")
+    
+    
+    fig,ax = plotdl.new_fig_ax()
+    N=200
+    for b in (1,5,10):
+        rates = numpy.random.uniform(3,8,N*b)
+        W = sparsedl.create_sparse_matrix(N,rates,b).todense()
+        D = sparsedl.resnet(W, b)
+        label = "b = {0}, D = {1}".format(b,D)
+        eigvals = eigenvalues_cummulative(ax, W, label)
+        diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),N-1)
+        diffusion = numpy.sqrt(2*pi*diffusion_space/(D))
+        ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{2\pi\lambda/D}}$")
+    plotdl.set_all(ax, title="Box distibution 3-8, N = {N}".format(N=N), legend_loc="best")
+    plotdl.savefig(fig, "eigvals_box")
+    
+    
+
 
 
 def eigenvalues_exponent_minus1(ax, N=100, nxi=0.3):
@@ -112,7 +149,7 @@ def eigenvalues_uniform(ax, N=100):
     
     R=numpy.max(eigvals)
     #R=2.0
-    semicircle = numpy.sqrt(numpy.ones(N)*R**2 - numpy.linspace(-R,R,N)**2)#/(2*numpy.pi)
+    semicircle = numpy.sqrt(numpy.ones(N)*R**2 - numpy.linspace(-R,R,N)**2)#/(2*pi)
     cum_semicircle = numpy.cumsum(semicircle) 
     print(numpy.max(cum_semicircle))
     cum_semicircle = cum_semicircle / numpy.max(cum_semicircle)*N
@@ -120,7 +157,13 @@ def eigenvalues_uniform(ax, N=100):
     ax.plot(numpy.linspace(-R,R,N), cum_semicircle,linestyle="--", label = r"Cummulative semicircle, with $R \approx {0:.2}$".format(R))
 
     plotdl.set_all(ax, title=r"uniform, $[-1,1]$", legend_loc="upper left")
-
+    
+def eigenvalues_lognormal_normal_axis(ax, N=100, b=1):
+    """  Plot the eigenvalues for a lognormal sparse banded matrix
+    """
+    eigenvalues_lognormal(ax, N=N, b=b)
+    ax.set_xscale('linear')
+    ax.set_yscale('linear')
     
 
 def torus_plots_eig_surv(ax_eig,ax_surv, N_points=100,dimensions=(10,10),end_log_time=1):
@@ -182,7 +225,7 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
     print("n = {0}, xi = {1}, n*xi = {2}, n*xi^2={3}".format(n,xi,n*xi,n*xi**2))
     dis =  geometry.distance_matrix(points, torus.distance)
     rnn = sparsedl.rnn(dis)
-    print("Rnn = "+str(rnn))
+    print("Rnn = "+str(rnn)+ " xi/rnn = "+str(xi/rnn))
     
     ex1 = numpy.exp(-dis/xi)
     sparsedl.zero_sum(ex1)
@@ -195,16 +238,18 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
     eigvals2 = eigvals2[1:] # The zero is problematic for the plots
     minvallog = numpy.log10(min(numpy.min(eigvals1),numpy.min( eigvals2)))
     maxvallog = numpy.log10(max(numpy.max(eigvals1),numpy.max( eigvals2)))
+    print(str(minvallog) +"   "+ str(maxvallog))
     #theory_space = numpy.logspace(minvallog,maxvallog,N_points)
-    theory_space = numpy.logspace(0,2,100)
-    theory = 1-numpy.exp(-(numpy.pi/2)*(n*xi**2)*(numpy.log(theory_space/2))**2)
+    theory_space = numpy.logspace(-18,0.3,100)
+    theory = numpy.exp(-(pi/2)*(xi/rnn*numpy.log(theory_space/2))**2)
+    print(theory)
 
     
     ax_eig.loglog(eigvals1, numpy.linspace(0,1,N_points-1), label="original", marker='.', linestyle='')
     ax_eig.loglog(eigvals2, numpy.linspace(0,1,N_points-1), label="permuted", marker='.', linestyle='')
 
     xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
-    ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
+    #ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
     ax_eig.legend(loc='lower right')
     ax_eig.set_xlim(xlim)
     ax_eig.set_ylim(ylim)
@@ -270,10 +315,12 @@ def all_plots(seed= 1, **kwargs):
     plotdl.plot_to_file(eigenvalues_lognormal, "eigvals_lognormal")
     plotdl.plot_to_file(eigenvalues_lognormal, "eigvals_lognormal_b_5", b=5)
     plotdl.plot_to_file(eigenvalues_lognormal, "eigvals_lognormal_b_10", b=10)
-    plotdl.plot_to_file(eigenvalues_lognormal, "eigvals_lognormal_b_100", b=100)
+    plotdl.plot_to_file(eigenvalues_lognormal_normal_axis, "eigvals_lognormal_normal", b=1)
     plotdl.plot_to_file(eigenvalues_uniform,  "eigvals_uniform")
     random.seed(seed)
     loop_torus_eig( )
+    random.seed(seed)
+    eigenvalues_multiple()
 
     #plotdl.plot_twin_subplots_to_file( torus_permutation)
 

@@ -55,10 +55,13 @@ def lognormal_sparse_matrix(N, b=1, **kwargs):
     return sp
    
   
-def resnet(W, N, N_low, N_high):
+def resnet(W, b):
     """
-    http://mail.scipy.org/pipermail/scipy-user/2007-October/013936.html
+    
     """
+    N = W.shape[0]
+    N_high = N-(b+1)
+    N_low = b
     I = numpy.zeros(N)
     I[[N_low,N_high]] =  [1,-1]
     #v = spsolve(W,I)

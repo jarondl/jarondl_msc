@@ -53,6 +53,13 @@ def plot_to_file(plot_func, filename, **kwargs):
     plot_func(ax, **kwargs)
     savefig(fig, filename)
     return fig
+    
+def new_fig_ax():
+    """
+    """
+    fig = Figure()
+    ax = fig.add_subplot(1,1,1)
+    return fig,ax
 
 
 def plot_2subplots_to_file(plot_func1, plot_func2, filename, suptitle=None, **kwargs):
@@ -92,7 +99,7 @@ def plot_to_screen(plot_func, **kwargs):
         ax = fig.add_subplot(1, 1, 1)
         plot_func(ax, **kwargs)
         pyplot.draw()
-        return pyplot
+        #return pyplot
         #pyplot.show()
     else:
         print("X is not available")

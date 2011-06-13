@@ -413,9 +413,9 @@ S. Alexander provided a general solution for the problem \cite{Alexander:1981:RM
         \end{cases}
         \qquad\mathrm{with}\qquad 0<\alpha<1
 \end{align}
-For two of the three classes the survival at $w\rightarrow 0$ and $t\rightarrow \infty$ are (6.13):
+For two of the three classes the survival at $w\rightarrow 0$ and $t\rightarrow \infty$ are (6.13) [Where $D=(\overline{w^{-1}})^{-1}$ ]:
 \begin{align}
-&\mathrm{(a) : }\qquad \mathcal{P}(t) \approx \sqrt{\frac{(\overline{w^{-1}})}{4\pi}}\frac{1}{\sqrt{t}}  \\
+&\mathrm{(a) : }\qquad \mathcal{P}(t) \approx \sqrt{\frac{1}{4\pi D t}}  \\
 &\mathrm{(c) : }\qquad \mathcal{P}(t) \propto t^{-\frac{1-\alpha}{2-\alpha}}
 \end{align}
 The spreading is defined by (7.3):
@@ -424,7 +424,7 @@ The spreading is defined by (7.3):
 \end{align}
 And it is solved (7.18):
 \begin{align}
-    &\mathrm{(a) : }\qquad S(t) \approx 2(\overline{w^{-1}})^{-1}t  \\
+    &\mathrm{(a) : }\qquad S(t) \approx 2Dt  \\
     &\mathrm{(b) : }\qquad S(t) \propto \frac{t}{\ln t}  \\
     &\mathrm{(c) : }\qquad S(t) \propto t^{2\frac{1-\alpha}{2-\alpha}}
 \end{align}
@@ -518,6 +518,15 @@ To check ourselves, we have plotted the eigenvalue distribution for the lognoram
     \\ \subfloat[Lognoraml banded matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_b_10}}
     \caption{Cummulative eigenvalue distribution.}
     \label{fig:eigenvalue_distribution_5_10}
+\end{figure}
+\begin{figure}
+    \includegraphics[clip, width=0.9\hsize]{eigvals_ones}
+\end{figure}
+\begin{figure}
+    \includegraphics[clip, width=0.9\hsize]{eigvals_alter}
+\end{figure}
+\begin{figure}
+    \includegraphics[clip, width=0.9\hsize]{eigvals_box}
 \end{figure}
 
 \section{Geometry's role} \label{sec:geometry}
