@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """ Survival and spreading for log normal distribution.  
 """
+from __future__ import division
 #from scipy.sparse import linalg as splinalg
 from numpy import linalg, random
 #from argparse import ArgumentParser
@@ -52,17 +53,15 @@ def eigenvalues_lognormal(ax, N=100, b=1):
     """  Plot the eigenvalues for a lognormal sparse banded matrix
     """
     W = sparsedl.lognormal_sparse_matrix(N,b).todense()
-    eigvals = - linalg.eigvalsh(W)  #  eigvalsh works for real symmetric matrices
-    eigvals.sort()
-    eigvals = eigvals[1:]  ## The first eigenvalue is zero, which does problems with loglog plots
+    eigvals = eigenvalues_cummulative(ax,W, "Cummulative eigenvalues")  ## Plots the eigenvalues.    
     diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),N-1)
     D = sparsedl.resnet(W,N,b,N-(b+1))
     print(D)
-    diffusion = numpy.sqrt( numpy.pi*diffusion_space) /(D)
-    ax.loglog(eigvals, numpy.linspace(0,1,N-1),marker='.',linestyle='', label="Normalized cummulative eigenvalues (divided by N)")
+    diffusion = numpy.sqrt(diffusion_space/D)
     ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $D\sqrt{{\lambda}}$ where $D = {0}$".format(D))
     plotdl.set_all(ax, title="lognormal, $b={0}$".format(b), legend_loc="upper left")
-    
+
+
 def eigenvalues_NN(ax, N=100, NN_data=None):
     """  Plot the eigenvalues for a Nearest neighbor matrix
     """
@@ -92,8 +91,16 @@ def eigenvalues_exponent_minus1(ax, N=100, nxi=0.3):
     ax.loglog(power_law_space, power_law, linestyle='--',label=r"\lambda^{n\xi}")
     plotdl.set_all(ax, title=r"$p(w) = w^{n\xi-1}n\xi $ Where $n\xi=$"+str(nxi), legend_loc="lower right")
     
-    
 
+def eigenvalues_cummulative(ax, matrix, label):
+    """ Plot the cummulative density of the eigenvalues
+    """
+    N = matrix.shape[0]
+    eigvals = -linalg.eigvalsh(matrix)
+    eigvals.sort()
+    eigvals = eigvals[1:]/N
+    ax.loglog(eigvals, numpy.linspace(0,1,N-1),marker=".",linestyle='', label=label)
+    return eigvals
 
 def eigenvalues_uniform(ax, N=100):
     """  Plot the eigenvalues for a uniform random matrix
@@ -159,7 +166,7 @@ def torus_plots_eig_surv(ax_eig,ax_surv, N_points=100,dimensions=(10,10),end_log
     #plotdl.set_all(ax_torus_eigvals, xlabel="Eigenvalue", title="Cummulative eigenvalue distribution")
 
 
-def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),end_log_time=1):
+def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=1):
     """  Create A_ij for points on a torus via e^(-r_ij). 
 
         :param N_points: Number of points, defaults to 100
@@ -171,9 +178,13 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),end_log_time=1):
     
     torus = geometry.Torus(dimensions)
     points = torus.generate_points(N_points)
+    n = N_points / (dimensions[0]*dimensions[1])
+    print("n = {0}, xi = {1}, n*xi = {2}, n*xi^2={3}".format(n,xi,n*xi,n*xi**2))
     dis =  geometry.distance_matrix(points, torus.distance)
+    rnn = sparsedl.rnn(dis)
+    print("Rnn = "+str(rnn))
     
-    ex1 = numpy.exp(-dis)
+    ex1 = numpy.exp(-dis/xi)
     sparsedl.zero_sum(ex1)
     ex2 = sparsedl.permute_tri(ex1)
     eigvals1 = -linalg.eigvalsh(ex1)   # NOTE : minus sign
@@ -182,18 +193,21 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),end_log_time=1):
     eigvals2.sort()
     eigvals1 = eigvals1[1:] # The zero is problematic for the plots
     eigvals2 = eigvals2[1:] # The zero is problematic for the plots
-    #minvallog = numpy.log10(min(numpy.min(eigvals1),numpy.min( eigvals2)))
-    #maxvallog = numpy.log10(max(numpy.max(eigvals1),numpy.max( eigvals2)))
+    minvallog = numpy.log10(min(numpy.min(eigvals1),numpy.min( eigvals2)))
+    maxvallog = numpy.log10(max(numpy.max(eigvals1),numpy.max( eigvals2)))
     #theory_space = numpy.logspace(minvallog,maxvallog,N_points)
-    #theory = 1-numpy.exp(-0.1*numpy.log(theory_space)**2)
-    #ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
+    theory_space = numpy.logspace(0,2,100)
+    theory = 1-numpy.exp(-(numpy.pi/2)*(n*xi**2)*(numpy.log(theory_space/2))**2)
+
     
     ax_eig.loglog(eigvals1, numpy.linspace(0,1,N_points-1), label="original", marker='.', linestyle='')
     ax_eig.loglog(eigvals2, numpy.linspace(0,1,N_points-1), label="permuted", marker='.', linestyle='')
-    ax_eig.legend(loc='lower right')
-    ax_eig.set_xlim(right=0)
-    
 
+    xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
+    ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
+    ax_eig.legend(loc='lower right')
+    ax_eig.set_xlim(xlim)
+    ax_eig.set_ylim(ylim)
 
 def clip(nparray,lower_bound):
     """  """

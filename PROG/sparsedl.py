@@ -208,6 +208,13 @@ def sparsity(mat):
     #q = mat.flatten()[mat.size//2] / avg
     return s,p#,q
 
+def rnn(mat):
+    """
+    """
+    N = mat.shape[0]
+    infdiag = numpy.diagflat(numpy.ones(N)*numpy.inf)
+    return numpy.mean((mat+infdiag).min(axis=0))
+
 
 def surv(eigen_values, times):
     """ Calculate survival probability by the sum of exponents equation"""

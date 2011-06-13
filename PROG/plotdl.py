@@ -12,6 +12,7 @@ from matplotlib import rc
 try:
     from matplotlib import pyplot
     X_AVAILABLE = True
+    pyplot.ion()
 except RuntimeError:
     X_AVAILABLE = False
     print("X is not available, non interactive use only")
@@ -86,10 +87,12 @@ def plot_to_screen(plot_func, **kwargs):
     """
     """
     if X_AVAILABLE:
-        pyplot.ion()
+        
         fig = pyplot.figure()
         ax = fig.add_subplot(1, 1, 1)
         plot_func(ax, **kwargs)
+        pyplot.draw()
+        return pyplot
         #pyplot.show()
     else:
         print("X is not available")
@@ -101,9 +104,9 @@ def savefig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor=
 
     fig.set_size_inches((size[0] * size_factor[0], size[1] * size_factor[1]))
     canvas_pdf = FigureCanvasPdf(fig)
-    canvas_ps = FigureCanvasPS(fig)
+    #canvas_ps = FigureCanvasPS(fig)
     pdfname = os.path.join("figures", fname + ".pdf")
-    epsname = os.path.join("figures", fname + ".eps")
+    #epsname = os.path.join("figures", fname + ".eps")
     canvas_pdf.print_figure(pdfname)
-    canvas_ps.print_figure(epsname)
-    print("Created:\n\t {0} \n\t {1}".format(pdfname, epsname))
+    #canvas_ps.print_figure(epsname)
+    print("Created:\n\t {0} ".format(pdfname))
