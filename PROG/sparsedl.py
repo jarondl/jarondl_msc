@@ -6,6 +6,7 @@
 from __future__ import division  # makes true division instead of integer division
 import scipy
 import numpy
+from numpy import sqrt, cos, pi
 from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
 from scipy.sparse.linalg import spsolve
@@ -70,6 +71,12 @@ def resnet(W, b):
     v = numpy.dot(invW, I)
     return (N_high- N_low)/(v[N_high] - v[N_low])
 
+
+def analytic_alter(a,b,m):
+    """ Returns the m's eigenvalue of the alternating a,b model. (m=m/N)
+    """
+    return (a+b) - sqrt(a**2+b**2+2*a*b*cos(2*pi*m))
+    
 
 def create_sparse_matrix(N, rates, b=1):
     """  Creates a sparse matrix out of the rates. 

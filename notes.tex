@@ -117,7 +117,7 @@
 
 \section{Introduction}
 The mathematical properties of random matrices may offer interesting insight for the physical properties. Such physical properties include the diffusion and the Survival Probability, while the mathematical properties include the sparsity of the matrix and its spectrum. 
-
+Phys. Rev. B, 28, 3799 (1983): 162 Q
 We shall concentrate on sparse matrices with log-normally distributed values. At first, we will work on a Nearest-Neighbor model as described in section \ref{sec:our_model}. One can think of this model as a one dimensional chain of sites, where transition rates between the sites vary log-normally.
 
 In regular diffusion there is a known relation between the survival probability and the diffusion. 
@@ -183,8 +183,9 @@ And then the survival probability will be:
 \end{align}
 The mean survival probability will be:
 \begin{align} \label{eq:surv_eigenvalues}
-\mathcal{P}(t) = \sum_i \frac{1}{N} P_i(t)=\sum_i \frac{1}{N} \sum_\lambda ({V_\lambda}_i)^2 e^{\lambda t}  =\frac{1}{N}\sum_\lambda e^{\lambda t}
+\mathcal{P}(t) = \sum_i \frac{1}{N} P_i(t)=\sum_i \frac{1}{N} \sum_\lambda ({V_\lambda}_i)^2 e^{\lambda t}  =\frac{1}{N}\sum_\lambda e^{\lambda t} = \int g(\lambda) e^{\lambda t}
 \end{align}
+Where $g(\lambda)$ stands for the density of eigenvalues. This last results means that the survival probability is the Laplace transform of the eigenvalue distribution.
 %%%%%%%%%%%%%%%
 \subsection{Spreading}
 The spreading of the probabilities is defined as the second moment of the locations:
@@ -283,7 +284,7 @@ a  & -a-b &  b \\
 \end{pmatrix}
 \end{align}
 The diffusion coefficient according to \ref{eq:diff} should be:
-\begin{align}
+\begin{align}\label{eq:D_alter}
 D = \left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1} = \frac{2}{\frac{1}{a} + \frac{1}{b}} = \frac{2ab}{a+b}
 \end{align}
 
@@ -299,6 +300,8 @@ The eigenvalues for this matrix can be found analytically, using bloch's theorem
 \begin{align}
 {V_\lambda}_n = \begin{cases}e^{ikn} c_1 \; &, \text{n odd} \\ e^{ikn} c_2 \; &, \text{n even} \end{cases}
 \end{align}
+Periodic boundary conditions dictate $k=\frac{2\pi}{N}m$ where $m$ is an integer.
+
 When we apply the eigenvalue equation to this vector ($WV_\lambda = \lambda V_\lambda$), we obtain two linear equations:
 \begin{align}
 ac_1e^{-ik}   -(a+b)c_2 +bc_1e^{ik} &= \lambda c_2 \\
@@ -309,6 +312,19 @@ The solution for $\lambda$ is
 (a+b+\lambda)^2 = a^2+b^2+2ab\cos 2k \\
 \lambda = -(a + b) \pm \sqrt{a^2+b^2+2ab\cos 2k}  \label{eq:abab_eigenvals}
 \end{align}
+We are interested in the eigenvalues close to zero, which means taking the plus sign, and $k\ll 1$:
+\begin{align}
+\lambda \approx -(a + b) + \sqrt{a^2+b^2+2ab(1-2k^2)} = -(a+b) +(a+b)\sqrt{1 - \frac{4abk^2}{(a+b)^2}}\approx \frac{2abk^2}{a+b}
+\end{align}
+The $k$'s are $k=\frac{2\pi}{N}m$ and therefore the cummulative eigenvalues are:
+\begin{align}
+\sqrt{\lambda\frac{a+b}{2ab}}\frac{N}{2\pi}
+\end{align}
+Or, using the diffusion coefficient we have found in \eqref{eq:D_alter}:
+\begin{align}
+\sqrt{\frac{\lambda}{D}}\frac{N}{2\pi}
+\end{align}
+
 Now that we have the eigenvalues, we may use equation \ref{eq:surv_eigenvalues} to find the survival probability as a function of time:
 \begin{align}
 \mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t} 

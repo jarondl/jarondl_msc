@@ -4,7 +4,7 @@
 """
 from __future__ import division
 #from scipy.sparse import linalg as splinalg
-from numpy import linalg, random, pi
+from numpy import linalg, random, pi, log10
 #from argparse import ArgumentParser
 from matplotlib.colors import LogNorm
 
@@ -61,9 +61,21 @@ def eigenvalues_lognormal(ax, N=100, b=1):
 def diffusion_plot(ax,D,eigvals):
     """ """
     diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),100)
-    diffusion = numpy.sqrt(2*pi*diffusion_space/(D))
+#    diffusion = numpy.sqrt(2*pi*diffusion_space/(D))
+    diffusion = numpy.sqrt(pi*diffusion_space/(D))
     ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{2\pi\lambda/D}}$")
     
+
+
+def alter_analytic_plot(ax, a,b,N):
+    """
+    """
+    space = numpy.linspace(1/N, 0.5, N // 2 - 1)
+    alter = sparsedl.analytic_alter(a,b,space) / (N )
+    alter.sort()
+    ax.loglog(alter, space, linestyle='', marker='+',label = r"Analytic alternating model")
+
+
 def eigenvalues_multiple():
     """
     """
@@ -93,6 +105,7 @@ def eigenvalues_multiple():
         diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),N-1)
         diffusion = numpy.sqrt(2*pi*diffusion_space/(D))
         ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{2\pi\lambda/D}}$")
+    alter_analytic_plot(ax, 3,8,N)
     plotdl.set_all(ax, title="Alternating 3-8, N = {N}".format(N=N), legend_loc="best")
     plotdl.savefig(fig, "eigvals_alter")
     
