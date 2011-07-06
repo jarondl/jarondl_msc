@@ -62,8 +62,8 @@ def diffusion_plot(ax,D,eigvals):
     """ """
     diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),100)
 #    diffusion = numpy.sqrt(2*pi*diffusion_space/(D))
-    diffusion = numpy.sqrt(diffusion_space/(D))
-    ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{2\pi\lambda/D}}$")
+    diffusion = numpy.sqrt(2*diffusion_space/(pi*D))
+    ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{2\lambda/(\pi D)}}$")
     
 
 
@@ -80,7 +80,7 @@ def eigenvalues_multiple():
     """  
     """
     fig,ax = plotdl.new_fig_ax()
-    N=400
+    N=200
     for b in (1,5,10):
         rates = numpy.ones(N*b)
         W = sparsedl.create_sparse_matrix(N,rates,b).todense()
@@ -93,7 +93,7 @@ def eigenvalues_multiple():
     plotdl.savefig(fig, "eigvals_ones")
     
     fig,ax = plotdl.new_fig_ax()
-    N=400
+    N=200
     for b in (1,5,10):
         rates = numpy.zeros(N*b)
         rates[::2] = 3
@@ -103,9 +103,7 @@ def eigenvalues_multiple():
         D = sparsedl.resnet(W, b)
         label = "b = {0}, D = {1}".format(b,D)
         eigvals = eigenvalues_cummulative(ax, W, label)
-        diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),N-1)
-        diffusion = numpy.sqrt(2*pi*diffusion_space/(D))
-        ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{2\pi\lambda/D}}$")
+        diffusion_plot(ax, D, eigvals)
     alter_analytic_plot(ax, 3,8,N)
     plotdl.set_all(ax, title="Alternating 3-8, N = {N}".format(N=N), legend_loc="best")
     plotdl.savefig(fig, "eigvals_alter")
@@ -119,9 +117,7 @@ def eigenvalues_multiple():
         D = sparsedl.resnet(W, b)
         label = "b = {0}, D = {1}".format(b,D)
         eigvals = eigenvalues_cummulative(ax, W, label)
-        diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),N-1)
-        diffusion = numpy.sqrt(2*pi*diffusion_space/(D))
-        ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{2\pi\lambda/D}}$")
+        diffusion_plot(ax,D,eigvals)
     plotdl.set_all(ax, title="Box distibution 3-8, N = {N}".format(N=N), legend_loc="best")
     plotdl.savefig(fig, "eigvals_box")
     
@@ -263,7 +259,7 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
     ax_eig.loglog(eigvals2, numpy.linspace(0,1,N_points-1), label="permuted", marker='.', linestyle='')
 
     xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
-    #ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
+    ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
     ax_eig.legend(loc='lower right')
     ax_eig.set_xlim(xlim)
     ax_eig.set_ylim(ylim)

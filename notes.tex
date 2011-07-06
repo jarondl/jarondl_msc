@@ -207,22 +207,16 @@ We have two known quantities, one is the survival probability $\mathcal{P}(t)$, 
 
 Using the scaling hypothesis one can show that
 \begin{align}
-\mathcal{P}(t)\sqrt{S(t)}=1
+    \mathcal{P}(t)\sqrt{S(t)}=1 \\
+    \mathcal{P}(t) = \frac{1}{\sqrt{S(t)}} \\
+    g(\lambda) = \mathcal{L}^{-1}[\mathcal{P}(t)] = \mathcal{L}^{-1}\left[\frac{1}{\sqrt{S(t)}}\right]
 \end{align}
+Where $\mathcal{L}^{-1}$ is the inverse laplace transform, (The Bromwich integral).
 
-On the other hand, we may be able to derive the spreading using the same methods we have used for the survival probability, i.e. eigenmode decomposition.
-
-By definition:
+If the diffusion can be described as $S(t)\approx 2Dt$, then:
 \begin{align}
-S(t) = \sum_n n^2 P_n -\left(\sum_n n P_n\right)^2 = \sum_n\sum_\lambda C_\lambda(0)e^{\lambda t}n^2 {V_\lambda}_n - (\sum_n\sum_\lambda C_\lambda(0)e^{\lambda t}n {V_\lambda}_n)^2
-\end{align}
-If we at start a specific site $i$, so that the only non zero probability is $P_i(0)=1$, the spreading will become:
-\begin{align}
-S_i(t) = \sum_n\sum_\lambda e^{\lambda t}n^2 {V_\lambda}_n{V_\lambda}_i - (\sum_n\sum_\lambda e^{\lambda t}n {V_\lambda}_n{V_\lambda}_i)^2
-\end{align}
-Averaging over the initial state $i$ we have:
-\begin{align}
-\overline{S}(t) = \frac{1}{N}\sum_i\sum_n\sum_\lambda e^{\lambda t}n^2 {V_\lambda}_n{V_\lambda}_i - \frac{1}{N}\sum_i(\sum_n\sum_\lambda e^{\lambda t}n {V_\lambda}_n{V_\lambda}_i)^2
+    g(\lambda) = \mathcal{L}^{-1}\left[\frac{1}{\sqrt{2Dt}}\right] = \frac{1}{\sqrt{2\pi D\lambda}} \\
+    \int_0^\lambda g(\lambda')d\lambda' = \sqrt{\frac{2\lambda}{\pi D}}
 \end{align}
 
 
