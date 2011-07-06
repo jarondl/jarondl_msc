@@ -89,6 +89,17 @@ def create_sparse_matrix(N, rates, b=1):
     sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
     return sp
 
+def create_sparse_matrix_periodic(N, rates, b = 1):
+    """  Creates a sparse matrix, but with periodic boundary conditions
+    """
+    
+    rerates = rates.reshape([b,N])
+    sp = spdiags(rerates, range(1, b + 1), N, N)  # create the above the diagonal lines
+    sp = sp + spdiags(rerates[::-1,::-1], range(N-b, N), N,N)
+    sp = sp + sp.transpose()
+    sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
+    return sp
+
 
 def rho(t, rho0, W, index=None):
     """ Calculate the probability vector at time t.

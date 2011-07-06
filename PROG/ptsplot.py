@@ -62,7 +62,7 @@ def diffusion_plot(ax,D,eigvals):
     """ """
     diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),100)
 #    diffusion = numpy.sqrt(2*pi*diffusion_space/(D))
-    diffusion = numpy.sqrt(pi*diffusion_space/(D))
+    diffusion = numpy.sqrt(diffusion_space/(D))
     ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{2\pi\lambda/D}}$")
     
 
@@ -70,17 +70,17 @@ def diffusion_plot(ax,D,eigvals):
 def alter_analytic_plot(ax, a,b,N):
     """
     """
-    space = numpy.linspace(1/N, 0.5, N // 2 - 1)
+    space = numpy.linspace(1/N, 0.5, N // 2 )  # removed -1
     alter = sparsedl.analytic_alter(a,b,space) / (N )
     alter.sort()
     ax.loglog(alter, space, linestyle='', marker='+',label = r"Analytic alternating model")
 
 
 def eigenvalues_multiple():
-    """
+    """  
     """
     fig,ax = plotdl.new_fig_ax()
-    N=200
+    N=400
     for b in (1,5,10):
         rates = numpy.ones(N*b)
         W = sparsedl.create_sparse_matrix(N,rates,b).todense()
@@ -93,12 +93,13 @@ def eigenvalues_multiple():
     plotdl.savefig(fig, "eigvals_ones")
     
     fig,ax = plotdl.new_fig_ax()
-    N=200
+    N=400
     for b in (1,5,10):
         rates = numpy.zeros(N*b)
         rates[::2] = 3
         rates[1::2] = 8
         W = sparsedl.create_sparse_matrix(N,rates,b).todense()
+        print(W)
         D = sparsedl.resnet(W, b)
         label = "b = {0}, D = {1}".format(b,D)
         eigvals = eigenvalues_cummulative(ax, W, label)
