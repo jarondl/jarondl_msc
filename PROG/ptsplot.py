@@ -4,7 +4,7 @@
 """
 from __future__ import division
 #from scipy.sparse import linalg as splinalg
-from numpy import linalg, random, pi, log10
+from numpy import linalg, random, pi, log10, sqrt
 #from argparse import ArgumentParser
 from matplotlib.colors import LogNorm
 
@@ -58,12 +58,12 @@ def eigenvalues_lognormal(ax, N=100, b=1):
     diffusion_plot(ax,D,eigvals)
     plotdl.set_all(ax, title="lognormal, $b={0}$, $D={1}$".format(b,D), legend_loc="upper left")
 
+
 def diffusion_plot(ax,D,eigvals):
     """ """
     diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),100)
-#    diffusion = numpy.sqrt(2*pi*diffusion_space/(D))
-    diffusion = numpy.sqrt(2*diffusion_space/(pi*D))
-    ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{2\lambda/(\pi D)}}$")
+    diffusion = numpy.sqrt(diffusion_space/(pi*D))
+    ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{\lambda/(\pi D)}}$")
     
 
 
@@ -71,9 +71,22 @@ def alter_analytic_plot(ax, a,b,N):
     """
     """
     space = numpy.linspace(1/N, 0.5, N // 2 )  # removed -1
-    alter = sparsedl.analytic_alter(a,b,space) / (N )
+    alter = sparsedl.analytic_alter(a,b,space) / (N ) 
     alter.sort()
     ax.loglog(alter, space, linestyle='', marker='+',label = r"Analytic alternating model")
+
+
+def survival_vs_resnet(ax, W, b):
+    """
+    """
+    eigvals = linalg.eigvalsh(W)
+    t = numpy.logspace(-4,4,100)
+    survs = sparsedl.surv(eigvals,t)
+    D = sparsedl.resnet(W, b)
+    theory = (sqrt(4*pi*D*t))**(-1)
+    ax.loglog(t, survs, label="surv")
+    ax.loglog(t, theory, label= "theory")
+    plotdl.set_all(ax, legend_loc="best")
 
 
 def eigenvalues_multiple():
@@ -99,7 +112,6 @@ def eigenvalues_multiple():
         rates[::2] = 3
         rates[1::2] = 8
         W = sparsedl.create_sparse_matrix(N,rates,b).todense()
-        print(W)
         D = sparsedl.resnet(W, b)
         label = "b = {0}, D = {1}".format(b,D)
         eigvals = eigenvalues_cummulative(ax, W, label)
@@ -120,8 +132,8 @@ def eigenvalues_multiple():
         diffusion_plot(ax,D,eigvals)
     plotdl.set_all(ax, title="Box distibution 3-8, N = {N}".format(N=N), legend_loc="best")
     plotdl.savefig(fig, "eigvals_box")
-    
-    
+
+
 
 
 
@@ -161,7 +173,6 @@ def eigenvalues_uniform(ax, N=100):
     #R=2.0
     semicircle = numpy.sqrt(numpy.ones(N)*R**2 - numpy.linspace(-R,R,N)**2)#/(2*pi)
     cum_semicircle = numpy.cumsum(semicircle) 
-    print(numpy.max(cum_semicircle))
     cum_semicircle = cum_semicircle / numpy.max(cum_semicircle)*N
     ax.plot(numpy.linspace(-R,R,N), semicircle, linestyle="--", label=r"Semi circle, with $R \approx {0:.2}$".format(R))
     ax.plot(numpy.linspace(-R,R,N), cum_semicircle,linestyle="--", label = r"Cummulative semicircle, with $R \approx {0:.2}$".format(R))
@@ -248,12 +259,9 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
     eigvals2 = eigvals2[1:] # The zero is problematic for the plots
     minvallog = numpy.log10(min(numpy.min(eigvals1),numpy.min( eigvals2)))
     maxvallog = numpy.log10(max(numpy.max(eigvals1),numpy.max( eigvals2)))
-    print(str(minvallog) +"   "+ str(maxvallog))
-    #theory_space = numpy.logspace(minvallog,maxvallog,N_points)
-    theory_space = numpy.logspace(-18,0.3,100)
-    theory = numpy.exp(-(pi/2)*(xi/rnn*numpy.log(theory_space/2))**2)
+    theory_space = numpy.logspace(0,2,100)
+    theory = 1 - numpy.exp(-(pi/2)*((xi/rnn)*numpy.log(theory_space/2))**2)
     print(theory)
-
     
     ax_eig.loglog(eigvals1, numpy.linspace(0,1,N_points-1), label="original", marker='.', linestyle='')
     ax_eig.loglog(eigvals2, numpy.linspace(0,1,N_points-1), label="permuted", marker='.', linestyle='')
@@ -287,7 +295,7 @@ def loop_torus_eig():
     fig.subplots_adjust(top=0.99, bottom=0.05)
     for i in range(1,6):
         random.seed(i)
-        torus_plots_eig(fig.add_subplot(5,1,i))
+        torus_plots_eig(fig.add_subplot(5,1,i), N_points=250)
     plotdl.savefig(fig, "8tori_eig", size_factor=(1,2))
 
     

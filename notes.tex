@@ -205,18 +205,15 @@ D = \left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1}
 \subsection{The relation between the spreading and the survival probability}
 We have two known quantities, one is the survival probability $\mathcal{P}(t)$, which is obtained by the use of eigenmode decomposition, and the other is the spreading $S(t)$, which was derived from the harmonic mean. The relation between them is not always clear. 
 
-Using the scaling hypothesis one can show that
+If $D$ exists, the long time decay of $\mathcal{P}(t)$, according to Alexander, (and consistent with the scaling hypothesis $\mathcal{P}(t)\sqrt{S(t)} \propto 1$) is:
 \begin{align}
-    \mathcal{P}(t)\sqrt{S(t)}=1 \\
-    \mathcal{P}(t) = \frac{1}{\sqrt{S(t)}} \\
-    g(\lambda) = \mathcal{L}^{-1}[\mathcal{P}(t)] = \mathcal{L}^{-1}\left[\frac{1}{\sqrt{S(t)}}\right]
+    \mathcal{P}(t) = \frac{1}{\sqrt{4\pi D t}} \\
+    g(\lambda) = \mathcal{L}^{-1}[\mathcal{P}(t)] = \mathcal{L}^{-1}\left[\frac{1}{\sqrt{4\pi D t}}\right]
 \end{align}
 Where $\mathcal{L}^{-1}$ is the inverse laplace transform, (The Bromwich integral).
-
-If the diffusion can be described as $S(t)\approx 2Dt$, then:
 \begin{align}
-    g(\lambda) = \mathcal{L}^{-1}\left[\frac{1}{\sqrt{2Dt}}\right] = \frac{1}{\sqrt{2\pi D\lambda}} \\
-    \int_0^\lambda g(\lambda')d\lambda' = \sqrt{\frac{2\lambda}{\pi D}}
+    g(\lambda) = \mathcal{L}^{-1}\left[\frac{1}{\sqrt{4\pi Dt}}\right] = \frac{1}{\sqrt{4\pi^2 D\lambda}} \\
+    \int_0^\lambda g(\lambda')d\lambda' = \sqrt{\frac{\lambda}{\pi^2 D}}
 \end{align}
 
 
@@ -407,7 +404,7 @@ P(\lambda)d\lambda= e^{-\frac{V_d}{2} \epsilon^d
 (-\rm{log}(-\lambda/2))^d} \]
 \end{fminipage}
 Or in our notation:
-\[ C(\lambda)= e^{-\frac{\Omega_d}{2d} (n\xi)^d \left( -\log(-\frac{\lambda}{2})\right)^d} \]
+\[ C(\lambda)= e^{-\frac{\Omega_d}{2d} (n\xi)^d \left( -\log(-\frac{\lambda}{2})\right)^d}  \]
 %%%%%%%%%%%%%%%%%%%%%%
 \section{S. Alexander's treatment}
 This is copied from Alexander's paper for easier referencing. 

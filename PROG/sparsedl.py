@@ -72,6 +72,7 @@ def resnet(W, b):
     return (N_high- N_low)/(v[N_high] - v[N_low])
 
 
+
 def analytic_alter(a,b,m):
     """ Returns the m's eigenvalue of the alternating a,b model. (m=m/N)
     """
@@ -172,7 +173,9 @@ def initial(nodes):
 
 
 def zero_sum(mat, tol=1E-12):
-    """  Change the diagonal elements of mat so that the sum of each row becomes 0
+    """  Set the diagonals of matrix, so the sum of each row eqauls zero, with
+            tolerance :param:`tol`. 
+        :returns: True if succeeded, or if matrix was already zero sum, False otherwise.
     """
     row_sum = mat.sum(axis=1)
     if (numpy.max(row_sum) < tol):
@@ -230,7 +233,8 @@ def sparsity(mat):
     return s,p#,q
 
 def rnn(mat):
-    """
+    """  Find the average NN distance. The algorithm is to add infinty to the
+         diagonal, and average over the minimum of each row.
     """
     N = mat.shape[0]
     infdiag = numpy.diagflat(numpy.ones(N)*numpy.inf)
