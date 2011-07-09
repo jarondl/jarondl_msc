@@ -281,7 +281,7 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
 
     xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
     ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
-    ax_eig.legend(loc='lower right')
+    ax_eig.legend(loc='upper left')
     ax_eig.set_xlim(xlim)
     ax_eig.set_ylim(ylim)
 
