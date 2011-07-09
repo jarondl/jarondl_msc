@@ -175,10 +175,10 @@ def initial(nodes):
 def zero_sum(mat, tol=1E-12):
     """  Set the diagonals of matrix, so the sum of each row eqauls zero, with
             tolerance :param:`tol`. 
-        :returns: True if succeeded, or if matrix was already zero sum, False otherwise.
+        :returns: True if matrix was already zero sum, False otherwise.
     """
     row_sum = mat.sum(axis=1)
-    if (numpy.max(row_sum) < tol):
+    if (numpy.max(numpy.abs(row_sum)) < tol):
         return True
     else:
         mat -= numpy.diagflat(row_sum)
@@ -239,6 +239,18 @@ def rnn(mat):
     N = mat.shape[0]
     infdiag = numpy.diagflat(numpy.ones(N)*numpy.inf)
     return numpy.mean((mat+infdiag).min(axis=0))
+
+def keep_only_nn(mat):
+    """  Keeps only the largest matrix values, while not touching the diagonal.
+    """
+    original_diagonal = mat.diagonal()
+    maximum_indices = (numpy.triu(mat,k=1))[:-1].argmax(axis=1)
+    #print("Max values : " , mat[maximum_indices, range(mat.shape[0]-1)] )
+    #print("Original diagonal : " ,original_diagonal) 
+    mask = numpy.zeros(mat.shape)
+    mask[maximum_indices, range(mat.shape[0]-1)] =1
+    
+    return (mask*mat) + (mask*mat).T +numpy.diagflat(original_diagonal)
 
 
 def surv(eigen_values, times):

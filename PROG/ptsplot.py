@@ -251,20 +251,33 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
     ex1 = numpy.exp(-dis/xi)
     sparsedl.zero_sum(ex1)
     ex2 = sparsedl.permute_tri(ex1)
-    eigvals1 = -linalg.eigvalsh(ex1)   # NOTE : minus sign
-    eigvals2 = -linalg.eigvalsh(ex2)
-    eigvals1.sort()
-    eigvals2.sort()
-    eigvals1 = eigvals1[1:] # The zero is problematic for the plots
-    eigvals2 = eigvals2[1:] # The zero is problematic for the plots
-    minvallog = numpy.log10(min(numpy.min(eigvals1),numpy.min( eigvals2)))
-    maxvallog = numpy.log10(max(numpy.max(eigvals1),numpy.max( eigvals2)))
+    ex3 = sparsedl.keep_only_nn(ex1)  # new addition, keep only nn
+    #print(ex3)
+    ex4 = numpy.copy(ex3)
+    print(sparsedl.zero_sum(ex4))
+    print(ex3.diagonal() - ex4.diagonal())
+    eigvals = []
+    for ex in (ex1,ex2,ex3,ex4):
+        eig = -linalg.eigvals(ex)
+        eig.sort()
+        eig = eig[1:] # The zero is problematic for the plots
+        eigvals += [eig]
+    diagvals = - ex1.diagonal()
+    diagvals.sort()
+    diagvals = diagvals[1:]
+    eigvals += [diagvals]  #### Only the diagonal values. Should resemble the others.
+    minvallog = numpy.log10(min(numpy.min(eigvals[0]),numpy.min( eigvals[1])))
+    maxvallog = numpy.log10(max(numpy.max(eigvals[0]),numpy.max( eigvals[1])))
     theory_space = numpy.logspace(0,2,100)
     theory = 1 - numpy.exp(-(pi/2)*((xi/rnn)*numpy.log(theory_space/2))**2)
-    print(theory)
     
-    ax_eig.loglog(eigvals1, numpy.linspace(0,1,N_points-1), label="original", marker='.', linestyle='')
-    ax_eig.loglog(eigvals2, numpy.linspace(0,1,N_points-1), label="permuted", marker='.', linestyle='')
+    print(eigvals[0].shape)
+    print(numpy.linspace(0,1,N_points-1).shape)
+    ax_eig.loglog(eigvals[0], numpy.linspace(0,1,N_points-1), label="original", marker='.', linestyle='')
+    ax_eig.loglog(eigvals[1], numpy.linspace(0,1,N_points-1), label="permuted", marker='.', linestyle='')
+    ax_eig.loglog(eigvals[2], numpy.linspace(0,1,N_points-1), label="only nn, same diagonal", marker='.', linestyle='')
+    ax_eig.loglog(eigvals[3], numpy.linspace(0,1,N_points-1), label="only nn, zero-summed", marker='.', linestyle='')
+    ax_eig.loglog(eigvals[4], numpy.linspace(0,1,N_points-1), label="Only the diagonals", marker='.', linestyle='')
 
     xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
     ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
