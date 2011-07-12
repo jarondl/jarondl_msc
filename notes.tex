@@ -185,7 +185,6 @@ Another interesting issue is that of dimensions higher than 1. Inherently, highe
         \item[The eigenvalue spectrum $P(\lambda)$ : ] How can we find the eigenvalue spectrum, besides direct diagonalization? Can we deduce its characteristics?
         \item[The diffusion $D$, and survival $\mathcal{P}$ : ] Knowing the eigenvalue spectrum we can find the survival probability. Can we obtain the diffusion coefficient directly from that? 
         \end{description}
-    \item Quasi 1D \ref{sec:quasi1d}. The system is one dimensional, but with non zero transition rates to sites beyond the nearest neighbors.
     \item VRH: Variable-Range-Hopping. 
     \item Resistor network calculation \ref{sec:res_net}. Could a resistor network calculation be the generalization of Alexander's solution for more than $1d$ (Quasi $1d$ or even $d>1$?
 
@@ -223,6 +222,18 @@ In the following sections we will describe several systems by defining their tra
 
 This class of systems has only nearest neighbor transitions, with non zero rates only on the first off diagonals. The rate distribution is wide, say $P(w) \sim \textrm{log wide}$.
 
+
+If the transition rates are $w_1,w_2,w_3,...$, the matrix looks like this:
+\begin{align}
+W = 
+\begin{pmatrix}
+-w_1  & w_1 \\
+w_1  & -w_1-w_2 &  w_2 \\
+ & w_2 & -w_2-w_3 &  w_3 \\
+& & w_3 & -w_3-w_4 & \; w_4 \\
+& & & \ddots &\ddots&\;\;\ddots
+\end{pmatrix}
+\end{align}
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{One dimension, beyond nearest neighbors}
 
@@ -244,13 +255,7 @@ This class of systems has the sites in a two (or more) dimensional system. An ad
 Contrary to all the previous systems, here the energy per site is not constant. We can \cite{Ambegaokar:1971} accomodate for this, by including Bolzmann's factor in the transition rates. Another consequnce is that the transition rates is not symmetric.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Rate equation}
-The equation governing the time development in a transition rate problem is:
-\begin{align}
-\frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t)
-\end{align}
-Where $P_n(t) \ge 0$ is the probability to be at site $n$ at time $t$ and $W$ is the transition matrix.
-
+\section{The relation between the survival probability and the eigenmode distribution}
 The matrix has eigenmodes $V_\lambda$ with eigenvalues $\lambda$. 
 We define a standard inner product :
 \begin{align}
@@ -262,15 +267,12 @@ P_n(t) = \sum_\lambda \inner{P(t)}{V_\lambda}{V_\lambda }_n = \sum_\lambda C_\la
 \end{align}
 Where we have defined $C_\lambda(t)\equiv \inner{P(t)}{V_\lambda}$.
 
-
 The rate equation becomes
 \begin{align}
 &\sum_\lambda \left( \frac{dC_\lambda(t)}{dt}{V_\lambda}_n - C_\lambda(t)\sum_m W_{nm}{V_\lambda}_n \right)= \sum_\lambda \left( \frac{dC_\lambda(t)}{dt} - \lambda C_\lambda(t)\right){V_\lambda}_n =0\\
 &C_\lambda(t) = C_\lambda(0)e^{\lambda t}\\
 &P_n(t) = \sum_\lambda C_\lambda(t) {V_\lambda}_n = \sum_\lambda  C_\lambda(0)e^{\lambda t} {V_\lambda}_n 
 \end{align}
-%%%%%%%%%%%%%
-\subsection{Survival probability}
 The survival probability is defined as the probability to remain in a specific site. If we begin with a probability vector whose only non zero element is $P_i(0)=1$, the corresponding $C_\lambda(0)$s will be:
 \begin{align}
 C_\lambda(0) = \inner{P(0)}{V_\lambda}= {V_\lambda}_ito
@@ -284,26 +286,11 @@ The mean survival probability will be:
 \mathcal{P}(t) = \sum_i \frac{1}{N} P_i(t)=\sum_i \frac{1}{N} \sum_\lambda ({V_\lambda}_i)^2 e^{\lambda t}  =\frac{1}{N}\sum_\lambda e^{\lambda t} = \int g(\lambda) e^{\lambda t}
 \end{align}
 Where $g(\lambda)$ stands for the density of eigenvalues. This last results means that the survival probability is the Laplace transform of the eigenvalue distribution.
-%%%%%%%%%%%%%%%
-\subsection{Spreading}
-The spreading of the probabilities is defined as the second moment of the locations:
-\begin{align}
-S(t) = \sum_n n^2 P_n -\left(\sum_n n P_n\right)^2
-\end{align}
-Alexander \cite{Alexander:1981:RMP} has shown that if the average of inverse transition rates is bounded ($\left(\frac{1}{N}\sum\frac{1}{w_n}\right) < \infty$) then the a spreading at $t\rightarrow \infty$ behaves like in an ordered chain:
-\begin{align}
-S(t) \approx 2Dt 
-\end{align}
-With a diffusion coefficient 
-\begin{align}\label{eq:diff}
-D = \left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1}
-\end{align}
+
 
 %%%%%%%%%%%%%%
-\subsection{The relation between the spreading and the survival probability}
-We have two known quantities, one is the survival probability $\mathcal{P}(t)$, which is obtained by the use of eigenmode decomposition, and the other is the spreading $S(t)$, which was derived from the harmonic mean. The relation between them is not always clear. 
-
-If $D$ exists, the long time decay of $\mathcal{P}(t)$, according to Alexander, (and consistent with the scaling hypothesis $\mathcal{P}(t)\sqrt{S(t)} \propto 1$) is:
+\section{The relation between the diffusion coefficient and the survival probability}
+If $D$ exists, the long time decay of $\mathcal{P}(t)$, according to Alexander et al \cite{Alexander:1981:RMP}, (and consistent with the scaling hypothesis $\mathcal{P}(t)\sqrt{S(t)} \propto 1$) is:
 \begin{align}
     \mathcal{P}(t) = \frac{1}{\sqrt{4\pi D t}} \\
     g(\lambda) = \mathcal{L}^{-1}[\mathcal{P}(t)] = \mathcal{L}^{-1}\left[\frac{1}{\sqrt{4\pi D t}}\right]
@@ -314,42 +301,8 @@ Where $\mathcal{L}^{-1}$ is the inverse laplace transform, (The Bromwich integra
     \int_0^\lambda g(\lambda')d\lambda' = \sqrt{\frac{\lambda}{\pi^2 D}}
 \end{align}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Eigenvalue distribution}
-In the supplementary material of \cite{Amir:2010:PRL} the moments of the distribution of the eigenvalues are found. 
-
-If we define $D$ as the diagonalized matrix $W$ as in $W=UDU^{-1}$, we have
-\begin{align}\label{eq:eig_moments}
-\sum_\lambda \lambda^k = Tr (D^k) = Tr(UDU^{-1}UDU^{-1}UDU^{-1}UDU^{-1}...) = Tr (W^k)
-\end{align}
-So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the distribution of the eigenvalues. If one can find the exponents of the matrix, he can find the moments of the distribution, and hopefully the distribution itself. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Models}\label{sec:our_model}
-The model consists of a chain of connected sites. Our point of interest are the transition rates between those sites. One can define a master equation:
-\begin{align}
-\frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t) \\
-W_{n,n-1} = W_{n-1,n} = w_n \\
-W_{nn} = -w_n - w_{n+1}
-\end{align}
-Where the $w_n$s are the individual transition rates.
-
-Less abstractly, the transition matrix is:
-\begin{align}
-W = 
-\begin{pmatrix}
--w_1  & w_1 \\
-w_1  & -w_1-w_2 &  w_2 \\
- & w_2 & -w_2-w_3 &  w_3 \\
-& & w_3 & -w_3-w_4 & \; w_4 \\
-& & & \ddots &\ddots&\;\;\ddots
-\end{pmatrix}
-\end{align}
-%%%%%%%
-\subsection{Log-normal}
-The different $w_n$s are chosen from a log-normal distribution (by a special construction, see section \ref{sec:matrix_construction})
-
+%%%%%%%%%%%%%%%%%55
+\section{The harmonic mean of log normal distribution}
 The harmonic mean of the log normal distribution with normal width $\sigma$ is given by:
 \begin{align}
 \left(\frac{1}{N}\sum\frac{1}{w_n}\right)&= \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{x^2}{2\sigma^2}} \frac{1}{e^x} dx  = \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{x^2}{2\sigma^2}-x} dx \\
@@ -360,8 +313,11 @@ The generalization for $\mu\neq 0$ is :
 \begin{align}
 \overline{w}_{harmonic} = e^{-\frac{\sigma^2}{2}+\mu}
 \end{align}
-%%%%%
-\subsection{Alternating transition rates}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Solving nearest neighbor alternating transition rates analyticaly}
+In this section I solve the alternating transition rates problem exactly.
+
 We can think of a model where every second transition is different, so the transitions are a,b,a,b,a,b... And the matrix is:
 \begin{align}
 W = 
@@ -406,27 +362,35 @@ We are interested in the eigenvalues close to zero, which means taking the plus 
 \begin{align}
 \lambda \approx -(a + b) + \sqrt{a^2+b^2+2ab(1-2k^2)} = -(a+b) +(a+b)\sqrt{1 - \frac{4abk^2}{(a+b)^2}}\approx \frac{2abk^2}{a+b}
 \end{align}
-The $k$'s are $k=\frac{2\pi}{N}m$ and therefore the cummulative eigenvalues are:
+The $k$'s are $k=\frac{2\pi}{N}m$, but with degeneracy of $2$ ($\pm k$ give the same result) and therefore the cummulative eigenvalues are:
 \begin{align}
-\sqrt{\lambda\frac{a+b}{2ab}}\frac{N}{2\pi}
+\sqrt{\lambda\frac{a+b}{2ab}}\frac{N}{\pi}
 \end{align}
 Or, using the diffusion coefficient we have found in \eqref{eq:D_alter}:
 \begin{align}
-\sqrt{\frac{\lambda}{D}}\frac{N}{2\pi}
+\sqrt{\frac{\lambda}{D}}\frac{N}{\pi}
 \end{align}
 
 Now that we have the eigenvalues, we may use equation \ref{eq:surv_eigenvalues} to find the survival probability as a function of time:
 \begin{align}
-\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t} 
+\mathcal{P}(t) =\int g(\lambda) e^{\lambda t} = \frac{1}{\sqrt{4 \pi D t}}
 \end{align}
 
-%%%%%%%%%%%
-\subsection{Log normal, but with less nodes}
-Perhaps a model similar to the original model but with a small finite number of nodes is easier to solve analytically.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The relation between the eigenvalue distribution and the transition matrix}
+In the supplementary material of \cite{Amir:2010:PRL} the moments of the distribution of the eigenvalues are found. 
+
+If we define $D$ as the diagonalized matrix $W$ as in $W=UDU^{-1}$, we have
+\begin{align}\label{eq:eig_moments}
+\sum_\lambda \lambda^k = Tr (D^k) = Tr(UDU^{-1}UDU^{-1}UDU^{-1}UDU^{-1}...) = Tr (W^k)
+\end{align}
+So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the distribution of the eigenvalues. If one can find the exponents of the matrix, he can find the moments of the distribution, and hopefully the distribution itself. 
 
 
 %%%%%%%%%%%%%%
-\subsection{Euclidean distance rates, or functions of it} \label{subsec:euclid}
+\section{Solving the spacing distribution for uniformally random points in d dimensions} \label{subsec:euclid}
 Random Euclidean distance matrices were widely researched \cite{Mezard:1999:NPB}, [insert more refs..]. Amir et al \cite{Amir:2010:PRL} have studied a model with the exponents of euclidean distances. They obtain the survival probability by finding the distribution of the eigenvalues, using the idea of \ref{eq:eig_moments}. 
 
 In one dimension, the transition rates are related to the distance between points distributed uniformly, with density $n$. The nearest neighbor distribution can be considered as the probability for no neighbor at $x'<x$, and a neighbor at $x<x'<x+dx$. Because the points are distributed uniformly, the probability for no neighbors at a small interval $\Delta x$ is :
@@ -463,8 +427,8 @@ average nearest-neighbor distance.
 In our notation (replacing $V_d$ with the more conventional $\frac{\Omega_d}{d}$ ), we can write it as:
 \[ f(r) = e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1} \]
 
-%%%
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Finding the transition rate distribution for $w= e^{-r/ \xi}$, with random points}
 We can change the random variable from $r$ to $w= e^{-r/ \xi}$, with $0<w<1$:
 \begin{align*}
     &|f_w(w)dw| = |f_r(r)dr| \\
@@ -503,12 +467,12 @@ P(\lambda)d\lambda= e^{-\frac{V_d}{2} \epsilon^d
 \end{fminipage}
 Or in our notation:
 \[ C(\lambda)= e^{-\frac{\Omega_d}{2d} (n\xi)^d \left( -\log(-\frac{\lambda}{2})\right)^d}  \]
+
 %%%%%%%%%%%%%%%%%%%%%%
-\section{S. Alexander's treatment}
-This is copied from Alexander's paper for easier referencing. 
+\section{The survival and spreading for the one dimensional problem}
+We present the survival and spreading for several cases of 1d systems, based on the work by \textcite{Alexander:1981:RMP}.
 
-
-S. Alexander provided a general solution for the problem \cite{Alexander:1981:RMP}. In his equation (2.4) three classes are classified:
+Three classes are classified:
 \begin{align} 
     &\mathrm{(a) : }\qquad (\overline{w^{-1}})^{-1} < \infty  \\
     &\mathrm{(b) : }\qquad P(w)\rightarrow \mathrm{const} \qquad\mathrm{as}\qquad w \rightarrow 0 \\
@@ -549,13 +513,8 @@ The interesting question regards the spreading. If the hypothesis $S(t) \propto 
 
 The definition of spreading Alexander uses \eqref{eq:spreading} ($\sum_n n^2 P_n(t)$) does match the average distance squared in 1D, but not in higher dimensions. The question is whether we can enumerate the sites in such a way that the methods presented so far apply.
 
-%%%%%%%%
-\section{Quasi 1D}\label{sec:quasi1d}
-A quasi $1d$ network is similar to a $1d$ network, but transitions beyond nearest neighbor are possible. The transition rate matrix $W$ will be a sparse, banded matrix. 
-
-We define the band width $b$ as the farthest off-diagonal containing non zero elements, or as the largest distance between neighbors with non zero transition rates. The sparisity of a matrix has no accepted definition, but there are some measures available.
-
-
+%%%%%%%%%%%%%%%
+\section{Defining sparsity?}
 Stotland's \cite{Stotland:2010:PRB}  sparsity characterization is:\\*
 %%%%%%%%%%%%%%%% minipage
 \begin{fminipage}{\textwidth}
@@ -630,7 +589,16 @@ To check ourselves, we have plotted the eigenvalue distribution for the lognoram
     \label{fig:eigenvalue_distribution_5_10}
 \end{figure}
 \begin{figure}
-    \includegraphics[clip, width=0.9\hsize]{eigvals_ones}
+    \includegraphics[clip, width=0.9\hsize]{eigvals_ones}\begin{align}
+W = 
+\begin{pmatrix}
+-w_1  & w_1 \\
+w_1  & -w_1-w_2 &  w_2 \\
+ & w_2 & -w_2-w_3 &  w_3 \\
+& & w_3 & -w_3-w_4 & \; w_4 \\
+& & & \ddots &\ddots&\;\;\ddots
+\end{pmatrix}
+\end{align}
 \end{figure}
 \begin{figure}
     \includegraphics[clip, width=0.9\hsize]{eigvals_alter}
@@ -651,6 +619,6 @@ Random points were chosen on a torus. A matrix with transition rates $W_{ij} = e
     \caption{averaging over 20 realizations, with 300 points}
 \end{figure}
 
-\bibliographystyle{plainnat}
+%\bibliographystyle{plainnat}
 \bibliography{jarondl}
 \end{document}
