@@ -7,6 +7,7 @@ from __future__ import division
 from numpy import linalg, random, pi, log10, sqrt
 #from argparse import ArgumentParser
 from matplotlib.colors import LogNorm
+from copy import deepcopy
 
 import numpy
 
@@ -285,6 +286,61 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
     ax_eig.set_xlim(xlim)
     ax_eig.set_ylim(ylim)
 
+def torus_avg(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=1,avg_N=10):
+    """
+    """
+    sum_of_eigvals = []
+    for i in range(avg_N):
+        torus = geometry.Torus(dimensions)
+        points = torus.generate_points(N_points)
+        n = N_points / (dimensions[0]*dimensions[1])
+        print("n = {0}, xi = {1}, n*xi = {2}, n*xi^2={3}".format(n,xi,n*xi,n*xi**2))
+        dis =  geometry.distance_matrix(points, torus.distance)
+        rnn = sparsedl.rnn(dis)
+        print("Rnn = "+str(rnn)+ " xi/rnn = "+str(xi/rnn))
+        
+        ex1 = numpy.exp(-dis/xi)
+        sparsedl.zero_sum(ex1)
+        ex2 = sparsedl.permute_tri(ex1)
+        ex3 = sparsedl.keep_only_nn(ex1)  # new addition, keep only nn
+        #print(ex3)
+        ex4 = numpy.copy(ex3)
+        print(sparsedl.zero_sum(ex4))
+        #print(ex3.diagonal() - ex4.diagonal())
+        eigvals = []
+        for ex in (ex1,ex2,ex3,ex4):
+            eig = -linalg.eigvals(ex)
+            eig.sort()
+            eig = eig[1:] # The zero is problematic for the plots
+            eigvals += [eig]
+        diagvals = - ex1.diagonal()
+        diagvals.sort()
+        diagvals = diagvals[1:]
+        eigvals += [diagvals]  #### Only the diagonal values. Should resemble the others.
+        minvallog = numpy.log10(min(numpy.min(eigvals[0]),numpy.min( eigvals[1])))
+        maxvallog = numpy.log10(max(numpy.max(eigvals[0]),numpy.max( eigvals[1])))
+        theory_space = numpy.logspace(0,2,100)
+        theory = 1 - numpy.exp(-(pi/2)*((xi/rnn)*numpy.log(theory_space/2))**2)
+        if sum_of_eigvals == [] :
+            sum_of_eigvals = deepcopy(eigvals)
+        else:
+            for i in range(5):
+                sum_of_eigvals[i] += eigvals[i]
+    avg_eigvals = [ values/ avg_N for values in sum_of_eigvals]
+    
+    ax_eig.loglog(avg_eigvals[0], numpy.linspace(0,1,N_points-1), label="original", marker='.', linestyle='')
+    ax_eig.loglog(avg_eigvals[1], numpy.linspace(0,1,N_points-1), label="permuted", marker='.', linestyle='')
+    ax_eig.loglog(avg_eigvals[2], numpy.linspace(0,1,N_points-1), label="only nn, same diagonal", marker='.', linestyle='')
+    ax_eig.loglog(avg_eigvals[3], numpy.linspace(0,1,N_points-1), label="only nn, zero-summed", marker='.', linestyle='')
+    ax_eig.loglog(avg_eigvals[4], numpy.linspace(0,1,N_points-1), label="Only the diagonals", marker='.', linestyle='')
+
+    xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
+    ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
+    ax_eig.legend(loc='upper left')
+    ax_eig.set_xlim(xlim)
+    ax_eig.set_ylim(ylim)
+    
+
 def clip(nparray,lower_bound):
     """  """
     return numpy.max((nparray > lower_bound).nonzero())
@@ -337,6 +393,8 @@ def torus_permutation_noax(N_points=100,dimensions=(10,10),filename="torus_perm"
 def all_plots(seed= 1, **kwargs):
     """  Create all of the figures. Please note that it might take some time.
     """
+    random.seed(seed)
+    plotdl.plot_to_file(torus_avg,"torus_avg", N_points=300,avg_N=20)
     random.seed(seed)
     plotdl.plot_to_file( p_lognormal_band, "P_lognormal_band")
     random.seed(seed)

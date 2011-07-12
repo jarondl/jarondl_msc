@@ -2,8 +2,7 @@
 %%%  notes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass[onecolumn,fleqn]{revtex4}
-
+\documentclass[onecolumn,fleqn,notitlepage,secnumarabic]{revtex4}
 
 % special 
 \usepackage{ifthen}
@@ -33,6 +32,7 @@
 \usepackage{natbib}
 \usepackage{fancybox}
 \usepackage{cmap}  % for making pdf mathmode searchable
+%\usepackage{sectsty}
 \usepackage[pdftitle={Notes by Jarondl}]{hyperref}  % for hyperlinks in biblio. should be called last?
 
 \graphicspath{{figures/},{PROG/figures/}}
@@ -42,6 +42,9 @@
 
 % NEW 
 \newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\varphiJ}{\bm{\varphi}}
+\newcommand{\thetaJ}{\bm{\theta}}
+%\renewcommand{\includegraphics}[2][0]{FIGURE}
 
 
 % math symbols I
@@ -72,28 +75,18 @@
 % equations
 \newcommand{\be}[1]{\begin{eqnarray}\ifthenelse{#1=-1}{\nonumber}{\ifthenelse{#1=0}{}{\label{e#1}}}}
 \newcommand{\ee}{\end{eqnarray}} 
-\newcommand{\beq}{\begin{eqnarray}}
-\newcommand{\eeq}{\end{eqnarray}} 
-
-
 
 % arrangement
+\newcommand{\hide}[1]{}
 \newcommand{\drawline}{\begin{picture}(500,1)\line(1,0){500}\end{picture}}
 \newcommand{\bitem}{$\bullet$ \ \ \ }
 \newcommand{\Cn}[1]{\begin{center} #1 \end{center}}
 \newcommand{\mpg}[2][1.0\hsize]{\begin{minipage}[b]{#1}{#2}\end{minipage}}
 \newcommand{\mpgt}[2][1.0\hsize]{\begin{minipage}[t]{#1}{#2}\end{minipage}}
 
-\newcommand{\rmrk}[1]{\textcolor{red}{#1}}
-\newcommand{\Rmrk}[1]{\textcolor{blue}{\LARGE\bf #1}}
-\newcommand{\hide}[1]{\rmrk{[hidden text]}}
+
 
 % extra math commands by jarondl
-%\newcommand{\aket}[1]{\left| #1 \right\rangle}
-%\newcommand{\abra}[1]{\left\langle #1 \right|}
-%\newcommand{\abraket}[2]{\left\langle #1 | #2   \right\rangle}
-%\newcommand{\sandwich}[3]{\left\langle #1 | #2 | #3  \right\rangle}
-%\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
 \newcommand{\inner}[2]{\left \langle #1 \middle| #2\right\rangle} % Inner product
 
 %fminipage using fancybox package
@@ -102,6 +95,58 @@
   {\end{minipage}\end{Sbox}\fbox{\TheSbox}}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Page setup
+\setlength{\parindent}{0cm} 
+\setlength{\parskip}{0.3cm} 
+
+%%% Sections. The original revtex goes like this:
+%\def\section{%
+%  \@startsection
+%    {section}%
+%    {1}%
+%    {\z@}%
+%    {0.8cm \@plus1ex \@minus .2ex}%
+%    {0.5cm}%
+%    {\normalfont\small\bfseries}%
+%}%
+%\def\subsection{%
+%  \@startsection
+%    {subsection}%
+%    {2}%
+%    {\z@}%
+%    {.8cm \@plus1ex \@minus .2ex}%
+%    {.5cm}%
+%    {\normalfont\small\bfseries}%
+%}%
+\makeatletter
+\def\section{%
+  \@startsection
+    {section}%
+    {1}%
+    {\z@}%
+    {0.8cm \@plus1ex \@minus .2ex}%
+    {0.5cm}%
+    {\Large\bf $=\!=\!=\!=\!=\!=\;$}%
+}%
+\def\subsection{%
+  \@startsection
+    {subsection}%
+    {2}%
+    {\z@}%
+    {.8cm \@plus1ex \@minus .2ex}%
+    {.5cm}%
+    {\normalfont\small\bfseries$=\!=\!=\!=\;$}%
+}%
+%\def\@hangfrom@section#1#2#3{\@hangfrom{#1#2}\MakeTextUppercase{#3}}%
+%\def\@hangfroms@section#1#2{#1\MakeTextUppercase{#2}}%
+\def\@hangfrom@section#1#2#3{\@hangfrom{#1#2}{#3}}%
+\def\@hangfroms@section#1#2{#1{#2}}%
+\makeatother
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
@@ -116,6 +161,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Introduction}
+
 The mathematical properties of random matrices may offer interesting insight for the physical properties. Such physical properties include the diffusion and the Survival Probability, while the mathematical properties include the sparsity of the matrix and its spectrum. 
 Phys. Rev. B, 28, 3799 (1983): 162 Q
 We shall concentrate on sparse matrices with log-normally distributed values. At first, we will work on a Nearest-Neighbor model as described in section \ref{sec:our_model}. One can think of this model as a one dimensional chain of sites, where transition rates between the sites vary log-normally.
@@ -144,6 +190,58 @@ Another interesting issue is that of dimensions higher than 1. Inherently, highe
     \item Resistor network calculation \ref{sec:res_net}. Could a resistor network calculation be the generalization of Alexander's solution for more than $1d$ (Quasi $1d$ or even $d>1$?
 
 \end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\section{definitions}\label{sec:definitions}
+\begin{description}
+    \item[Site probability - $P_n(t)$ : ] The probability to be in site $n$ at time $t$.
+    \item[Survival probability - $\mathcal{P}(t)$ : ] The probability to remain in the starting site. If the initial condition was $P_0(0)=1$, $P_i(0)=0 \textrm{  for  } i\neq 0$, then $\mathcal{P}(t)= P_0(t)$
+    \item[Spreading - $S(t)$ : ] The squared width (second moment) of the probability distribution. $S(t) \equiv \sum_n n^2 P_n -\left(\sum_n n P_n\right)^2$. 
+    \item[Diffusion coefficient - $D$ : ] The long term ratio of spreading to time, with $S(t) \sim 2Dt$.
+    \item[Rate matrix - $W_{ij}$ : ] A matrix describing the transition rates between sites. $W_{ij}$ is the rate of transitions from site $j$ to site $i$.
+    \item[Probability conserving matrix : ]\label{def:prob_conserv} A matrix where the sum of each and every row is zero - $\sum_i W_{ij} = 0 \qquad \forall j$. This relates to conserving probability if this matrix is a rate matrix.
+    \item[Banded matrix, with width $b$ : ] A matrix that has non zero values only within the first $b$ off diagonals, meaning $2b+1$ diagonals with values.
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Rate equation}
+
+The basic model is of a particle distributed among many sites. The particle moves from site to site, with a transition rate matrix $W_{ij}$. Then, the probability to find the particle at a given site $i$, denoted $P_i$, obeys the rate equation:
+\begin{align}
+\frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t)
+\end{align}
+We can generally describe a system by defining its transition matrix $W_{ij}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Systems of interest}
+
+In the following sections we will describe several systems by defining their transition matrices. Unless stated otherwise, all the matrices are symmetric and probability conserving as defined previously \ref{sec:definitions}. The rates are obviously non negative.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{One dimensional nearest neighbor systems with wide distributions}
+
+This class of systems has only nearest neighbor transitions, with non zero rates only on the first off diagonals. The rate distribution is wide, say $P(w) \sim \textrm{log wide}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{One dimension, beyond nearest neighbors}
+
+This system has non zero rates to sites beyond the nearest neighbors. The largest distance with non zero rates will define the matrix bandwidth $b$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Quasi one dimensional - strip}
+
+This system is two dimensional, but one of the dimensions is very small compared to the other. This matrix will also be banded.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Two or higher dimensions}
+
+This class of systems has the sites in a two (or more) dimensional system. An added diffuculty is that there is more then one coordinate, so that there are several ways to map this to 1d vectors.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Variable site energy}
+
+Contrary to all the previous systems, here the energy per site is not constant. We can \cite{Ambegaokar:1971} accomodate for this, by including Bolzmann's factor in the transition rates. Another consequnce is that the transition rates is not symmetric.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Rate equation}
@@ -522,6 +620,10 @@ To check ourselves, we have plotted the eigenvalue distribution for the lognoram
     \label{fig:eigenvalue_distribution}
 \end{figure}
 \begin{figure}
+    \includegraphics[clip,width=0.9\hsize]{eigvals_lognormal_normal}
+    \caption{Cummulative eigenvalue distribution, in a normal scale}
+\end{figure}
+\begin{figure}
     \subfloat[Lognoraml banded matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_b_5}}
     \\ \subfloat[Lognoraml banded matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_b_10}}
     \caption{Cummulative eigenvalue distribution.}
@@ -543,6 +645,10 @@ Random points were chosen on a torus. A matrix with transition rates $W_{ij} = e
     \includegraphics[clip]{8tori_eig}
     \caption{Cummulative eigenvalue distribution for points on a torus with $W_{ij} = e^{-r_{ij}}$, and with permuted matrices.}
     \label{fig:distance}
+\end{figure}
+\begin{figure}
+    \includegraphics[clip, width=0.9\hsize]{torus_avg}
+    \caption{averaging over 20 realizations, with 300 points}
 \end{figure}
 
 \bibliographystyle{plainnat}
