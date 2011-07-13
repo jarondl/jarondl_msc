@@ -74,7 +74,7 @@ def resnet(W, b):
 
 
 def analytic_alter(a,b,m):
-    """ Returns the m's eigenvalue of the alternating a,b model. (m=m/N)
+    """ Returns the m's eigenvalue of the alternating a,b model. (m=>m/N)
     """
     return (a+b) - sqrt(a**2+b**2+2*a*b*cos(2*pi*m))
     

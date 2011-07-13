@@ -5,7 +5,6 @@
 from __future__ import division
 #from scipy.sparse import linalg as splinalg
 from numpy import linalg, random, pi, log10, sqrt
-#from argparse import ArgumentParser
 from matplotlib.colors import LogNorm
 from copy import deepcopy
 
@@ -50,92 +49,79 @@ def spreading_plots(ax, N=100):
     plotdl.set_all(ax, xlabel = "$t$", ylabel = r"$S(t)$", title = r"Spreading", legend_loc="best")
 
 
-def eigenvalues_lognormal(ax, N=100, b=1):
+############################     Eigen value plot functions   ###############
+
+
+def eigenvalues_lognormal(ax, N=200, b_list=(1,)):
     """  Plot the eigenvalues for a lognormal sparse banded matrix
     """
-    W = sparsedl.lognormal_sparse_matrix(N,b).todense()
-    eigvals = eigenvalues_cummulative(ax,W, "Cummulative eigenvalues")  ## Plots the eigenvalues.    
-    D = sparsedl.resnet(W,b)
-    diffusion_plot(ax,D,eigvals)
-    plotdl.set_all(ax, title="lognormal, $b={0}$, $D={1}$".format(b,D), legend_loc="upper left")
+    for b in b_list:
+        W = sparsedl.lognormal_sparse_matrix(N,b).todense()
+        D = sparsedl.resnet(W,b)
+        eigvals = eigenvalues_cummulative(ax,W, label = "b = {0}, D = {1}".format(b,D))  ## Plots the eigenvalues.    
+
+        diffusion_plot(ax,D,eigvals)
+    plotdl.set_all(ax, title="lognormal, N={N}".format(N=N), legend_loc="upper left")
 
 
-def diffusion_plot(ax,D,eigvals):
-    """ """
-    diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),numpy.log10(numpy.max(eigvals)),100)
-    diffusion = numpy.sqrt(diffusion_space/(pi*D))
-    ax.loglog(diffusion_space,diffusion, linestyle='--',label = r"Square root, $\sqrt{{\lambda/(\pi D)}}$")
-    
-
-
-def alter_analytic_plot(ax, a,b,N):
+def eigenvalues_ones(ax, N=200, b_list=(1,)):
+    """  Plot the eigenvalues for a banded matrix with ones only, for each b.
     """
-    """
-    space = numpy.linspace(1/N, 0.5, N // 2 )  # removed -1
-    alter = sparsedl.analytic_alter(a,b,space) / (N ) 
-    alter.sort()
-    ax.loglog(alter, space, linestyle='', marker='+',label = r"Analytic alternating model")
-
-
-def survival_vs_resnet(ax, W, b):
-    """
-    """
-    eigvals = linalg.eigvalsh(W)
-    t = numpy.logspace(-4,4,100)
-    survs = sparsedl.surv(eigvals,t)
-    D = sparsedl.resnet(W, b)
-    theory = (sqrt(4*pi*D*t))**(-1)
-    ax.loglog(t, survs, label="surv")
-    ax.loglog(t, theory, label= "theory")
-    plotdl.set_all(ax, legend_loc="best")
-
-
-def eigenvalues_multiple():
-    """  
-    """
-    fig,ax = plotdl.new_fig_ax()
-    N=200
-    for b in (1,5,10):
+    for b in b_list:
         rates = numpy.ones(N*b)
-        W = sparsedl.create_sparse_matrix(N,rates,b).todense()
+        W = sparsedl.create_sparse_matrix(N, rates, b).todense()
+        if not sparsedl.zero_sum(W):
+            raise Exception("The W matrix is not zero summed. How did you make it?")
         D = sparsedl.resnet(W, b)
         label = "b = {0}, D = {1}".format(b,D)
         eigvals = eigenvalues_cummulative(ax, W, label)
-        diffusion_plot(ax,D,eigvals)
-
+        diffusion_plot(ax, D, eigvals)
+        #ones_analytic_plot(ax, N)
+    #ax.set_xscale('linear')
+    #ax.set_yscale('linear')
     plotdl.set_all(ax, title="All ones, N = {N}".format(N=N), legend_loc="best")
-    plotdl.savefig(fig, "eigvals_ones")
-    
-    fig,ax = plotdl.new_fig_ax()
-    N=200
-    for b in (1,5,10):
+
+
+def eigenvalues_alter(ax, N=200,w1 = 3, w2 = 8, b_list=(1,)):
+    """  Plot the eigenvalues for a banded matrix with alternating 3 and 8, for each b.
+    """
+    for b in b_list:
         rates = numpy.zeros(N*b)
         rates[::2] = 3
         rates[1::2] = 8
-        W = sparsedl.create_sparse_matrix(N,rates,b).todense()
+        W = sparsedl.create_sparse_matrix(N, rates, b).todense()
+        if not sparsedl.zero_sum(W):
+            raise Exception("The W matrix is not zero summed. How did you make it?")
         D = sparsedl.resnet(W, b)
         label = "b = {0}, D = {1}".format(b,D)
         eigvals = eigenvalues_cummulative(ax, W, label)
         diffusion_plot(ax, D, eigvals)
     alter_analytic_plot(ax, 3,8,N)
     plotdl.set_all(ax, title="Alternating 3-8, N = {N}".format(N=N), legend_loc="best")
-    plotdl.savefig(fig, "eigvals_alter")
-    
-    
-    fig,ax = plotdl.new_fig_ax()
-    N=200
-    for b in (1,5,10):
+
+
+def eigenvalues_box(ax, N=200,w1 = 3, w2 = 8, b_list=(1,)):
+    """  Plot the eigenvalues for a banded matrix with alternating 3 and 8, for each b.
+    """
+    for b in b_list:
         rates = numpy.random.uniform(3,8,N*b)
-        W = sparsedl.create_sparse_matrix(N,rates,b).todense()
+        W = sparsedl.create_sparse_matrix(N, rates, b).todense()
+        if not sparsedl.zero_sum(W):
+            raise Exception("The W matrix is not zero summed. How did you make it?")
         D = sparsedl.resnet(W, b)
         label = "b = {0}, D = {1}".format(b,D)
         eigvals = eigenvalues_cummulative(ax, W, label)
-        diffusion_plot(ax,D,eigvals)
+        diffusion_plot(ax, D, eigvals)
     plotdl.set_all(ax, title="Box distibution 3-8, N = {N}".format(N=N), legend_loc="best")
-    plotdl.savefig(fig, "eigvals_box")
 
 
-
+def eigenvalues_multiple(N=200):
+    """  
+    """
+    
+    plotdl.plot_to_file(eigenvalues_ones, "eigvals_ones",N=N, b_list=(1,5,10,20,30))
+    plotdl.plot_to_file(eigenvalues_alter, "eigvals_alter",N=N, b_list=(1,5,10,20,30))
+    plotdl.plot_to_file(eigenvalues_box, "eigvals_box",N=N, b_list=(1,5,10,20,30))
 
 
 def eigenvalues_exponent_minus1(ax, N=100, nxi=0.3):
@@ -150,17 +136,18 @@ def eigenvalues_exponent_minus1(ax, N=100, nxi=0.3):
     ax.loglog(eigvals, numpy.linspace(0,1,N-2),marker='.',linestyle='', label="Cummulative eigenvalues (divided by N)")
     ax.loglog(power_law_space, power_law, linestyle='--',label=r"\lambda^{n\xi}")
     plotdl.set_all(ax, title=r"$p(w) = w^{n\xi-1}n\xi $ Where $n\xi=$"+str(nxi), legend_loc="lower right")
-    
+
 
 def eigenvalues_cummulative(ax, matrix, label):
-    """ Plot the cummulative density of the eigenvalues
+    """  Plot the cummulative density of the eigenvalues
     """
     N = matrix.shape[0]
     eigvals = -linalg.eigvalsh(matrix)
     eigvals.sort()
-    eigvals = eigvals[1:]/N
-    ax.loglog(eigvals, numpy.linspace(0,1,N-1),marker=".",linestyle='', label=label)
+    eigvals = eigvals[1:]  ## The zero (or nearly zero) is a problematic eigenvalue.
+    ax.loglog(eigvals, numpy.linspace(1/N,1,N-1),marker=".",linestyle='', label=label)
     return eigvals
+
 
 def eigenvalues_uniform(ax, N=100):
     """  Plot the eigenvalues for a uniform random matrix
@@ -179,57 +166,51 @@ def eigenvalues_uniform(ax, N=100):
     ax.plot(numpy.linspace(-R,R,N), cum_semicircle,linestyle="--", label = r"Cummulative semicircle, with $R \approx {0:.2}$".format(R))
 
     plotdl.set_all(ax, title=r"uniform, $[-1,1]$", legend_loc="upper left")
+
     
-def eigenvalues_lognormal_normal_axis(ax, N=100, b=1):
+def eigenvalues_lognormal_normal_axis(ax, N=100, b_list=(1,)):
     """  Plot the eigenvalues for a lognormal sparse banded matrix
     """
-    eigenvalues_lognormal(ax, N=N, b=b)
+    eigenvalues_lognormal(ax, N=N, b_list=b_list)
     ax.set_xscale('linear')
     ax.set_yscale('linear')
+
     
+################ Plots related to the eigenvalue plots ############3
 
-def torus_plots_eig_surv(ax_eig,ax_surv, N_points=100,dimensions=(10,10),end_log_time=1):
-    """  Create A_ij for points on a torus via e^(-r_ij). 
 
-        :param N_points: Number of points, defaults to 100
-        :type N_points: int
-        :param dimensions: The 2d dimensions, as a 2-tuple. defaults to (10,10)
+def diffusion_plot(ax,D,eigvals):
+    """ """
+    max_log_value = numpy.log10(numpy.min((numpy.max(eigvals), D*pi**2)))
+    diffusion_space = numpy.logspace(numpy.log10(numpy.min(eigvals)),max_log_value,100)
+    diffusion = numpy.sqrt(diffusion_space/(D))/pi
+    ax.loglog(diffusion_space,diffusion, linestyle='--', label="")#label = r"Square root, $\sqrt{\frac{\lambda}{(D)}}/\pi$")
 
+
+def alter_analytic_plot(ax, a,b,N):
     """
+    """
+    space = numpy.linspace(1/N, 0.5, N // 2 )  # removed -1
+    alter = sparsedl.analytic_alter(a,b,space)
+    alter.sort()
+    ax.loglog(alter, space, linestyle='', marker='+',label = r"Analytic alternating model")
 
-    
-    torus = geometry.Torus(dimensions)
-    points = torus.generate_points(N_points)
-    dis =  geometry.distance_matrix(points, torus.distance)
-    
-    ex1 = numpy.exp(-dis)
-    sparsedl.zero_sum(ex1)
-    ex2 = sparsedl.permute_tri(ex1)
-    eigvals1 = -linalg.eigvalsh(ex1)
-    eigvals2 = -linalg.eigvalsh(ex2)
-    eigvals1.sort()
-    eigvals2.sort()
-    #eigvals1 = eigvals1[1:] # The zero is problematic for the plots
-    #eigvals2 = eigvals2[1:] # The zero is problematic for the plots
-    
-    ax_eig.plot(eigvals1, numpy.linspace(0,N_points,N_points), label="original")
-    ax_eig.plot(eigvals2, numpy.linspace(0,N_points,N_points), label="permuted")
-    ax_eig.legend(loc='lower right')
-    ax_eig.set_xlim(right=0)
 
-    
-    t= numpy.logspace(-2,end_log_time,100,endpoint=False)
-    survs1 = sparsedl.surv(-eigvals1,t)
-    survs2 = sparsedl.surv(-eigvals2,t)
-   
-    ax_surv.loglog(t, survs1)
-    ax_surv.loglog(t, survs2)
-    ax_surv.set_ylim(bottom=0.01)
-    
-    #plotdl.set_all(ax_torus_surv, xlabel = "$t$", ylabel = r"$\mathcal{P}(t)$", title = "Survival")
-    #ax_torus_eigvals.plot(eigvals,numpy.linspace(0,N_points,N_points))
-    #plotdl.set_all(ax_torus_eigvals, xlabel="Eigenvalue", title="Cummulative eigenvalue distribution")
+def ones_analytic_plot(ax, N):
+    """
+    """
+    space = numpy.linspace(1/N,1,N)
+    analytic1 = 2*(1-numpy.cos(pi*space))/ N
+    approx_space = numpy.linspace(0,1/N)
+    analytic2 = numpy.arccos(1-N*approx_space/2)/pi
+    approx = sqrt(N*approx_space)/pi
+    #analytic.sort()
+    ax.loglog(analytic1, space, linestyle='', marker='+',label = r"Analytic : $2(1-\cos(\pi n))$")
+    ax.plot(approx_space, analytic2, linestyle='--', label=r"Analytic, $\cos^{-1}$")
+    ax.plot(approx_space, approx, linestyle='', marker = '+', label=r"Approximation, $\sqrt{N*n}/\pi$")
 
+
+####################   Torus Plots ################
 
 def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=1):
     """  Create A_ij for points on a torus via e^(-r_ij). 
@@ -252,16 +233,16 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
     ex1 = numpy.exp(-dis/xi)
     sparsedl.zero_sum(ex1)
     ex2 = sparsedl.permute_tri(ex1)
+    sparsedl.zero_sum(ex2)
     ex3 = sparsedl.keep_only_nn(ex1)  # new addition, keep only nn
     #print(ex3)
     ex4 = numpy.copy(ex3)
     print(sparsedl.zero_sum(ex4))
-    print(ex3.diagonal() - ex4.diagonal())
+    #print(ex3.diagonal() - ex4.diagonal())
     eigvals = []
-    for ex in (ex1,ex2,ex3,ex4):
-        eig = -linalg.eigvals(ex)
-        eig.sort()
-        eig = eig[1:] # The zero is problematic for the plots
+    for ex, label in zip((ex1,ex2,ex3,ex4),("original, zero sum", "permuted, zero sum", "only nn, same diagonal",
+                                         "only nn, zero sum")):
+        eig = eigenvalues_cummulative(ax_eig, ex, label)
         eigvals += [eig]
     diagvals = - ex1.diagonal()
     diagvals.sort()
@@ -269,22 +250,18 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
     eigvals += [diagvals]  #### Only the diagonal values. Should resemble the others.
     minvallog = numpy.log10(min(numpy.min(eigvals[0]),numpy.min( eigvals[1])))
     maxvallog = numpy.log10(max(numpy.max(eigvals[0]),numpy.max( eigvals[1])))
-    theory_space = numpy.logspace(0,2,100)
-    theory = 1 - numpy.exp(-(pi/2)*((xi/rnn)*numpy.log(theory_space/2))**2)
+    theory_space = numpy.logspace(-2,2,100)
+    theory = numpy.exp(-(pi)*((xi*n)*numpy.log(theory_space/2))**2)
     
-    print(eigvals[0].shape)
-    print(numpy.linspace(0,1,N_points-1).shape)
-    ax_eig.loglog(eigvals[0], numpy.linspace(0,1,N_points-1), label="original", marker='.', linestyle='')
-    ax_eig.loglog(eigvals[1], numpy.linspace(0,1,N_points-1), label="permuted", marker='.', linestyle='')
-    ax_eig.loglog(eigvals[2], numpy.linspace(0,1,N_points-1), label="only nn, same diagonal", marker='.', linestyle='')
-    ax_eig.loglog(eigvals[3], numpy.linspace(0,1,N_points-1), label="only nn, zero-summed", marker='.', linestyle='')
-    ax_eig.loglog(eigvals[4], numpy.linspace(0,1,N_points-1), label="Only the diagonals", marker='.', linestyle='')
+
+    ax_eig.loglog(eigvals[4], numpy.linspace(1/N_points,1,N_points-1), label="Only the diagonals", marker='.', linestyle='')
 
     xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
     ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
     ax_eig.legend(loc='upper left')
     ax_eig.set_xlim(xlim)
     ax_eig.set_ylim(ylim)
+
 
 def torus_avg(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=1,avg_N=10):
     """
@@ -341,21 +318,6 @@ def torus_avg(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=1,avg_
     ax_eig.set_ylim(ylim)
     
 
-def clip(nparray,lower_bound):
-    """  """
-    return numpy.max((nparray > lower_bound).nonzero())
-    
-    
-def loop_torus_eig_surv():   
-    """ Create 5 pairs subplots of `torus_plots`
-    """
-    fig = plotdl.Figure()
-    fig.subplots_adjust(top=0.99, bottom=0.05)
-    for i in range(1,10,2):
-        random.seed(i)
-        torus_plots(fig.add_subplot(5,2,i), fig.add_subplot(5,2,i+1))
-    plotdl.savefig(fig, "8tori", size_factor=(1,2))
-
 
 def loop_torus_eig():   
     """ Create 5 pairs subplots of `torus_plots`
@@ -367,7 +329,6 @@ def loop_torus_eig():
         torus_plots_eig(fig.add_subplot(5,1,i), N_points=250)
     plotdl.savefig(fig, "8tori_eig", size_factor=(1,2))
 
-    
 
 def torus_permutation_noax(N_points=100,dimensions=(10,10),filename="torus_perm"):
     """
@@ -394,28 +355,26 @@ def all_plots(seed= 1, **kwargs):
     """  Create all of the figures. Please note that it might take some time.
     """
     random.seed(seed)
-    plotdl.plot_to_file(torus_avg,"torus_avg", N_points=300,avg_N=20)
-    random.seed(seed)
-    plotdl.plot_to_file( p_lognormal_band, "P_lognormal_band")
+    ax = plotdl.new_ax_for_file()
+    p_lognormal_band(ax)
+    plotdl.save_ax(ax, "P_lognormal_band")
+
     random.seed(seed)
     plotdl.plot_to_file( spreading_plots, "spreading")
+
+
     random.seed(seed)
     #plotdl.plot_2subplots_to_file( eigenvalues_lognormal, eigenvalues_uniform, "eigvals", suptitle="Cummulative eigenvalue distribution")
-    plotdl.plot_to_file(eigenvalues_lognormal, "eigvals_lognormal")
-    plotdl.plot_to_file(eigenvalues_lognormal, "eigvals_lognormal_b_5", b=5)
-    plotdl.plot_to_file(eigenvalues_lognormal, "eigvals_lognormal_b_10", b=10)
-    plotdl.plot_to_file(eigenvalues_lognormal_normal_axis, "eigvals_lognormal_normal", b=1)
+    plotdl.plot_to_file(eigenvalues_lognormal, "eigvals_lognormal", b_list=(1,5,10,20,40))
+    plotdl.plot_to_file(eigenvalues_lognormal_normal_axis, "eigvals_lognormal_normal", b_list=(1,5,10,20,40))
     plotdl.plot_to_file(eigenvalues_uniform,  "eigvals_uniform")
     random.seed(seed)
     loop_torus_eig( )
     random.seed(seed)
     eigenvalues_multiple()
-
+    #random.seed(seed)
+    #plotdl.plot_to_file(torus_avg,"torus_avg", N_points=300,avg_N=20)
     #plotdl.plot_twin_subplots_to_file( torus_permutation)
-
-
-    
-    
 
 
 if __name__ ==  "__main__":

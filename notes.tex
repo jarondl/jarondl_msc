@@ -29,7 +29,7 @@
 %by jarondl
 \usepackage{subfig}
 \usepackage{verbatim} % for multiline comments
-\usepackage{natbib}
+\usepackage{natbib} 
 \usepackage{fancybox}
 \usepackage{cmap}  % for making pdf mathmode searchable
 %\usepackage{sectsty}
@@ -120,6 +120,7 @@
 %    {.5cm}%
 %    {\normalfont\small\bfseries}%
 %}%
+%%%%%%% And our version goes like this:
 \makeatletter
 \def\section{%
   \@startsection
@@ -139,6 +140,7 @@
     {.5cm}%
     {\normalfont\small\bfseries$=\!=\!=\!=\;$}%
 }%
+%%%%%%%%%%  Here we deal with capitalization. The original revtex first, and then our version.
 %\def\@hangfrom@section#1#2#3{\@hangfrom{#1#2}\MakeTextUppercase{#3}}%
 %\def\@hangfroms@section#1#2{#1\MakeTextUppercase{#2}}%
 \def\@hangfrom@section#1#2#3{\@hangfrom{#1#2}{#3}}%
@@ -163,7 +165,7 @@
 \section{Introduction}
 
 The mathematical properties of random matrices may offer interesting insight for the physical properties. Such physical properties include the diffusion and the Survival Probability, while the mathematical properties include the sparsity of the matrix and its spectrum. 
-Phys. Rev. B, 28, 3799 (1983): 162 Q
+
 We shall concentrate on sparse matrices with log-normally distributed values. At first, we will work on a Nearest-Neighbor model as described in section \ref{sec:our_model}. One can think of this model as a one dimensional chain of sites, where transition rates between the sites vary log-normally.
 
 In regular diffusion there is a known relation between the survival probability and the diffusion. 
@@ -466,7 +468,10 @@ P(\lambda)d\lambda= e^{-\frac{V_d}{2} \epsilon^d
 (-\rm{log}(-\lambda/2))^d} \]
 \end{fminipage}
 Or in our notation:
-\[ C(\lambda)= e^{-\frac{\Omega_d}{2d} (n\xi)^d \left( -\log(-\frac{\lambda}{2})\right)^d}  \]
+\[ C(\lambda)= e^{-\frac{\Omega_d}{2d} (n\xi)^d \left( -\log(\frac{\lambda}{2})\right)^d}  \]
+In 2D that becomes:
+\[ C(\lambda) = e^{-\frac{\pi}{2} (n\xi)^2 \left(\log(\frac{\lambda}{2})\right)^2 } \]
+This cummulative distribution is the same as the lognormal probability distribution. 
 
 %%%%%%%%%%%%%%%%%%%%%%
 \section{The survival and spreading for the one dimensional problem}
@@ -564,6 +569,8 @@ So our calclutions become similar to those of resistors, whose rules are well kn
 
 The resistor network calculation has been used by Stotland to find the diffusion of quasi one dimensional systems.
 
+To solve the problem, we need to find the inverse of $\boldsymbol{W}^{-1}$. Such an inverse does not exist, because $\boldsymbol{W}$ always has a zero valued eigenmode.
+
 %%%%%%%%
 \section{Random Matrix Construction}\label{sec:matrix_construction}
 To create a $N\times N$ matrix, we have to choose $N-1$ random numbers. To make sure our distribution is truly log-normal, we create $N-1$ numbers forming a log-normal distribution, and permute them. In order to create the numbers, first we create a vector of $N-1$ linearly spaced values between $0$ and $1$. Then we apply element-wise the inverse cumulative distribution function of the normal distribution \ref{eq:invcdf}, using the inverse complementary error function. This gives a $N-1$ vector with normal distributed values. The vector is then scaled ($\tilde{y} = \mu+\sigma\cdot y$) to the appropriate width and mean [of the normal distribution]. The last step is to permute the vector, and apply an exponent element-wise.
@@ -583,22 +590,7 @@ To check ourselves, we have plotted the eigenvalue distribution for the lognoram
     \caption{Cummulative eigenvalue distribution, in a normal scale}
 \end{figure}
 \begin{figure}
-    \subfloat[Lognoraml banded matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_b_5}}
-    \\ \subfloat[Lognoraml banded matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_b_10}}
-    \caption{Cummulative eigenvalue distribution.}
-    \label{fig:eigenvalue_distribution_5_10}
-\end{figure}
-\begin{figure}
     \includegraphics[clip, width=0.9\hsize]{eigvals_ones}\begin{align}
-W = 
-\begin{pmatrix}
--w_1  & w_1 \\
-w_1  & -w_1-w_2 &  w_2 \\
- & w_2 & -w_2-w_3 &  w_3 \\
-& & w_3 & -w_3-w_4 & \; w_4 \\
-& & & \ddots &\ddots&\;\;\ddots
-\end{pmatrix}
-\end{align}
 \end{figure}
 \begin{figure}
     \includegraphics[clip, width=0.9\hsize]{eigvals_alter}

@@ -54,13 +54,19 @@ def plot_to_file(plot_func, filename, **kwargs):
     savefig(fig, filename)
     return fig
     
-def new_fig_ax():
+def new_ax_for_file():
     """
     """
     fig = Figure()
     ax = fig.add_subplot(1,1,1)
-    return fig,ax
+    return ax
 
+def new_ax_for_screen():
+    """
+    """
+    fig = pyplot.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    return ax
 
 def plot_2subplots_to_file(plot_func1, plot_func2, filename, suptitle=None, **kwargs):
     """
@@ -103,6 +109,12 @@ def plot_to_screen(plot_func, **kwargs):
         #pyplot.show()
     else:
         print("X is not available")
+
+
+def save_ax(ax, fname, **kwargs):
+    """  Save an axis to a pdf file.
+    """
+    savefig(ax.get_figure(),fname,**kwargs)
 
 
 def savefig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor=(1, 1)):
