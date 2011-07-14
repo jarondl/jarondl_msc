@@ -163,31 +163,31 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Introduction}
+This work concerns the survival probality and spreading (defined in section \ref{sec:definitions}) for systems with multiple intercontected sites. We will study which physical and mathematical properties are necessary to describe the system. The systems are defined using the transition rates between sites (and sometimes the energy of the sites). Some sort of random distribution is used for building th systems, either by randomly setting the transition rates themselves, or by randomly positioning them in space, obtaining the transition rates from their distances. These physical systems are mapped to matrices, which are then further studied. The matrices have random origin, but are not completely random, due to physical or topological considirations.
 
-The mathematical properties of random matrices may offer interesting insight for the physical properties. Such physical properties include the diffusion and the Survival Probability, while the mathematical properties include the sparsity of the matrix and its spectrum. 
-
-We shall concentrate on sparse matrices with log-normally distributed values. At first, we will work on a Nearest-Neighbor model as described in section \ref{sec:our_model}. One can think of this model as a one dimensional chain of sites, where transition rates between the sites vary log-normally.
 
 In regular diffusion there is a known relation between the survival probability and the diffusion. 
 A known solution for the diffusion constant in a nearest neighbor network is \cite{Derrida:1983}:
 \begin{align}
 D=\overline{w}_{harmonic} =(\overline{w^{-1}})^{-1}=\left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1}
 \end{align}
-A major problem with this solution is that not all distributions have a defined harmonic average. The question is whether those other distributions show regular diffusion, and if so, does the relation between survival probability and diffusion hold?
 
-
-Another interesting issue is that of dimensions higher than 1. Inherently, higher dimensions offer different transition rate distributions. What is not clear is whether the dimensionality of the system adds other complexities or not. 
-
-\section{Tentative working plan}
+%%%%%%%%%%%%
+\section{Questions}
 \begin{itemize}
-    \item A one dimensional system with nearest neighbor transitions only,($d=1$, $b=1$), with the transition rates distributed widely (e.g. $P(w) \sim \textrm{log wide}$). What are the survival $\mathcal{P}(t)$ and spreading $S(t)$, and how are they related?
-    \item $2d$ \ref{subsec:euclid}. Two dimensions, uniform points, but transition rates decay exponentialy (Amir's system). 
-        \begin{description}
-        \item[The matrix $W_{ij}$ versus the distribution $P(w)$ : ] The $W_{ij}$ matrix governs the diffusion and survival probability. The question is whether the information is stored in the distribution of transition rates ($P(w)$) alone, or is there more information needed? For example, we see that the geometry of the points does matter \ref{sec:geometry}.
-        \item[The eigenvalue spectrum $P(\lambda)$ : ] How can we find the eigenvalue spectrum, besides direct diagonalization? Can we deduce its characteristics?
-        \item[The diffusion $D$, and survival $\mathcal{P}$ : ] Knowing the eigenvalue spectrum we can find the survival probability. Can we obtain the diffusion coefficient directly from that? 
-        \end{description}
-    \item VRH: Variable-Range-Hopping. 
+    \item Is the known relation $\mathcal{P}(t) \sim \frac{1}{\sqrt{S(t)}}$ general, and does it hold for more than two dimensions?
+    \item Do geometrical and topological considirations matter, or is the rate distribution enough to find the survival and spreading?
+    \item Could a resistor network calculation be the generalization of Alexander's solution (see section {sec:alexander}) for more than $1d$ (Quasi $1d$ or even $d>1$?
+    \item What are the implications of different site energies, and does the VRH method address them correctly?
+\end{itemize}
+%%%%%%%%%%%%
+\section{Tentative working plan}
+Several systems of interest are defined in section \ref{sec:sys_of_interest}. With those systems 
+\begin{itemize}
+    \item Solve $1d$ nearest neighbors problems, analytically, numerically, and using the resistor network method. The numerical solution is based on finding the eigenvalues.
+    \item Solve quasi-1d and strip systems.
+    \item Analyze $2d$ systems, analytically and numerically.
+    \item VRH: Variable-Range-Hopping, insert different energies for the sites, 
     \item Resistor network calculation \ref{sec:res_net}. Could a resistor network calculation be the generalization of Alexander's solution for more than $1d$ (Quasi $1d$ or even $d>1$?
 
 \end{itemize}
@@ -215,7 +215,7 @@ The basic model is of a particle distributed among many sites. The particle move
 We can generally describe a system by defining its transition matrix $W_{ij}$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
-\section{Systems of interest}
+\section{Systems of interest}\label{sec:sys_of_interest}
 
 In the following sections we will describe several systems by defining their transition matrices. Unless stated otherwise, all the matrices are symmetric and probability conserving as defined previously \ref{sec:definitions}. The rates are obviously non negative.
 
@@ -249,12 +249,12 @@ This system is two dimensional, but one of the dimensions is very small compared
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Two or higher dimensions}
 
-This class of systems has the sites in a two (or more) dimensional system. An added diffuculty is that there is more then one coordinate, so that there are several ways to map this to 1d vectors.
+This class of systems has the sites in a two (or more) dimensional system. An added difficulty is that there is more then one coordinate, so that there are several ways to map this to 1d vectors.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Variable site energy}
 
-Contrary to all the previous systems, here the energy per site is not constant. We can \cite{Ambegaokar:1971} accomodate for this, by including Bolzmann's factor in the transition rates. Another consequnce is that the transition rates is not symmetric.
+Contrary to all the previous systems, here the energy per site is not constant. We can \cite{Ambegaokar:1971} accommodate for this, by including Boltzmann's factor in the transition rates. Another consequence is that the transition rates is not symmetric.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The relation between the survival probability and the eigenmode distribution}
@@ -297,7 +297,7 @@ If $D$ exists, the long time decay of $\mathcal{P}(t)$, according to Alexander e
     \mathcal{P}(t) = \frac{1}{\sqrt{4\pi D t}} \\
     g(\lambda) = \mathcal{L}^{-1}[\mathcal{P}(t)] = \mathcal{L}^{-1}\left[\frac{1}{\sqrt{4\pi D t}}\right]
 \end{align}
-Where $\mathcal{L}^{-1}$ is the inverse laplace transform, (The Bromwich integral).
+Where $\mathcal{L}^{-1}$ is the inverse Laplace transform, (The Bromwich integral).
 \begin{align}
     g(\lambda) = \mathcal{L}^{-1}\left[\frac{1}{\sqrt{4\pi Dt}}\right] = \frac{1}{\sqrt{4\pi^2 D\lambda}} \\
     \int_0^\lambda g(\lambda')d\lambda' = \sqrt{\frac{\lambda}{\pi^2 D}}
@@ -317,7 +317,7 @@ The generalization for $\mu\neq 0$ is :
 \end{align}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Solving nearest neighbor alternating transition rates analyticaly}
+\section{Solving nearest neighbor alternating transition rates analytically}
 In this section I solve the alternating transition rates problem exactly.
 
 We can think of a model where every second transition is different, so the transitions are a,b,a,b,a,b... And the matrix is:
@@ -344,7 +344,7 @@ b {V_\lambda}_{n+1} - (a+b+\lambda){V_\lambda}_{n+2} + a {V_\lambda}_{n+3} =0
 The solution with real eigenmodes is rather cumbersome, but the eigenvalues found by any set of orthogonal eigenmodes have to be the same. So for purely analytical reasons we find the eigenvalues with complex eigenmodes, although they have no meaning in our model.
 
 
-The eigenvalues for this matrix can be found analytically, using bloch's theorem. The solution for a periodic structure with a unit cell is ${V_\lambda}_n = e^{ikn} u(x)$ where $u(x)$ is a function with the periodicity of the unit cell. In our case this simplifies to:
+The eigenvalues for this matrix can be found analytically, using Bloch's theorem. The solution for a periodic structure with a unit cell is ${V_\lambda}_n = e^{ikn} u(x)$ where $u(x)$ is a function with the periodicity of the unit cell. In our case this simplifies to:
 \begin{align}
 {V_\lambda}_n = \begin{cases}e^{ikn} c_1 \; &, \text{n odd} \\ e^{ikn} c_2 \; &, \text{n even} \end{cases}
 \end{align}
@@ -364,7 +364,7 @@ We are interested in the eigenvalues close to zero, which means taking the plus 
 \begin{align}
 \lambda \approx -(a + b) + \sqrt{a^2+b^2+2ab(1-2k^2)} = -(a+b) +(a+b)\sqrt{1 - \frac{4abk^2}{(a+b)^2}}\approx \frac{2abk^2}{a+b}
 \end{align}
-The $k$'s are $k=\frac{2\pi}{N}m$, but with degeneracy of $2$ ($\pm k$ give the same result) and therefore the cummulative eigenvalues are:
+The $k$'s are $k=\frac{2\pi}{N}m$, but with degeneracy of $2$ ($\pm k$ give the same result) and therefore the cumulative eigenvalues are:
 \begin{align}
 \sqrt{\lambda\frac{a+b}{2ab}}\frac{N}{\pi}
 \end{align}
@@ -392,7 +392,7 @@ So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the dis
 
 
 %%%%%%%%%%%%%%
-\section{Solving the spacing distribution for uniformally random points in d dimensions} \label{subsec:euclid}
+\section{Solving the spacing distribution for uniformly random points in d dimensions} \label{subsec:euclid}
 Random Euclidean distance matrices were widely researched \cite{Mezard:1999:NPB}, [insert more refs..]. Amir et al \cite{Amir:2010:PRL} have studied a model with the exponents of euclidean distances. They obtain the survival probability by finding the distribution of the eigenvalues, using the idea of \ref{eq:eig_moments}. 
 
 In one dimension, the transition rates are related to the distance between points distributed uniformly, with density $n$. The nearest neighbor distribution can be considered as the probability for no neighbor at $x'<x$, and a neighbor at $x<x'<x+dx$. Because the points are distributed uniformly, the probability for no neighbors at a small interval $\Delta x$ is :
@@ -471,10 +471,10 @@ Or in our notation:
 \[ C(\lambda)= e^{-\frac{\Omega_d}{2d} (n\xi)^d \left( -\log(\frac{\lambda}{2})\right)^d}  \]
 In 2D that becomes:
 \[ C(\lambda) = e^{-\frac{\pi}{2} (n\xi)^2 \left(\log(\frac{\lambda}{2})\right)^2 } \]
-This cummulative distribution is the same as the lognormal probability distribution. 
+This cumulative distribution is the same as the log-normal probability distribution. 
 
 %%%%%%%%%%%%%%%%%%%%%%
-\section{The survival and spreading for the one dimensional problem}
+\section{The survival and spreading for the one dimensional problem}\label{sec:alexander}
 We present the survival and spreading for several cases of 1d systems, based on the work by \textcite{Alexander:1981:RMP}.
 
 Three classes are classified:
@@ -545,12 +545,12 @@ or equivalently if $p \ll 1$ or $q \ll 1$.
 %%
 \\
 
-The direct calculation for the survival in a log normal banded matrix is depicted in figure \ref{fig:p_lognormal_band}. For each value of $b$, a matrix (curently $100
-\times 100$) with a band b filled with lognormally distributed ($\sigma=1$) values was constructed. Then, the eigenvalues were numerically calculated, and then the laplace sum $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$.
+The direct calculation for the survival in a log normal banded matrix is depicted in figure \ref{fig:p_lognormal_band}. For each value of $b$, a matrix (currently $100
+\times 100$) with a band b filled with log-normally distributed ($\sigma=1$) values was constructed. Then, the eigenvalues were numerically calculated, and then the Laplace sum $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$.
 %%%
 \begin{figure}
 \includegraphics[clip, width=0.9\hsize]{P_lognormal_band.pdf}
-\caption{$\mathcal{P}(t)$ for constant sparisity, and variable bandwidth. The survival was calculated using $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$ \eqref{eq:surv_eigenvalues} with numerical diagonalization of the transition matrix.
+\caption{$\mathcal{P}(t)$ for constant sparsity, and variable bandwidth. The survival was calculated using $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$ \eqref{eq:surv_eigenvalues} with numerical diagonalization of the transition matrix.
 }
 \label{fig:p_lognormal_band}
 \end{figure}
@@ -565,7 +565,7 @@ Which resembles resistivity calculations:
 \[ \boldsymbol{V} = \boldsymbol{R}\boldsymbol{ I } \]
 If we define the inverse resistivity as:
 \[ \boldsymbol{R} = \boldsymbol{W}^{-1} \]
-So our calclutions become similar to those of resistors, whose rules are well known.
+So our calculations become similar to those of resistors, whose rules are well known.
 
 The resistor network calculation has been used by Stotland to find the diffusion of quasi one dimensional systems.
 
@@ -582,15 +582,15 @@ To check ourselves, we have plotted the eigenvalue distribution for the lognoram
 \begin{figure}
     \subfloat[Uniform distribution ]{\includegraphics[clip, width=0.9\hsize]{eigvals_uniform}}
     \\ \subfloat[Lognoraml nearest neighbor matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal}}
-    \caption{Cummulative eigenvalue distribution.}
+    \caption{Cumulative eigenvalue distribution.}
     \label{fig:eigenvalue_distribution}
 \end{figure}
 \begin{figure}
     \includegraphics[clip,width=0.9\hsize]{eigvals_lognormal_normal}
-    \caption{Cummulative eigenvalue distribution, in a normal scale}
+    \caption{Cumulative eigenvalue distribution, in a normal scale}
 \end{figure}
 \begin{figure}
-    \includegraphics[clip, width=0.9\hsize]{eigvals_ones}\begin{align}
+    \includegraphics[clip, width=0.9\hsize]{eigvals_ones}
 \end{figure}
 \begin{figure}
     \includegraphics[clip, width=0.9\hsize]{eigvals_alter}
@@ -603,13 +603,13 @@ To check ourselves, we have plotted the eigenvalue distribution for the lognoram
 Random points were chosen on a torus. A matrix with transition rates $W_{ij} = e^{-r_{ij}}$ was constructed, for which eigenvalues and survival were calculated. Later, the matrix elements were permuted, and the same calculations were made. \ref{fig:distance}. Since the matrix should remain symmetric, the elements distribution should stay the same, and the sum of each row should stay $0$, the permutation was done on the upper triangle of the matrix only. (And then transposed to the other triangle, and the diagonal set match the zero sum demand).
 \begin{figure}
     \includegraphics[clip]{8tori_eig}
-    \caption{Cummulative eigenvalue distribution for points on a torus with $W_{ij} = e^{-r_{ij}}$, and with permuted matrices.}
+    \caption{Cumulative eigenvalue distribution for points on a torus with $W_{ij} = e^{-r_{ij}}$, and with permuted matrices.}
     \label{fig:distance}
 \end{figure}
-\begin{figure}
-    \includegraphics[clip, width=0.9\hsize]{torus_avg}
-    \caption{averaging over 20 realizations, with 300 points}
-\end{figure}
+%\begin{figure}
+%    \includegraphics[clip, width=0.9\hsize]{torus_avg}
+%    \caption{averaging over 20 realizations, with 300 points}
+%\end{figure}
 
 %\bibliographystyle{plainnat}
 \bibliography{jarondl}

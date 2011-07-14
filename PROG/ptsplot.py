@@ -257,7 +257,7 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
     ax_eig.loglog(eigvals[4], numpy.linspace(1/N_points,1,N_points-1), label="Only the diagonals", marker='.', linestyle='')
 
     xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
-    ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
+    #ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
     ax_eig.legend(loc='upper left')
     ax_eig.set_xlim(xlim)
     ax_eig.set_ylim(ylim)
@@ -312,7 +312,7 @@ def torus_avg(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=1,avg_
     ax_eig.loglog(avg_eigvals[4], numpy.linspace(0,1,N_points-1), label="Only the diagonals", marker='.', linestyle='')
 
     xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
-    ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
+    #ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
     ax_eig.legend(loc='upper left')
     ax_eig.set_xlim(xlim)
     ax_eig.set_ylim(ylim)
@@ -373,8 +373,8 @@ def all_plots(seed= 1, **kwargs):
     random.seed(seed)
     eigenvalues_multiple()
     #random.seed(seed)
-    #plotdl.plot_to_file(torus_avg,"torus_avg", N_points=300,avg_N=20)
-    #plotdl.plot_twin_subplots_to_file( torus_permutation)
+    plotdl.plot_to_file(torus_avg,"torus_avg", N_points=300,avg_N=20)
+    plotdl.plot_twin_subplots_to_file( torus_permutation)
 
 
 if __name__ ==  "__main__":
