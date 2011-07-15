@@ -234,28 +234,22 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
     sparsedl.zero_sum(ex1)
     ex2 = sparsedl.permute_tri(ex1)
     sparsedl.zero_sum(ex2)
-    ex3 = sparsedl.keep_only_nn(ex1)  # new addition, keep only nn
-    #print(ex3)
-    ex4 = numpy.copy(ex3)
-    print(sparsedl.zero_sum(ex4))
-    #print(ex3.diagonal() - ex4.diagonal())
     eigvals = []
-    for ex, label in zip((ex1,ex2,ex3,ex4),("original, zero sum", "permuted, zero sum", "only nn, same diagonal",
-                                         "only nn, zero sum")):
-        eig = eigenvalues_cummulative(ax_eig, ex, label)
-        eigvals += [eig]
+    eigvals += [eigenvalues_cummulative(ax_eig, ex1, "Original values")]
+    eigvals += [eigenvalues_cummulative(ax_eig, ex2, "Permuted values")]
     diagvals = - ex1.diagonal()
     diagvals.sort()
     diagvals = diagvals[1:]
-    eigvals += [diagvals]  #### Only the diagonal values. Should resemble the others.
+#    diagvals2 = -ex2.diagonal()
+#    diagvals2.sort()
+#    diagvals2 = diagvals2[1:]
+#    eigvals += [diagvals]  #### Only the diagonal values. Should resemble the others.
     minvallog = numpy.log10(min(numpy.min(eigvals[0]),numpy.min( eigvals[1])))
     maxvallog = numpy.log10(max(numpy.max(eigvals[0]),numpy.max( eigvals[1])))
     theory_space = numpy.logspace(-2,2,100)
     theory = numpy.exp(-(pi)*((xi*n)*numpy.log(theory_space/2))**2)
-    
-
-    ax_eig.loglog(eigvals[4], numpy.linspace(1/N_points,1,N_points-1), label="Only the diagonals", marker='.', linestyle='')
-
+    #ax_eig.loglog(diagvals, numpy.linspace(1/N_points,1,N_points-1), label="Only the diagonals", marker='.', linestyle='')
+    #ax_eig.loglog(diagvals2, numpy.linspace(1/N_points,1,N_points-1), label="Only the diagonals of 2", marker='.', linestyle='')
     xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
     #ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
     ax_eig.legend(loc='upper left')
@@ -374,7 +368,7 @@ def all_plots(seed= 1, **kwargs):
     eigenvalues_multiple()
     #random.seed(seed)
     plotdl.plot_to_file(torus_avg,"torus_avg", N_points=300,avg_N=20)
-    plotdl.plot_twin_subplots_to_file( torus_permutation)
+    #plotdl.plot_twin_subplots_to_file( torus_permutation)
 
 
 if __name__ ==  "__main__":
