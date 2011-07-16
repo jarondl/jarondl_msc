@@ -50,7 +50,7 @@ def spreading_plots(ax, N=100):
 
 
 ############################     Eigen value plot functions   ###############
-
+## Here follows a set of of plot functions to plot eigenvalues. The first argument is always a matplotlib axes instance, to plot on.
 
 def eigenvalues_lognormal(ax, N=200, b_list=(1,)):
     """  Plot the eigenvalues for a lognormal sparse banded matrix
@@ -115,15 +115,6 @@ def eigenvalues_box(ax, N=200,w1 = 3, w2 = 8, b_list=(1,)):
     plotdl.set_all(ax, title="Box distibution 3-8, N = {N}".format(N=N), legend_loc="best")
 
 
-def eigenvalues_multiple(N=200):
-    """  
-    """
-    
-    plotdl.plot_to_file(eigenvalues_ones, "eigvals_ones",N=N, b_list=(1,5,10,20,30))
-    plotdl.plot_to_file(eigenvalues_alter, "eigvals_alter",N=N, b_list=(1,5,10,20,30))
-    plotdl.plot_to_file(eigenvalues_box, "eigvals_box",N=N, b_list=(1,5,10,20,30))
-
-
 def eigenvalues_exponent_minus1(ax, N=100, nxi=0.3):
     """  Plot the eigenvalues for a :math:p(w) = w^{n\\xi-1}n\\xi:
     """
@@ -138,15 +129,7 @@ def eigenvalues_exponent_minus1(ax, N=100, nxi=0.3):
     plotdl.set_all(ax, title=r"$p(w) = w^{n\xi-1}n\xi $ Where $n\xi=$"+str(nxi), legend_loc="lower right")
 
 
-def eigenvalues_cummulative(ax, matrix, label):
-    """  Plot the cummulative density of the eigenvalues
-    """
-    N = matrix.shape[0]
-    eigvals = -linalg.eigvalsh(matrix)
-    eigvals.sort()
-    eigvals = eigvals[1:]  ## The zero (or nearly zero) is a problematic eigenvalue.
-    ax.loglog(eigvals, numpy.linspace(1/N,1,N-1),marker=".",linestyle='', label=label)
-    return eigvals
+
 
 
 def eigenvalues_uniform(ax, N=100):
@@ -168,14 +151,24 @@ def eigenvalues_uniform(ax, N=100):
     plotdl.set_all(ax, title=r"uniform, $[-1,1]$", legend_loc="upper left")
 
     
-def eigenvalues_lognormal_normal_axis(ax, N=100, b_list=(1,)):
+def eigenvalues_lognormal_normal_axis(ax, N=200, b_list=(1,)):
     """  Plot the eigenvalues for a lognormal sparse banded matrix
     """
     eigenvalues_lognormal(ax, N=N, b_list=b_list)
     ax.set_xscale('linear')
     ax.set_yscale('linear')
 
-    
+
+###############  Meta-eigenvalue #########
+def eigenvalues_cummulative(ax, matrix, label):
+    """  Plot the cummulative density of the eigenvalues
+    """
+    N = matrix.shape[0]
+    eigvals = -linalg.eigvalsh(matrix)
+    eigvals.sort()
+    eigvals = eigvals[1:]  ## The zero (or nearly zero) is a problematic eigenvalue.
+    ax.loglog(eigvals, numpy.linspace(1/N,1,N-1),marker=".",linestyle='', label=label)
+    return eigvals
 ################ Plots related to the eigenvalue plots ############3
 
 
@@ -212,7 +205,7 @@ def ones_analytic_plot(ax, N):
 
 ####################   Torus Plots ################
 
-def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=1):
+def torus_plots_eig(ax_eig, N_points=200,dimensions=(10,10),xi = 1,end_log_time=1):
     """  Create A_ij for points on a torus via e^(-r_ij). 
 
         :param N_points: Number of points, defaults to 100
@@ -252,9 +245,11 @@ def torus_plots_eig(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=
     #ax_eig.loglog(diagvals2, numpy.linspace(1/N_points,1,N_points-1), label="Only the diagonals of 2", marker='.', linestyle='')
     xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
     #ax_eig.loglog(theory_space,theory,label="theory", linestyle="--")
-    ax_eig.legend(loc='upper left')
     ax_eig.set_xlim(xlim)
     ax_eig.set_ylim(ylim)
+    plotdl.set_all(ax_eig,title = r"Eigenvalues for torus points $w = e^{{-r/\xi}}$, N ={0}".format(N_points), legend_loc='upper left')
+    
+    return torus, points, dis
 
 
 def torus_avg(ax_eig, N_points=100,dimensions=(10,10),xi = 1,end_log_time=1,avg_N=10):
@@ -344,7 +339,28 @@ def torus_permutation_noax(N_points=100,dimensions=(10,10),filename="torus_perm"
     #fig.colorbar(mat2)
     plotdl.savefig(fig, filename)
 
+def torus_3_plots():
+    """
+    """
+    ax1 = plotdl.new_ax_for_file()
+    t, p, d = torus_plots_eig(ax1)
+    plotdl.save_ax(ax1, "torus")
+    ax1.set_yscale('linear')
+    ax1.set_xscale('linear')
+    plotdl.save_ax(ax1,"torus_linear")
+    
+    ax2 = plotdl.new_ax_for_file()
+    ax2.scatter(p[:,0],p[:,1])
+    plotdl.set_all(ax2, title="Scatter plot of the points")
+    plotdl.save_ax(ax2, "torus_scatter")
 
+    ax1.clear()
+    distance_from_0 = d[0,:]
+    N = distance_from_0.size
+    distance_from_0.sort()
+    ax1.plot(distance_from_0, numpy.linspace(0,1,N),marker=".",linestyle='')
+    plotdl.save_ax(ax1,"torus_distance")
+    
 def all_plots(seed= 1, **kwargs):
     """  Create all of the figures. Please note that it might take some time.
     """
@@ -352,22 +368,48 @@ def all_plots(seed= 1, **kwargs):
     ax = plotdl.new_ax_for_file()
     p_lognormal_band(ax)
     plotdl.save_ax(ax, "P_lognormal_band")
+    ax.clear()
 
+    random.seed(seed)
+    eigenvalues_lognormal(ax, b_list=(1,5,10,20,40))
+    plotdl.save_ax(ax, "eigvals_lognormal_loglog")
+    ax.set_xscale('linear')
+    ax.set_yscale('linear')
+    plotdl.save_ax(ax, "eigvals_lognormal_normal")
+    ax.clear()
+
+    eigenvalues_ones(ax, N=200, b_list=(1,5,10,20,30))
+    plotdl.save_ax(ax, "eigvals_ones_loglog")
+    ax.set_xscale('linear')
+    ax.set_yscale('linear')
+    plotdl.save_ax(ax, "eigvals_ones_normal")
+    ax.clear()
+    
+    eigenvalues_alter(ax, N=200, b_list=(1,5,10,20,30))
+    plotdl.save_ax(ax, "eigvals_alter_loglog")
+    ax.set_xscale('linear')
+    ax.set_yscale('linear')
+    plotdl.save_ax(ax, "eigvals_alter_normal")
+    ax.clear()
+
+    random.seed(seed)
+    eigenvalues_box(ax, N=200, b_list=(1,5,10,20,30))
+    plotdl.save_ax(ax,  "eigvals_box_loglog")
+    ax.set_xscale('linear')
+    ax.set_yscale('linear')
+    plotdl.save_ax(ax, "eigvals_box_normal")
+    ax.clear()
+    
     random.seed(seed)
     plotdl.plot_to_file( spreading_plots, "spreading")
-
-
-    random.seed(seed)
-    #plotdl.plot_2subplots_to_file( eigenvalues_lognormal, eigenvalues_uniform, "eigvals", suptitle="Cummulative eigenvalue distribution")
-    plotdl.plot_to_file(eigenvalues_lognormal, "eigvals_lognormal", b_list=(1,5,10,20,40))
-    plotdl.plot_to_file(eigenvalues_lognormal_normal_axis, "eigvals_lognormal_normal", b_list=(1,5,10,20,40))
     plotdl.plot_to_file(eigenvalues_uniform,  "eigvals_uniform")
     random.seed(seed)
-    loop_torus_eig( )
-    random.seed(seed)
-    eigenvalues_multiple()
+    #loop_torus_eig( )
+    torus_3_plots()
     #random.seed(seed)
-    plotdl.plot_to_file(torus_avg,"torus_avg", N_points=300,avg_N=20)
+    #eigenvalues_multiple()
+    #random.seed(seed)
+    #plotdl.plot_to_file(torus_avg,"torus_avg", N_points=300,avg_N=20)
     #plotdl.plot_twin_subplots_to_file( torus_permutation)
 
 

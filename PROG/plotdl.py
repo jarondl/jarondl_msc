@@ -11,6 +11,7 @@ from matplotlib.figure import Figure
 from matplotlib import rc
 try:
     from matplotlib import pyplot
+    from matplotlib.pyplot import draw
     X_AVAILABLE = True
     pyplot.ion()
 except RuntimeError:
