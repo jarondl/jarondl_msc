@@ -23,11 +23,11 @@ Indices and tables
 
 Modules:
 ========
-* :py:mod:`sparsedl`
-* :py:mod:`plotdl`
+* :mod:`sparsedl`
+* :mod:`plotdl`
 
 Making plots:
 =============
-* :py:mod:`ptsplot`
+* :mod:`ptsplot`
 
 

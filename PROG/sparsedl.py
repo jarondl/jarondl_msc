@@ -11,51 +11,79 @@ from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
 from scipy.sparse.linalg import spsolve
 
+##############  Create and manipulate matrices
 
-
-def NN_matrix(N, b=1, **kwargs):
-    """ Build a NxN matrix.
-
-    :param N: The size of the matrix
-    :param b: The Bandwidth
-    :param **kwargs: The rest of the keyworded arguments are passed
-                        to the lognormal function, so you can define
-                        sigma and mu.
-    :returns: a NxN numpy array
-
-    Uses :py:func:`lognormal_construction`.
-
+def create_sparse_matrix(N, rates, b=1):
+    """  Creates a sparse matrix out of the rates.
+    
+    :param N: The size of the matrix will be NxN
+    :param rates: Should be flat with N*b elements
+    :param b: The bandwidth
     """
-    matrix = numpy.zeros([N, N])
-    for diag in range(1, b + 1):
-        off_diag_values = lognormal_construction(N - diag, **kwargs)
-        matrix += (numpy.diagflat(off_diag_values, diag) +
-                   numpy.diagflat(off_diag_values, - diag))
-    diag_values = matrix.sum(axis=1)  # the diagonal contains minus the sum of rows
-    matrix -= numpy.diagflat(diag_values)
-    return matrix
-
-
-def lognormal_sparse_matrix(N, b=1, **kwargs):
-    """ Build a NxN matrix, using sparse matrices.
-
-    :param N: The size of the matrix
-    :param b: The Bandwidth
-    :param **kwargs: The rest of the keyworded arguments are passed
-                        to the lognormal function, so you can define
-                        sigma and mu.
-    :returns: a NxN numpy array
-
-    Uses :py:func:`lognormal_construction`.
-
-    """
-    diag_data = lognormal_construction(N * b, **kwargs).reshape([b, N])
-    sp = spdiags(diag_data, range(1, b + 1), N, N)  # create the above the diagonal lines
+    
+    sp = spdiags(rates.reshape([b,N]), range(1, b + 1), N, N)  # create the above the diagonal lines
     sp = sp + sp.transpose()
     sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
     return sp
-   
-  
+
+
+def create_sparse_matrix_periodic(N, rates, b = 1):
+    """  Creates a sparse matrix, but with periodic boundary conditions
+    """
+    
+    rerates = rates.reshape([b,N])
+    sp = spdiags(rerates, range(1, b + 1), N, N)  # create the above the diagonal lines
+    sp = sp + spdiags(rerates[::-1,::-1], range(N-b, N), N,N)
+    sp = sp + sp.transpose()
+    sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
+    return sp
+
+
+def permute_tri(mat):
+    """  Radnomly permutes the upper triangle of mat, and then transposes it to the lower triangle
+    """
+    upper_triangle_indices = numpy.triu(numpy.ones(mat.shape), k=1).nonzero()
+    new_upper = numpy.random.permutation(mat[upper_triangle_indices])
+    retval = numpy.zeros(mat.shape)
+    retval[upper_triangle_indices] = new_upper
+    retval += retval.T
+    zero_sum(retval)
+    return retval
+
+
+def zero_sum(mat, tol=1E-12):
+    """  Set the diagonals of matrix, so the sum of each row eqauls zero, with
+            tolerance :param:`tol`. 
+        
+        :param mat: A symmetric 2d array.
+        :type mat: numpy.ndarray
+        :param tol: the tolerance for non zero values.
+        :returns: True if matrix was already zero sum, False otherwise.
+    """
+    row_sum = mat.sum(axis=1)
+    if (numpy.max(numpy.abs(row_sum)) < tol):
+        return True
+    else:
+        mat -= numpy.diagflat(row_sum)
+        if numpy.max((mat.sum(axis=0), mat.sum(axis=1))) > tol:
+            raise Exception("Failed to make sums zero, is the matrix symmetric?")
+        return False
+
+#########  Create random arrays
+
+def lognormal_construction(N, mu=0, sigma=1, **kwargs):
+    """ Create log-normal distribution, with N elements, mu average and sigma width.
+        The construction begins with a lineary spaced vector from 0 to 1. Then
+        the inverse CDF of a normal distribution is applied to the vector.
+        The result is permutated, and its piecewise exponent is returned.
+    """
+    uniform = scipy.linspace(0.0001, 0.9999, N)
+    y = -scipy.sqrt(2) * special.erfcinv(2 * uniform)
+    rescaled_y = mu + (sigma * y)
+    perm_y = scipy.random.permutation(rescaled_y) 
+    return scipy.exp(perm_y)  # Element-wise exponentiation. 
+
+
 def resnet(W, b):
     """
     
@@ -73,33 +101,6 @@ def resnet(W, b):
 
 
 
-def analytic_alter(a,b,m):
-    """ Returns the m's eigenvalue of the alternating a,b model. (m=>m/N)
-    """
-    return (a+b) - sqrt(a**2+b**2+2*a*b*cos(2*pi*m))
-    
-
-def create_sparse_matrix(N, rates, b=1):
-    """  Creates a sparse matrix out of the rates. 
-
-    :param rates: Should be flat with N*b elements
-    """
-    
-    sp = spdiags(rates.reshape([b,N]), range(1, b + 1), N, N)  # create the above the diagonal lines
-    sp = sp + sp.transpose()
-    sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
-    return sp
-
-def create_sparse_matrix_periodic(N, rates, b = 1):
-    """  Creates a sparse matrix, but with periodic boundary conditions
-    """
-    
-    rerates = rates.reshape([b,N])
-    sp = spdiags(rerates, range(1, b + 1), N, N)  # create the above the diagonal lines
-    sp = sp + spdiags(rerates[::-1,::-1], range(N-b, N), N,N)
-    sp = sp + sp.transpose()
-    sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
-    return sp
 
 
 def rho(t, rho0, W, index=None):
@@ -133,6 +134,13 @@ def cvfit(f, xdata, ydata, p0):
     """
     res = optimize.leastsq(_general_function, p0, args=(xdata, ydata, f))
     return res[0]
+
+
+def analytic_alter(a,b,m):
+    """ Returns the m's eigenvalue of the alternating a,b model. (m=>m/N)
+    """
+    return (a+b) - sqrt(a**2+b**2+2*a*b*cos(2*pi*m))
+    
 
 
 def strexp(x, a, b):
@@ -172,54 +180,6 @@ def initial(nodes):
     return rho0, A, xcoord
 
 
-def zero_sum(mat, tol=1E-12):
-    """  Set the diagonals of matrix, so the sum of each row eqauls zero, with
-            tolerance :param:`tol`. 
-        :returns: True if matrix was already zero sum, False otherwise.
-    """
-    row_sum = mat.sum(axis=1)
-    if (numpy.max(numpy.abs(row_sum)) < tol):
-        return True
-    else:
-        mat -= numpy.diagflat(row_sum)
-        if numpy.max((mat.sum(axis=0), mat.sum(axis=1))) > tol:
-            raise Exception("Failed to make sums zero, is the matrix symmetric?")
-        return False
-
-
-def lognormal_construction(N, mu=0, sigma=1, **kwargs):
-    """ Create log-normal distribution, with N elements, mu average and sigma width.
-        The construction begins with a lineary spaced vector from 0 to 1. Then
-          the inverse CDF of a normal distribution is applied to the vector.
-        The result is permutated, and its piecewise exponent is returned."""
-    uniform = scipy.linspace(0.0001, 0.9999, N)
-    y = -scipy.sqrt(2) * special.erfcinv(2 * uniform)
-    rescaled_y = mu + (sigma * y)
-    perm_y = scipy.random.permutation(rescaled_y) 
-    return scipy.exp(perm_y)  # Element-wise exponentiation. 
-
-
-def exponent_minus1(N,nxi = 0.5):
-    """ """
-    uniform = numpy.linspace(0.0001,0.9999, N)
-    y = uniform**(1/nxi)
-    perm_y = numpy.random.permutation(y)
-    sp = spdiags(perm_y, 1, N, N)  # create the above the diagonal line
-    sp = sp + sp.transpose()
-    sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
-    return sp
-    
-
-def permute_tri(mat):
-    """  Radnomly permutes the upper triangle of mat, and then transposes it to the lower triangle
-    """
-    upper_triangle_indices = numpy.triu(numpy.ones(mat.shape), k=1).nonzero()
-    new_upper = numpy.random.permutation(mat[upper_triangle_indices])
-    retval = numpy.zeros(mat.shape)
-    retval[upper_triangle_indices] = new_upper
-    retval += retval.T
-    zero_sum(retval)
-    return retval
 
 def sparsity(mat):
     """  Calculate the sparsity parameters of a matrix
@@ -239,18 +199,6 @@ def rnn(mat):
     N = mat.shape[0]
     infdiag = numpy.diagflat(numpy.ones(N)*numpy.inf)
     return numpy.mean((mat+infdiag).min(axis=0))
-
-def keep_only_nn(mat):
-    """  Keeps only the largest matrix values, while not touching the diagonal.
-    """
-    original_diagonal = mat.diagonal()
-    maximum_indices = (numpy.triu(mat,k=1))[:-1].argmax(axis=1)
-    #print("Max values : " , mat[maximum_indices, range(mat.shape[0]-1)] )
-    #print("Original diagonal : " ,original_diagonal) 
-    mask = numpy.zeros(mat.shape)
-    mask[maximum_indices, range(mat.shape[0]-1)] =1
-    
-    return (mask*mat) + (mask*mat).T +numpy.diagflat(original_diagonal)
 
 
 def surv(eigen_values, times):

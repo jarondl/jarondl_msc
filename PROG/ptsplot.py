@@ -19,20 +19,20 @@ def p_lognormal_band(ax, N=100, b=1, **kwargs):
     """ Plot p (survival) as a function of time, with lognormal banded transition matrices.
         The sparsitiy is constant (set via the lognormal sigma), 
         while b assumes values between 1 and 10.
-        ARGUMENT LIST:
-            **kwargs, arguments passed on to create the banded lognormal matrix. (N,b, sigma,mu)
+
+        :param \*\*kwargs: arguments passed on to create the banded lognormal matrix. (N,b, sigma,mu)
     """
-    
-    t= sparsedl.numpy.logspace(-1,1,100,endpoint=False)
+    t = sparsedl.numpy.logspace(-1,1,100,endpoint=False)
     for b in range(1,10):
-        s     = sparsedl.lognormal_sparse_matrix(N,b,**kwargs).todense()
+        rates = sparsedl.lognormal_construction(N * b, **kwargs)
+        s     = sparsedl.create_sparse_matrix(N, rates ,b).todense()
         vals  = linalg.eigvalsh(s)
         survs = sparsedl.surv(vals,t)
         ax.loglog(t,survs,label= r"$b = {0}$".format(b))
     plotdl.set_all(ax, xlabel = "$t$", ylabel = r"$\mathcal{P}(t)$", title = "Survival", legend_loc="best")
 
 
-def spreading_plots(ax, N=100):
+def spreading_plots(ax, N=100, **kwargs):
     """
     """
     t= sparsedl.numpy.linspace(0,4,100)
@@ -41,7 +41,8 @@ def spreading_plots(ax, N=100):
     xcoord = numpy.linspace(-N,N,N)
     
     for b in range(1,10):
-        W = sparsedl.lognormal_sparse_matrix(N,b).todense()
+        rates = sparsedl.lognormal_construction(N * b, **kwargs)
+        W     = sparsedl.create_sparse_matrix(N, rates ,b).todense()
         S = []
         for time in t:
             S += [sparsedl.var(xcoord, sparsedl.rho(time, rho0, W))]
@@ -52,11 +53,12 @@ def spreading_plots(ax, N=100):
 ############################     Eigen value plot functions   ###############
 ## Here follows a set of of plot functions to plot eigenvalues. The first argument is always a matplotlib axes instance, to plot on.
 
-def eigenvalues_lognormal(ax, N=200, b_list=(1,)):
+def eigenvalues_lognormal(ax, N=200, b_list=(1,), **kwargs):
     """  Plot the eigenvalues for a lognormal sparse banded matrix
     """
     for b in b_list:
-        W = sparsedl.lognormal_sparse_matrix(N,b).todense()
+        rates = sparsedl.lognormal_construction(N * b, **kwargs)
+        W     = sparsedl.create_sparse_matrix(N, rates ,b).todense()
         D = sparsedl.resnet(W,b)
         eigvals = eigenvalues_cummulative(ax,W, label = "b = {0}, D = {1}".format(b,D))  ## Plots the eigenvalues.    
 
@@ -360,7 +362,8 @@ def torus_3_plots():
     distance_from_0.sort()
     ax1.plot(distance_from_0, numpy.linspace(0,1,N),marker=".",linestyle='')
     plotdl.save_ax(ax1,"torus_distance")
-    
+
+
 def all_plots(seed= 1, **kwargs):
     """  Create all of the figures. Please note that it might take some time.
     """
@@ -401,16 +404,15 @@ def all_plots(seed= 1, **kwargs):
     ax.clear()
     
     random.seed(seed)
-    plotdl.plot_to_file( spreading_plots, "spreading")
-    plotdl.plot_to_file(eigenvalues_uniform,  "eigvals_uniform")
+    spreading_plots(ax)
+    plotdl.save_ax(ax, "spreading")
+    ax.clear()
+
+    eigenvalues_uniform(ax)
+    plotdl.save_ax(ax, "eigvals_uniform")
     random.seed(seed)
-    #loop_torus_eig( )
     torus_3_plots()
-    #random.seed(seed)
-    #eigenvalues_multiple()
-    #random.seed(seed)
-    #plotdl.plot_to_file(torus_avg,"torus_avg", N_points=300,avg_N=20)
-    #plotdl.plot_twin_subplots_to_file( torus_permutation)
+
 
 
 if __name__ ==  "__main__":
