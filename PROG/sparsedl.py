@@ -15,13 +15,13 @@ from scipy.sparse.linalg import spsolve
 
 def create_sparse_matrix(N, rates, b=1):
     """  Creates a sparse matrix out of the rates.
-    
+
     :param N: The size of the matrix will be NxN
     :param rates: Should be flat with N*b elements
     :param b: The bandwidth
     """
-    
-    sp = spdiags(rates.reshape([b,N]), range(1, b + 1), N, N)  # create the above the diagonal lines
+
+    sp = spdiags(rates.reshape([b, N]), range(1, b + 1), N, N)  # create the above the diagonal lines
     sp = sp + sp.transpose()
     sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
     return sp
@@ -30,10 +30,10 @@ def create_sparse_matrix(N, rates, b=1):
 def create_sparse_matrix_periodic(N, rates, b = 1):
     """  Creates a sparse matrix, but with periodic boundary conditions
     """
-    
-    rerates = rates.reshape([b,N])
+
+    rerates = rates.reshape([b, N])
     sp = spdiags(rerates, range(1, b + 1), N, N)  # create the above the diagonal lines
-    sp = sp + spdiags(rerates[::-1,::-1], range(N-b, N), N,N)
+    sp = sp + spdiags(rerates[::-1, ::-1], range(N-b, N), N, N)
     sp = sp + sp.transpose()
     sp = sp - spdiags(sp.sum(axis=0), 0, N, N)
     return sp
@@ -53,8 +53,8 @@ def permute_tri(mat):
 
 def zero_sum(mat, tol=1E-12):
     """  Set the diagonals of matrix, so the sum of each row eqauls zero, with
-            tolerance :param:`tol`. 
-        
+            tolerance :param:`tol`.
+
         :param mat: A symmetric 2d array.
         :type mat: numpy.ndarray
         :param tol: the tolerance for non zero values.
@@ -80,21 +80,21 @@ def lognormal_construction(N, mu=0, sigma=1, **kwargs):
     uniform = scipy.linspace(0.0001, 0.9999, N)
     y = -scipy.sqrt(2) * special.erfcinv(2 * uniform)
     rescaled_y = mu + (sigma * y)
-    perm_y = scipy.random.permutation(rescaled_y) 
-    return scipy.exp(perm_y)  # Element-wise exponentiation. 
+    perm_y = scipy.random.permutation(rescaled_y)
+    return scipy.exp(perm_y)  # Element-wise exponentiation.
 
 
 def resnet(W, b):
     """
-    
+
     """
     N = W.shape[0]
     N_high = N-(b+1)
     N_low = b
     I = numpy.zeros(N)
-    I[[N_low,N_high]] =  [1,-1]
-    #v = spsolve(W,I)
-    #v= linalg.solve(W.todense(),I)
+    I[[N_low, N_high]] =  [1, -1]
+    #v = spsolve(W, I)
+    #v= linalg.solve(W.todense(), I)
     invW = linalg.pinv(W)
     v = numpy.dot(invW, I)
     return (N_high- N_low)/(v[N_high] - v[N_low])
@@ -129,24 +129,24 @@ def cvfit(f, xdata, ydata, p0):
     :param f: A function that accepts 1+len(p0) arguments, first one will be x
     :param xdata: X values
     :param ydata: Y values
-    :param p0: The initial guess, put [1,1,1,..] if uncertain.
+    :param p0: The initial guess, put [1, 1, 1, ..] if uncertain.
 
     """
     res = optimize.leastsq(_general_function, p0, args=(xdata, ydata, f))
     return res[0]
 
 
-def analytic_alter(a,b,m):
-    """ Returns the m's eigenvalue of the alternating a,b model. (m=>m/N)
+def analytic_alter(a, b, m):
+    """ Returns the m's eigenvalue of the alternating a, b model. (m=>m/N)
     """
     return (a+b) - sqrt(a**2+b**2+2*a*b*cos(2*pi*m))
-    
+
 
 
 def strexp(x, a, b):
     """ The streched exponential function, :math:`e^{-(\\frac{x}{a})^b}`
 
-    >>> strexp(1,2,2)
+    >>> strexp(1, 2, 2)
     0.77880078307140488
     """
     return numpy.exp(-(x / a) ** b)
@@ -162,7 +162,7 @@ def mean(x, y):
 def var(x, y):
     """  Returns the Variance of a ditribution with x as location and y as value
 
-    >>> sparsedl.var([1,2,3,4,5,6],[1,1,2,1,1,2])
+    >>> sparsedl.var([1, 2, 3, 4, 5, 6], [1, 1, 2, 1, 1, 2])
     2.9375
     """
     xarr = numpy.array(x)  # Make sure we have numpy arrays and not lists
@@ -190,7 +190,7 @@ def sparsity(mat):
     s = avg**2 / sqr_avg
     p = ((mat > avg).sum())/mat.size
     #q = mat.flatten()[mat.size//2] / avg
-    return s,p#,q
+    return s, p#, q
 
 def rnn(mat):
     """  Find the average NN distance. The algorithm is to add infinty to the
