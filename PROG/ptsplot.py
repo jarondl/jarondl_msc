@@ -205,9 +205,9 @@ def ones_analytic_plot(ax, N):
     ax.plot(approx_space, approx, linestyle='', marker = '+', label=r"Approximation, $\sqrt{N*n}/\pi$")
 
 
-####################   Torus Plots ################
+####################   Sample Plots ################
 
-def torus_plots_eig(ax_eig, N_points=200, dimensions=(10, 10), xi = 1, end_log_time=1):
+def sample_plots_eig(ax_eig, sample, xi = 1, end_log_time=1):
     """  Create A_ij for points on a torus via e^(-r_ij).
 
         :param N_points: Number of points, defaults to 100
@@ -217,11 +217,10 @@ def torus_plots_eig(ax_eig, N_points=200, dimensions=(10, 10), xi = 1, end_log_t
     """
 
 
-    torus = geometry.Torus(dimensions)
-    points = torus.generate_points(N_points)
-    n = N_points / (dimensions[0]*dimensions[1])
+    points = sample.points
+    n = sample.number_of_points / sample.volume
     print("n = {0}, xi = {1}, n*xi = {2}, n*xi^2={3}".format(n, xi, n*xi, n*xi**2))
-    dis =  geometry.distance_matrix(points, torus.distance)
+    dis =  geometry.distance_matrix(points, sample.distance)
     rnn = sparsedl.rnn(dis)
     print("Rnn = "+str(rnn)+ " xi/rnn = "+str(xi/rnn))
 
@@ -249,9 +248,8 @@ def torus_plots_eig(ax_eig, N_points=200, dimensions=(10, 10), xi = 1, end_log_t
     #ax_eig.loglog(theory_space, theory, label="theory", linestyle="--")
     ax_eig.set_xlim(xlim)
     ax_eig.set_ylim(ylim)
-    plotdl.set_all(ax_eig, title = r"Eigenvalues for torus points $w = e^{{-r/\xi}}$, N ={0}".format(N_points), legend_loc='upper left')
+    plotdl.set_all(ax_eig, title = r"Eigenvalues for points on a {0} with $w = e^{{-r/\xi}}$, N ={1}".format(sample.description, sample.number_of_points), legend_loc='upper left')
 
-    return torus, points, dis
 
 
 def torus_avg(ax_eig, N_points=100, dimensions=(10, 10), xi = 1, end_log_time=1, avg_N=10):
@@ -341,27 +339,80 @@ def torus_permutation_noax(N_points=100, dimensions=(10, 10), filename="torus_pe
     #fig.colorbar(mat2)
     plotdl.savefig(fig, filename)
 
-def torus_3_plots():
+def torus_3_plots(N=200):
     """
     """
     ax1 = plotdl.new_ax_for_file()
-    t, p, d = torus_plots_eig(ax1)
+    torus = geometry.Torus((10,10), N)
+    sample_plots_eig(ax1, torus)
     plotdl.save_ax(ax1, "torus")
     ax1.set_yscale('linear')
     ax1.set_xscale('linear')
     plotdl.save_ax(ax1, "torus_linear")
 
     ax2 = plotdl.new_ax_for_file()
-    ax2.scatter(p[:, 0], p[:, 1])
+    ax2.scatter(torus.xpoints, torus.ypoints)
     plotdl.set_all(ax2, title="Scatter plot of the points")
     plotdl.save_ax(ax2, "torus_scatter")
 
-    ax1.clear()
-    distance_from_0 = d[0, :]
-    N = distance_from_0.size
-    distance_from_0.sort()
-    ax1.plot(distance_from_0, numpy.linspace(0, 1, N), marker=".", linestyle='')
-    plotdl.save_ax(ax1, "torus_distance")
+def torus_show_state(ax, time, torus ,xi=1):
+    """
+    """
+    N = torus.number_of_points
+    # Create initial condition rho
+    rho0 = numpy.zeros(N)
+    rho0[0] = 1
+        
+    # Create rate matrix W
+    dis =  geometry.distance_matrix(torus.points, torus.distance)
+    W = numpy.exp(-dis/xi)
+    sparsedl.zero_sum(W)
+
+    # 
+    rho = sparsedl.rho(time, rho0, W) 
+    ax.scatter( torus.xpoints, torus.ypoints, c=rho)
+
+def torus_plot_rho(ax, rho, torus):
+    """
+    """
+    ax.scatter(torus.xpoints, torus.ypoints, c=rho, vmin=0, vmax =1)
+
+def torus_list_of_rhos(torus, times, xi=1):
+    """
+    """
+    N = torus.number_of_points
+    rho0 = numpy.zeros(N)
+    rho0[0] = 1
+        
+    # Create rate matrix W
+    dis =  geometry.distance_matrix(torus.points, torus.distance)
+    W = numpy.exp(-dis/xi)
+    sparsedl.zero_sum(W)
+
+    # 
+    rho = []
+    for t in times:
+        rho += [sparsedl.rho(t, rho0, W)]
+    return rho
+
+def torus_time():
+    """
+    """
+    times = numpy.linspace(0,1,100)
+    torus = geometry.Torus((10,10),100)
+    rhos = torus_list_of_rhos(torus, times)
+    plotdl.animate(torus_plot_rho, "test", rhos, torus=torus)
+
+def line_3_plots(N=200):
+    """
+    """
+    ax1 = plotdl.new_ax_for_file()
+    line = geometry.PeriodicLine(10, N)
+    sample_plots_eig(ax1, line)
+    plotdl.save_ax(ax1, "line")
+    ax1.set_yscale('linear')
+    ax1.set_xscale('linear')
+    plotdl.save_ax(ax1, "line_linear")
 
 
 def all_plots(seed= 1, **kwargs):

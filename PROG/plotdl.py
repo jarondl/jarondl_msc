@@ -20,6 +20,12 @@
     for example the title and legend location.
 """
 from __future__ import division  # makes true division instead of integer division
+
+import tempfile
+import os
+import shutil
+import subprocess
+
 from matplotlib.backends.backend_agg import FigureCanvasAgg  # For raster rendering, e.g. png
 #from matplotlib.backends.backend_cairo import FigureCanvasCairo # For vector rendering e.g. pdf, eps  ###Doesn't have tex
 from matplotlib.backends.backend_pdf import FigureCanvasPdf
@@ -36,7 +42,6 @@ except RuntimeError:
     print("X is not available, non interactive use only")
 
 import numpy
-import os
 
 
 ## I use some latex info to derive optimial default sizes
@@ -91,6 +96,11 @@ def save_ax(ax, fname, **kwargs):
     """
     save_fig(ax.get_figure(), fname, **kwargs)
 
+def save_fig_to_png(fig, fname):
+    """ """
+    canvas = FigureCanvasAgg(fig)
+    canvas.print_figure(fname + ".png")
+    print("Created:\n\t {0} ".format(fname + ".png"))
 
 def save_fig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor=(1, 1)):
     """ Save figure to pdf and eps
@@ -104,5 +114,30 @@ def save_fig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor
     canvas_pdf.print_figure(pdfname)
     #canvas_ps.print_figure(epsname)
     print("Created:\n\t {0} ".format(pdfname))
+
+
+def animate(plot_function, filename, variable_range, **kwargs):
+    """
+    """
+    # Create temporary dir:
+    tempdir = tempfile.mkdtemp()
+    
+    fig = Figure()
+    ax = fig.add_subplot(1, 1, 1)
+
+    for num, var in enumerate(variable_range):
+        plot_function(ax, var, **kwargs)
+        tempname = os.path.join(tempdir, "img{0:04}".format(num))
+        save_fig_to_png(fig, tempname)
+        ax.clear()
+    
+    # make a movie
+    command = ("mencoder", "mf://{0}/img*.png".format(tempdir), "-ovc", "lavc", "-speed", "0.2", "-o", filename + ".mpg")
+    try:
+        subprocess.check_call(command)
+    except OSError:
+        print( "Movie creation failed. Make sure you have mencoder installed")
+
+    shutil.rmtree(tempdir)
 
 

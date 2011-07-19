@@ -8,13 +8,19 @@ import numpy as np, numpy
 
 
 class Torus(object):
-    def __init__(self, (a, b)):
+    def __init__(self, (a, b), number_of_points=None):
         """ ARGUMENTS:
                 a - length of torus (x dim)
                 b - width of torus ( y dim)
         """
         self.a = a
         self.b = b
+        self.volume = a*b
+        self.description = "2d periodic torus"
+        if number_of_points is not None:
+            self.number_of_points = number_of_points
+            self.generate_points(number_of_points)
+
     def distance(self, point1, point2):
         x1, y1 = point1
         x2, y2 = point2
@@ -26,7 +32,24 @@ class Torus(object):
         self.xpoints = numpy.random.uniform(0, self.a, N)
         self.ypoints = numpy.random.uniform(0, self.b, N)
         self.points = numpy.vstack((self.xpoints, self.ypoints)).T
+        #return self.points
+
+class PeriodicLine(object):
+    def __init__(self, a, number_of_points=None):
+        self.a = a
+        self.volume = a
+        self.description = "1d periodic line"
+        if number_of_points is not None:
+            self.number_of_points = number_of_points
+            self.generate_points(number_of_points)
+
+    def distance(self, point1,point2):
+        return np.min(( np.abs(point2 - point1) , (self.a - np.abs(point2 - point1))  ))
+
+    def generate_points(self, number_of_points):
+        self.points = numpy.random.uniform(0,self.a,number_of_points)
         return self.points
+
 
 def euclid(point1, point2):
     """  Calculate the euclidean distance (norm) between any two points. Points
@@ -47,4 +70,6 @@ def distance_matrix(points, distance_function=euclid):
         for j in range(N):
             S[i, j] = distance_function(points[i], points[j])
     return S
+
+
 
