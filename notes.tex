@@ -396,81 +396,81 @@ So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the dis
 Random Euclidean distance matrices were widely researched \cite{Mezard:1999:NPB}, [insert more refs..]. Amir et al \cite{Amir:2010:PRL} have studied a model with the exponents of euclidean distances. They obtain the survival probability by finding the distribution of the eigenvalues, using the idea of \ref{eq:eig_moments}. 
 
 In one dimension, the transition rates are related to the distance between points distributed uniformly, with density $n$. The nearest neighbor distribution can be considered as the probability for no neighbor at $x'<x$, and a neighbor at $x<x'<x+dx$. Because the points are distributed uniformly, the probability for no neighbors at a small interval $\Delta x$ is :
-\[P_0(\Delta x) = (1-n\Delta x) \]
+\begin{align}P_0(\Delta x) = (1-n\Delta x) \end{align}
 So for a larger interval, we can divide $x$ to $N$ parts:
-\[P_0(x) = \lim_{N\rightarrow \infty}(1-\frac{nx}{N})^N = e^{-n x} \]
+\begin{align}P_0(x) = \lim_{N\rightarrow \infty}(1-\frac{nx}{N})^N = e^{-n x} \end{align}
 The probability for a neighbor at $x<x'<x+dx$ is:
-\[P_1(x<x'<x+dx) = n dx \]
+\begin{align}P_1(x<x'<x+dx) = n dx \end{align}
 So the probability for a nearest neighbor between $x$ and $x+dx$ is:
-\[P_{NN}(x< x'<x+dx) = P_0(x'<x)\cdot P_1(x<x'<x+dx) = e^{-n x}ndx \]
+\begin{align}P_{NN}(x< x'<x+dx) = P_0(x'<x)\cdot P_1(x<x'<x+dx) = e^{-n x}ndx \end{align}
 And the distribution density functions is:
-\[ f(x) = e^{-n x}n\]
+\begin{align} f(x) = e^{-n x}n\end{align}
 
 For higher dimensions, if we assume that site density is constant (denoted $n$), then the probability for no neighbors in volume $V(r)$ is:
-\[ P_0( V(r)) = e^{-nV(r)}\]
+\begin{align} P_0( V(r)) = e^{-nV(r)}\end{align}
 So the cumulative probability for the nearest neighbor distance to be less than $r$ is:
-\[ F (r) = 1-P_0(V(r)) = 1- e^{-nV(r)} \]
+\begin{align} F (r) = 1-P_0(V(r)) = 1- e^{-nV(r)} \end{align}
 The probability density is the derivative of the cumulative probability:
-\[ f(r) = \frac{dF(r)}{dr} =   e^{-nV(r)} n \frac{dV(r)}{dr} \]
+\begin{align} f(r) = \frac{dF(r)}{dr} =   e^{-nV(r)} n \frac{dV(r)}{dr} \end{align}
 For two dimensions:
-\[ f(r) = e^{-n \pi r^2}n2\pi r \]
+\begin{align} f(r) = e^{-n \pi r^2}n2\pi r \end{align}
 For three dimensions:
-\[ f(r) = e^{-n \frac{4\pi}{3} r^3}n4\pi r^2 \]
+\begin{align} f(r) = e^{-n \frac{4\pi}{3} r^3}n4\pi r^2 \end{align}
 Amir et al. \cite{Amir:2010:PRL} come to the same equation in their supplementary material:
 
 %%
 \begin{fminipage}{\textwidth}
-\[P_{nn}(r)=\frac{d
-V_d}{r_{nn}} {(r/r_{nn})}^{d-1} e^{-V_d {(r/r_{nn})}^d}\] 
+\begin{align}P_{nn}(r)=\frac{d
+V_d}{r_{nn}} {(r/r_{nn})}^{d-1} e^{-V_d {(r/r_{nn})}^d}\end{align} 
 where $V_d$ is the volume of a $d$ dimensional sphere and $r_{nn}$ is the
 average nearest-neighbor distance.
 \end{fminipage}
 
 In our notation (replacing $V_d$ with the more conventional $\frac{\Omega_d}{d}$ ), we can write it as:
-\[ f(r) = e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1} \]
+\begin{align} f(r) = e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1} \end{align}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Finding the transition rate distribution for $w= e^{-r/ \xi}$, with random points}
 We can change the random variable from $r$ to $w= e^{-r/ \xi}$, with $0<w<1$:
-\begin{align*}
+\begin{align}
     &|f_w(w)dw| = |f_r(r)dr| \\
     &f_w(w) = f_r(r)\left|\frac{dr}{dw}\right| = f_r(-\xi \ln w)\frac{\xi}{w} = e^{-n \frac{\Omega_d}{d} (-\xi\ln w)^d} n\Omega_d (-\xi\ln w)^{d-1}\frac{\xi}{w} \\
     &f_w(w) \sim \frac{|\ln w|^{d-1}}{w} e^{-|\ln w|^d}
-\end{align*}
+\end{align}
 In $1d$ that becomes:
-\[ f(w)= e^{n \xi\ln w} \frac{n\xi}{w} = w^{n\xi-1}n\xi\]
+\begin{align} f(w)= e^{n \xi\ln w} \frac{n\xi}{w} = w^{n\xi-1}n\xi\end{align}
 Which matches Alexander's $\alpha = 1-n\xi$, and therefore should have survival of $\mathcal{P}(t)\propto t^{-\frac{1-\alpha}{2-\alpha}}= t^{-\frac{n\xi}{1+n\xi}}$. This result appears also in Amir's article.
 
 
 
 For $2d$:
-\[ f(w) = e^{-n \pi (-\xi\ln w)^2} n 2\pi  (-\xi\ln w)\frac{\xi}{w}\]
+\begin{align} f(w) = e^{-n \pi (-\xi\ln w)^2} n 2\pi  (-\xi\ln w)\frac{\xi}{w}\end{align}
 
 The diffusion coefficient is given by $\left(\overline{(w^{-1})}\right)^{-1}$:
-\begin{align*}
+\begin{align}
     & \overline{(w^{-1})} = \int_0^\infty \frac{1}{w} e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1} dr = \int_0^\infty e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1}e^{r/\xi} dr 
-\end{align*}
+\end{align}
 For $d>1$ this integral converges, so normal diffusion should occur.
 
 Amir also finds the eigenvalue distribution (using the idea of equation \eqref{eq:eig_moments} ):
 
 %%
 \begin{fminipage}{\textwidth}
-\[ P(\lambda)=  \frac{\epsilon^d d V_d /2
+\begin{align} P(\lambda)=  \frac{\epsilon^d d V_d /2
 (-\rm{log}(-\lambda/2))^{d-1} e^{-\frac{V_d}{2} \epsilon^d
-(-\rm{log}(-\lambda/2))^d}}{\lambda} \]
+(-\rm{log}(-\lambda/2))^d}}{\lambda} \end{align}
 
 
 The cumulative $C(\lambda)$ of this distribution takes a
 particularly simple form: 
-\[ C(\lambda)\equiv \int_\lambda^0
+\begin{align} C(\lambda)\equiv \int_\lambda^0
 P(\lambda)d\lambda= e^{-\frac{V_d}{2} \epsilon^d
-(-\rm{log}(-\lambda/2))^d} \]
+(-\rm{log}(-\lambda/2))^d} \end{align}
 \end{fminipage}
 Or in our notation:
-\[ C(\lambda)= e^{-\frac{\Omega_d}{2d} (n\xi)^d \left( -\log(\frac{\lambda}{2})\right)^d}  \]
+\begin{align} C(\lambda)= e^{-\frac{\Omega_d}{d} n\xi^d \left( -\log(\frac{\lambda}{2})\right)^d}  \end{align}
 In 2D that becomes:
-\[ C(\lambda) = e^{-\frac{\pi}{2} (n\xi)^2 \left(\log(\frac{\lambda}{2})\right)^2 } \]
+\begin{align} C(\lambda) = e^{-\pi n\xi^2 \left(\log(\frac{\lambda}{2})\right)^2 } \end{align}
 This cumulative distribution is the same as the log-normal probability distribution. 
 
 %%%%%%%%%%%%%%%%%%%%%%
@@ -529,11 +529,11 @@ by a parameter~$s$ or optionally
 by the parameters~$p$ and~$q$ that 
 are defined as follows: 
 %
-\begin{align*}
+\begin{align}
 s \ \ &=& \ \ \langle x \rangle^2 / \langle x^2 \rangle \\
 p \ \ &=& \ \ \mbox{Prob}(x {>} \langle x\rangle) \\
 q \ \ &=& \ \ \langle\langle x \rangle\rangle_{\tbox{median}}/\langle x \rangle
-\end{align*}
+\end{align}
 %
 By this definition $p$ is the fraction of the elements that 
 are larger than the algebraic average and $q$ is the ratio between the median
@@ -558,13 +558,13 @@ The direct calculation for the survival in a log normal banded matrix is depicte
 %%%%%%%%%%
 \section{Resistor Network Calculation} \label{sec:res_net}
 Our basic equation is 
-\[ \boldsymbol{ \dot P } = \boldsymbol{W} \boldsymbol{P} \]
+\begin{align} \boldsymbol{ \dot P } = \boldsymbol{W} \boldsymbol{P} \end{align}
 It can be rewritten as:
-\[  \boldsymbol{P} = \boldsymbol{W}^{-1}\boldsymbol{ \dot P } \]
+\begin{align}  \boldsymbol{P} = \boldsymbol{W}^{-1}\boldsymbol{ \dot P } \end{align}
 Which resembles resistivity calculations:
-\[ \boldsymbol{V} = \boldsymbol{R}\boldsymbol{ I } \]
+\begin{align} \boldsymbol{V} = \boldsymbol{R}\boldsymbol{ I } \end{align}
 If we define the inverse resistivity as:
-\[ \boldsymbol{R} = \boldsymbol{W}^{-1} \]
+\begin{align} \boldsymbol{R} = \boldsymbol{W}^{-1} \end{align}
 So our calculations become similar to those of resistors, whose rules are well known.
 
 The resistor network calculation has been used by Stotland to find the diffusion of quasi one dimensional systems.
@@ -581,7 +581,7 @@ y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x)
 To check ourselves, we have plotted the eigenvalue distribution for the lognoraml banded matrix, and a uniform random matrix in figure \ref{fig:eigenvalue_distribution}, and also compared between $b=5$ and $b=10$ in figure \ref{fig:eigenvalue_distribution_5_10}
 \begin{figure}
     \subfloat[Uniform distribution ]{\includegraphics[clip, width=0.9\hsize]{eigvals_uniform}}
-    \\ \subfloat[Lognoraml nearest neighbor matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal}}
+    \\ \subfloat[Lognoraml nearest neighbor matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}}
     \caption{Cumulative eigenvalue distribution.}
     \label{fig:eigenvalue_distribution}
 \end{figure}
@@ -590,19 +590,19 @@ To check ourselves, we have plotted the eigenvalue distribution for the lognoram
     \caption{Cumulative eigenvalue distribution, in a normal scale}
 \end{figure}
 \begin{figure}
-    \includegraphics[clip, width=0.9\hsize]{eigvals_ones}
+    \includegraphics[clip, width=0.9\hsize]{eigvals_ones_loglog}
 \end{figure}
 \begin{figure}
-    \includegraphics[clip, width=0.9\hsize]{eigvals_alter}
+    \includegraphics[clip, width=0.9\hsize]{eigvals_alter_loglog}
 \end{figure}
 \begin{figure}
-    \includegraphics[clip, width=0.9\hsize]{eigvals_box}
+    \includegraphics[clip, width=0.9\hsize]{eigvals_box_loglog}
 \end{figure}
 
 \section{Geometry's role} \label{sec:geometry}
 Random points were chosen on a torus. A matrix with transition rates $W_{ij} = e^{-r_{ij}}$ was constructed, for which eigenvalues and survival were calculated. Later, the matrix elements were permuted, and the same calculations were made. \ref{fig:distance}. Since the matrix should remain symmetric, the elements distribution should stay the same, and the sum of each row should stay $0$, the permutation was done on the upper triangle of the matrix only. (And then transposed to the other triangle, and the diagonal set match the zero sum demand).
 \begin{figure}
-    \includegraphics[clip]{8tori_eig}
+    \includegraphics[clip]{torus}
     \caption{Cumulative eigenvalue distribution for points on a torus with $W_{ij} = e^{-r_{ij}}$, and with permuted matrices.}
     \label{fig:distance}
 \end{figure}

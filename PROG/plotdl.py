@@ -126,7 +126,7 @@ def animate(plot_function, filename, variable_range, **kwargs):
     ax = fig.add_subplot(1, 1, 1)
 
     for num, var in enumerate(variable_range):
-        plot_function(ax, var, **kwargs)
+        plot_function(ax, var, num=num, **kwargs)
         tempname = os.path.join(tempdir, "img{0:04}".format(num))
         save_fig_to_png(fig, tempname)
         ax.clear()

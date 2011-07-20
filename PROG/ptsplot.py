@@ -169,8 +169,32 @@ def eigenvalues_cummulative(ax, matrix, label):
     eigvals = -linalg.eigvalsh(matrix)
     eigvals.sort()
     eigvals = eigvals[1:]  ## The zero (or nearly zero) is a problematic eigenvalue.
+    assert  eigvals[0] >0, ("All eigenvalues [except the first] should be positive" + str(eigvals))
     ax.loglog(eigvals, numpy.linspace(1/N, 1, N-1), marker=".", linestyle='', label=label)
     return eigvals
+
+def eigenvalues_density(ax, matrix, label):
+    """  Plot the density of the eigenvalues
+    """
+    N = matrix.shape[0]
+    eigvals = -linalg.eigvalsh(matrix)
+    eigvals.sort()
+    eigvals = eigvals[1:]  ## The zero (or nearly zero) is a problematic eigenvalue.
+    assert  eigvals[0] >0, ("All eigenvalues [except the first] should be positive" + str(eigvals))
+    left_lim = log10(eigvals[0])
+    right_lim = log10(eigvals[-1])
+    #density_space = eigvals[:-1]
+    log_lambda = numpy.log(eigvals)
+    density = ((log_lambda[1:] - log_lambda[:-1])**(-1))
+    ax.plot(log_lambda[:-1], density, marker=".", linestyle='', label=label)
+    return eigvals
+
+def plot_density(ax, values):
+    """
+    """
+    values.sort()
+    density = (values[1:]-values[:-1])/len(values)
+    ax.plot(values[:-1], density, marker=".", linestyle='')
 ################ Plots related to the eigenvalue plots ############3
 
 
@@ -207,7 +231,7 @@ def ones_analytic_plot(ax, N):
 
 ####################   Sample Plots ################
 
-def sample_plots_eig(ax_eig, sample, xi = 1, end_log_time=1):
+def sample_plots_eig(ax_eig, sample, distance_matrix = None, xi = 1, end_log_time=1 ,show_theory=False):
     """  Create A_ij for points on a torus via e^(-r_ij).
 
         :param N_points: Number of points, defaults to 100
@@ -220,39 +244,66 @@ def sample_plots_eig(ax_eig, sample, xi = 1, end_log_time=1):
     points = sample.points
     n = sample.number_of_points / sample.volume
     print("n = {0}, xi = {1}, n*xi = {2}, n*xi^2={3}".format(n, xi, n*xi, n*xi**2))
-    dis =  geometry.distance_matrix(points, sample.distance)
-    rnn = sparsedl.rnn(dis)
-    print("Rnn = "+str(rnn)+ " xi/rnn = "+str(xi/rnn))
+    if distance_matrix is None:
+        dis =  geometry.fast_periodic_distance_matrix(points, sample.dimensions)
+    else:
+        dis = distance_matrix
 
     ex1 = numpy.exp(-dis/xi)
     sparsedl.zero_sum(ex1)
+    assert sparsedl.zero_sum(ex1)
     ex2 = sparsedl.permute_tri(ex1)
     sparsedl.zero_sum(ex2)
+    assert sparsedl.zero_sum(ex2)
     eigvals = []
     eigvals += [eigenvalues_cummulative(ax_eig, ex1, "Original values")]
     eigvals += [eigenvalues_cummulative(ax_eig, ex2, "Permuted values")]
     diagvals = - ex1.diagonal()
     diagvals.sort()
     diagvals = diagvals[1:]
-#    diagvals2 = -ex2.diagonal()
-#    diagvals2.sort()
-#    diagvals2 = diagvals2[1:]
-#    eigvals += [diagvals]  #### Only the diagonal values. Should resemble the others.
-    minvallog = numpy.log10(min(numpy.min(eigvals[0]), numpy.min( eigvals[1])))
-    maxvallog = numpy.log10(max(numpy.max(eigvals[0]), numpy.max( eigvals[1])))
-    theory_space = numpy.logspace(-2, 2, 100)
-    theory = numpy.exp(-(pi)*((xi*n)*numpy.log(theory_space/2))**2)
-    #ax_eig.loglog(diagvals, numpy.linspace(1/N_points, 1, N_points-1), label="Only the diagonals", marker='.', linestyle='')
-    #ax_eig.loglog(diagvals2, numpy.linspace(1/N_points, 1, N_points-1), label="Only the diagonals of 2", marker='.', linestyle='')
-    xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
-    #ax_eig.loglog(theory_space, theory, label="theory", linestyle="--")
-    ax_eig.set_xlim(xlim)
-    ax_eig.set_ylim(ylim)
-    plotdl.set_all(ax_eig, title = r"Eigenvalues for points on a {0} with $w = e^{{-r/\xi}}$, N ={1}".format(sample.description, sample.number_of_points), legend_loc='upper left')
+    if show_theory:
+        #minvallog = numpy.log10(numpy.min(eigvals[0]))
+        #maxvallog = min(( numpy.log10(numpy.max(eigvals[0])) , log10(2)))
+        left_end = numpy.log10(2) - sqrt(log10(sample.number_of_points)/(pi*n*xi**2))
+        right_end = numpy.log10(2)
+        #print "min : {0} max : {1}  minlog : {2}  maxlog : {3}".format(numpy.min(eigvals[0]),numpy.max(eigvals[0]), minvallog, maxvallog)
+        theory_space= numpy.logspace(left_end, right_end,100)
+        theory = numpy.exp(-(pi)*n*(xi*numpy.log(theory_space/2))**2)
 
+        xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
+        ax_eig.loglog(theory_space, theory, label="theory", linestyle="--")
+        ax_eig.set_xlim(xlim)
+        ax_eig.set_ylim(ylim)
+    plotdl.set_all(ax_eig, title = r"A {0}, {2}, $w = e^{{-r/\xi}}$, N ={1}, $\xi = {3}$, $n\xi^2 = {4}$".format(sample.description, sample.number_of_points, sample.dimensions, xi, n*xi**2), legend_loc='lower right')
 
+def sample_collect_eigenvalues(sample, N=1000, epsilon=0.1, number_of_runs=10):
+    """
+    """
+    collected_eigenvalues = []
+    n = N/sample.volume
+    xi = epsilon * n**(-1/sample.d)
+    print n, xi, epsilon
+    for i in range(number_of_runs):
+        print( "{0:03} / {1}".format(i+1, number_of_runs))
+        sample.generate_points(N)
+        points = sample.points
+        dis = geometry.fast_periodic_distance_matrix(points, sample.dimensions)
+        ex1 = numpy.exp(-dis/xi)
+        sparsedl.zero_sum(ex1)
+        collected_eigenvalues += [ -linalg.eigvals(ex1)]
+    all_eigenvalues = numpy.concatenate(collected_eigenvalues)
+    return all_eigenvalues
 
-def torus_avg(ax_eig, N_points=100, dimensions=(10, 10), xi = 1, end_log_time=1, avg_N=10):
+def sample_density_avg(ax):
+    """
+    """
+    torus = geometry.Torus((1,1))
+    eigvals = sample_collect_eigenvalues(torus, 1000,0.0032,10)
+    eigvals.sort()
+    plot_density(ax, eigvals[10:])
+        
+
+def torus_avg(ax_eig, N_points=1000, dimensions=(1, 1), xi = 0.0032, end_log_time=1, avg_N=10):
     """
     """
     sum_of_eigvals = []
@@ -261,7 +312,7 @@ def torus_avg(ax_eig, N_points=100, dimensions=(10, 10), xi = 1, end_log_time=1,
         points = torus.generate_points(N_points)
         n = N_points / (dimensions[0]*dimensions[1])
         print("n = {0}, xi = {1}, n*xi = {2}, n*xi^2={3}".format(n, xi, n*xi, n*xi**2))
-        dis =  geometry.distance_matrix(points, torus.distance)
+        dis =  geometry.fast_periodic_distance_matrix(points, torus.dimensions)
         rnn = sparsedl.rnn(dis)
         print("Rnn = "+str(rnn)+ " xi/rnn = "+str(xi/rnn))
 
@@ -324,7 +375,7 @@ def torus_permutation_noax(N_points=100, dimensions=(10, 10), filename="torus_pe
     """
     torus = geometry.Torus(dimensions)
     points = torus.generate_points(N_points)
-    dis =  geometry.distance_matrix(points, torus.distance)
+    dis =  geometry.fast_periodic_distance_matrix(points, torus.dimensions)
 
     fig = plotdl.Figure()
     ax1 = fig.add_subplot(1, 2, 1)
@@ -343,8 +394,8 @@ def torus_3_plots(N=200):
     """
     """
     ax1 = plotdl.new_ax_for_file()
-    torus = geometry.Torus((10,10), N)
-    sample_plots_eig(ax1, torus)
+    torus = geometry.Torus((100,100), N)
+    sample_plots_eig(ax1, torus, xi = 1)
     plotdl.save_ax(ax1, "torus")
     ax1.set_yscale('linear')
     ax1.set_xscale('linear')
@@ -355,6 +406,20 @@ def torus_3_plots(N=200):
     plotdl.set_all(ax2, title="Scatter plot of the points")
     plotdl.save_ax(ax2, "torus_scatter")
 
+
+def sheet_3_plots(N=200):
+    """ non periodic 2d surface
+    """
+    ax1 = plotdl.new_ax_for_file()
+    torus = geometry.Torus((100,100), N)
+    dis = geometry.fast_distance_matrix(torus.points)
+    sample_plots_eig(ax1, torus)
+    plotdl.save_ax(ax1, "sheet")
+    ax1.set_yscale('linear')
+    ax1.set_xscale('linear')
+    plotdl.save_ax(ax1, "sheet_linear")
+
+
 def torus_show_state(ax, time, torus ,xi=1):
     """
     """
@@ -364,18 +429,23 @@ def torus_show_state(ax, time, torus ,xi=1):
     rho0[0] = 1
         
     # Create rate matrix W
-    dis =  geometry.distance_matrix(torus.points, torus.distance)
+    dis =  geometry.fast_periodic_distance_matrix(torus.points, torus.dimensions)
     W = numpy.exp(-dis/xi)
     sparsedl.zero_sum(W)
 
     # 
     rho = sparsedl.rho(time, rho0, W) 
     ax.scatter( torus.xpoints, torus.ypoints, c=rho)
+    
 
-def torus_plot_rho(ax, rho, torus):
+def torus_plot_rho(ax, rho, torus, num):
     """
     """
-    ax.scatter(torus.xpoints, torus.ypoints, c=rho, vmin=0, vmax =1)
+    sct = ax.scatter(torus.xpoints, torus.ypoints, edgecolors='none',
+            c=rho, norm=LogNorm( vmin=1/torus.number_of_points, vmax =1))
+    
+    if num==0:
+        ax.get_figure().colorbar(sct)
 
 def torus_list_of_rhos(torus, times, xi=1):
     """
@@ -385,7 +455,7 @@ def torus_list_of_rhos(torus, times, xi=1):
     rho0[0] = 1
         
     # Create rate matrix W
-    dis =  geometry.distance_matrix(torus.points, torus.distance)
+    dis =  geometry.fast_periodic_distance_matrix(torus.points, torus.dimensions)
     W = numpy.exp(-dis/xi)
     sparsedl.zero_sum(W)
 
