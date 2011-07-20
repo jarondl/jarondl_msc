@@ -609,6 +609,17 @@ Here I will explain the dependence of $G(r)$ in $r$, so we could be able to use 
 
 The basic idea, as in $1d$ networks, is to add a source of current ($+1$) and a sink ($-1$). If we can calculate the voltage between those "electrodes", we know the conductance, as $G = \frac{I}{V}$. 
 
+Instead of calculating the system with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
+\begin{align}
+  E = \frac{J}{\sigma} = \frac{I}{2\pi r\sigma} \\
+  V = \int E dr = \frac{I}{2\pi\sigma}\ln\frac{r}{r_0}
+\end{align}
+The superposition of the sink just doubles the result, and we obtain:
+\begin{align}
+    G = \frac{I}{V} = \frac{\pi\sigma }{\ln\frac{r}{r_0}}  \\
+    \sigma = \frac{1}{\pi}G\ln\frac{r}{r_0}
+\end{align}
+
 
 %%%%%%%%%%%
 \section{Dissecting the $w=e^{-r/\xi}$ models}
