@@ -450,7 +450,7 @@ The diffusion coefficient is given by $\left(\overline{(w^{-1})}\right)^{-1}$:
 \begin{align}
     & \overline{(w^{-1})} = \int_0^\infty \frac{1}{w} e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1} dr = \int_0^\infty e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1}e^{r/\xi} dr 
 \end{align}
-For $d>1$ this integral converges, so normal diffusion should occur.
+For $d>1$ this integral converges. If the naive $1d$ calculation holds, normal diffusion should occur.
 
 Amir also finds the eigenvalue distribution (using the idea of equation \eqref{eq:eig_moments} ):
 
@@ -599,8 +599,21 @@ To check ourselves, we have plotted the eigenvalue distribution for the lognoram
     \includegraphics[clip, width=0.9\hsize]{eigvals_box_loglog}
 \end{figure}
 
+%%%%%%%%%%%%%
 \section{Geometry's role} \label{sec:geometry}
 Random points were chosen on a torus. A matrix with transition rates $W_{ij} = e^{-r_{ij}}$ was constructed, for which eigenvalues and survival were calculated. Later, the matrix elements were permuted, and the same calculations were made. \ref{fig:distance}. Since the matrix should remain symmetric, the elements distribution should stay the same, and the sum of each row should stay $0$, the permutation was done on the upper triangle of the matrix only. (And then transposed to the other triangle, and the diagonal set match the zero sum demand).
+
+%%%%%%%%%%%%
+\section{Resistor network computation for 2d surfaces}
+Here I will explain the dependence of $G(r)$ in $r$, so we could be able to use the resistor network calculation for $2d$ problems.
+
+The basic idea, as in $1d$ networks, is to add a source of current ($+1$) and a sink ($-1$). If we can calculate the voltage between those "electrodes", we know the conductance, as $G = \frac{I}{V}$. 
+
+
+%%%%%%%%%%%
+\section{Dissecting the $w=e^{-r/\xi}$ models}
+
+
 \begin{figure}
     \includegraphics[clip]{torus}
     \caption{Cumulative eigenvalue distribution for points on a torus with $W_{ij} = e^{-r_{ij}}$, and with permuted matrices.}
