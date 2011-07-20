@@ -300,14 +300,17 @@ def sample_collect_eigenvalues(sample, N=1000, epsilon=0.1, number_of_runs=10):
     all_eigenvalues = numpy.concatenate(collected_eigenvalues)
     return all_eigenvalues
 
-def sample_cummulative_avg(ax, epsilon_list=(0.1,), number_of_points=500, number_of_realizations=20, sample=geometry.Torus((1,1))):
+def sample_cummulative_avg(ax, epsilon_list=(0.1,), number_of_points=500, number_of_realizations=20, sample=geometry.Torus((1,1)), ax_hist=None):
     """
     """
     for epsilon in epsilon_list:
         eigvals = sample_collect_eigenvalues(sample, number_of_points, epsilon, number_of_realizations)
         logvals = numpy.log(numpy.sort(eigvals)[number_of_realizations:])
         cummulative_plot(ax, logvals, label=r"$\epsilon = {0}$".format(epsilon))
-        
+        if ax_hist is not None:
+            ax_hist.hist(logvals, bins = sqrt(number_of_points*number_of_realizations), label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
+    if ax_hist is not None:
+        ax_hist.legend()
 
 def torus_avg(ax_eig, N_points=1000, dimensions=(1, 1), xi = 0.0032, end_log_time=1, avg_N=10):
     """
@@ -541,62 +544,81 @@ def all_plots(seed= 1, **kwargs):
     torus_3_plots()
     ax.clear()
     
+    ####################
     random.seed(seed)
     torus = geometry.Torus((1,1))
     sample_cummulative_avg(ax,(0.1,0.5,1,1.5,2,5), 300, 10, torus)
     plotdl.set_all(ax, title="2d surface with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_torus_semilogy")
+    plotdl.save_ax(ax,"avg_torus_0semilogx")
     ax.set_yscale('log')
-    plotdl.save_ax(ax, "avg_torus_loglog")
+    plotdl.save_ax(ax, "avg_torus_0loglog")
     ax.clear()
     
-    # high density region (high xi)
+    # high density region (high xi)(with hist)
+    ax_hist = plotdl.new_ax_for_file()
     random.seed(seed)
     torus = geometry.Torus((1,1))
-    sample_cummulative_avg(ax,(5,10), 300, 10, torus)
+    sample_cummulative_avg(ax,(5,10), 300, 10, torus, ax_hist=ax_hist)
     plotdl.set_all(ax, title="2d surface with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_torus_high_semilogy")
+    plotdl.save_ax(ax,"avg_torus_high_semilogx")
     ax.set_yscale('log')
     plotdl.save_ax(ax, "avg_torus_high_loglog")
     ax.clear()
-    # low density region (high xi)
+    #hist
+    plotdl.set_all(ax_hist, title="2d surface with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax_hist,"avg_torus_high_zhist")
+    ax_hist.clear()
+    
+    # low density region (low xi)(with hist)
     random.seed(seed)
     torus = geometry.Torus((1,1))
-    sample_cummulative_avg(ax,(0.05,0.1), 300, 10, torus)
+    sample_cummulative_avg(ax,(0.05,0.1), 300, 10, torus, ax_hist=ax_hist)
     plotdl.set_all(ax, title="2d surface with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_torus_low_semilogy")
+    plotdl.save_ax(ax,"avg_torus_low_semilogx")
     ax.set_yscale('log')
     plotdl.save_ax(ax, "avg_torus_low_loglog")
     ax.clear()
+    #hist
+    plotdl.set_all(ax_hist, title="2d surface with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax_hist,"avg_torus_low_zhist")
+    ax_hist.clear()
 
     random.seed(seed)
     line = geometry.PeriodicLine(1)
     sample_cummulative_avg(ax,(0.1,0.5,1,1.5,2,5), 300, 10, line)
     plotdl.set_all(ax, title="1d line with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_line_semilogy")
+    plotdl.save_ax(ax,"avg_line_0semilogx")
     ax.set_yscale('log')
-    plotdl.save_ax(ax, "avg_line_loglog")
+    plotdl.save_ax(ax, "avg_line_0loglog")
     ax.clear()
     
-    #high density region:
+    #high density region: +hist
     random.seed(seed)
     line = geometry.PeriodicLine(1)
-    sample_cummulative_avg(ax,(5,10), 300, 10, line)
+    sample_cummulative_avg(ax,(5,10), 300, 10, line, ax_hist=ax_hist)
     plotdl.set_all(ax, title="1d line with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_line_high_semilogy")
+    plotdl.save_ax(ax,"avg_line_high_semilogx")
     ax.set_yscale('log')
     plotdl.save_ax(ax, "avg_line_high_loglog")
     ax.clear()
+    #hist
+    plotdl.set_all(ax_hist, title="1d line with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax_hist,"avg_line_high_zhist")
+    ax_hist.clear()
     
-    #low density region:
+    #low density region: +hist
     random.seed(seed)
     line = geometry.PeriodicLine(1)
-    sample_cummulative_avg(ax,(0.05,0.1), 300, 10, line)
+    sample_cummulative_avg(ax,(0.05,0.1), 300, 10, line, ax_hist=ax_hist)
     plotdl.set_all(ax, title="1d line with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_line_low_semilogy")
+    plotdl.save_ax(ax,"avg_line_low_semilogx")
     ax.set_yscale('log')
     plotdl.save_ax(ax, "avg_line_low_loglog")
     ax.clear()
+    #hist
+    plotdl.set_all(ax_hist, title="1d line with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax_hist,"avg_line_low_zhist")
+    ax_hist.clear()
     
 
 
