@@ -19,6 +19,7 @@ class Torus(object):
         self.dimensions = (a,b)
         self.volume = a*b
         self.description = "2d periodic torus"
+        self.short_name="torus"
         if number_of_points is not None:
             self.number_of_points = number_of_points
             self.generate_points(number_of_points)
@@ -44,6 +45,7 @@ class PeriodicLine(object):
         self.volume = a
 
         self.description = "1d periodic line"
+        self.short_name="line"
         if number_of_points is not None:
             self.number_of_points = number_of_points
             self.generate_points(number_of_points)

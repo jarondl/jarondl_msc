@@ -206,3 +206,11 @@ def surv(eigen_values, times):
     op = numpy.outer(eigen_values, times)
     exps = numpy.exp(op)
     return exps.sum(axis=0) / len(eigen_values)
+
+
+def sorted_eigh(matrix):
+    """ """
+    eigvals, eigvecs = linalg.eigh(matrix)
+    sort_indices = numpy.argsort(eigvals)
+    return eigvals[sort_indices], eigvecs[:,sort_indices]
+    

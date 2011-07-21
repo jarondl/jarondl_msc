@@ -117,23 +117,6 @@ def eigenvalues_box(ax, N=200, w1 = 3, w2 = 8, b_list=(1, )):
     plotdl.set_all(ax, title="Box distibution 3-8, N = {N}".format(N=N), legend_loc="best")
 
 
-def eigenvalues_exponent_minus1(ax, N=100, nxi=0.3):
-    """  Plot the eigenvalues for a :math:p(w) = w^{n\\xi-1}n\\xi:
-    """
-    W = sparsedl.exponent_minus1(N, nxi=nxi).todense()
-    eigvals = - linalg.eigvalsh(W)  #  eigvalsh works for real symmetric matrices
-    eigvals.sort()
-    eigvals = eigvals[2:]/N  ## The first eigenvalue is zero, which does problems with loglog plots
-    power_law_space = numpy.logspace(numpy.log10(numpy.min(eigvals[1:])), numpy.log10(numpy.max(eigvals)), N-1)
-    power_law = (power_law_space**(nxi))
-    ax.loglog(eigvals, numpy.linspace(0, 1, N-2), marker='.', linestyle='', label="Cummulative eigenvalues (divided by N)")
-    ax.loglog(power_law_space, power_law, linestyle='--', label=r"\lambda^{n\xi}")
-    plotdl.set_all(ax, title=r"$p(w) = w^{n\xi-1}n\xi $ Where $n\xi=$"+str(nxi), legend_loc="lower right")
-
-
-
-
-
 def eigenvalues_uniform(ax, N=100):
     """  Plot the eigenvalues for a uniform random matrix
     """
@@ -153,14 +136,6 @@ def eigenvalues_uniform(ax, N=100):
     plotdl.set_all(ax, title=r"uniform, $[-1, 1]$", legend_loc="upper left")
 
 
-def eigenvalues_lognormal_normal_axis(ax, N=200, b_list=(1, )):
-    """  Plot the eigenvalues for a lognormal sparse banded matrix
-    """
-    eigenvalues_lognormal(ax, N=N, b_list=b_list)
-    ax.set_xscale('linear')
-    ax.set_yscale('linear')
-
-
 ###############  Meta-eigenvalue #########
 def eigenvalues_cummulative(ax, matrix, label):
     """  Plot the cummulative density of the eigenvalues
@@ -177,32 +152,16 @@ def cummulative_plot(ax, values, label=None):
     """  Plot cummulative values.
     """
     N = len(values)
-    ax.plot(values, numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label)
+    ax.plot(numpy.sort(values), numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label)
 
-def eigenvalues_density(ax, matrix, label):
-    """  Plot the density of the eigenvalues
+def eigen_matrix_squared(ax, eigenvectors):
     """
-    N = matrix.shape[0]
-    eigvals = -linalg.eigvalsh(matrix)
-    eigvals.sort()
-    eigvals = eigvals[1:]  ## The zero (or nearly zero) is a problematic eigenvalue.
-    assert  eigvals[0] >0, ("All eigenvalues [except the first] should be positive" + str(eigvals))
-    left_lim = log10(eigvals[0])
-    right_lim = log10(eigvals[-1])
-    #density_space = eigvals[:-1]
-    log_lambda = numpy.log(eigvals)
-    density = ((log_lambda[1:] - log_lambda[:-1])**(-1))
-    ax.plot(log_lambda[:-1], density, marker=".", linestyle='', label=label)
-    return eigvals
+    """
+    #vals, vecs = sparsedl.sorted_eigh(matrix)
+    ms = ax.matshow( eigenvectors[:,::-1]**2, norm=LogNorm(vmin=10**(-10) ))
+    ax.figure.colorbar(ms)
 
-def plot_density(ax, values):
-    """
-    """
-    values.sort()
-    density = (values[1:]-values[:-1])/len(values)
-    ax.plot(values[:-1], density, marker=".", linestyle='')
 ################ Plots related to the eigenvalue plots ############3
-
 
 def diffusion_plot(ax, D, eigvals):
     """ """
@@ -282,6 +241,23 @@ def sample_plots_eig(ax_eig, sample, distance_matrix = None, xi = 1, end_log_tim
         ax_eig.set_ylim(ylim)
     plotdl.set_all(ax_eig, title = r"A {0}, {2}, $w = e^{{-r/\xi}}$, N ={1}, $\xi = {3}$, $n\xi^2 = {4}$".format(sample.description, sample.number_of_points, sample.dimensions, xi, n*xi**2), legend_loc='lower right')
 
+
+def sample_2d_theory(ax, sample, epsilon):
+    """ """
+    n = sample.number_of_points/sample.volume
+    xi = epsilon * n**(-1/sample.d)
+    left_end = numpy.log10(2) - sqrt(log10(sample.number_of_points)/(pi*n*xi**2))
+    right_end = numpy.log10(2)
+    #print "min : {0} max : {1}  minlog : {2}  maxlog : {3}".format(numpy.min(eigvals[0]),numpy.max(eigvals[0]), minvallog, maxvallog)
+    theory_space= numpy.logspace(left_end, right_end,100)
+    theory = numpy.exp(-(pi)*n*(xi*numpy.log(theory_space/2))**2)
+
+    xlim, ylim = ax.get_xlim(), ax.get_ylim()
+    ax.plot(theory_space, theory, label=r"theory $\epsilon = {0}$".format(epsilon), linestyle="--")
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+
+
 def sample_collect_eigenvalues(sample, N=1000, epsilon=0.1, number_of_runs=10):
     """
     """
@@ -300,72 +276,15 @@ def sample_collect_eigenvalues(sample, N=1000, epsilon=0.1, number_of_runs=10):
     all_eigenvalues = numpy.concatenate(collected_eigenvalues)
     return all_eigenvalues
 
-def sample_cummulative_avg(ax, epsilon_list=(0.1,), number_of_points=500, number_of_realizations=20, sample=geometry.Torus((1,1)), ax_hist=None):
+def sample_exp_matrix(sample, epsilon=0.1):
     """
     """
-    for epsilon in epsilon_list:
-        eigvals = sample_collect_eigenvalues(sample, number_of_points, epsilon, number_of_realizations)
-        logvals = numpy.log(numpy.sort(eigvals)[number_of_realizations:])
-        cummulative_plot(ax, logvals, label=r"$\epsilon = {0}$".format(epsilon))
-        if ax_hist is not None:
-            ax_hist.hist(logvals, bins = sqrt(number_of_points*number_of_realizations), label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
-    if ax_hist is not None:
-        ax_hist.legend()
-
-def torus_avg(ax_eig, N_points=1000, dimensions=(1, 1), xi = 0.0032, end_log_time=1, avg_N=10):
-    """
-    """
-    sum_of_eigvals = []
-    for i in range(avg_N):
-        torus = geometry.Torus(dimensions)
-        points = torus.generate_points(N_points)
-        n = N_points / (dimensions[0]*dimensions[1])
-        print("n = {0}, xi = {1}, n*xi = {2}, n*xi^2={3}".format(n, xi, n*xi, n*xi**2))
-        dis =  geometry.fast_periodic_distance_matrix(points, torus.dimensions)
-        rnn = sparsedl.rnn(dis)
-        print("Rnn = "+str(rnn)+ " xi/rnn = "+str(xi/rnn))
-
-        ex1 = numpy.exp(-dis/xi)
-        sparsedl.zero_sum(ex1)
-        ex2 = sparsedl.permute_tri(ex1)
-        ex3 = sparsedl.keep_only_nn(ex1)  # new addition, keep only nn
-        #print(ex3)
-        ex4 = numpy.copy(ex3)
-        print(sparsedl.zero_sum(ex4))
-        #print(ex3.diagonal() - ex4.diagonal())
-        eigvals = []
-        for ex in (ex1, ex2, ex3, ex4):
-            eig = -linalg.eigvals(ex)
-            eig.sort()
-            eig = eig[1:] # The zero is problematic for the plots
-            eigvals += [eig]
-        diagvals = - ex1.diagonal()
-        diagvals.sort()
-        diagvals = diagvals[1:]
-        eigvals += [diagvals]  #### Only the diagonal values. Should resemble the others.
-        minvallog = numpy.log10(min(numpy.min(eigvals[0]), numpy.min( eigvals[1])))
-        maxvallog = numpy.log10(max(numpy.max(eigvals[0]), numpy.max( eigvals[1])))
-        theory_space = numpy.logspace(0, 2, 100)
-        theory = 1 - numpy.exp(-(pi/2)*((xi/rnn)*numpy.log(theory_space/2))**2)
-        if sum_of_eigvals == [] :
-            sum_of_eigvals = deepcopy(eigvals)
-        else:
-            for i in range(5):
-                sum_of_eigvals[i] += eigvals[i]
-    avg_eigvals = [ values/ avg_N for values in sum_of_eigvals]
-
-    ax_eig.loglog(avg_eigvals[0], numpy.linspace(0, 1, N_points-1), label="original", marker='.', linestyle='')
-    ax_eig.loglog(avg_eigvals[1], numpy.linspace(0, 1, N_points-1), label="permuted", marker='.', linestyle='')
-    ax_eig.loglog(avg_eigvals[2], numpy.linspace(0, 1, N_points-1), label="only nn, same diagonal", marker='.', linestyle='')
-    ax_eig.loglog(avg_eigvals[3], numpy.linspace(0, 1, N_points-1), label="only nn, zero-summed", marker='.', linestyle='')
-    ax_eig.loglog(avg_eigvals[4], numpy.linspace(0, 1, N_points-1), label="Only the diagonals", marker='.', linestyle='')
-
-    xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
-    #ax_eig.loglog(theory_space, theory, label="theory", linestyle="--")
-    ax_eig.legend(loc='upper left')
-    ax_eig.set_xlim(xlim)
-    ax_eig.set_ylim(ylim)
-
+    n = sample.number_of_points/ sample.volume
+    xi = epsilon * n**(-1/sample.d)
+    dis = geometry.fast_periodic_distance_matrix(sample.points, sample.dimensions)
+    ex1 = numpy.exp(-dis/xi)
+    sparsedl.zero_sum(ex1)
+    return ex1
 
 
 def loop_torus_eig():
@@ -378,26 +297,6 @@ def loop_torus_eig():
         torus_plots_eig(fig.add_subplot(5, 1, i), N_points=250)
     plotdl.savefig(fig, "8tori_eig", size_factor=(1, 2))
 
-
-def torus_permutation_noax(N_points=100, dimensions=(10, 10), filename="torus_perm"):
-    """
-    """
-    torus = geometry.Torus(dimensions)
-    points = torus.generate_points(N_points)
-    dis =  geometry.fast_periodic_distance_matrix(points, torus.dimensions)
-
-    fig = plotdl.Figure()
-    ax1 = fig.add_subplot(1, 2, 1)
-    ax2 = fig.add_subplot(1, 2, 2)
-
-    ex1 = numpy.exp(-dis)
-    sparsedl.zero_sum(ex1)
-    ex2 = sparsedl.permute_tri(ex1)
-    mat1 = ax1.matshow(ex1) #, norm=LogNorm(vmin=numpy.min(ex1), vmax=numpy.max(ex1))
-    mat2 = ax2.matshow(ex2)
-    #fig.colorbar(mat1)
-    #fig.colorbar(mat2)
-    plotdl.savefig(fig, filename)
 
 def torus_3_plots(N=200):
     """
@@ -428,7 +327,20 @@ def sheet_3_plots(N=200):
     ax1.set_xscale('linear')
     plotdl.save_ax(ax1, "sheet_linear")
 
+def line_3_plots(N=200):
+    """
+    """
+    ax1 = plotdl.new_ax_for_file()
+    line = geometry.PeriodicLine(10, N)
+    sample_plots_eig(ax1, line)
+    plotdl.save_ax(ax1, "line")
+    ax1.set_yscale('linear')
+    ax1.set_xscale('linear')
+    plotdl.save_ax(ax1, "line_linear")
 
+
+
+#########  Torus animation #####
 def torus_show_state(ax, time, torus ,xi=1):
     """
     """
@@ -482,18 +394,75 @@ def torus_time():
     rhos = torus_list_of_rhos(torus, times)
     plotdl.animate(torus_plot_rho, "test", rhos, torus=torus)
 
-def line_3_plots(N=200):
+##########
+def exp_models_sample(sample=geometry.Torus((1,1)), number_of_points=300, number_of_realizations = 10):
     """
     """
-    ax1 = plotdl.new_ax_for_file()
-    line = geometry.PeriodicLine(10, N)
-    sample_plots_eig(ax1, line)
-    plotdl.save_ax(ax1, "line")
-    ax1.set_yscale('linear')
-    ax1.set_xscale('linear')
-    plotdl.save_ax(ax1, "line_linear")
+    ax_exp = plotdl.new_ax_for_file()
+    epsilon_list = (0.05, 0.1,0.5,1,1.5,2,5,10)
+    ## 2d - torus
+    if number_of_realizations >1 :
+        plot_title = "{0} with {1} points, eigenvalues of ${2}$ realizations, $n=1$".format(sample.description,number_of_points, number_of_realizations )
+    else:
+        plot_title = "{0} with {1} points, eigenvalues for a single realization, $n=1$".format(sample.description,number_of_points)
+    hist_bins = sqrt(number_of_points*number_of_realizations)
+    
+    logvals = {} # empty dict
+    for epsilon in epsilon_list:
+        eigvals = sample_collect_eigenvalues(sample, number_of_points, epsilon, number_of_realizations)
+        logvals[epsilon]= numpy.log(numpy.sort(eigvals)[number_of_realizations:])
+        # I'm using str to avoid trouble with 0.05000000003
+    
+    #all
+    for epsilon in epsilon_list:
+        cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
+    plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax_exp,"exp_{0}_{1}_0semilogx".format(sample.short_name, number_of_realizations))
+    ax_exp.set_yscale('log')
+    plotdl.save_ax(ax_exp, "exp_{0}_{1}_0loglog".format(sample.short_name, number_of_realizations))
+    ax_exp.clear()
+       
+    ### low density
+    for epsilon in (0.05, 0.1):
+        cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
+    plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax_exp,"exp_{0}_{1}_low_semilogx".format(sample.short_name, number_of_realizations))
+    ax_exp.set_yscale('log')
+    plotdl.save_ax(ax_exp, "exp_{0}_{1}_low_loglog".format(sample.short_name, number_of_realizations))
+    ax_exp.clear()
+    #histogram
+    for epsilon in (0.05, 0.1):
+        ax_exp.hist(logvals[epsilon], bins = hist_bins, label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
+    plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax_exp,"exp_{0}_{1}_low_zhist".format(sample.short_name, number_of_realizations))
+    ax_exp.clear()
 
+    #high density
+    for epsilon in (5, 10):
+        cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
+    plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax_exp, "exp_{0}_{1}_high_semilogx".format(sample.short_name, number_of_realizations))
+    ax_exp.set_yscale('log')
+    plotdl.save_ax(ax_exp, "exp_{0}_{1}_high_loglog".format(sample.short_name, number_of_realizations))
+    ax_exp.clear()
+    #histogram
+    for epsilon in (0.05, 0.1):
+        ax_exp.hist(logvals[epsilon], bins = hist_bins,
+            label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
+    plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax_exp,"exp_{0}_{1}_high_zhist".format(sample.short_name, number_of_realizations))
 
+def participation_number(ax, matrix):
+    """
+    """
+    pn = ((matrix**2).sum(axis=0))**(-1)
+    ax.plot(pn)
+
+def participation_and_matshow(ax1, ax2, matrix):
+    """
+    """
+    
+######## One function to plot them all
 def all_plots(seed= 1, **kwargs):
     """  Create all of the figures. Please note that it might take some time.
     """
@@ -544,81 +513,9 @@ def all_plots(seed= 1, **kwargs):
     torus_3_plots()
     ax.clear()
     
-    ####################
     random.seed(seed)
-    torus = geometry.Torus((1,1))
-    sample_cummulative_avg(ax,(0.1,0.5,1,1.5,2,5), 300, 10, torus)
-    plotdl.set_all(ax, title="2d surface with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_torus_0semilogx")
-    ax.set_yscale('log')
-    plotdl.save_ax(ax, "avg_torus_0loglog")
-    ax.clear()
-    
-    # high density region (high xi)(with hist)
-    ax_hist = plotdl.new_ax_for_file()
-    random.seed(seed)
-    torus = geometry.Torus((1,1))
-    sample_cummulative_avg(ax,(5,10), 300, 10, torus, ax_hist=ax_hist)
-    plotdl.set_all(ax, title="2d surface with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_torus_high_semilogx")
-    ax.set_yscale('log')
-    plotdl.save_ax(ax, "avg_torus_high_loglog")
-    ax.clear()
-    #hist
-    plotdl.set_all(ax_hist, title="2d surface with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax_hist,"avg_torus_high_zhist")
-    ax_hist.clear()
-    
-    # low density region (low xi)(with hist)
-    random.seed(seed)
-    torus = geometry.Torus((1,1))
-    sample_cummulative_avg(ax,(0.05,0.1), 300, 10, torus, ax_hist=ax_hist)
-    plotdl.set_all(ax, title="2d surface with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_torus_low_semilogx")
-    ax.set_yscale('log')
-    plotdl.save_ax(ax, "avg_torus_low_loglog")
-    ax.clear()
-    #hist
-    plotdl.set_all(ax_hist, title="2d surface with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax_hist,"avg_torus_low_zhist")
-    ax_hist.clear()
-
-    random.seed(seed)
-    line = geometry.PeriodicLine(1)
-    sample_cummulative_avg(ax,(0.1,0.5,1,1.5,2,5), 300, 10, line)
-    plotdl.set_all(ax, title="1d line with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_line_0semilogx")
-    ax.set_yscale('log')
-    plotdl.save_ax(ax, "avg_line_0loglog")
-    ax.clear()
-    
-    #high density region: +hist
-    random.seed(seed)
-    line = geometry.PeriodicLine(1)
-    sample_cummulative_avg(ax,(5,10), 300, 10, line, ax_hist=ax_hist)
-    plotdl.set_all(ax, title="1d line with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_line_high_semilogx")
-    ax.set_yscale('log')
-    plotdl.save_ax(ax, "avg_line_high_loglog")
-    ax.clear()
-    #hist
-    plotdl.set_all(ax_hist, title="1d line with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax_hist,"avg_line_high_zhist")
-    ax_hist.clear()
-    
-    #low density region: +hist
-    random.seed(seed)
-    line = geometry.PeriodicLine(1)
-    sample_cummulative_avg(ax,(0.05,0.1), 300, 10, line, ax_hist=ax_hist)
-    plotdl.set_all(ax, title="1d line with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax,"avg_line_low_semilogx")
-    ax.set_yscale('log')
-    plotdl.save_ax(ax, "avg_line_low_loglog")
-    ax.clear()
-    #hist
-    plotdl.set_all(ax_hist, title="1d line with 300 points, eigenvalues of $10$ realizations, $n=1$", xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax_hist,"avg_line_low_zhist")
-    ax_hist.clear()
+    exp_models_sample(sample=geometry.Torus((1,1)), number_of_points=300, number_of_realizations = 10)
+    exp_models_sample(sample=geometry.PeriodicLine((1)), number_of_points=300, number_of_realizations = 10)
     
 
 
