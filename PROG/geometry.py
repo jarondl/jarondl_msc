@@ -40,7 +40,7 @@ class Torus(object):
 class PeriodicLine(object):
     def __init__(self, a, number_of_points=None):
         self.a = a
-        self.d = 2
+        self.d = 1
         self.dimensions = (a,)
         self.volume = a
 
@@ -55,7 +55,7 @@ class PeriodicLine(object):
 
     def generate_points(self, number_of_points):
         self.points = numpy.random.uniform(0,self.a,number_of_points)
-        return self.points
+        self.points.sort()
 
 
 def euclid(point1, point2):

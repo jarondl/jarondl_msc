@@ -6,6 +6,7 @@ from __future__ import division
 #from scipy.sparse import linalg as splinalg
 from numpy import linalg, random, pi, log10, sqrt
 from matplotlib.colors import LogNorm
+from matplotlib.widgets import Slider
 from copy import deepcopy
 
 import numpy
@@ -363,10 +364,29 @@ def torus_plot_rho(ax, rho, torus, num):
     """
     """
     sct = ax.scatter(torus.xpoints, torus.ypoints, edgecolors='none',
-            c=rho, norm=LogNorm( vmin=1/torus.number_of_points, vmax =1))
+            c=rho, norm=LogNorm( vmin=(1/torus.number_of_points)/1000, vmax =1))
     
     if num==0:
         ax.get_figure().colorbar(sct)
+
+def replot_rho_factory(ax, rhos, torus):
+    """
+    """
+    def replot_rho(slider_position):
+        torus_plot_rho(ax, rhos[:,int(slider_position)], torus, 1)
+    return replot_rho
+
+def torus_plot_several_rhos(fig,rhos, torus):
+    """
+    """
+    ax = fig.add_subplot(111)
+    fig.subplots_adjust(left=0.25, bottom=0.25)
+    torus_plot_rho(ax, rhos[:,0], torus, 0)
+    replot_rho = replot_rho_factory(ax, rhos, torus)
+    axsl = fig.add_axes([0.25, 0.1, 0.65, 0.03])
+    sl = Slider(axsl, "eigenmode", 0,rhos.shape[1],0)
+    sl.on_changed(replot_rho)
+
 
 def torus_list_of_rhos(torus, times, xi=1):
     """
@@ -393,6 +413,7 @@ def torus_time():
     torus = geometry.Torus((10,10),100)
     rhos = torus_list_of_rhos(torus, times)
     plotdl.animate(torus_plot_rho, "test", rhos, torus=torus)
+
 
 ##########
 def exp_models_sample(sample=geometry.Torus((1,1)), number_of_points=300, number_of_realizations = 10):
@@ -458,9 +479,20 @@ def participation_number(ax, matrix):
     pn = ((matrix**2).sum(axis=0))**(-1)
     ax.plot(pn)
 
-def participation_and_matshow(ax1, ax2, matrix):
+def plot_several_vectors(fig, matrix, vec_indices):
     """
     """
+    num_of_vectors = len(vec_indices)
+    axes = {} # empty_dict
+    
+    for n,m in enumerate(vec_indices):
+        if n==0:
+            axes[n] = fig.add_subplot(num_of_vectors,1,n+1)
+        else:
+            axes[n] = fig.add_subplot(num_of_vectors,1,n+1, sharex=axes[0], sharey=axes[0])
+        axes[n].plot(matrix[:,m], label = "eigenmode {0}".format(m))
+        axes[n].legend()
+
     
 ######## One function to plot them all
 def all_plots(seed= 1, **kwargs):
