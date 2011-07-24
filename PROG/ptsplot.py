@@ -155,11 +155,11 @@ def cummulative_plot(ax, values, label=None):
     N = len(values)
     ax.plot(numpy.sort(values), numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label)
 
-def eigen_matrix_squared(ax, eigenvectors):
+def plot_matrix_and_colorbar(ax, matrix):
     """
     """
     #vals, vecs = sparsedl.sorted_eigh(matrix)
-    ms = ax.matshow( eigenvectors[:,::-1]**2, norm=LogNorm(vmin=10**(-10) ))
+    ms = ax.matshow(matrix, norm=LogNorm(vmin=10**(-10) ))
     ax.figure.colorbar(ms)
 
 ################ Plots related to the eigenvalue plots ############3
@@ -269,10 +269,7 @@ def sample_collect_eigenvalues(sample, N=1000, epsilon=0.1, number_of_runs=10):
     for i in range(number_of_runs):
         print( "{0:03} / {1}".format(i+1, number_of_runs))
         sample.generate_points(N)
-        points = sample.points
-        dis = geometry.fast_periodic_distance_matrix(points, sample.dimensions)
-        ex1 = numpy.exp(-dis/xi)
-        sparsedl.zero_sum(ex1)
+        ex1 = sample_exp_matrix(sample, epsilon)
         collected_eigenvalues += [ -linalg.eigvals(ex1)]
     all_eigenvalues = numpy.concatenate(collected_eigenvalues)
     return all_eigenvalues
@@ -314,6 +311,10 @@ def torus_3_plots(N=200):
     ax2.scatter(torus.xpoints, torus.ypoints)
     plotdl.set_all(ax2, title="Scatter plot of the points")
     plotdl.save_ax(ax2, "torus_scatter")
+    
+    ax3 = plotdl.new_ax_for_file()
+    
+
 
 
 def sheet_3_plots(N=200):
@@ -401,10 +402,10 @@ def torus_list_of_rhos(torus, times, xi=1):
     sparsedl.zero_sum(W)
 
     # 
-    rho = []
+    rhos = []
     for t in times:
-        rho += [sparsedl.rho(t, rho0, W)]
-    return rho
+        rhos += [sparsedl.rho(t, rho0, W)]
+    return rhos
 
 def torus_time():
     """

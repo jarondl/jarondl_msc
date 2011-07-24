@@ -212,5 +212,5 @@ def sorted_eigh(matrix):
     """ """
     eigvals, eigvecs = linalg.eigh(matrix)
     sort_indices = numpy.argsort(eigvals)
-    return eigvals[sort_indices], eigvecs[:,sort_indices]
+    return eigvals[sort_indices[::-1]], eigvecs[:,sort_indices[::-1]]
     
