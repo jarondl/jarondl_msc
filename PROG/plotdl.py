@@ -32,6 +32,7 @@ from matplotlib.backends.backend_pdf import FigureCanvasPdf
 from matplotlib.backends.backend_ps import FigureCanvasPS
 from matplotlib.figure import Figure
 from matplotlib import rc
+from matplotlib.colors import LogNorm
 try:
     from matplotlib import pyplot
     from matplotlib.pyplot import draw
@@ -43,6 +44,9 @@ except RuntimeError:
 
 import numpy
 
+
+### Raise all float errors 
+numpy.seterr(all='warn')
 
 ## I use some latex info to derive optimial default sizes
 latex_width_pt = 460
@@ -139,5 +143,19 @@ def animate(plot_function, filename, variable_range, **kwargs):
         print( "Movie creation failed. Make sure you have mencoder installed")
 
     shutil.rmtree(tempdir)
+
+def cummulative_plot(ax, values, label=None):
+    """  Plot cummulative values.
+    """
+    N = len(values)
+    ax.plot(numpy.sort(values), numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label)
+
+def matshow_cb(ax, matrix, vmin=10**(-10), colorbar=True):
+    """
+    """
+    #vals, vecs = sparsedl.sorted_eigh(matrix)
+    ms = ax.matshow(matrix, norm=LogNorm(vmin=vmin ))
+    if colorbar:
+        ax.figure.colorbar(ms)
 
 

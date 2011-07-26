@@ -10,6 +10,10 @@ from numpy import sqrt, cos, pi
 from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
 from scipy.sparse.linalg import spsolve
+from scipy.maxentropy import logsumexp
+
+### Raise all float errors 
+numpy.seterr(all='warn')
 
 ##############  Create and manipulate matrices
 
@@ -47,9 +51,19 @@ def permute_tri(mat):
     retval = numpy.zeros(mat.shape)
     retval[upper_triangle_indices] = new_upper
     retval += retval.T
-    zero_sum(retval)
     return retval
 
+def permute_rows(mat):
+    """ Randomly permute every row of the upper triangle of mat, and then transposes it to the lower triangle.
+    """
+    upper = numpy.triu(mat, k=1)
+    mat_size = mat.shape[0]
+    retval = numpy.zeros(mat.shape)
+    for row in range(mat_size):
+        retval[row,(row+1):] = numpy.random.permutation(mat[row,(row+1):])
+    ### notice, only permutes columns!
+    retval += retval.T
+    return retval
 
 def zero_sum(mat, tol=1E-12):
     """  Set the diagonals of matrix, so the sum of each row eqauls zero, with
@@ -207,10 +221,28 @@ def surv(eigen_values, times):
     exps = numpy.exp(op)
     return exps.sum(axis=0) / len(eigen_values)
 
+def safe_surv(eigen_values, times):
+    """ Calculate survival probability by the sum of exponents equation"""
+    op = numpy.outer(eigen_values, times)
+    return logsumexp(op) / len(eigen_values)
+
+
 
 def sorted_eigh(matrix):
     """ """
     eigvals, eigvecs = linalg.eigh(matrix)
     sort_indices = numpy.argsort(eigvals)
     return eigvals[sort_indices[::-1]], eigvecs[:,sort_indices[::-1]]
-    
+
+
+def sorted_eigvalsh(matrix):
+    """ """
+    eigvals =  - linalg.eigvalsh(matrix)
+    eigvals.sort()
+    return eigvals    
+
+def descrete_spatial_fourier2(k , points, values):
+    """ """
+    ikr = 1j*numpy.dot(k, points.T)
+    f_e_ikr = values*numpy.exp(ikr)
+    return f_e_ikr.sum()

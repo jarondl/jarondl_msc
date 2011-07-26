@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 """  A module containing several geometry related functions.
 """
+from __future__ import division  # makes true division instead of integer division
 
 import numpy as np, numpy
 
-
+### Raise all float errors 
+numpy.seterr(all='warn')
 
 class Torus(object):
     def __init__(self, (a, b), number_of_points=None):
@@ -31,11 +33,16 @@ class Torus(object):
         xdiff = np.min( (np.abs(x2-x1), self.a - np.abs(x2-x1))  )
         return np.sqrt(xdiff**2 + ydiff**2)
 
-    def generate_points(self, N):
-        self.xpoints = numpy.random.uniform(0, self.a, N)
-        self.ypoints = numpy.random.uniform(0, self.b, N)
+    def generate_points(self, number_of_points):
+        self.xpoints = numpy.random.uniform(0, self.a, number_of_points)
+        self.ypoints = numpy.random.uniform(0, self.b, number_of_points)
         self.points = numpy.vstack((self.xpoints, self.ypoints)).T
+        self.number_of_points = number_of_points
         #return self.points
+    
+    def epsilon_to_xi(self, epsilon):
+        n = self.number_of_points/ self.volume
+        return epsilon * n**(-1/self.d)
 
 class PeriodicLine(object):
     def __init__(self, a, number_of_points=None):
@@ -56,7 +63,11 @@ class PeriodicLine(object):
     def generate_points(self, number_of_points):
         self.points = numpy.random.uniform(0,self.a,number_of_points)
         self.points.sort()
+        self.number_of_points = number_of_points
 
+    def epsilon_to_xi(self, epsilon):
+        n = self.number_of_points/ self.volume
+        return epsilon * n**(-1/self.d)
 
 def euclid(point1, point2):
     """  Calculate the euclidean distance (norm) between any two points. Points
