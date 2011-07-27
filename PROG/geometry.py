@@ -9,6 +9,38 @@ import numpy as np, numpy
 ### Raise all float errors 
 numpy.seterr(all='warn')
 
+class Sample(object):
+    def __init__(self, dimensions, number_of_points=None):
+        """
+        :param dimensions:  A tuple of the dimensions
+        """
+        self.dimensions = dimensions
+        self.number_of_points = number_of_points
+        self.d = len(dimensions)
+        self.volume = np.prod(self.dimensions)
+
+        if number_of_points is not None:
+            self.generate_points(number_of_points)
+
+    def generate_points(self, number_of_points):
+        d_points = []
+        for dimension in range(self.d):
+            d_points += [numpy.random.uniform(0, self.dimensions[dimension], number_of_points)]
+        self.points = numpy.vstack(d_points).T
+        self.number_of_points = number_of_points
+        self.n = self.number_of_points / self.volume
+
+    def epsilon_to_xi(self, epsilon):
+        """ Returns xi, using the current sample density. Should raise an error if no points were created."""
+        return epsilon * self.n**(-1/self.d)
+
+    def periodic_distance_matrix(self):
+        return fast_periodic_distance_matrix(self.points, self.dimensions)
+
+    def non_periodic_distance_matrix(self):
+        return fast_distance_matrix(self.points)
+
+
 class Torus(object):
     def __init__(self, (a, b), number_of_points=None):
         """ ARGUMENTS:
@@ -105,6 +137,9 @@ def fast_distance_matrix(points):
     for d in range(1,m):
         data = points[:,d]
         delta += (data - data[:,np.newaxis])**2
+    #weird 1d problem solving:
+    if m==1:
+        return numpy.sqrt(delta[:,:,0])
     return numpy.sqrt(delta)
 
 def fast_periodic_distance_matrix(points, dimensions=(1,1)):
