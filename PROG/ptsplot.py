@@ -21,6 +21,7 @@ from plotdl import cummulative_plot
 
 ### Raise all float errors 
 numpy.seterr(all='warn')
+EXP_MAX_NEG = numpy.log(numpy.finfo( numpy.float).tiny)
 
 
 def p_lognormal_band(ax, N=100, b=1, **kwargs):
@@ -130,16 +131,15 @@ def sample_2d_theory(ax, sample, epsilon):
     ax.set_ylim(ylim)
 
 
-def sample_collect_eigenvalues(sample, N=1000, epsilon=0.1, number_of_runs=10):
+def sample_collect_eigenvalues(sample, epsilon=0.1, number_of_runs=10):
     """
     """
     collected_eigenvalues = []
-    n = N/sample.volume
-    xi = epsilon * n**(-1/sample.d)
-    print n, xi, epsilon
+    xi = sample.epsilon_to_xi(epsilon)
+    print xi, epsilon
     for i in range(number_of_runs):
         print( "{0:03} / {1}".format(i+1, number_of_runs))
-        sample.generate_points(N)
+        sample.generate_points()
         ex1 = sample_exp_matrix(sample, epsilon)
         collected_eigenvalues += [ -linalg.eigvals(ex1)]
     all_eigenvalues = numpy.concatenate(collected_eigenvalues)
@@ -149,7 +149,11 @@ def sample_exp_matrix(sample, epsilon=0.1):
     """
     """
     xi = sample.epsilon_to_xi(epsilon)
-    dis = geometry.fast_periodic_distance_matrix(sample.points, sample.dimensions)
+    dis = sample.periodic_distance_matrix()
+    ## check for minimal exp probelm (arround exp(-800))
+    underflows = (-dis/xi < EXP_MAX_NEG).sum()
+    if underflows != 0:
+        print "### {0} died out of {1} ".format(underflows, dis.size)
     ex1 = numpy.exp(-dis/xi)
     sparsedl.zero_sum(ex1)
     return ex1
@@ -293,62 +297,42 @@ def torus_time():
 
 
 ##########
-def exp_models_sample(sample=Sample((1,1)), number_of_points=300, number_of_realizations = 10):
+def exp_models_sample(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05, 0.1),(5,10)), epsilon_range_names=("all","low","high"), number_of_realizations = 10):
     """
     """
     ax_exp = plotdl.new_ax_for_file()
-    epsilon_list = (0.05, 0.1,0.5,1,1.5,2,5,10)
-    ## 2d - torus
+    epsilon_list = set()
+    epsilon_list.update(*epsilon_ranges)
+    print(epsilon_list)
+    #epsilon_list = (0.05, 0.1,0.5,1,1.5,2,5,10)
     if number_of_realizations >1 :
-        plot_title = "{0}d with {1} points, eigenvalues of ${2}$ realizations, $n=1$".format(sample.d,number_of_points, number_of_realizations )
+        plot_title = "{0}d with {1} points, eigenvalues of ${2}$ realizations, $n=1$".format(sample.d, sample.number_of_points, number_of_realizations )
     else:
-        plot_title = "{0}d with {1} points, eigenvalues for a single realization, $n=1$".format(sample.d,number_of_points)
-    hist_bins = sqrt(number_of_points*number_of_realizations)
+        plot_title = "{0}d with {1} points, eigenvalues for a single realization, $n=1$".format(sample.d,sample.number_of_points)
+    hist_bins = sqrt(sample.number_of_points*number_of_realizations)
     
+    ## First we create all the eigenvalues for all epsilons and realizations
     logvals = {} # empty dict
     for epsilon in epsilon_list:
-        eigvals = sample_collect_eigenvalues(sample, number_of_points, epsilon, number_of_realizations)
+        eigvals = sample_collect_eigenvalues(sample, epsilon, number_of_realizations)
         logvals[epsilon]= numpy.log(numpy.sort(eigvals)[number_of_realizations:])
         # I'm using str to avoid trouble with 0.05000000003
     
-    #all
-    for epsilon in epsilon_list:
-        cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
-    plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_0semilogx".format(sample.d, number_of_realizations))
-    ax_exp.set_yscale('log')
-    plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_0loglog".format(sample.d, number_of_realizations))
-    ax_exp.clear()
-       
-    ### low density
-    for epsilon in (0.05, 0.1):
-        cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
-    plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_low_semilogx".format(sample.d, number_of_realizations))
-    ax_exp.set_yscale('log')
-    plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_low_loglog".format(sample.d, number_of_realizations))
-    ax_exp.clear()
-    #histogram
-    for epsilon in (0.05, 0.1):
-        ax_exp.hist(logvals[epsilon], bins = hist_bins, label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
-    plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_low_zhist".format(sample.d, number_of_realizations))
-    ax_exp.clear()
+    for range_name, epsilon_list in zip(epsilon_range_names, epsilon_ranges):
+            for epsilon in sorted(epsilon_list):
+                cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
+            plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
+            plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_semilogx".format(sample.d, number_of_realizations, range_name))
+            ax_exp.set_yscale('log')
+            plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_loglog".format(sample.d, number_of_realizations, range_name))
+            ax_exp.clear()
+            ### Histogram
+            for epsilon in sorted(epsilon_list):
+                ax_exp.hist(logvals[epsilon], bins = hist_bins, label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
+            plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
+            plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_{2}_zhist".format(sample.d, number_of_realizations, range_name))
+            ax_exp.clear()
 
-    #high density
-    for epsilon in (5, 10):
-        cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
-    plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_high_semilogx".format(sample.d, number_of_realizations))
-    ax_exp.set_yscale('log')
-    plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_high_loglog".format(sample.d, number_of_realizations))
-    ax_exp.clear()
-    #histogram
-    for epsilon in (5, 10):
-        ax_exp.hist(logvals[epsilon], bins = hist_bins,
-            label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
-    plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_high_zhist".format(sample.d, number_of_realizations))
 
 def participation_number(ax, matrix):
     """
@@ -403,10 +387,10 @@ def all_plots(seed= 1, **kwargs):
     #plotdl.save_ax(ax, "P_lognormal_band")
     #ax.clear()
 
-    random.seed(seed)
-    spreading_plots(ax)
-    plotdl.save_ax(ax, "spreading")
-    ax.clear()
+    #random.seed(seed)
+    #spreading_plots(ax)
+    #plotdl.save_ax(ax, "spreading")
+    #ax.clear()
 
 
     random.seed(seed)
@@ -414,9 +398,9 @@ def all_plots(seed= 1, **kwargs):
     ax.clear()
     
     random.seed(seed)
-    exp_models_sample(sample=Sample((1,1)), number_of_points=300, number_of_realizations = 10)
-    exp_models_sample(sample=Sample((1,1)), number_of_points=300, number_of_realizations = 1)
-    exp_models_sample(sample=Sample((1)), number_of_points=300, number_of_realizations = 10)
+    exp_models_sample(sample=Sample((1,1),300), number_of_realizations = 10)
+    exp_models_sample(sample=Sample((1,1),300), number_of_realizations = 1)
+    exp_models_sample(sample=Sample((1,),300), number_of_realizations = 10)
     
 
 

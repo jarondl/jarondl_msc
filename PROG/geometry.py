@@ -28,11 +28,17 @@ class Sample(object):
         if number_of_points is not None:
             self.generate_points(number_of_points)
 
-    def generate_points(self, number_of_points):
+    def generate_points(self, number_of_points=None):
+        if number_of_points is None:
+            number_of_points = self.number_of_points
         d_points = []
         for dimension in range(self.d):
             d_points += [numpy.random.uniform(0, self.dimensions[dimension], number_of_points)]
-        self.points = numpy.vstack(d_points).T
+        if self.d ==1:
+            self.points = d_points[0]
+            self.points.sort()
+        else:
+            self.points = numpy.vstack(d_points).T
         self.number_of_points = number_of_points
         self.n = self.number_of_points / self.volume
 
