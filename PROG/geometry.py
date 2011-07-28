@@ -14,9 +14,15 @@ class Sample(object):
         """
         :param dimensions:  A tuple of the dimensions
         """
-        self.dimensions = dimensions
+
         self.number_of_points = number_of_points
-        self.d = len(dimensions)
+        # one int/float doesn't have length
+        try:
+            self.d = len(dimensions)
+            self.dimensions = dimensions
+        except TypeError:
+            self.d = 1
+            self.dimensions = (dimensions,) # a one-tuple
         self.volume = np.prod(self.dimensions)
 
         if number_of_points is not None:

@@ -15,6 +15,7 @@ import numpy
 import sparsedl
 import plotdl
 import geometry
+from geometry import Sample
 from eigenvalue_plots import eigenvalues_cummulative
 from plotdl import cummulative_plot
 
@@ -169,7 +170,7 @@ def torus_3_plots(N=200):
     """
     """
     ax1 = plotdl.new_ax_for_file()
-    torus = geometry.Torus((1,1), N)
+    torus = Sample((1,1), N)
     sample_plots_eig(ax1, torus)
     plotdl.save_ax(ax1, "torus")
     ax1.set_yscale('linear')
@@ -177,7 +178,7 @@ def torus_3_plots(N=200):
     plotdl.save_ax(ax1, "torus_linear")
 
     ax2 = plotdl.new_ax_for_file()
-    ax2.scatter(torus.xpoints, torus.ypoints)
+    ax2.scatter(torus.points[:,0], torus.points[:,1])
     plotdl.set_all(ax2, title="Scatter plot of the points")
     plotdl.save_ax(ax2, "torus_scatter")
     
@@ -190,7 +191,7 @@ def sheet_3_plots(N=200):
     """ non periodic 2d surface
     """
     ax1 = plotdl.new_ax_for_file()
-    torus = geometry.Torus((100,100), N)
+    torus = Sample((100,100), N)
     dis = geometry.fast_distance_matrix(torus.points)
     sample_plots_eig(ax1, torus)
     plotdl.save_ax(ax1, "sheet")
@@ -202,7 +203,7 @@ def line_3_plots(N=200):
     """
     """
     ax1 = plotdl.new_ax_for_file()
-    line = geometry.PeriodicLine(10, N)
+    line = Sample(10, N)
     sample_plots_eig(ax1, line)
     plotdl.save_ax(ax1, "line")
     ax1.set_yscale('linear')
@@ -286,13 +287,13 @@ def torus_time():
     """
     """
     times = numpy.linspace(0,1,100)
-    torus = geometry.Torus((10,10),100)
+    torus = Sample((10,10),100)
     rhos = torus_list_of_rhos(torus, times)
     plotdl.animate(torus_plot_rho, "test", rhos, torus=torus)
 
 
 ##########
-def exp_models_sample(sample=geometry.Torus((1,1)), number_of_points=300, number_of_realizations = 10):
+def exp_models_sample(sample=Sample((1,1)), number_of_points=300, number_of_realizations = 10):
     """
     """
     ax_exp = plotdl.new_ax_for_file()
@@ -413,9 +414,9 @@ def all_plots(seed= 1, **kwargs):
     ax.clear()
     
     random.seed(seed)
-    exp_models_sample(sample=geometry.Torus((1,1)), number_of_points=300, number_of_realizations = 10)
-    exp_models_sample(sample=geometry.Torus((1,1)), number_of_points=300, number_of_realizations = 1)
-    exp_models_sample(sample=geometry.PeriodicLine((1)), number_of_points=300, number_of_realizations = 10)
+    exp_models_sample(sample=Sample((1,1)), number_of_points=300, number_of_realizations = 10)
+    exp_models_sample(sample=Sample((1,1)), number_of_points=300, number_of_realizations = 1)
+    exp_models_sample(sample=Sample((1)), number_of_points=300, number_of_realizations = 10)
     
 
 
