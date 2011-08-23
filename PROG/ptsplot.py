@@ -368,12 +368,50 @@ def sample_participation_number(ax, sample, epsilon=0.1):
     ax.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
     ax.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
 
-    dots_to_annotate = (pn > (sample.number_of_points/3)).nonzero()[0]
-    _arrowprops=dict(arrowstyle="->")
-    for dot in dots_to_annotate:
-        print dot, pn[dot]
-        ax.annotate(r"${x},{y}, \lambda={l}$".format(x=dot, y=pn[dot], l= eigvals[dot]), xy=(dot,pn[dot]), xycoords='data', xytext=(20,20), 
-            textcoords='offset points', arrowprops=_arrowprops)
+    #dots_to_annotate = (pn > (sample.number_of_points/3)).nonzero()[0]
+    #_arrowprops=dict(arrowstyle="->")
+    #for dot in dots_to_annotate:
+    #    print dot, pn[dot]
+    #    ax.annotate(r"${x},{y}, \lambda={l}$".format(x=dot, y=pn[dot], l= eigvals[dot]), xy=(dot,pn[dot]), xycoords='data', xytext=(20,20), 
+    #        textcoords='offset points', arrowprops=_arrowprops)
+
+def high_epsilons(number_of_points=200, epsilon=20):
+    """
+    """
+    line = Sample(1,number_of_points)
+    ax = plotdl.new_ax_for_file()
+    ex = sample_exp_matrix(line, epsilon=epsilon)
+    v,w = sparsedl.sorted_eigh(ex)
+    cummulative_plot(ax, (-v)[1:])
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    plotdl.set_all(ax, title="Cummulative eigenvalues $N={0}, \epsilon = {1}$".format(number_of_points, epsilon), xlabel=r"$\lambda$")
+    plotdl.save_ax(ax, "exp_1d_{0}_{1}_eigvals".format(number_of_points, epsilon))
+
+    ax.clear()
+    pn = ((w**4).sum(axis=0))**(-1)
+    ax.plot(pn, label="PN - participation number")
+    ax.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
+    ax.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
+    plotdl.set_all(ax, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
+    plotdl.save_ax(ax, "exp_1d_{0}_{1}_participation".format(number_of_points, epsilon))
+
+    ax.clear()
+    plotdl.matshow_cb(ax, w**2, vmin=10**(-10), colorbar=True)
+    plotdl.set_all(ax, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
+    plotdl.save_ax(ax, "exp_1d_{0}_{1}_matshow".format(number_of_points, epsilon))
+    
+    f= plotdl.Figure()
+    plot_several_vectors(f, w**2, range(1,5))
+    plotdl.save_fig(f, "exp_1d_{0}_{1}_vecs_01_04".format(number_of_points, epsilon))
+    f.clear()
+    plot_several_vectors(f, w**2, range(5,10))
+    plotdl.save_fig(f, "exp_1d_{0}_{1}_vecs_05_10".format(number_of_points, epsilon))
+    f.clear()
+    plot_several_vectors(f, w**2, range(11,15))
+    plotdl.save_fig(f, "exp_1d_{0}_{1}_vecs_11_15".format(number_of_points, epsilon))
+    
+    
     
     
 ######## One function to plot them all
@@ -391,6 +429,14 @@ def all_plots(seed= 1, **kwargs):
     #spreading_plots(ax)
     #plotdl.save_ax(ax, "spreading")
     #ax.clear()
+    random.seed(1)
+    high_epsilons(number_of_points=200, epsilon=20)
+    random.seed(1)
+    high_epsilons(number_of_points=200, epsilon=5)
+    random.seed(2)
+    high_epsilons(number_of_points=400, epsilon=20)
+    random.seed(2)
+    high_epsilons(number_of_points=400, epsilon=5)
 
 
     random.seed(seed)
