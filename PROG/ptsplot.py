@@ -84,14 +84,19 @@ def sample_plots_eig(ax_eig, sample, distance_matrix = None, epsilon = 0.1, end_
         dis = distance_matrix
 
     ex1 = numpy.exp(-dis/xi)
+    # New -  trying to normalize
+    # r_0 -> avg distance?
+    #r_0 = dis.sum()/(dis.size)
+    #ex1 = ex1*numpy.exp(r_0/xi)
+    #
     sparsedl.zero_sum(ex1)
-    assert sparsedl.zero_sum(ex1)
+    #assert sparsedl.zero_sum(ex1)
     ex2 = sparsedl.permute_tri(ex1)
     sparsedl.zero_sum(ex2)
-    assert sparsedl.zero_sum(ex2)
+    #assert sparsedl.zero_sum(ex2)
     ex3 = sparsedl.permute_rows(ex1)
     sparsedl.zero_sum(ex3)
-    assert sparsedl.zero_sum(ex3)
+    #assert sparsedl.zero_sum(ex3)
     eigvals = []
     eigvals += [eigenvalues_cummulative(ax_eig, ex1, "Original values")]
     eigvals += [eigenvalues_cummulative(ax_eig, ex2, "Permuted values")]
@@ -154,7 +159,12 @@ def sample_exp_matrix(sample, epsilon=0.1):
     underflows = (-dis/xi < EXP_MAX_NEG).sum()
     if underflows != 0:
         print "### {0} died out of {1} ".format(underflows, dis.size)
-    ex1 = numpy.exp(-dis/xi)
+    
+    # new
+    r_0 = dis.sum()/(dis.size)
+    r_0_mat = numpy.ones(dis.shape)*r_0
+    ex1 = numpy.exp((r_0_mat-dis)/xi)
+#    ex1 = ex1*numpy.exp(r_0/xi)
     sparsedl.zero_sum(ex1)
     return ex1
 

@@ -171,7 +171,9 @@ We use $P_n$ to denote the $n$'th site occupation probability, and $W_{nm}$ for 
 \begin{align}
 \frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t)
 \end{align}
-Or in a vector form:
+Because of probability conservation, we want to have $\sum_m W_{nm} = 0 \  \forall m$ , which we can achieve by setting $W_{nn} = -\sum_{m\ne n} W_{nm} $, meaning that for each site the sum of incoming transition rates negates the outgoing transitions.
+
+In a vector form, we have:
 \begin{align} \boldsymbol{ \dot P } = \boldsymbol{W} \boldsymbol{P} \end{align}
 
 \subsection{Finding the values for the the transition rates}
