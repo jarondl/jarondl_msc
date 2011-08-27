@@ -331,6 +331,8 @@ def exp_models_sample(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05
     for range_name, epsilon_list in zip(epsilon_range_names, epsilon_ranges):
             for epsilon in sorted(epsilon_list):
                 cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
+
+                
             plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
             plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_semilogx".format(sample.d, number_of_realizations, range_name))
             ax_exp.set_yscale('log')
@@ -342,6 +344,61 @@ def exp_models_sample(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05
             plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
             plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_{2}_zhist".format(sample.d, number_of_realizations, range_name))
             ax_exp.clear()
+
+
+#### Sample one realization with diffusion, and same points for all realizations##
+def exp_models_sample_oner(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05, 0.1),(5,10)), epsilon_range_names=("all","low","high")):
+    """
+    """
+    #temp:
+    number_of_realizations = 1
+    ax_exp = plotdl.new_ax_for_file()
+    epsilon_list = set()
+    epsilon_list.update(*epsilon_ranges)
+    print(epsilon_list)
+    #epsilon_list = (0.05, 0.1,0.5,1,1.5,2,5,10)
+    if number_of_realizations >1 :
+        plot_title = "{0}d with {1} points, eigenvalues of ${2}$ realizations, $n=1$".format(sample.d, sample.number_of_points, number_of_realizations )
+    else:
+        plot_title = "{0}d with {1} points, eigenvalues for a single realization, $n=1$".format(sample.d,sample.number_of_points)
+    hist_bins = sqrt(sample.number_of_points*number_of_realizations)
+    
+    ## First we create all the eigenvalues for all epsilons and realizations
+    logvals = {} # empty dict
+    rate_matrix = {}
+    for epsilon in epsilon_list:
+        ##eigvals = sample_collect_eigenvalues(sample, epsilon, number_of_realizations)
+        ex1 = sample_exp_matrix(sample, epsilon)
+        eigvals= -linalg.eigvals(ex1)
+        logvals[epsilon]= numpy.log(numpy.sort(eigvals)[1:])
+        rate_matrix[epsilon] = ex1.copy()
+        
+    
+    for range_name, epsilon_list in zip(epsilon_range_names, epsilon_ranges):
+            for epsilon in sorted(epsilon_list):
+                cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
+                ### diffusion
+                diff_coef = sparsedl.resnet(rate_matrix[epsilon], 1)
+                diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],logvals[epsilon][-1], 100))
+                diffusion = numpy.sqrt(diffusion_space/(diff_coef))/pi
+                ax_exp.plot(numpy.log(diffusion_space), diffusion, linestyle='--', label="1")
+                diffusion2 = numpy.sqrt(diffusion_space/(diff_coef))
+                ax_exp.plot(numpy.log(diffusion_space), diffusion2, linestyle='--', label="2")
+                diffusion3 = numpy.sqrt((diffusion_space/(diff_coef))/(pi))
+                ax_exp.plot(numpy.log(diffusion_space), diffusion3, linestyle='--', label="3")
+                    
+            plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
+            plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_semilogx".format(sample.d, number_of_realizations, range_name))
+            ax_exp.set_yscale('log')
+            plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_loglog".format(sample.d, number_of_realizations, range_name))
+            ax_exp.clear()
+            ### Histogram
+            for epsilon in sorted(epsilon_list):
+                ax_exp.hist(logvals[epsilon], bins = hist_bins, label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
+            plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
+            plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_{2}_zhist".format(sample.d, number_of_realizations, range_name))
+            ax_exp.clear()
+
 
 
 def participation_number(ax, matrix):
