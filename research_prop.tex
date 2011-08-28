@@ -111,7 +111,7 @@
 %    {0.5cm}%
 %    {\normalfont\small\bfseries}%
 %}%
-%\def\subsection{%
+%\def{ \bf %
 %  \@startsection
 %    {subsection}%
 %    {2}%
@@ -163,50 +163,51 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%
-\section{Introduction}
+\section{Work plan}
 
 %%%%%%%%%%%
-\subsection{Defining site occupation probabilities and transition rates}
-First let us define the model. The model consists of sites which a particle may occupy. At each point in time, and for every site, there is a probability to find the particle in this particular site, which is called \emph{occupation probability}. We define the \emph{transition rates} as the rate in which those probabilites move from one site to another. A $1d$ system can also be called a Markovian chain. Higher dimensional systems are types of networks, or \emph{graphs}, where \emph{Graph Theory} has some relevance.
 
-%%%%%%%%%%%
-\subsection{Rate equation}
-We use $P_n$ to denote the $n$'th site occupation probability, and $W_{nm}$ for the transition rate between two sites $n$ and $m$. The time evolution of $P_n$ may be written as:
+{ \bf Modeling .-- } $N$ interconnected sites constitue a network. A single particle is bound to the network. We denote by $p_n(t)$ the probability to find the particle on site $n$ at time $t$, so that $\sum_n p_n(t) =1$. The dynamics of the system are described by the rate equation:
 \begin{align}
-\frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t)
+\frac{dp_n(t)}{dt} = \sum_m W_{nm}p_m(t)
 \end{align}
-Because of probability conservation, we want to have $\sum_m W_{nm} = 0 \  \forall m$ , which we can achieve by setting $W_{nn} = -\sum_{m\ne n} W_{nm} $, meaning that for each site the sum of incoming transition rates negates the outgoing transitions.
-
-In a vector form, we have:
-\begin{align} \boldsymbol{ \dot P } = \boldsymbol{W} \boldsymbol{P} \end{align}
-The vector $\boldsymbol{P}$ has positive values and sums up to one. The matrix $\boldsymbol{W}$ is symmetric (at the moment, see section \ref{sec:vrh}), except for the main diagonal, which has values that ensure that each row's sum is zero.
+Where $W_{nm}$ is the \emph{transition rate}, i.e.\ the rate at which probability moves from site $m$ to site $n$.
+Because of probability conservation, we want to have $\sum_m W_{nm} = 0 \ \ \forall n$ , which we can achieve by setting $W_{nn} = -\sum_{m\ne n} W_{nm} $, meaning that for each site the sum of incoming transition rates negates the outgoing transitions.
+The rate equation can also be written as a vectorial equation:$\boldsymbol{ \dot p } = \boldsymbol{W} \boldsymbol{p}$. In its basic form, the matrix $\boldsymbol{W}$ is symmetric (at the moment, see section \ref{sec:vrh}), except for the main diagonal, which has values that ensure that each row's sum is zero.
 
 %%%%%%%%%%%
-\subsection{Deciding the values for the the transition rates}
-Most of the systems we will work with can be defined unambiguously by defining their transition rates. We can map certain physical, geometrical or topological charecteristics of systems to their transition rate matrices. One of our main interests are transition rates that depened on the distance betweeen scattered points, in either $1d$, $2d$, or any other dimension. Specifically, the case of $W_{nm}= e^{-r_{nm}/ \xi}$, which was studied by \citet{Amir:2010:PRL}, will be researched.
+The network (the values of $W_{nm}$) can be defined arbitrarily, but we wish to focus on networks that represent geometric systems, by defining the transition rates to depend on the distance betweeen scattered points. One such network, with the rates $W_{nm}= e^{-r_{nm}/ \xi}$, where $r_{nm}$ is the distance between site $n$ and $m$, and $\xi$ is some scaling coefficient, was studied in \cite{Amir:2010:PRL}, and is of particular interest for us.
+
+%%%%%%%%%%%
+
+%%%%%%%%%%%
+{ \bf Geometrical implications.--} 
+{ \bf Banded sparse matrices}
+%%%%
+%1. geometry -> statistics
+%2. Stotland, resistor network for banded sparse matrices, numeric only, not full analytical understanding of the bandwidth implications
+%3. 1d -> alexander shows subdiff. 2d is less clear , amir claims log^d, but resistor network shows otherwise,we propose normalization group. 
+%4. hopping , halperin, resistor network, symmetric. what are the effects of assymetry?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{TEMP TITLE: What we seek and for which models}
 
+
 %%%%%%%%%%%
-\subsection{Survival probability - $\mathcal{P}(t)$} 
+{ \bf Survival probability - $\mathcal{P}(t)$.--} 
 The survival probability is the probability to remain in the starting site. If the initial condition was $P_0(0)=1$, $P_i(0)=0 \textrm{  for  } i\neq 0$, then $\mathcal{P}(t)= P_0(t)$. The survival probability is related to the localization properties of the system.
 
 %%%%%%%%%%%
-\subsection{Transport / Conductance / Spreading}
+{ \bf Transport / Conductance / Spreading.--}
 All these terms refer to quantities that measure at which rate does a particle move in the system. Spreading usually means the Root-Mean-Square of the particle from its initial position, while Conductance is the rate at which particles pass the system from one end to the other.
 
 %%%%%%%%%%%
-\subsection{$1d$, $2d$, quasi-$1d$}
+{ \bf $1d$, $2d$, quasi-$1d$.--}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Block renormalization group}
 A useful method to find the conductance is block renormalization. For $1d$ this is rather straight forward. In each step two adjacent bonds are treated as one renormalized bond. This is repeated until we have one effective bond, instead of the entire system. (See figure \ref{fig:renorm_group}). 
-\begin{figure}
-    \includegraphics[clip]{rp_renorm_group}
-    \caption{Block renormalization in $1d$. The dots represent sites, while the lines represent bonds.}
-    \label{fig:renorm_group}
-\end{figure}
+
 
 For $2d$ or higher, we will need another mechanism, because cutting the system to blocks is not as trivial. In $1d$, two adjacent bonds have two connections to the rest of the system, and thus the replacement procedure is trivial. In $2d$, each site has many bonds, so to remove a site many bonds need to be renormalized which is rather difficult. An optional solution is to treat the network as continuous, and then slice it geometrically.
 
@@ -214,6 +215,7 @@ For $2d$ or higher, we will need another mechanism, because cutting the system t
 \section{Adding site-energy to the game} \label{sec:vrh}
 If the sites have different potentials, then the probability to remain in a site is modified by Boltzmann's factor. The VRH - \emph{Variable Range Hopping} method compensates for this effect by altering the transition rates accordingly. In VRH, the transition rate matrix stays symmetric, meaning that the transition rate from site $A$ to site $B$ equals the rate from $B$ to $A$. However, we know that transition from a higher potential site to a lower potential one is more probable than the reverse, by Boltzmann's factor. Therefore, we know that the matrix cannot be symmetric, and Boltzmann's factor should be added. It is of great interest to us wheter this change is significant, and how does it affect our current knowledge about survival and conductance.
 
+\section{Preliminary results}
 
 %\bibliographystyle{plainnat}
 \bibliography{jarondl}

@@ -83,12 +83,16 @@ def sample_plots_eig(ax_eig, sample, distance_matrix = None, epsilon = 0.1, end_
     else:
         dis = distance_matrix
 
-    ex1 = numpy.exp(-dis/xi)
+    #ex1 = numpy.exp(-dis/xi)
     # New -  trying to normalize
     # r_0 -> avg distance?
     #r_0 = dis.sum()/(dis.size)
     #ex1 = ex1*numpy.exp(r_0/xi)
     #
+    r_0 = dis.sum()/(dis.size)
+    print(r_0)
+    r_0_mat = numpy.ones(dis.shape)*r_0
+    ex1 = numpy.exp((r_0_mat-dis)/xi)
     sparsedl.zero_sum(ex1)
     #assert sparsedl.zero_sum(ex1)
     ex2 = sparsedl.permute_tri(ex1)
@@ -100,7 +104,7 @@ def sample_plots_eig(ax_eig, sample, distance_matrix = None, epsilon = 0.1, end_
     eigvals = []
     eigvals += [eigenvalues_cummulative(ax_eig, ex1, "Original values")]
     eigvals += [eigenvalues_cummulative(ax_eig, ex2, "Permuted values")]
-    eigvals += [eigenvalues_cummulative(ax_eig, ex3, "Permuted rows only")]
+    #eigvals += [eigenvalues_cummulative(ax_eig, ex3, "Permuted rows only")]
     diagvals = - ex1.diagonal()
     diagvals.sort()
     diagvals = diagvals[1:]
@@ -156,12 +160,13 @@ def sample_exp_matrix(sample, epsilon=0.1):
     xi = sample.epsilon_to_xi(epsilon)
     dis = sample.periodic_distance_matrix()
     ## check for minimal exp probelm (arround exp(-800))
-    underflows = (-dis/xi < EXP_MAX_NEG).sum()
-    if underflows != 0:
-        print "### {0} died out of {1} ".format(underflows, dis.size)
+    #underflows = (-dis/xi < EXP_MAX_NEG).sum()
+    #if underflows != 0:
+    #    print "### {0} underflows out of {1} ".format(underflows, dis.size)
     
     # new
     r_0 = dis.sum()/(dis.size)
+    print(r_0)
     r_0_mat = numpy.ones(dis.shape)*r_0
     ex1 = numpy.exp((r_0_mat-dis)/xi)
 #    ex1 = ex1*numpy.exp(r_0/xi)
@@ -381,11 +386,11 @@ def exp_models_sample_oner(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),
                 diff_coef = sparsedl.resnet(rate_matrix[epsilon], 1)
                 diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],logvals[epsilon][-1], 100))
                 diffusion = numpy.sqrt(diffusion_space/(diff_coef))/pi
-                ax_exp.plot(numpy.log(diffusion_space), diffusion, linestyle='--', label="1")
-                diffusion2 = numpy.sqrt(diffusion_space/(diff_coef))
-                ax_exp.plot(numpy.log(diffusion_space), diffusion2, linestyle='--', label="2")
-                diffusion3 = numpy.sqrt((diffusion_space/(diff_coef))/(pi))
-                ax_exp.plot(numpy.log(diffusion_space), diffusion3, linestyle='--', label="3")
+                ax_exp.plot(numpy.log(diffusion_space), diffusion, linestyle='--', label="")
+                #diffusion2 = numpy.sqrt(diffusion_space/(diff_coef))
+                #ax_exp.plot(numpy.log(diffusion_space), diffusion2, linestyle='--', label="2")
+                #diffusion3 = numpy.sqrt((diffusion_space/(diff_coef))/(pi))
+                #ax_exp.plot(numpy.log(diffusion_space), diffusion3, linestyle='--', label="3")
                     
             plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
             plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_semilogx".format(sample.d, number_of_realizations, range_name))
@@ -509,6 +514,11 @@ def all_plots(seed= 1, **kwargs):
     random.seed(seed)
     torus_3_plots()
     ax.clear()
+    
+    random.seed(seed)
+    exp_models_sample_oner(Sample((1,),300), epsilon_ranges=((0.5,0.8,1,1.5,2,5,10),(0.5,0.8),(5,10)))
+    exp_models_sample_oner(Sample((1,1),300))
+    exp_models_sample_oner(Sample((1,1,1),300))
     
     random.seed(seed)
     exp_models_sample(sample=Sample((1,1),300), number_of_realizations = 10)
