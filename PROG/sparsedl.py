@@ -79,9 +79,12 @@ def zero_sum(mat, tol=1E-12):
         return True
     else:
         mat -= numpy.diagflat(row_sum)
-#        maxdev  = numpy.max((mat.sum(axis=0), mat.sum(axis=1)))
-#        if numpy.max((mat.sum(axis=0), mat.sum(axis=1))) > tol:
-#            raise Exception("Failed to make sums zero, is the matrix symmetric?")
+        maxdev  = numpy.max((mat.sum(axis=0), mat.sum(axis=1)))
+        if numpy.max((mat.sum(axis=0), mat.sum(axis=1))) > tol:
+            print(mat)
+            print(mat-mat.T)
+            print(numpy.max((mat.sum(axis=0), mat.sum(axis=1))))
+        #    raise Exception("Failed to make sums zero, is the matrix symmetric?")
         return False
 
 #########  Create random arrays

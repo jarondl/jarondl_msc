@@ -501,6 +501,13 @@ def all_plots(seed= 1, **kwargs):
     #spreading_plots(ax)
     #plotdl.save_ax(ax, "spreading")
     #ax.clear()
+    
+    
+    #test: (high_eps with low)
+    random.seed(1)
+    high_epsilons(number_of_points=200, epsilon=0.5)
+    
+    
     random.seed(1)
     high_epsilons(number_of_points=200, epsilon=20)
     random.seed(1)
@@ -509,6 +516,9 @@ def all_plots(seed= 1, **kwargs):
     high_epsilons(number_of_points=400, epsilon=20)
     random.seed(2)
     high_epsilons(number_of_points=400, epsilon=5)
+    
+
+
 
 
     random.seed(seed)
