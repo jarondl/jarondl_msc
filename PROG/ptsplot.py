@@ -532,7 +532,7 @@ def all_plots(seed= 1, **kwargs):
     
     random.seed(seed)
     exp_models_sample(sample=Sample((1,1),300), number_of_realizations = 10)
-    exp_models_sample(sample=Sample((1,1),300), number_of_realizations = 1)
+    #exp_models_sample(sample=Sample((1,1),300), number_of_realizations = 1)
     exp_models_sample(sample=Sample((1,),300), number_of_realizations = 10)
     
 
