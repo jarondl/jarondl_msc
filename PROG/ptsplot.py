@@ -384,7 +384,9 @@ def exp_models_sample_oner(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),
                 cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
                 ### diffusion
                 diff_coef = sparsedl.resnet(rate_matrix[epsilon], 1)
-                diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],logvals[epsilon][-1], 100))
+                #maxval = diff_coef*pi**2
+                #diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],logvals[epsilon][-1], 100))
+                diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],numpy.log(diff_coef*pi**2), 100))
                 diffusion = numpy.sqrt(diffusion_space/(diff_coef))/pi
                 ax_exp.plot(numpy.log(diffusion_space), diffusion, linestyle='--', label="")
                 #diffusion2 = numpy.sqrt(diffusion_space/(diff_coef))
