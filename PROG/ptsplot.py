@@ -386,7 +386,9 @@ def exp_models_sample_oner(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),
                 diff_coef = sparsedl.resnet(rate_matrix[epsilon], 1)
                 #maxval = diff_coef*pi**2
                 #diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],logvals[epsilon][-1], 100))
-                diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],numpy.log(diff_coef*pi**2), 100))
+                maxvallog = numpy.min((numpy.log(diff_coef*pi**2), logvals[epsilon][-1]))
+                print("maxvallog  " + str(numpy.log(diff_coef*pi**2))+ "  "+str(logvals[epsilon][-1]))
+                diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],maxvallog, 100))
                 diffusion = numpy.sqrt(diffusion_space/(diff_coef))/pi
                 ax_exp.plot(numpy.log(diffusion_space), diffusion, linestyle='--', label="")
                 #diffusion2 = numpy.sqrt(diffusion_space/(diff_coef))
@@ -413,6 +415,7 @@ def participation_number(ax, matrix):
     """
     pn = ((matrix**2).sum(axis=0))**(-1)
     ax.plot(pn)
+
     
 
 def plot_several_vectors(fig, matrix, vec_indices, x_values = None):
@@ -467,6 +470,7 @@ def high_epsilons(number_of_points=200, epsilon=20):
     ax.plot(pn, label="PN - participation number")
     ax.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
     ax.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
+    ax.set_yscale('symlog')
     plotdl.set_all(ax, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
     plotdl.save_ax(ax, "exp_1d_{0}_{1}_participation".format(number_of_points, epsilon))
 
@@ -534,8 +538,8 @@ def all_plots(seed= 1, **kwargs):
     
     random.seed(seed)
     exp_models_sample(sample=Sample((1,1),300), number_of_realizations = 10)
-    #exp_models_sample(sample=Sample((1,1),300), number_of_realizations = 1)
-    exp_models_sample(sample=Sample((1,),300), number_of_realizations = 10)
+    ####exp_models_sample(sample=Sample((1,1),300), number_of_realizations = 1)
+    #exp_models_sample(sample=Sample((1,),300), number_of_realizations = 10)
     
 
 

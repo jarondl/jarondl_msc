@@ -163,7 +163,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%
-\section{Work plan}
+\section{Background}
 
 %%%%%%%%%%%
 
@@ -176,39 +176,90 @@ Because of probability conservation, we want to have $\sum_m W_{nm} = 0 \ \ \for
 The rate equation can also be written as a vectorial equation:$\boldsymbol{ \dot p } = \boldsymbol{W} \boldsymbol{p}$. In its basic form, the matrix $\boldsymbol{W}$ is symmetric (at the moment, see "Assymetric VRH" further down in this section), except for the main diagonal, which has values that ensure that each row's sum is zero.
 
 %%%%%%%%%%%
-The network (the values of $W_{nm}$) can be defined arbitrarily, but we wish to focus on networks that represent geometric systems, by defining the transition rates to depend on the distance betweeen randomly scattered points. One such network, with the rates $W_{nm}= e^{-r_{nm}/ \xi}$, where $r_{nm}$ is the distance between site $n$ and $m$, and $\xi$ is some scaling coefficient, was studied in \cite{Amir:2010:PRL}, and is of particular interest for us.
+The network (the values of $W_{nm}$) can be defined arbitrarily, but we wish to focus on networks that represent geometric systems, by defining the transition rates to depend on the distance betweeen randomly scattered points. One such network, with the rates $W_{nm}\sim e^{-r_{nm}/ \xi}$, where $r_{nm}$ is the distance between site $n$ and $m$, and $\xi$ is some scaling coefficient, was studied in \cite{Amir:2010:PRL}, and is of particular interest for us.
 
 %%%%%%%%%%%
-{ \bf dimensions.-- } The system may be in $1d$, $2d$, $3d$ etc., or in quasi-$1d$. Quasi-$1d$ relates either to $1d$ systems where there are bonds between sites beyond the nearest neighbors, or to banded $2d$ systems, where the length in one dimension is much smaller than in the other dimension. Both these systems have banded matrices, with bandwidth $b$.
+{ \bf Dimensions.-- } The system may be in $1d$, $2d$, $3d$ etc., or in quasi-$1d$. Quasi-$1d$ relates either to $1d$ systems where there are bonds between sites beyond the nearest neighbors, or to $2d$ systems with finite width (strip). Both these systems have banded matrices, with bandwidth $b$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 { \bf Survival probability - $\mathcal{P}(t)$.--} 
-The survival probability is the probability to remain in the starting site. If the initial condition was $P_0(0)=1$, $P_i(0)=0 \textrm{  for  } i\neq 0$, then $\mathcal{P}(t)= P_0(t)$. The survival probability is directly related to the spectral properties of the transition matrices, being $\mathcal{P}(t) = \frac{1}{N}\sum_\lambda e^{\lambda t}$ where the $\lambda$s are the eigenvalues of the matrix.
+The survival probability is the probability to remain in the starting site. If the initial condition was $p_0(0)=1$, $p_i(0)=0 \textrm{  for  } i\neq 0$, then $\mathcal{P}(t)= p_0(t)$. The survival probability is directly related to the spectral properties of the transition matrices, and it can be shown that 
+\begin{align} \label{eq:p_t_spectrum}
+\mathcal{P}(t) = \frac{1}{N}\sum_\lambda e^{\lambda t}
+\end{align}
+where the $\lambda$s are the eigenvalues of the matrix, namely that the survival probability is the Laplace transform of the eigenvalue density.
 
 %%%%%%%%%%%
-{ \bf Diffusion.--}
-Particles can diffuse through the system. In \cite{Alexander:1981:RMP} it is shown that in $1d$ the diffusion can found by finding the survival probability. CLARIFICATION NEEDED
+{ \bf Transport and Spreading.--}  %add some S(t) or g, and add \sqrt{S(t)}\mathcal{P}(t)
+A particle can be transmitted through the system from one end to the other. This transport can be characterized in different ways. One way is to calculate the spreading $S(t)$, which is the Root-Mean-Square of the particle location, i.e:
+\begin{align}
+  S(t) = \sum_n (r_n(t)  )^2 p_n  %-\overline{r}(t)
+\end{align}
+Where $r_n$ is the location of the $n$th site. In \cite{Alexander:1981:RMP} it is shown that in $1d$ the spreading is related to the survival probability (which is itself related to the spectrum by \eqref{eq:p_t_spectrum}), by
+\begin{align}
+S(t)\sim \left(\frac{1}{\mathcal{P}(t)}\right)^2
+\end{align}
+We do not know yet if a similar relation holds in $2d$. Another approach is the resistor network one. If we think of the network as a network of resistors, then we can characterize the transport by the conductance between two points. 
+
+%%%%%%%%%%%%%%%%%%%
+\section{Work plan}
 
 
-THE QUESTIONS
 %%%%%%%%%%%
-{ \bf Geometrical implications.-- }  The statistics of the distances, and by extension  the statistics of the transition rates, reflects the geometric properties of the system. However, there is more information about the system than just its statistics. The question arises: Are the statistics all that is needed to understand the physics of the system? See the preliminary results for farther discussion \ref{sec:prelim}.
+{ \bf Geometrical implications.-- } The geometric properties of the system are reflected in the statistics of the distances, and by extension in the statistics of the transition rates. However, there is more information in the $W_{nm}$ matrix than just its statistics. The question arises: Are the statistics all that is needed to understand the physics of the system? See the preliminary results for farther discussion \ref{sec:prelim}.
 
-{ \bf Banded sparse matrices.-- } The conductance of quasi-$1d$ banded sparse matrices was studied numerically in \cite{Stotland:2010:PRB}. We wish to comprehend analytically what are the bandwidth implications in this model.
+{ \bf Banded sparse matrices.-- } The conductance of quasi-$1d$ banded sparse matrices was studied numerically in \cite{Stotland:2010:PRB}. There, they use \emph{Variable-Range-Hopping} in the sparse regime, where 
+$(\text{sparsity}\cdot \text{bandwidth}) \ll 1$. However, in this work it is not clear what are the limits on either sparsity or bandwidth, and in particular where is the cross between the validity regime of VRH and that of SLRT. We will try to understand this issue analytically.
 
-{ \bf Diffusion or Subdiffusion in $2d$.-- } The question of diffusion in most $1d$ systems was analytically solved in \cite{Alexander:1981:RMP}. Converting the distance statistics of scattered points to transition rate statistics, we find that subdiffusion is expected. The $2d$ case is, as for as we know, not yet analytically solved, and is much less clear. In \cite{Amir:2010:PRL} it is claimed that in low density systems subdiffusion of order $\sim log^d$ should occur. We wish to use the block-renormalization-group method to find out if this is indeed the case. We also wish to see if there is a transition between low densities and high densities.
+{ \bf Diffusion or Subdiffusion in $2d$.-- } The question of diffusion in most $1d$ systems was analytically solved in \cite{Alexander:1981:RMP}. The $2d$ case is, as for as we know, not yet analytically solved, and is much less clear. In \cite{Amir:2010:PRL} it is claimed that in low density systems subdiffusion of order $\sim log^d$ should occur. We wish to use the block-renormalization-group method to find out if this is indeed the case. We also wish to see if there is a transition between low densities and high densities.
 
-{\bf Assymetric VRH.--} If the sites have different potentials, then the site occupation probabilites change. This can be acommodated by modifying the transition rates by Boltzmann's factor. This is called \emph{VRH- Variable Range Hopping}\cite{Ambegaokar:1971}. This is usually treated by modifying the transition rates symmetrically, but we know that the transition from higher to lower potential is more probable, and therefore the transition rates should not be symmetric. The question is what are the effects of this assymetry on the problem.
+{\bf Assymetric VRH.--} If the sites have different potentials, then the site occupation probabilites change. This can be acommodated for by modifying the transition rates by Boltzmann's factor. This is called \emph{VRH- Variable Range Hopping}\cite{Ambegaokar:1971}, and has been widely studied. The common practice is to treat the system as a symmetric resistor network, but we want to ask if there are cases where this reduction to a symmetrical network is not valid.
 
 
 \section{Preliminary results} \label{sec:prelim}
-{ \bf Geometrical implications.-- } In order to achieve insight to the geometric effects on the matrix spectrum, beyond the direct statistical influence, some numerical results were calculated. We have randomly scattered $200$ points on a $2d$ periodic surface. The transition matrix for this system was calculated, together with its eigenvalues. Now, the off-diagonal transition rates were randomly permuted, the new matrix was symmetrized, and its diagonal reset to keep the rows zero-summed. The cummulative eigenvalue distributions for the original and for the permuted matrices are plotted in figure \ref{fig:torus}. This is for a single realization.
+
+{ \bf Geometrical implications.-- } In order to achieve insight to the geometric effects on the matrix spectrum, beyond the direct statistical influence, some numerical results were calculated. We have randomly scattered $200$ points on a $2d$ periodic surface. The transition rates between the sites were calculated as usual. Another network was created, using the same rates, but in a randomly permuted order. That way, the statistics of the rates were preserved, but the rest of the data not. The cummulative eigenvalue distributions for the original and for the permuted matrices are plotted in figure \ref{fig:torus}. This is for a single realization, but the distinct difference between the spectra is present in all of the realizations that we have checked.
 
 \begin{figure}
     \includegraphics[clip, width=0.9\hsize]{torus}
     \caption{The geometric implications}\label{fig:torus}
 \end{figure}
 
+{ \bf The exponential dependence model in various dimensions.--} In this model we define the rates as 
+\begin{align}
+  W_{nm}= w_0 e^{(r_0-r_{nm})/ \xi}
+\end{align}
+Where $r_0$ is the typical distance between points, $w_0$ is the transition rate between points at distance $r_0$, and $\xi$ is a scaling coefficient. It can be shown that the distances of randomly scattered points have a distribution described by 
+\begin{align}
+  f(r)dr = e^{-\frac{\Omega_d}{d} (\frac{r}{r_0})^d} \Omega_d (\frac{r}{r_0})^{d-1}\frac{dr}{r_0}
+\end{align}
+where $n$ is the density, $d$ the dimension, and $\Omega_d$ is the $d$ dimensional solid angle. The distribution of the rates can be found by replacing the random variable ($|f_w(w)dw| = |f_r(r)dr|$), and we find it to be 
+\begin{align}
+\textrm{VERSION 1} &\qquad f_w(w)dw = \left|\frac{\xi}{r_0}\ln \frac{w}{w_0}\right|^{d-1} e^{-\left|\frac{\Omega_d}{d}\frac{\xi}{r_0}\ln \frac{w}{w_0}\right|^d} \Omega_d\frac{\xi dw}{r_0 w} \\
+\textrm{VERSION 2} &\qquad f_w(w)dw \sim \left|\ln \frac{w}{w_0}\right|^{d-1} e^{-\left|\frac{\Omega_d}{d}\frac{\xi}{r_0}\ln \frac{w}{w_0}\right|^d} \frac{dw}{w}
+\end{align}
+In $1d$, following the solution presented in \cite{Alexander:1981:RMP}, we know that subdiffusion should occur. The question of whether this leads to reguler diffusion or subdiffusion in higher dimensions is not yet clear.
+
+{\bf Resistor network calculation.--} For diffusive system in $1d$, the eigenvalue density close to zero is 
+\begin{align}
+  g(\lambda) \approx \sqrt{\frac{\lambda}{D}}\frac{N}{\pi}
+\end{align}
+We can find the diffusion coefficient $D$ using resistor network calculation. To compare this result to the obtained eigenvalues, we have created a $1d$ system with random log-normaly distributed transition rates, and calculted the diffusion.
+\begin{figure}
+    \includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}
+    \caption{Cummulated eigenvalues, and the diffusion coefficient. No fitting parameters were used.}\label{fig:eigvals_lognormal}
+\end{figure}
+
+{\bf Resistor network in $2d$.--} To calculate conductance with resistor networks, we apply incoming current in one site, outgoing current in another, and then compute the site occupation probability difference between them. In $1d$, the conductance $\sigma$ between two points is just the conductavity $G$ divided by the distance. In $2d$, instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
+\begin{align}
+  E = \frac{J}{\sigma} = \frac{I}{2\pi r\sigma} \\
+  V = \int E dr = \frac{I}{2\pi\sigma}\ln\frac{r}{r_0}
+\end{align}
+The superposition of an outgoing current just doubles the result, and we obtain:
+\begin{align}
+    G = \frac{I}{V} = \frac{\pi\sigma }{\ln\frac{r}{r_0}}  \\
+    \sigma = \frac{1}{\pi}G\ln\frac{r}{r_0}
+\end{align}
 
 %\bibliographystyle{plainnat}
 \bibliography{jarondl}
