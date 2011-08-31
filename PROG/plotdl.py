@@ -67,7 +67,8 @@ def set_all(ax, title=None, xlabel=None, ylabel=None, legend_loc=False):
 
         :param legend_loc: sets the location of the legend. Use "best" for defualt location
     """
-    if title: ax.set_title(title)
+    ## REMOVE all titles temporarily for "production"
+    #if title: ax.set_title(title)  
     if xlabel: ax.set_xlabel(xlabel)
     if ylabel: ax.set_ylabel(ylabel)
     if legend_loc: ax.legend(loc=legend_loc)

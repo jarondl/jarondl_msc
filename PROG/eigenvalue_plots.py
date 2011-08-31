@@ -24,7 +24,7 @@ def eigenvalues_lognormal(ax, number_of_points=200, band_width_list=(1, ),
         rate_matrix     = sparsedl.create_sparse_matrix(number_of_points, rates, band_width).todense()
         diff_coef = sparsedl.resnet(rate_matrix, band_width)
         eigvals = eigenvalues_cummulative(ax, rate_matrix,
-                label = "b = {0}, D = {1}".format(band_width, diff_coef))
+                label = r"$b = {0}, D \approx {1:.3G}$".format(band_width, diff_coef))
 
         diffusion_plot(ax, diff_coef, eigvals)
     plotdl.set_all(ax, title="lognormal, N={N}".format(N=number_of_points),
@@ -40,7 +40,7 @@ def eigenvalues_ones(ax, number_of_points=200, band_width_list=(1, )):
         if not sparsedl.zero_sum(rate_matrix):
             raise Exception("The rate_matrix matrix is not zero summed. How did you make it?")
         diff_coef = sparsedl.resnet(rate_matrix, band_width)
-        label = "b = {0}, D = {1}".format(band_width, diff_coef)
+        label = r"$b = {0}, D \approx {1:.3G}$".format(band_width, diff_coef)
         eigvals = eigenvalues_cummulative(ax, rate_matrix, label)
         diffusion_plot(ax, diff_coef, eigvals)
         #ones_analytic_plot(ax, number_of_points)
@@ -62,7 +62,7 @@ def eigenvalues_alter(ax, number_of_points=200, lower_w = 3, higher_w = 8,
         if not sparsedl.zero_sum(rate_matrix):
             raise Exception("The rate_matrix matrix is not zero summed. How did you make it?")
         diff_coef = sparsedl.resnet(rate_matrix, band_width)
-        label = "b = {0}, D = {1}".format(band_width, diff_coef)
+        label = r"$b = {0}, D \approx {1:.3G}$".format(band_width, diff_coef)
         eigvals = eigenvalues_cummulative(ax, rate_matrix, label)
         diffusion_plot(ax, diff_coef, eigvals)
     alter_analytic_plot(ax, lower_w, higher_w, number_of_points)
@@ -79,7 +79,7 @@ def eigenvalues_box(ax, number_of_points=200, lower_w = 3, higher_w = 8, band_wi
         if not sparsedl.zero_sum(rate_matrix):
             raise Exception("The rate_matrix matrix is not zero summed. How did you make it?")
         diff_coef = sparsedl.resnet(rate_matrix, band_width)
-        label = "b = {0}, D = {1}".format(band_width, diff_coef)
+        label = r"$b = {0}, D \approx {1:.3G}$".format(band_width, diff_coef)
         eigvals = eigenvalues_cummulative(ax, rate_matrix, label)
         diffusion_plot(ax, diff_coef, eigvals)
     plotdl.set_all(ax, title="Box distibution {l}-{h}, N = {N}".format(N=number_of_points, l=lower_w, h=higher_w), legend_loc="best")

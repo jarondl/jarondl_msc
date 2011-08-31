@@ -225,6 +225,23 @@ $(\text{sparsity}\cdot \text{bandwidth}) \ll 1$. However, in this work it is not
     \caption{The geometric implications}\label{fig:torus}
 \end{figure}
 
+
+%%%%%%%%%%%%%%
+{\bf Resistor network in $1d$.--} We can find the diffusion coefficient $D$ using resistor network calculation. The basic idea is to apply incoming current (+1 in suitable units) in one site, outgoing in another (-1), and then compute the site occupation probability difference between them. This will give us the conductivity $G$, which in $1d$ is the conductance $\sigma$ times the distance:
+\begin{align}
+  \sigma = \frac{G}{r}
+\end{align} 
+For diffusive systems in $1d$, the eigenvalue density close to zero is 
+\begin{align}
+  g(\lambda) \approx \sqrt{\frac{\lambda}{D}}\frac{N}{\pi}
+\end{align}
+To compare this result to the obtained eigenvalues, we have created a $1d$ system with random log-normaly distributed transition rates, and calculted the diffusion, see figure \ref{fig:eigvals_lognormal}.
+\begin{figure}\label{fig:eigvals_lognormal}
+    \includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}
+    \caption{Cummulated eigenvalues, and the diffusion coefficient. No fitting parameters were used.}\label{fig:eigvals_lognormal}
+\end{figure}
+
+%%%%%%%%%%%%
 { \bf The exponential dependence model in various dimensions.--} In this model we define the rates as 
 \begin{align}
   W_{nm}= w_0 e^{(r_0-r_{nm})/ \xi}
@@ -240,17 +257,8 @@ where $n$ is the density, $d$ the dimension, and $\Omega_d$ is the $d$ dimension
 \end{align}
 In $1d$, following the solution presented in \cite{Alexander:1981:RMP}, we know that subdiffusion should occur. The question of whether this leads to reguler diffusion or subdiffusion in higher dimensions is not yet clear.
 
-{\bf Resistor network calculation.--} For diffusive system in $1d$, the eigenvalue density close to zero is 
-\begin{align}
-  g(\lambda) \approx \sqrt{\frac{\lambda}{D}}\frac{N}{\pi}
-\end{align}
-We can find the diffusion coefficient $D$ using resistor network calculation. To compare this result to the obtained eigenvalues, we have created a $1d$ system with random log-normaly distributed transition rates, and calculted the diffusion.
-\begin{figure}
-    \includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}
-    \caption{Cummulated eigenvalues, and the diffusion coefficient. No fitting parameters were used.}\label{fig:eigvals_lognormal}
-\end{figure}
-
-{\bf Resistor network in $2d$.--} To calculate conductance with resistor networks, we apply incoming current in one site, outgoing current in another, and then compute the site occupation probability difference between them. In $1d$, the conductance $\sigma$ between two points is just the conductavity $G$ divided by the distance. In $2d$, instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
+%%%%%%%%%%%%%%%%
+{\bf Resistor network in $2d$.--} In $2d$, instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
 \begin{align}
   E = \frac{J}{\sigma} = \frac{I}{2\pi r\sigma} \\
   V = \int E dr = \frac{I}{2\pi\sigma}\ln\frac{r}{r_0}
@@ -260,6 +268,7 @@ The superposition of an outgoing current just doubles the result, and we obtain:
     G = \frac{I}{V} = \frac{\pi\sigma }{\ln\frac{r}{r_0}}  \\
     \sigma = \frac{1}{\pi}G\ln\frac{r}{r_0}
 \end{align}
+
 
 %\bibliographystyle{plainnat}
 \bibliography{jarondl}
