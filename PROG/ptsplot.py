@@ -121,7 +121,7 @@ def sample_plots_eig(ax_eig, sample, distance_matrix = None, epsilon = 0.1, end_
         ax_eig.loglog(theory_space, theory, label="theory", linestyle="--")
         ax_eig.set_xlim(xlim)
         ax_eig.set_ylim(ylim)
-    plotdl.set_all(ax_eig, title = r"{0}d, $w = e^{{-r/\xi}}$, $N ={1}$, $\epsilon={2}$".format(sample.d, sample.number_of_points, epsilon), legend_loc='lower right')
+    plotdl.set_all(ax_eig, title = r"{0}d, $w = e^{{-r/\xi}}$, $N ={1}$, $\epsilon={2}$".format(sample.d, sample.number_of_points, epsilon), legend_loc='lower right', xlabel=r"$\lambda$", ylabel=r"$C(\lambda)$")
 
 
 def sample_2d_theory(ax, sample, epsilon):
@@ -336,7 +336,6 @@ def exp_models_sample(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05
     for range_name, epsilon_list in zip(epsilon_range_names, epsilon_ranges):
             for epsilon in sorted(epsilon_list):
                 cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
-
                 
             plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
             plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_semilogx".format(sample.d, number_of_realizations, range_name))

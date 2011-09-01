@@ -28,7 +28,7 @@ def eigenvalues_lognormal(ax, number_of_points=200, band_width_list=(1, ),
 
         diffusion_plot(ax, diff_coef, eigvals)
     plotdl.set_all(ax, title="lognormal, N={N}".format(N=number_of_points),
-            legend_loc="upper left")
+            legend_loc="upper left", xlabel=r"$\lambda$", ylabel=r"$C(\lambda)$")
 
 
 def eigenvalues_ones(ax, number_of_points=200, band_width_list=(1, )):
@@ -47,7 +47,7 @@ def eigenvalues_ones(ax, number_of_points=200, band_width_list=(1, )):
     #ax.set_xscale('linear')
     #ax.set_yscale('linear')
     plotdl.set_all(ax, title="All ones, N = {N}".format(N=number_of_points),
-            legend_loc="best")
+            legend_loc="best", xlabel=r"$\lambda$", ylabel=r"$C(\lambda)$")
 
 
 def eigenvalues_alter(ax, number_of_points=200, lower_w = 3, higher_w = 8,
@@ -82,7 +82,7 @@ def eigenvalues_box(ax, number_of_points=200, lower_w = 3, higher_w = 8, band_wi
         label = r"$b = {0}, D \approx {1:.3G}$".format(band_width, diff_coef)
         eigvals = eigenvalues_cummulative(ax, rate_matrix, label)
         diffusion_plot(ax, diff_coef, eigvals)
-    plotdl.set_all(ax, title="Box distibution {l}-{h}, N = {N}".format(N=number_of_points, l=lower_w, h=higher_w), legend_loc="best")
+    plotdl.set_all(ax, title="Box distibution {l}-{h}, N = {N}".format(N=number_of_points, l=lower_w, h=higher_w), legend_loc="best", xlabel=r"$\lambda$", ylabel=r"$C(\lambda)$")
 
 
 def eigenvalues_uniform(ax, number_of_points=100):
@@ -106,7 +106,7 @@ def eigenvalues_uniform(ax, number_of_points=100):
             linestyle="--",
             label = r"Cummulative semicircle, with $R \approx {0:.2}$".format(radius))
 
-    plotdl.set_all(ax, title=r"uniform, $[-1, 1]$", legend_loc="upper left")
+    plotdl.set_all(ax, title=r"uniform, $[-1, 1]$", legend_loc="upper left", xlabel=r"$\lambda$", ylabel=r"$C(\lambda)$")
 
 
 ###############  Meta-eigenvalue #########

@@ -35,7 +35,7 @@
 %\usepackage{sectsty}
 \usepackage[pdftitle={Yaron de Leeuw's research proposal}]{hyperref}  % for hyperlinks in biblio. should be called last?
 
-\graphicspath{{figures/},{PROG/figures/}}
+\graphicspath{{figures_rp/},{PROG/figures/}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -175,8 +175,14 @@ Where $W_{nm}$ is the \emph{transition rate}, i.e.\ the rate at which probabilit
 Because of probability conservation, we want to have $\sum_m W_{nm} = 0 \ \ \forall n$ , which we can achieve by setting $W_{nn} = -\sum_{m\ne n} W_{nm} $, meaning that for each site the sum of incoming transition rates negates the outgoing transitions.
 The rate equation can also be written as a vectorial equation:$\boldsymbol{ \dot p } = \boldsymbol{W} \boldsymbol{p}$. In its basic form, the matrix $\boldsymbol{W}$ is symmetric (at the moment, see "Assymetric VRH" further down in this section), except for the main diagonal, which has values that ensure that each row's sum is zero.
 
+How should I cite these\cite{Parris:1986}\cite{Jayannavar:1991}\cite{Guarneri:1989}\cite{AslangulChvosta:1995}\cite{Guarneri:1993}
+
 %%%%%%%%%%%
-The network (the values of $W_{nm}$) can be defined arbitrarily, but we wish to focus on networks that represent geometric systems, by defining the transition rates to depend on the distance betweeen randomly scattered points. One such network, with the rates $W_{nm}\sim e^{-r_{nm}/ \xi}$, where $r_{nm}$ is the distance between site $n$ and $m$, and $\xi$ is some scaling coefficient, was studied in \cite{Amir:2010:PRL}, and is of particular interest for us.
+The network (the values of $W_{nm}$) can be defined arbitrarily, but we wish to focus on networks that represent geometric systems, by defining the transition rates to depend on the distance betweeen randomly scattered points\cite{Mezard:1999:NPB}. One such network, with the rates defined as:
+\begin{align} \label{eq:exp_rates}
+  W_{nm}= w_0 e^{(r_0-r_{nm})/ \xi}
+\end{align}
+Where $r_{nm}$ is the distance between site $n$ and $m$, $r_0$ is the typical distance between points, $w_0$ is the transition rate between points at distance $r_0$, and $\xi$ is a scaling coefficient, was studied in \cite{Amir:2010:PRL}, and is of particular interest for us.
 
 %%%%%%%%%%%
 { \bf Dimensions.-- } The system may be in $1d$, $2d$, $3d$ etc., or in quasi-$1d$. Quasi-$1d$ relates either to $1d$ systems where there are bonds between sites beyond the nearest neighbors, or to $2d$ systems with finite width (strip). Both these systems have banded matrices, with bandwidth $b$.
@@ -215,14 +221,15 @@ $(\text{sparsity}\cdot \text{bandwidth}) \ll 1$. However, in this work it is not
 
 {\bf Assymetric VRH.--} If the sites have different potentials, then the site occupation probabilites change. This can be acommodated for by modifying the transition rates by Boltzmann's factor. This is called \emph{VRH- Variable Range Hopping}\cite{Ambegaokar:1971}, and has been widely studied. The common practice is to treat the system as a symmetric resistor network, but we want to ask if there are cases where this reduction to a symmetrical network is not valid.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preliminary results} \label{sec:prelim}
 
 { \bf Geometrical implications.-- } In order to achieve insight to the geometric effects on the matrix spectrum, beyond the direct statistical influence, some numerical results were calculated. We have randomly scattered $200$ points on a $2d$ periodic surface. The transition rates between the sites were calculated as usual. Another network was created, using the same rates, but in a randomly permuted order. That way, the statistics of the rates were preserved, but the rest of the data not. The cummulative eigenvalue distributions for the original and for the permuted matrices are plotted in figure \ref{fig:torus}. This is for a single realization, but the distinct difference between the spectra is present in all of the realizations that we have checked.
 
 \begin{figure}
     \includegraphics[clip, width=0.9\hsize]{torus}
-    \caption{The geometric implications}\label{fig:torus}
+    \caption{{ \bf The geometric implications -} $N=200$ points were randomly scattered on a $2d$ $(1\times 1)$ surface. The transmission rates were calculated according to \eqref{eq:exp_rates}, with $\frac{\xi}{r_0} = 0.1$, and $w_0=1$}
+    \label{fig:torus}
 \end{figure}
 
 
@@ -236,9 +243,10 @@ For diffusive systems in $1d$, the eigenvalue density close to zero is
   g(\lambda) \approx \sqrt{\frac{\lambda}{D}}\frac{N}{\pi}
 \end{align}
 To compare this result to the obtained eigenvalues, we have created a $1d$ system with random log-normaly distributed transition rates, and calculted the diffusion, see figure \ref{fig:eigvals_lognormal}.
-\begin{figure}\label{fig:eigvals_lognormal}
+\begin{figure}
     \includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}
-    \caption{Cummulated eigenvalues, and the diffusion coefficient. No fitting parameters were used.}\label{fig:eigvals_lognormal}
+    \caption{Cummulated eigenvalues, and the diffusion coefficient. No fitting parameters were used. There are $N=200$ points, and the rates were randomly drawn from a log-normal distribution, with the original normal distribution variance $\sigma^2=1$, and mean $\mu=0$. Matrices with different bandwidths were constructed, although we are only certain that theory holds for $b=1$}
+    \label{fig:eigvals_lognormal}
 \end{figure}
 
 %%%%%%%%%%%%
@@ -248,17 +256,26 @@ To compare this result to the obtained eigenvalues, we have created a $1d$ syste
 \end{align}
 Where $r_0$ is the typical distance between points, $w_0$ is the transition rate between points at distance $r_0$, and $\xi$ is a scaling coefficient. It can be shown that the distances of randomly scattered points have a distribution described by 
 \begin{align}
-  f(r)dr = e^{-\frac{\Omega_d}{d} (\frac{r}{r_0})^d} \Omega_d (\frac{r}{r_0})^{d-1}\frac{dr}{r_0}
+  f(r)dr = e^{-\frac{\Omega_d}{d} \left(\frac{r}{r_0}\right)^d} \Omega_d \left(\frac{r}{r_0}\right)^{d-1}\frac{dr}{r_0}
 \end{align}
 where $n$ is the density, $d$ the dimension, and $\Omega_d$ is the $d$ dimensional solid angle. The distribution of the rates can be found by replacing the random variable ($|f_w(w)dw| = |f_r(r)dr|$), and we find it to be 
-\begin{align}
-\textrm{VERSION 1} &\qquad f_w(w)dw = \left|\frac{\xi}{r_0}\ln \frac{w}{w_0}\right|^{d-1} e^{-\left|\frac{\Omega_d}{d}\frac{\xi}{r_0}\ln \frac{w}{w_0}\right|^d} \Omega_d\frac{\xi dw}{r_0 w} \\
-\textrm{VERSION 2} &\qquad f_w(w)dw \sim \left|\ln \frac{w}{w_0}\right|^{d-1} e^{-\left|\frac{\Omega_d}{d}\frac{\xi}{r_0}\ln \frac{w}{w_0}\right|^d} \frac{dw}{w}
+\begin{align}\label{eq:f_w}
+ &\qquad f_w(w)dw = \left|\ln \frac{w}{w_0}\right|^{d-1} e^{-\left|\frac{\Omega_d}{d}\frac{\xi}{r_0}\ln \frac{w}{w_0}\right|^d} \Omega_d\left(\frac{\xi}{r_0}\right)^d\frac{dw}{w}
 \end{align}
-In $1d$, following the solution presented in \cite{Alexander:1981:RMP}, we know that subdiffusion should occur. The question of whether this leads to reguler diffusion or subdiffusion in higher dimensions is not yet clear.
+In $1d$ resistor networks, the average resistance of a system is the mean of the individual resistances, and the average conductance is the harmonic mean of the individual conductances. Following the $1d$ solution presented in \cite{Alexander:1981:RMP}, if the harmonic mean is finite, then the system will be diffusive with diffusion coefficient equal to the inverse of the harmonic mean:
+\begin{align}
+\textrm{if } &\overline{(w^{-1})}\equiv \int f(w) \frac{dw}{w}< \infty \\
+\textrm{then } & D = \left(\overline{(w^{-1})}\right)^{-1}
+\end{align}
+ It is a known property of harmonic means, that because of their inverse dependence on values, the values closer to zero contribute most of the sum. Therefore, we are interested in the distribution of transition rates in the limit $w\rightarrow 0$. This limit in equation \eqref{eq:f_w} for $1d$ is:
+\begin{align}
+\lim_{w\rightarrow 0} f(w)dw \sim \frac{dw}{w_0} \\
+\int f(w)\frac{dw}{w} \sim \int\frac{dw}{w_0w} \rightarrow \infty 
+\end{align}
+Which means that the harmonic mean diverges, and the system is not diffusive. 
 
 %%%%%%%%%%%%%%%%
-{\bf Resistor network in $2d$.--} In $2d$, instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
+{\bf Resistor network in $2d$.--} We do not know yet if the above criterion for diffusion works in dimensions higher than $1d$. If we put in the $2d$ distribution, the harmonic mean does not diverge. Hence, if the naive generalization from $1d$ to $2d$ holds, we should observe diffusion. A different approach is to resolve the resistor network for a $2d$ system. Instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
 \begin{align}
   E = \frac{J}{\sigma} = \frac{I}{2\pi r\sigma} \\
   V = \int E dr = \frac{I}{2\pi\sigma}\ln\frac{r}{r_0}
