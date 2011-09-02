@@ -6,7 +6,7 @@
 from __future__ import division  # makes true division instead of integer division
 import scipy
 import numpy
-from numpy import sqrt, cos, pi
+from numpy import sqrt, cos, pi, diagflat
 from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
 from scipy.sparse.linalg import spsolve
@@ -53,6 +53,17 @@ def permute_tri(mat):
     retval += retval.T
     return retval
 
+def permute_diagonals(mat):
+    """ Randomly permutes every diagonal of the upper triangle
+    """
+    retval = numpy.zeros(mat.shape)
+    for k in range(1, mat.shape[0]):
+        retval += diagflat(numpy.random.permutation( mat.diagonal(k)), k)
+    retval += retval.T
+    zero_sum(retval)
+    return retval
+
+
 def permute_rows(mat):
     """ Randomly permute every row of the upper triangle of mat, and then transposes it to the lower triangle.
     """
@@ -87,6 +98,14 @@ def zero_sum(mat, tol=1E-12):
         #    raise Exception("Failed to make sums zero, is the matrix symmetric?")
         return False
 
+def new_zero_sum(mat):
+    """ Same as zero_sum, up to a diagonal constant
+    """
+    N = mat.shape[0] # the matrix is NxN
+    row_sum = mat.sum(axis=1)
+    row_avg = row_sum.sum() / N
+    mat -= (numpy.diagflat(row_sum) - numpy.eye(N)*row_avg)
+    return row_avg
 #########  Create random arrays
 
 def lognormal_construction(N, mu=0, sigma=1, **kwargs):

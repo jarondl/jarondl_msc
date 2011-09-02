@@ -17,6 +17,7 @@ import plotdl
 import geometry
 from geometry import Sample
 from eigenvalue_plots import eigenvalues_cummulative
+from sparsedl import sorted_eigvalsh
 from plotdl import cummulative_plot
 
 ### Raise all float errors 
@@ -24,47 +25,9 @@ numpy.seterr(all='warn')
 EXP_MAX_NEG = numpy.log(numpy.finfo( numpy.float).tiny)
 
 
-def p_lognormal_band(ax, N=100, b=1, **kwargs):
-    """ Plot p (survival) as a function of time, with lognormal banded transition matrices.
-        The sparsitiy is constant (set via the lognormal sigma), 
-        while b assumes values between 1 and 10.
-
-        :param \*\*kwargs: arguments passed on to create the banded lognormal matrix. (N, b, sigma, mu)
-    """
-    t = sparsedl.numpy.logspace(-1, 1, 100, endpoint=False)
-    for b in range(1, 10):
-        rates = sparsedl.lognormal_construction(N * b, **kwargs)
-        s     = sparsedl.create_sparse_matrix(N, rates, b).todense()
-        vals  = linalg.eigvalsh(s)
-        print(numpy.sort(vals))
-        #survs = sparsedl.surv(vals, t) ## has problem with e^{-800}
-        survs = sparsedl.safe_surv(vals, t)
-        ax.loglog(t, survs, label= r"$b = {0}$".format(b))
-    plotdl.set_all(ax, xlabel = "$t$", ylabel = r"$\mathcal{P}(t)$", title = "Survival", legend_loc="best")
-
-
-def spreading_plots(ax, N=100, **kwargs):
-    """
-    """
-    t= sparsedl.numpy.linspace(0, 4, 100)
-    rho0 = numpy.zeros(N)
-    rho0[N//2] =1
-    xcoord = numpy.linspace(-N, N, N)
-
-    for b in range(1, 10):
-        rates = sparsedl.lognormal_construction(N * b, **kwargs)
-        W     = sparsedl.create_sparse_matrix(N, rates, b).todense()
-        S = []
-        for time in t:
-            S += [sparsedl.var(xcoord, sparsedl.rho(time, rho0, W))]
-        ax.semilogy(t, S, label= r"$b = {0}$".format(b))
-    plotdl.set_all(ax, xlabel = "$t$", ylabel = r"$S(t)$", title = r"Spreading", legend_loc="best")
-
-
-
 ####################   Sample Plots ################
 
-def sample_plots_eig(ax_eig, sample, distance_matrix = None, epsilon = 0.1, end_log_time=1 ,show_theory=False):
+def plot_exp_model_permutation(ax, sample, epsilon = 0.1, end_log_time=1 ,show_theory=False):
     """  Create A_ij for points on a torus: e^(-r_ij).
 
         :param N_points: Number of points, defaults to 100
@@ -73,61 +36,25 @@ def sample_plots_eig(ax_eig, sample, distance_matrix = None, epsilon = 0.1, end_
 
     """
 
-
-    points = sample.points
-    n = sample.number_of_points / sample.volume
-    xi = sample.epsilon_to_xi(epsilon)
-    print("n = {0}, xi = {1}, n*xi = {2}, n*xi^2={3}".format(n, xi, n*xi, n*xi**2))
-    if distance_matrix is None:
-        dis =  sample.periodic_distance_matrix()
-    else:
-        dis = distance_matrix
-
-    #ex1 = numpy.exp(-dis/xi)
-    # New -  trying to normalize
-    # r_0 -> avg distance?
-    #r_0 = dis.sum()/(dis.size)
-    #ex1 = ex1*numpy.exp(r_0/xi)
-    #
-    r_0 = dis.sum()/(dis.size)
-    print(r_0)
-    r_0_mat = numpy.ones(dis.shape)*r_0
-    ex1 = numpy.exp((r_0_mat-dis)/xi)
+    ex1 = exp_model_matrix(sample, epsilon)
     sparsedl.zero_sum(ex1)
-    #assert sparsedl.zero_sum(ex1)
     ex2 = sparsedl.permute_tri(ex1)
     sparsedl.zero_sum(ex2)
-    #assert sparsedl.zero_sum(ex2)
-    ex3 = sparsedl.permute_rows(ex1)
+    ex3 = sparsedl.permute_diagonals(ex1)
     sparsedl.zero_sum(ex3)
-    #assert sparsedl.zero_sum(ex3)
-    eigvals = []
-    eigvals += [eigenvalues_cummulative(ax_eig, ex1, "Original values")]
-    eigvals += [eigenvalues_cummulative(ax_eig, ex2, "Permuted values")]
-    #eigvals += [eigenvalues_cummulative(ax_eig, ex3, "Permuted rows only")]
-    diagvals = - ex1.diagonal()
-    diagvals.sort()
-    diagvals = diagvals[1:]
-    if show_theory:
-        #minvallog = numpy.log10(numpy.min(eigvals[0]))
-        #maxvallog = min(( numpy.log10(numpy.max(eigvals[0])) , log10(2)))
-        left_end = numpy.log10(2) - sqrt(log10(sample.number_of_points)/(pi*n*xi**2))
-        right_end = numpy.log10(2)
-        #print "min : {0} max : {1}  minlog : {2}  maxlog : {3}".format(numpy.min(eigvals[0]),numpy.max(eigvals[0]), minvallog, maxvallog)
-        theory_space= numpy.logspace(left_end, right_end,100)
-        theory = numpy.exp(-(pi)*n*(xi*numpy.log(theory_space/2))**2)
+    
+    cummulative_plot(ax, sorted_eigvalsh(ex1)[1:], "Original values")
+    cummulative_plot(ax, sorted_eigvalsh(ex2)[1:], "Permuted values")
+    cummulative_plot(ax, sorted_eigvalsh(ex3)[1:], "Diagonaly permuted values")
 
-        xlim, ylim = ax_eig.get_xlim(), ax_eig.get_ylim()
-        ax_eig.loglog(theory_space, theory, label="theory", linestyle="--")
-        ax_eig.set_xlim(xlim)
-        ax_eig.set_ylim(ylim)
-    plotdl.set_all(ax_eig, title = r"{0}d, $w = e^{{-r/\xi}}$, $N ={1}$, $\epsilon={2}$".format(sample.d, sample.number_of_points, epsilon), legend_loc='lower right', xlabel=r"$\lambda$", ylabel=r"$C(\lambda)$")
+    plotdl.set_all(ax, title = r"{0}d, $w = e^{{-r/\xi}}$, $N ={1}$, $\epsilon={2}$".format(sample.d, sample.number_of_points, epsilon),
+                   legend_loc='lower right', xlabel=r"$\lambda$", ylabel=r"$C(\lambda)$")
 
 
 def sample_2d_theory(ax, sample, epsilon):
     """ """
     n = sample.number_of_points/sample.volume
-    xi = epsilon * n**(-1/sample.d)
+    xi = sample.epsilon_to_xi(epsilon)
     left_end = numpy.log10(2) - sqrt(log10(sample.number_of_points)/(pi*n*xi**2))
     right_end = numpy.log10(2)
     #print "min : {0} max : {1}  minlog : {2}  maxlog : {3}".format(numpy.min(eigvals[0]),numpy.max(eigvals[0]), minvallog, maxvallog)
@@ -144,18 +71,20 @@ def sample_collect_eigenvalues(sample, epsilon=0.1, number_of_runs=10):
     """
     """
     collected_eigenvalues = []
-    xi = sample.epsilon_to_xi(epsilon)
-    print xi, epsilon
     for i in range(number_of_runs):
         print( "{0:03} / {1}".format(i+1, number_of_runs))
         sample.generate_points()
-        ex1 = sample_exp_matrix(sample, epsilon)
+        ex1 = exp_model_matrix(sample, epsilon)
         collected_eigenvalues += [ -linalg.eigvals(ex1)]
     all_eigenvalues = numpy.concatenate(collected_eigenvalues)
     return all_eigenvalues
 
-def sample_exp_matrix(sample, epsilon=0.1):
-    """
+def exp_model_matrix(sample, epsilon=0.1): ## rename from sample exp
+    """ Creats W_{nm} = exp((r_0-r_{nm})/xi). The matrix is zero summed and should be symmetric.
+
+        :param sample: The sample, with generated points.
+        :type sample: geometry.Sample
+        :param epsilon: the epsilon, defaults to 0.1
     """
     xi = sample.epsilon_to_xi(epsilon)
     dis = sample.periodic_distance_matrix()
@@ -163,26 +92,21 @@ def sample_exp_matrix(sample, epsilon=0.1):
     #underflows = (-dis/xi < EXP_MAX_NEG).sum()
     #if underflows != 0:
     #    print "### {0} underflows out of {1} ".format(underflows, dis.size)
-    
-    # new
+
+    # new -renormalization
     r_0 = dis.sum()/(dis.size)
     print(r_0)
     r_0_mat = numpy.ones(dis.shape)*r_0
     ex1 = numpy.exp((r_0_mat-dis)/xi)
 #    ex1 = ex1*numpy.exp(r_0/xi)
-    sparsedl.zero_sum(ex1)
-    return ex1
-
-
-def loop_torus_eig():
-    """ Create 5 pairs subplots of `torus_plots`
-    """
-    fig = plotdl.Figure()
-    fig.subplots_adjust(top=0.99, bottom=0.05)
-    for i in range(1, 6):
-        random.seed(i)
-        torus_plots_eig(fig.add_subplot(5, 1, i), N_points=250)
-    plotdl.savefig(fig, "8tori_eig", size_factor=(1, 2))
+    #sparsedl.zero_sum(ex1)
+    lamb_0 = sparsedl.new_zero_sum(ex1)
+    #  Check for symmetry
+    print (ex1-ex1.T).nonzero()
+    print(lamb_0)
+    print (ex1.max(), numpy.abs(ex1).min())
+    #assert (ex1 == ex1.T).all()
+    return ex1 - numpy.eye(ex1.shape[0])*lamb_0
 
 
 def torus_3_plots(N=200):
@@ -190,7 +114,7 @@ def torus_3_plots(N=200):
     """
     ax1 = plotdl.new_ax_for_file()
     torus = Sample((1,1), N)
-    sample_plots_eig(ax1, torus)
+    plot_exp_model_permutation(ax1, torus)
     plotdl.save_ax(ax1, "torus")
     ax1.set_yscale('linear')
     ax1.set_xscale('linear')
@@ -200,159 +124,15 @@ def torus_3_plots(N=200):
     ax2.scatter(torus.points[:,0], torus.points[:,1])
     plotdl.set_all(ax2, title="Scatter plot of the points")
     plotdl.save_ax(ax2, "torus_scatter")
-    
-    ax3 = plotdl.new_ax_for_file()
-    
 
-
-
-def sheet_3_plots(N=200):
-    """ non periodic 2d surface
-    """
-    ax1 = plotdl.new_ax_for_file()
-    torus = Sample((100,100), N)
-    dis = geometry.fast_distance_matrix(torus.points)
-    sample_plots_eig(ax1, torus)
-    plotdl.save_ax(ax1, "sheet")
-    ax1.set_yscale('linear')
-    ax1.set_xscale('linear')
-    plotdl.save_ax(ax1, "sheet_linear")
-
-def line_3_plots(N=200):
-    """
-    """
-    ax1 = plotdl.new_ax_for_file()
-    line = Sample(10, N)
-    sample_plots_eig(ax1, line)
-    plotdl.save_ax(ax1, "line")
-    ax1.set_yscale('linear')
-    ax1.set_xscale('linear')
-    plotdl.save_ax(ax1, "line_linear")
-
-
-
-#########  Torus animation #####
-def torus_show_state(ax, time, torus ,xi=1):
-    """
-    """
-    N = torus.number_of_points
-    # Create initial condition rho
-    rho0 = numpy.zeros(N)
-    rho0[0] = 1
-        
-    # Create rate matrix W
-    dis =  geometry.fast_periodic_distance_matrix(torus.points, torus.dimensions)
-    W = numpy.exp(-dis/xi)
-    sparsedl.zero_sum(W)
-
-    # 
-    rho = sparsedl.rho(time, rho0, W) 
-    ax.scatter( torus.xpoints, torus.ypoints, c=rho)
-    
-
-def torus_plot_rho(ax, rho, torus, colorbar=False ):
-    """
-    """
-    sct = ax.scatter(torus.xpoints, torus.ypoints, edgecolors='none',
-            c=rho, norm=LogNorm( vmin=(1/torus.number_of_points)/1000, vmax =1))
-    
-    if colorbar:
-        ax.get_figure().colorbar(sct)
-
-def replot_rho_factory(ax, rhos, torus, eigvals):
-    """
-    """
-    def replot_rho(slider_position):
-        ax.clear()
-        pos = int(slider_position)
-        eigval = eigvals[pos]
-        participation_number = ((rhos[:,pos]**2).sum(axis = 0))**(-1)
-        torus_plot_rho(ax, rhos[:,pos], torus, colorbar=False)
-        ax.set_title(r"\#${0}, \lambda={1}, PN = {2}$".format(pos, eigval, participation_number))
-        plotdl.draw()
-    return replot_rho
-
-def torus_rhos_slider(fig,rhos, torus, eigvals):
-    """
-    """
-    ax = fig.add_subplot(111)
-    fig.subplots_adjust(left=0.25, bottom=0.25)
-    torus_plot_rho(ax, rhos[:,0], torus, colorbar=True)
-    replot_rho = replot_rho_factory(ax, rhos, torus, eigvals)
-    axsl = fig.add_axes([0.25, 0.1, 0.65, 0.03])
-    sl = Slider(axsl, "eigenmode", 0,rhos.shape[1],0)
-    sl.on_changed(replot_rho)
-
-
-def torus_list_of_rhos(torus, times, xi=1):
-    """
-    """
-    N = torus.number_of_points
-    rho0 = numpy.zeros(N)
-    rho0[0] = 1
-        
-    # Create rate matrix W
-    dis =  geometry.fast_periodic_distance_matrix(torus.points, torus.dimensions)
-    W = numpy.exp(-dis/xi)
-    sparsedl.zero_sum(W)
-
-    # 
-    rhos = []
-    for t in times:
-        rhos += [sparsedl.rho(t, rho0, W)]
-    return rhos
-
-def torus_time():
-    """
-    """
-    times = numpy.linspace(0,1,100)
-    torus = Sample((10,10),100)
-    rhos = torus_list_of_rhos(torus, times)
-    plotdl.animate(torus_plot_rho, "test", rhos, torus=torus)
 
 
 ##########
-def exp_models_sample(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05, 0.1),(5,10)), epsilon_range_names=("all","low","high"), number_of_realizations = 10):
-    """
-    """
-    ax_exp = plotdl.new_ax_for_file()
-    epsilon_list = set()
-    epsilon_list.update(*epsilon_ranges)
-    print(epsilon_list)
-    #epsilon_list = (0.05, 0.1,0.5,1,1.5,2,5,10)
-    if number_of_realizations >1 :
-        plot_title = "{0}d with {1} points, eigenvalues of ${2}$ realizations, $n=1$".format(sample.d, sample.number_of_points, number_of_realizations )
-    else:
-        plot_title = "{0}d with {1} points, eigenvalues for a single realization, $n=1$".format(sample.d,sample.number_of_points)
-    hist_bins = sqrt(sample.number_of_points*number_of_realizations)
-    
-    ## First we create all the eigenvalues for all epsilons and realizations
-    logvals = {} # empty dict
-    for epsilon in epsilon_list:
-        eigvals = sample_collect_eigenvalues(sample, epsilon, number_of_realizations)
-        logvals[epsilon]= numpy.log(numpy.sort(eigvals)[number_of_realizations:])
-        # I'm using str to avoid trouble with 0.05000000003
-    
-    for range_name, epsilon_list in zip(epsilon_range_names, epsilon_ranges):
-            for epsilon in sorted(epsilon_list):
-                cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
-                
-            plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-            plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_semilogx".format(sample.d, number_of_realizations, range_name))
-            ax_exp.set_yscale('log')
-            plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_loglog".format(sample.d, number_of_realizations, range_name))
-            ax_exp.clear()
-            ### Histogram
-            for epsilon in sorted(epsilon_list):
-                ax_exp.hist(logvals[epsilon], bins = hist_bins, label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
-            plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
-            plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_{2}_zhist".format(sample.d, number_of_realizations, range_name))
-            ax_exp.clear()
 
 
 #### Sample one realization with diffusion, and same points for all realizations##
-def exp_models_sample_oner(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05, 0.1),(5,10)), epsilon_range_names=("all","low","high")):
-    """
+def exp_models_D(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05, 0.1),(5,10)), epsilon_range_names=("all","low","high")):
+    """ creates files
     """
     #temp:
     number_of_realizations = 1
@@ -361,61 +141,50 @@ def exp_models_sample_oner(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),
     epsilon_list.update(*epsilon_ranges)
     print(epsilon_list)
     #epsilon_list = (0.05, 0.1,0.5,1,1.5,2,5,10)
-    if number_of_realizations >1 :
-        plot_title = "{0}d with {1} points, eigenvalues of ${2}$ realizations, $n=1$".format(sample.d, sample.number_of_points, number_of_realizations )
-    else:
-        plot_title = "{0}d with {1} points, eigenvalues for a single realization, $n=1$".format(sample.d,sample.number_of_points)
+    plot_title = "{0}d with {1} points, eigenvalues for a single realization, $n=1$".format(sample.d,sample.number_of_points)
     hist_bins = sqrt(sample.number_of_points*number_of_realizations)
     
     ## First we create all the eigenvalues for all epsilons and realizations
     logvals = {} # empty dict
     rate_matrix = {}
     for epsilon in epsilon_list:
-        ##eigvals = sample_collect_eigenvalues(sample, epsilon, number_of_realizations)
-        ex1 = sample_exp_matrix(sample, epsilon)
+        ex1 = exp_model_matrix(sample, epsilon)
         eigvals= -linalg.eigvals(ex1)
         logvals[epsilon]= numpy.log(numpy.sort(eigvals)[1:])
         rate_matrix[epsilon] = ex1.copy()
         
     
     for range_name, epsilon_list in zip(epsilon_range_names, epsilon_ranges):
-            for epsilon in sorted(epsilon_list):
-                cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
-                ### diffusion
-                diff_coef = sparsedl.resnet(rate_matrix[epsilon], 1)
-                #maxval = diff_coef*pi**2
-                #diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],logvals[epsilon][-1], 100))
-                maxvallog = numpy.min((numpy.log(diff_coef*pi**2), logvals[epsilon][-1]))
-                print("maxvallog  " + str(numpy.log(diff_coef*pi**2))+ "  "+str(logvals[epsilon][-1]))
-                diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],maxvallog, 100))
-                diffusion = numpy.sqrt(diffusion_space/(diff_coef))/pi
-                ax_exp.plot(numpy.log(diffusion_space), diffusion, linestyle='--', label="")
-                #diffusion2 = numpy.sqrt(diffusion_space/(diff_coef))
-                #ax_exp.plot(numpy.log(diffusion_space), diffusion2, linestyle='--', label="2")
-                #diffusion3 = numpy.sqrt((diffusion_space/(diff_coef))/(pi))
-                #ax_exp.plot(numpy.log(diffusion_space), diffusion3, linestyle='--', label="3")
-                    
-            plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-            plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_semilogx".format(sample.d, number_of_realizations, range_name))
-            ax_exp.set_yscale('log')
-            plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_loglog".format(sample.d, number_of_realizations, range_name))
-            ax_exp.clear()
-            ### Histogram
-            for epsilon in sorted(epsilon_list):
-                ax_exp.hist(logvals[epsilon], bins = hist_bins, label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
-            plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
-            plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_{2}_zhist".format(sample.d, number_of_realizations, range_name))
-            ax_exp.clear()
+        for epsilon in sorted(epsilon_list):
+            cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
+            ### diffusion
+            diff_coef = sparsedl.resnet(rate_matrix[epsilon], 1)
+            maxvallog = numpy.min((numpy.log(diff_coef*pi**2), logvals[epsilon][-1]))
+            print("maxvallog  " + str(numpy.log(diff_coef*pi**2))+ "  "+str(logvals[epsilon][-1]))
+            diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],maxvallog, 100))
+            diffusion = numpy.sqrt(diffusion_space/(diff_coef))/pi
+            ax_exp.plot(numpy.log(diffusion_space), diffusion, linestyle='--', label="")
+                
+        plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
+        plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_semilogx".format(sample.d, number_of_realizations, range_name))
+        ax_exp.set_yscale('log')
+        plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_loglog".format(sample.d, number_of_realizations, range_name))
+        ax_exp.clear()
+        ### Histogram
+        for epsilon in sorted(epsilon_list):
+            ax_exp.hist(logvals[epsilon], bins = hist_bins, label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
+        plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
+        plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_{2}_zhist".format(sample.d, number_of_realizations, range_name))
+        ax_exp.clear()
 
 
 
-def participation_number(ax, matrix):
+def plot_participation_number(ax, matrix):
     """
     """
     pn = ((matrix**2).sum(axis=0))**(-1)
     ax.plot(pn)
 
-    
 
 def plot_several_vectors(fig, matrix, vec_indices, x_values = None):
     """
@@ -434,114 +203,78 @@ def plot_several_vectors(fig, matrix, vec_indices, x_values = None):
             axes[n].plot(x_values, matrix[:,m], label = "eigenmode {0}".format(m))
         axes[n].legend()
 
+
 def sample_participation_number(ax, sample, epsilon=0.1):
     """
     """
-    exp_mat = sample_exp_matrix(sample, epsilon)
+    exp_mat = exp_model_matrix(sample, epsilon)
     eigvals, eigvecs = sparsedl.sorted_eigh(exp_mat)
     pn = ((eigvecs**4).sum(axis=0))**(-1)
     ax.plot(pn, label="PN - participation number")
     ax.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
     ax.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
 
-    #dots_to_annotate = (pn > (sample.number_of_points/3)).nonzero()[0]
-    #_arrowprops=dict(arrowstyle="->")
-    #for dot in dots_to_annotate:
-    #    print dot, pn[dot]
-    #    ax.annotate(r"${x},{y}, \lambda={l}$".format(x=dot, y=pn[dot], l= eigvals[dot]), xy=(dot,pn[dot]), xycoords='data', xytext=(20,20), 
-    #        textcoords='offset points', arrowprops=_arrowprops)
 
-def high_epsilons(number_of_points=200, epsilon=20):
+def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20):#used to be high_epsilons
     """
     """
-    line = Sample(1,number_of_points)
-    ax = plotdl.new_ax_for_file()
-    ex = sample_exp_matrix(line, epsilon=epsilon)
+    number_of_points = sample.number_of_points
+    fig = plotdl.Figure()
+    ax1 = fig.add_subplot(2,1,1)
+    ax2 = fig.add_subplot(2,1,2,sharex=ax1)
+#    ax3 = fig.add_subplot(2,1,3)#,sharex=ax1)
+    ex = exp_model_matrix(sample, epsilon=epsilon)
     v,w = sparsedl.sorted_eigh(ex)
-    cummulative_plot(ax, (-v)[1:])
-    ax.set_yscale('log')
-    ax.set_xscale('log')
-    plotdl.set_all(ax, title="Cummulative eigenvalues $N={0}, \epsilon = {1}$".format(number_of_points, epsilon), xlabel=r"$\lambda$")
-    plotdl.save_ax(ax, "exp_1d_{0}_{1}_eigvals".format(number_of_points, epsilon))
+    cummulative_plot(ax1, (-v)[1:])
+    #ax1.set_yscale('log')
+    #ax1.set_xscale('log')
+    plotdl.set_all(ax1, title="Cummulative eigenvalues $N={0}, \epsilon = {1}$".format(number_of_points, epsilon), xlabel=r"$\lambda$")
+    #plotdl.save_ax(ax, "exp_1d_{0}_{1}_eigvals".format(number_of_points, epsilon))
+    #ax2.set_xscale('log')
+    ax2.set_ylim(bottom=0)
 
-    ax.clear()
     pn = ((w**4).sum(axis=0))**(-1)
-    ax.plot(pn, label="PN - participation number")
-    ax.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
-    ax.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
-    ax.set_yscale('symlog')
-    plotdl.set_all(ax, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
-    plotdl.save_ax(ax, "exp_1d_{0}_{1}_participation".format(number_of_points, epsilon))
+    ax2.plot((-v[1:]),pn[1:], label="PN - participation number", marker=".", linestyle='')
+    ax2.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
+    ax2.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
+    ax2.set_yscale('symlog', linthreshx=1)
+    plotdl.set_all(ax2, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
+    #plotdl.save_ax(ax2, "exp_1d_{0}_{1}_participation".format(number_of_points, epsilon))
+    plotdl.save_fig(fig, "exp_1d_{0}_{1}_test".format(number_of_points, epsilon))
 
-    ax.clear()
-    plotdl.matshow_cb(ax, w**2, vmin=10**(-10), colorbar=True)
-    plotdl.set_all(ax, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
-    plotdl.save_ax(ax, "exp_1d_{0}_{1}_matshow".format(number_of_points, epsilon))
-    
-    f= plotdl.Figure()
-    plot_several_vectors(f, w**2, range(1,5))
-    plotdl.save_fig(f, "exp_1d_{0}_{1}_vecs_01_04".format(number_of_points, epsilon))
-    f.clear()
-    plot_several_vectors(f, w**2, range(5,10))
-    plotdl.save_fig(f, "exp_1d_{0}_{1}_vecs_05_10".format(number_of_points, epsilon))
-    f.clear()
-    plot_several_vectors(f, w**2, range(11,15))
-    plotdl.save_fig(f, "exp_1d_{0}_{1}_vecs_11_15".format(number_of_points, epsilon))
-    
-    
-    
-    
+    #ax.clear()
+    ax3 = plotdl.new_ax_for_file()
+    plotdl.matshow_cb(ax3, w**2, vmin=10**(-10), colorbar=True)
+    plotdl.set_all(ax3, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
+    plotdl.save_ax(ax3, "exp_1d_{0}_{1}_matshow".format(number_of_points, epsilon))
+
+    #plotdl.save_fig(fig, "exp_1d_{0}_{1}_test".format(number_of_points, epsilon))
+
 ######## One function to plot them all
 def all_plots(seed= 1, **kwargs):
     """  Create all of the figures. Please note that it might take some time.
     """
     ax = plotdl.new_ax_for_file()
 
-    #random.seed(seed)
-    #p_lognormal_band(ax)
-    #plotdl.save_ax(ax, "P_lognormal_band")
-    #ax.clear()
 
-    #random.seed(seed)
-    #spreading_plots(ax)
-    #plotdl.save_ax(ax, "spreading")
-    #ax.clear()
-    
-    
-    #test: (high_eps with low)
+    line = Sample(1,200)
     random.seed(1)
-    high_epsilons(number_of_points=200, epsilon=0.5)
-    
-    
+    plotf_eig_matshow_pn(line, epsilon=0.5)
     random.seed(1)
-    high_epsilons(number_of_points=200, epsilon=20)
+    plotf_eig_matshow_pn(line, epsilon=20)
     random.seed(1)
-    high_epsilons(number_of_points=200, epsilon=5)
-    random.seed(2)
-    high_epsilons(number_of_points=400, epsilon=20)
-    random.seed(2)
-    high_epsilons(number_of_points=400, epsilon=5)
-    
-
-
-
+    plotf_eig_matshow_pn(line, epsilon=5)
 
     random.seed(seed)
     torus_3_plots()
     ax.clear()
     
     random.seed(seed)
-    exp_models_sample_oner(Sample((1,),300), epsilon_ranges=((0.5,0.8,1,1.5,2,5,10),(0.5,0.8),(5,10)))
-    exp_models_sample_oner(Sample((1,1),300))
-    exp_models_sample_oner(Sample((1,1,1),300))
+    exp_models_D(Sample((1,),300), epsilon_ranges=((0.5,0.8,1,1.5,2,5,10),(0.5,0.8),(5,10)))
+    exp_models_D(Sample((1,1),300))
+    exp_models_D(Sample((1,1,1),300))
     
-    random.seed(seed)
-    exp_models_sample(sample=Sample((1,1),300), number_of_realizations = 10)
-    ####exp_models_sample(sample=Sample((1,1),300), number_of_realizations = 1)
-    #exp_models_sample(sample=Sample((1,),300), number_of_realizations = 10)
     
-
-
 
 if __name__ ==  "__main__":
     all_plots()

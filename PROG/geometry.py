@@ -152,6 +152,8 @@ def fast_distance_matrix(points):
     #weird 1d problem solving:
     if m==1:
         return numpy.sqrt(delta[:,:,0])
+    #  Check for symmetry
+    assert (delta == delta.T).all()
     return numpy.sqrt(delta)
 
 def fast_periodic_distance_matrix(points, dimensions=(1,1)):
@@ -180,6 +182,8 @@ def fast_periodic_distance_matrix(points, dimensions=(1,1)):
         temp_delta += [(-dims[:,d] + data - data[:,np.newaxis])**2]
         delta += numpy.dstack(temp_delta).min(axis=2)
 
+    #  Check for symmetry
+    assert (delta == delta.T).any()
     return numpy.sqrt(delta)
 
 
