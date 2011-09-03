@@ -24,6 +24,20 @@ from plotdl import cummulative_plot
 numpy.seterr(all='warn')
 EXP_MAX_NEG = numpy.log(numpy.finfo( numpy.float).tiny)
 
+def resnet_1d_plot(ax, diff_coef, xlim, ylim):
+    """ Plots 1d diffusion, in the current xlims
+    """
+    # a temporary solution to autoscaling issues
+    x1, x2 = xlim
+    y1, y2 = ylim
+    #right bound:
+    xr = min((x2,  diff_coef*pi**2))
+    xl = x1
+    print ("# debug : x1,x2,y1,y2", x1,x2,y1,y2)
+    diffusion_space = numpy.linspace(xl, xr, 100)
+    diffusion = numpy.sqrt(diffusion_space/(diff_coef))/pi
+    ax.loglog(diffusion_space, diffusion, linestyle='--', label="")
+    return diff_coef
 
 ####################   Sample Plots ################
 
@@ -231,22 +245,30 @@ def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20):#used to be high_ep
     plotdl.set_all(ax1, title="Cummulative eigenvalues $N={0}, \epsilon = {1}$".format(number_of_points, epsilon), xlabel=r"$\lambda$")
     #plotdl.save_ax(ax, "exp_1d_{0}_{1}_eigvals".format(number_of_points, epsilon))
     #ax2.set_xscale('log')
+    D = sparsedl.resnet(ex,1)
+    resnet_1d_plot(ax1, D, xlim= ((-v)[1], (-v)[-1]), ylim=(1/len(v), 1))
     ax2.set_ylim(bottom=0)
 
     pn = ((w**4).sum(axis=0))**(-1)
-    ax2.plot((-v[1:]),pn[1:], label="PN - participation number", marker=".", linestyle='')
-    ax2.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
+    ax2.plot((-v[1:]),pn[1:], marker=".", linestyle='')#, label="PN - participation number"
+    #ax2.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
     ax2.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
-    ax2.set_yscale('symlog', linthreshx=1)
-    plotdl.set_all(ax2, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
+    plotdl.set_all(ax2, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon),legend_loc="best")
     #plotdl.save_ax(ax2, "exp_1d_{0}_{1}_participation".format(number_of_points, epsilon))
-    plotdl.save_fig(fig, "exp_1d_{0}_{1}_test".format(number_of_points, epsilon))
+    plotdl.save_fig(fig, "exp_1d_{0}_pn_linear".format(epsilon))
+    ax1.set_xscale('log')
+    ax1.set_yscale('log')
+    ax2.set_xscale('log')
+    #ax2.set_yscale('symlog', linthreshx=1)
+    ax2.set_yscale('log')    
+    ax2.set_ylim(bottom=-0.1)
+    plotdl.save_fig(fig, "exp_1d_{0}_pn_log".format(epsilon))
 
     #ax.clear()
     ax3 = plotdl.new_ax_for_file()
     plotdl.matshow_cb(ax3, w**2, vmin=10**(-10), colorbar=True)
     plotdl.set_all(ax3, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
-    plotdl.save_ax(ax3, "exp_1d_{0}_{1}_matshow".format(number_of_points, epsilon))
+    plotdl.save_ax(ax3, "exp_1d_{1}_matshow".format(number_of_points, epsilon))
 
     #plotdl.save_fig(fig, "exp_1d_{0}_{1}_test".format(number_of_points, epsilon))
 

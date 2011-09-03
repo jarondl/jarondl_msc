@@ -56,7 +56,7 @@ latex_width_inch = latex_width_pt / latex_dpi
 latex_height_inch = latex_height_pt / latex_dpi
 
 
-rc('text', usetex=True)
+#rc('text', usetex=True)
 rc('font', size=10)
 rc('figure', figsize=[latex_width_inch, latex_height_inch])
 rc('legend', fontsize=10)
