@@ -269,3 +269,8 @@ def descrete_spatial_fourier2(k , points, values):
     ikr = 1j*numpy.dot(k, points.T)
     f_e_ikr = values*numpy.exp(ikr)
     return f_e_ikr.sum()
+
+def banded_ones(N, bandwidth):
+    """ returns a NxN banded matrix of ones
+    """
+    return numpy.tri(N, k=bandwidth)*numpy.tri(N,k=bandwidth).T

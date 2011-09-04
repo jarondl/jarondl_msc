@@ -4,7 +4,7 @@
 """
 from __future__ import division
 #from scipy.sparse import linalg as splinalg
-from numpy import linalg, random, pi, log10, sqrt
+from numpy import linalg, random, pi, log10, sqrt, log
 from matplotlib.colors import LogNorm
 from matplotlib.cm import summer
 from matplotlib.widgets import Slider
@@ -17,27 +17,46 @@ import plotdl
 import geometry
 from geometry import Sample
 from eigenvalue_plots import eigenvalues_cummulative
-from sparsedl import sorted_eigvalsh
+from sparsedl import sorted_eigvalsh, banded_ones
 from plotdl import cummulative_plot
 
 ### Raise all float errors 
 numpy.seterr(all='warn')
 EXP_MAX_NEG = numpy.log(numpy.finfo( numpy.float).tiny)
 
-def resnet_1d_plot(ax, diff_coef, xlim, ylim):
+def resnet_1d_plot(ax, diff_coef, x1, x2, y1, y2):
     """ Plots 1d diffusion, in the current xlims
     """
-    # a temporary solution to autoscaling issues
-    x1, x2 = xlim
-    y1, y2 = ylim
     #right bound:
     xr = min((x2,  diff_coef*pi**2))
     xl = x1
-    print ("# debug : x1,x2,y1,y2", x1,x2,y1,y2)
     diffusion_space = numpy.linspace(xl, xr, 100)
-    diffusion = numpy.sqrt(diffusion_space/(diff_coef))/pi
-    ax.loglog(diffusion_space, diffusion, linestyle='--', label="")
-    return diff_coef
+    diffusion = sqrt((diffusion_space)/(diff_coef))/pi
+    
+    ax.plot(diffusion_space, diffusion, linestyle='--', label=r"$D \approx {0:.3G}$".format(diff_coef))
+
+
+def resnet_1d_logplot(ax, diff_coef, x1, x2, y1, y2,label):
+    """ Plots 1d diffusion, treating the x value as log10.
+    """
+    #right bound:
+    xr = min((x2,  diff_coef*pi**2))
+    xl = x1
+    diffusion_space = numpy.linspace(log10(xl), log10(xr), 100)
+    diffusion = (sqrt((10**diffusion_space)/(diff_coef))/pi)
+    ax.plot(diffusion_space, diffusion, linestyle='--', label=label)
+    
+
+def epsilon_1d_logplot(ax, epsilon, x1, x2, y1, y2,label):
+    """ Plots 1d diffusion, treating the x value as log10.
+    """
+    #right bound:
+    xr = x2#xr = min((x2,  diff_coef*pi**2))
+    xl = x1
+    diffusion_space = numpy.linspace(log10(xl), log10(xr), 100)
+    diffusion = (10**diffusion_space)**epsilon
+    ax.plot(diffusion_space, diffusion, linestyle='--', label=label)
+
 
 ####################   Sample Plots ################
 
@@ -93,7 +112,7 @@ def sample_collect_eigenvalues(sample, epsilon=0.1, number_of_runs=10):
     all_eigenvalues = numpy.concatenate(collected_eigenvalues)
     return all_eigenvalues
 
-def exp_model_matrix(sample, epsilon=0.1): ## rename from sample exp
+def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample exp
     """ Creats W_{nm} = exp((r_0-r_{nm})/xi). The matrix is zero summed and should be symmetric.
 
         :param sample: The sample, with generated points.
@@ -102,25 +121,26 @@ def exp_model_matrix(sample, epsilon=0.1): ## rename from sample exp
     """
     xi = sample.epsilon_to_xi(epsilon)
     dis = sample.periodic_distance_matrix()
-    ## check for minimal exp probelm (arround exp(-800))
-    #underflows = (-dis/xi < EXP_MAX_NEG).sum()
-    #if underflows != 0:
-    #    print "### {0} underflows out of {1} ".format(underflows, dis.size)
-
+    if sample.d ==  1:
+        if bandwidth is None:
+            dis = dis*banded_ones(dis.shape[0], 1)
+        else:
+            dis = dis*banded_ones(dis.shape[0], bandwidth)
     # new -renormalization
     r_0 = dis.sum()/(dis.size)
     print(r_0)
     r_0_mat = numpy.ones(dis.shape)*r_0
     ex1 = numpy.exp((r_0_mat-dis)/xi)
-#    ex1 = ex1*numpy.exp(r_0/xi)
-    #sparsedl.zero_sum(ex1)
-    lamb_0 = sparsedl.new_zero_sum(ex1)
-    #  Check for symmetry
-    print (ex1-ex1.T).nonzero()
-    print(lamb_0)
-    print (ex1.max(), numpy.abs(ex1).min())
+
+    # handle bandwidth for 1d. the default is 1.
+    if sample.d ==  1:
+        if bandwidth is None:
+            ex1 = ex1*banded_ones(dis.shape[0], 1)
+        else:
+            ex1 = ex1*banded_ones(dis.shape[0], bandwidth)
+    sparsedl.zero_sum(ex1)
     #assert (ex1 == ex1.T).all()
-    return ex1 - numpy.eye(ex1.shape[0])*lamb_0
+    return ex1 #- numpy.eye(ex1.shape[0])*lamb_0
 
 
 def torus_3_plots(N=200):
@@ -239,36 +259,29 @@ def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20):#used to be high_ep
 #    ax3 = fig.add_subplot(2,1,3)#,sharex=ax1)
     ex = exp_model_matrix(sample, epsilon=epsilon)
     v,w = sparsedl.sorted_eigh(ex)
-    cummulative_plot(ax1, (-v)[1:])
-    #ax1.set_yscale('log')
-    #ax1.set_xscale('log')
-    plotdl.set_all(ax1, title="Cummulative eigenvalues $N={0}, \epsilon = {1}$".format(number_of_points, epsilon), xlabel=r"$\lambda$")
-    #plotdl.save_ax(ax, "exp_1d_{0}_{1}_eigvals".format(number_of_points, epsilon))
-    #ax2.set_xscale('log')
-    D = sparsedl.resnet(ex,1)
-    resnet_1d_plot(ax1, D, xlim= ((-v)[1], (-v)[-1]), ylim=(1/len(v), 1))
-    ax2.set_ylim(bottom=0)
-
+    logvals = log10((-v)[1:])
+    cummulative_plot(ax1, logvals)
+    #D = sparsedl.resnet(ex,1)
+    D =  (epsilon-1)/epsilon
+    if D > 0:
+        resnet_1d_logplot(ax1, D, x1= (-v)[1], x2 = (-v)[-1], y1 = 1/len(v), y2 = 1, label=r"$D \approx {0:.3G}$".format(D))
+    else:
+        epsilon_1d_logplot(ax1, epsilon, x1= (-v)[1], x2 = (-v)[-1], y1 = 1/len(v), y2 = 1, label=r"$\epsilon \approx {0:.3G}$".format(epsilon))
+    plotdl.set_all(ax1, title="Cummulative eigenvalues $N={0}, \epsilon = {1}$".format(number_of_points, epsilon),
+                 xlabel=r"$\log_{10}\lambda$",legend_loc="best")
     pn = ((w**4).sum(axis=0))**(-1)
-    ax2.plot((-v[1:]),pn[1:], marker=".", linestyle='')#, label="PN - participation number"
-    #ax2.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
+    ax2.plot(logvals,pn[1:], marker=".", linestyle='')
     ax2.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
     plotdl.set_all(ax2, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon),legend_loc="best")
-    #plotdl.save_ax(ax2, "exp_1d_{0}_{1}_participation".format(number_of_points, epsilon))
-    plotdl.save_fig(fig, "exp_1d_{0}_pn_linear".format(epsilon))
-    ax1.set_xscale('log')
     ax1.set_yscale('log')
-    ax2.set_xscale('log')
-    #ax2.set_yscale('symlog', linthreshx=1)
     ax2.set_yscale('log')    
-    ax2.set_ylim(bottom=-0.1)
-    plotdl.save_fig(fig, "exp_1d_{0}_pn_log".format(epsilon))
+    plotdl.save_fig(fig, "exp_{1}d_{0}_pn_log".format(epsilon, sample.d))
 
     #ax.clear()
     ax3 = plotdl.new_ax_for_file()
     plotdl.matshow_cb(ax3, w**2, vmin=10**(-10), colorbar=True)
     plotdl.set_all(ax3, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
-    plotdl.save_ax(ax3, "exp_1d_{1}_matshow".format(number_of_points, epsilon))
+    plotdl.save_ax(ax3, "exp_{2}d_{1}_matshow".format(number_of_points, epsilon,sample.d))
 
     #plotdl.save_fig(fig, "exp_1d_{0}_{1}_test".format(number_of_points, epsilon))
 

@@ -6,6 +6,8 @@ from __future__ import division  # makes true division instead of integer divisi
 
 import numpy as np, numpy
 
+
+
 ### Raise all float errors 
 numpy.seterr(all='warn')
 
@@ -53,66 +55,6 @@ class Sample(object):
         return fast_distance_matrix(self.points)
 
 
-class Torus(object):
-    def __init__(self, (a, b), number_of_points=None):
-        """ ARGUMENTS:
-                a - length of torus (x dim)
-                b - width of torus ( y dim)
-        """
-        self.a = a
-        self.b = b
-        self.d = 2
-        self.dimensions = (a,b)
-        self.volume = a*b
-        self.description = "2d periodic torus"
-        self.short_name="torus"
-        if number_of_points is not None:
-            self.number_of_points = number_of_points
-            self.generate_points(number_of_points)
-
-    def distance(self, point1, point2):
-        x1, y1 = point1
-        x2, y2 = point2
-        ydiff = np.min( (np.abs(y2-y1), self.b - np.abs(y2-y1))  )
-        xdiff = np.min( (np.abs(x2-x1), self.a - np.abs(x2-x1))  )
-        return np.sqrt(xdiff**2 + ydiff**2)
-
-    def generate_points(self, number_of_points):
-        self.xpoints = numpy.random.uniform(0, self.a, number_of_points)
-        self.ypoints = numpy.random.uniform(0, self.b, number_of_points)
-        self.points = numpy.vstack((self.xpoints, self.ypoints)).T
-        self.number_of_points = number_of_points
-        #return self.points
-    
-    def epsilon_to_xi(self, epsilon):
-        n = self.number_of_points/ self.volume
-        return epsilon * n**(-1/self.d)
-
-class PeriodicLine(object):
-    def __init__(self, a, number_of_points=None):
-        self.a = a
-        self.d = 1
-        self.dimensions = (a,)
-        self.volume = a
-
-        self.description = "1d periodic line"
-        self.short_name="line"
-        if number_of_points is not None:
-            self.number_of_points = number_of_points
-            self.generate_points(number_of_points)
-
-    def distance(self, point1,point2):
-        return np.min(( np.abs(point2 - point1) , (self.a - np.abs(point2 - point1))  ))
-
-    def generate_points(self, number_of_points):
-        self.points = numpy.random.uniform(0,self.a,number_of_points)
-        self.points.sort()
-        self.number_of_points = number_of_points
-
-    def epsilon_to_xi(self, epsilon):
-        n = self.number_of_points/ self.volume
-        return epsilon * n**(-1/self.d)
-
 def euclid(point1, point2):
     """  Calculate the euclidean distance (norm) between any two points. Points
         can be given as a numpy array or simple list
@@ -122,7 +64,7 @@ def euclid(point1, point2):
     return np.sqrt( np.dot((point2-point1), (point2-point1)) )
 
 def distance_matrix(points, distance_function=euclid):
-    """  Create a distance matrix, where A_ij is |r_i-r_j|.
+    """  Create a distance matrix, where A_ij is |r_i-r_j|. ** SLOW **
          Points should be given as N dublets, or (Nx2) array.
          If no distance function is give, euclidean distance is used
     """
