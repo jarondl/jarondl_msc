@@ -54,7 +54,7 @@ def epsilon_1d_logplot(ax, epsilon, x1, x2, y1, y2,label):
     xr = x2#xr = min((x2,  diff_coef*pi**2))
     xl = x1
     diffusion_space = numpy.linspace(log10(xl), log10(xr), 100)
-    diffusion = (10**diffusion_space)**epsilon
+    diffusion = (10**diffusion_space)**(epsilon/2)
     ax.plot(diffusion_space, diffusion, linestyle='--', label=label)
 
 
@@ -260,11 +260,11 @@ def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20):#used to be high_ep
     ex = exp_model_matrix(sample, epsilon=epsilon)
     v,w = sparsedl.sorted_eigh(ex)
     logvals = log10((-v)[1:])
-    cummulative_plot(ax1, logvals)
+    cummulative_plot(ax1, logvals, label=r"$\epsilon = {0:.3G}$".format(epsilon))
     #D = sparsedl.resnet(ex,1)
     D =  (epsilon-1)/epsilon
     if D > 0:
-        resnet_1d_logplot(ax1, D, x1= (-v)[1], x2 = (-v)[-1], y1 = 1/len(v), y2 = 1, label=r"$D \approx {0:.3G}$".format(D))
+        resnet_1d_logplot(ax1, D, x1= (-v)[1], x2 = (-v)[-1], y1 = 1/len(v), y2 = 1, label=r"$D = \frac{{\epsilon-1}}{{\epsilon}} \approx {0:.3G}$".format(D))
     else:
         epsilon_1d_logplot(ax1, epsilon, x1= (-v)[1], x2 = (-v)[-1], y1 = 1/len(v), y2 = 1, label=r"$\epsilon \approx {0:.3G}$".format(epsilon))
     plotdl.set_all(ax1, title="Cummulative eigenvalues $N={0}, \epsilon = {1}$".format(number_of_points, epsilon),
