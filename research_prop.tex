@@ -175,8 +175,6 @@ Where $W_{nm}$ is the \emph{transition rate}, i.e.\ the rate at which probabilit
 Because of probability conservation, we want to have $\sum_m W_{nm} \;=\; 0 \ \ \forall n$ , which we can achieve by setting $W_{nn} \;=\; -\sum_{m\ne n} W_{nm} $, meaning that for each site the sum of incoming transition rates negates the outgoing transitions.
 The rate equation can also be written as a vectorial equation:$\boldsymbol{ \dot p } \;=\; \boldsymbol{W} \boldsymbol{p}$. In its basic form, the matrix $\boldsymbol{W}$ is symmetric (at the moment, see "Assymetric VRH" further down in this section), except for the main diagonal, which has values that ensure that each row's sum is zero.
 
-Quantum spreading and transport is another subject we wish to tackle, following the lead of \cite{Jayannavar:1991}\cite{Guarneri:1989}\cite{Guarneri:1993}.
-
 %%%%%%%%%%%
 The network (the values of $W_{nm}$) can be defined arbitrarily, but we wish to focus on networks that represent geometric systems, by defining the transition rates to depend on the distance betweeen randomly scattered points\cite{Mezard:1999:NPB}. One such network, with the rates defined as:
 \begin{align} \label{eq:exp_rates}
@@ -216,7 +214,9 @@ We can combine this result with \eqref{eq:p_t_spectrum} to obtain a relation bet
     C(\lambda) &\;=\; \int_{\infty}^{\lambda} g(\lambda')d\lambda' \;=\; \sqrt{\frac{\lambda}{\pi^2 D}} \label{eq:C_D}
 \end{align}
 
-We do not know yet if a similar relation holds in $2d$. Another approach is the resistor network one. If we think of the network as a network of resistors, then we can characterize the transport by the conductance between two points. 
+
+Quantum spreading and transport is another subject we wish to tackle, following the lead of \cite{Jayannavar:1991}\cite{Guarneri:1989}\cite{Guarneri:1993}.
+
 
 %%%%%%%%%%%%%%%%%%%
 \section{Work plan}
@@ -290,11 +290,7 @@ D &\;=\; \left[\int_0^\infty  \frac{\xi}{r_0} \left(\frac{w}{w_0}\right)^{\frac{
 \caption{The exponential dependence model in $1d$ and $2d$. The sites' locations were randomly chosen with a uniform distribution. The transition rates between them are according to \eqref{eq:exp_dep}, with a different value of $\epsilon=\frac{\xi}{r_0}$ for each graph, as stated in their legend. For the $1d$ systems, where applicable, the expected eigenvalue density of diffusion modes was drawn, according to \eqref{eq:C_D} and \eqref{eq:1d_D}. For $2d$ systems, or for $1d$ systems with $D=0$, the diffusion density was drawn using Resistor Network calculation\eqref{eq:resnet}. }
 \end{figure}
 
-%%%%%%%%%%%%%
-%%%%%ENDING THE DOCUMENT. WORK IN PROGRESS
-%\bibliographystyle{plainnat}
-\bibliography{jarondl}
-\end{document}
+
 
 
 
@@ -303,6 +299,12 @@ There is an analogy between the diffusion problem we have laid out, to electrica
 \begin{align}
 J = -D \nabla \phi 
 \end{align}
+...
+%%%%%%%%%%%%%
+%%%%%ENDING THE DOCUMENT. WORK IN PROGRESS
+%\bibliographystyle{plainnat}
+\bibliography{jarondl}
+\end{document}
 {\bf Resistor network in $1d$.--} We can find the diffusion coefficient $D$ using resistor network calculation. The basic idea is to apply incoming current (+1 in suitable units) in one site, outgoing in another (-1), and then compute the site occupation probability difference between them. This will give us the conductivity $G$, which in $1d$ is the conductance $\sigma$ times the distance:
 \begin{align}
   \sigma \;=\; \frac{G}{r}
