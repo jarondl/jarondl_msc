@@ -6,7 +6,7 @@
 from __future__ import division  # makes true division instead of integer division
 import scipy
 import numpy
-from numpy import sqrt, cos, pi, diagflat
+from numpy import sqrt, cos, pi, diagflat, log
 from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
 from scipy.sparse.linalg import spsolve
@@ -136,8 +136,20 @@ def resnet(W, b):
     v = numpy.dot(invW, I)
     return (N_high- N_low)/(v[N_high] - v[N_low])
 
-
-
+def avg_2d_resnet(W, dis, r_0, sampling=20):
+    """
+    """
+    indices = numpy.arange(sampling) # the points are not sorted, so it is random.
+    invW = linalg.pinv(W)
+    N = W.shape[0]
+    G = numpy.zeros(sampling)
+    for n in indices:
+        I = numpy.zeros(N)
+        I[[0, n+1]] =  [-1, 1]
+        v = numpy.dot(invW, I)
+        G[n] = (v[0]-v[n+1])**(-1)
+    sigma = G*log(dis[0,indices+1]/r_0)/pi
+    return (sigma.sum()/sampling)/r_0**2
 
 
 def rho(t, rho0, W, index=None):

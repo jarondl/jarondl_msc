@@ -175,7 +175,7 @@ Where $W_{nm}$ is the \emph{transition rate}, i.e.\ the rate at which probabilit
 Because of probability conservation, we want to have $\sum_m W_{nm} \;=\; 0 \ \ \forall n$ , which we can achieve by setting $W_{nn} \;=\; -\sum_{m\ne n} W_{nm} $, meaning that for each site the sum of incoming transition rates negates the outgoing transitions.
 The rate equation can also be written as a vectorial equation:$\boldsymbol{ \dot p } \;=\; \boldsymbol{W} \boldsymbol{p}$. In its basic form, the matrix $\boldsymbol{W}$ is symmetric (at the moment, see "Assymetric VRH" further down in this section), except for the main diagonal, which has values that ensure that each row's sum is zero.
 
-How should I cite these\cite{Parris:1986}\cite{Jayannavar:1991}\cite{Guarneri:1989}\cite{AslangulChvosta:1995}\cite{Guarneri:1993}
+Quantum spreading and transport is another subject we wish to tackle, following the lead of \cite{Jayannavar:1991}\cite{Guarneri:1989}\cite{Guarneri:1993}.
 
 %%%%%%%%%%%
 The network (the values of $W_{nm}$) can be defined arbitrarily, but we wish to focus on networks that represent geometric systems, by defining the transition rates to depend on the distance betweeen randomly scattered points\cite{Mezard:1999:NPB}. One such network, with the rates defined as:
@@ -185,7 +185,7 @@ The network (the values of $W_{nm}$) can be defined arbitrarily, but we wish to 
 Where $r_{nm}$ is the distance between site $n$ and $m$, $r_0$ is the typical distance between points, $w_0$ is the transition rate between points at distance $r_0$, and $\xi$ is a scaling coefficient, was studied in \cite{Amir:2010:PRL}, and is of particular interest for us.
 
 %%%%%%%%%%%
-{ \bf Dimensions.-- } The system may be in $1d$, $2d$, $3d$ etc., or in quasi-$1d$. Quasi-$1d$ relates either to $1d$ systems where there are bonds between sites beyond the nearest neighbors, or to $2d$ systems with finite width (strip). Both these systems have banded matrices, with bandwidth $b$.
+{ \bf Dimensions.-- } The system may be in $1d$, $2d$, $3d$ etc., or in quasi-$1d$. The $1d$ system has been studied, among others, in\cite{Parris:1986}\cite{Alexander:1981:RMP}\cite{AslangulChvosta:1995}.  Quasi-$1d$ relates either to $1d$ systems where there are bonds between sites beyond the nearest neighbors, or to $2d$ systems with finite width (strip). Both these systems have banded matrices, with bandwidth $b$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 { \bf Survival probability - $\mathcal{P}(t)$.--} 
@@ -256,11 +256,11 @@ To compare this result to the obtained eigenvalues, we have created a $1d$ syste
 \end{align}
 Where $r_0$ is the typical distance between points, $w_0$ is the transition rate between points at distance $r_0$, and $\xi$ is a scaling coefficient. It can be shown that the distances of randomly scattered points have a distribution described by 
 \begin{align}
-  f(r)dr \;=\; e^{-\frac{\Omega_d}{d} \left(\frac{r}{r_0}\right)^d} \Omega_d \left(\frac{r}{r_0}\right)^{d-1}\frac{dr}{r_0}
+  f(r)dr \;=\; e^{-\frac{\Omega_d}{2d} \left(\frac{r}{r_0}\right)^d} \frac{\Omega_d}{2} \left(\frac{r}{r_0}\right)^{d-1}\frac{dr}{r_0}
 \end{align}
 where $n$ is the density, $d$ the dimension, and $\Omega_d$ is the $d$ dimensional solid angle. The distribution of the rates can be found by replacing the random variable ($|f_w(w)dw| \;=\; |f_r(r)dr|$), and we find it to be 
 \begin{align}\label{eq:f_w}
- &\qquad f_w(w)dw \;=\; \Omega_d\left(\frac{\xi}{r_0}\right)^d\left|\ln \frac{w}{w_0}\right|^{d-1} \exp\left[-\left|\frac{\Omega_d}{d}\frac{\xi}{r_0}\ln \frac{w}{w_0}\right|^d\right] \frac{dw}{w}
+ &\qquad f_w(w)dw \;=\; \frac{\Omega_d}{2}\left(\frac{\xi}{r_0}\right)^d\left|\ln \frac{w}{w_0}\right|^{d-1} \exp\left[-\left|\frac{\Omega_d}{2d}\frac{\xi}{r_0}\ln \frac{w}{w_0}\right|^d\right] \frac{dw}{w}
 \end{align}
 In $1d$ resistor networks, the average resistance of a system is the mean of the individual resistances, and the average conductance is the harmonic mean of the individual conductances. Following the $1d$ solution presented in \cite{Alexander:1981:RMP}, if the harmonic mean is finite, then the system will be diffusive with diffusion coefficient equal to the inverse of the harmonic mean:
 \begin{align}
@@ -268,13 +268,29 @@ In $1d$ resistor networks, the average resistance of a system is the mean of the
 \end{align}
 If $D>0$ then there is diffusion, else sub diffusion is implied. It is a known property of harmonic means, that because of their inverse dependence on values, the values closer to zero contribute most of the sum. Therefore, we are interested in the distribution of transition rates in the limit $w\rightarrow 0$. The $1d$ case of \eqref{eq:f_w} is:
 \begin{align}
-f(w)dw &\;=\; 2\frac{\xi}{r_0} \left(\frac{w}{w_0}\right)^{\frac{2\xi}{r_0} }\frac{dw}{w} \\
-D &\;=\; \left[\int_0^\infty  \frac{2\xi}{r_0} \left(\frac{w}{w_0}\right)^{\frac{2\xi}{r_0} } \frac{dw}{w^2}\right]^{-1} r_0^2 \;=\; 
+f(w)dw &\;=\; \frac{\xi}{r_0} \left(\frac{w}{w_0}\right)^{\frac{\xi}{r_0} }\frac{dw}{w} \\
+D &\;=\; \left[\int_0^\infty  \frac{\xi}{r_0} \left(\frac{w}{w_0}\right)^{\frac{\xi}{r_0} } \frac{dw}{w^2}\right]^{-1} r_0^2 \;=\; 
 \begin{cases}
-    \frac{\frac{2\xi}{r_0} -1}{\frac{2\xi}{r_0}}w_0^{\frac{2\xi}{r_0}} r_0^2 &\qquad \frac{2\xi}{r_0} > 1\\
+    \frac{\frac{\xi}{r_0} -1}{\frac{\xi}{r_0}}w_0^{\frac{\xi}{r_0}} r_0^2 &\qquad \frac{\xi}{r_0} > 1\\
     0  &\qquad \frac{2\xi}{r_0} < 1
 \end{cases}
 \end{align}
+
+\begin{figure}
+\subfloat{
+    \includegraphics[clip, width=0.45\hsize]{exp_1d_0__2_pn.pdf}} 
+\subfloat{
+    \includegraphics[clip, width=0.45\hsize]{exp_2d_0__2_pn.pdf}}\\
+\subfloat{
+    \includegraphics[clip, width=0.45\hsize]{exp_1d_1__5_pn.pdf} }
+\subfloat{
+    \includegraphics[clip, width=0.45\hsize]{exp_2d_1__5_pn.pdf}}\\
+\subfloat{
+    \includegraphics[clip, width=0.45\hsize]{exp_1d_5_pn}}
+\subfloat{
+    \includegraphics[clip, width=0.45\hsize]{exp_2d_5_pn.pdf}}
+
+\end{figure}
 
 %%%%%%%%%%%%%%%%
 {\bf Resistor network in $2d$.--} We do not know yet if the above criterion for diffusion works in dimensions higher than $1d$. If we put in the $2d$ distribution, the harmonic mean does not diverge. Hence, if the naive generalization from $1d$ to $2d$ holds, we should observe diffusion. A different approach is to resolve the resistor network for a $2d$ system. Instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :

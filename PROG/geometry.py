@@ -43,6 +43,7 @@ class Sample(object):
             self.points = numpy.vstack(d_points).T
         self.number_of_points = number_of_points
         self.n = self.number_of_points / self.volume
+        self.r_0 = self.n**(-1/self.d)
 
     def epsilon_to_xi(self, epsilon):
         """ Returns xi, using the current sample density. Should raise an error if no points were created."""

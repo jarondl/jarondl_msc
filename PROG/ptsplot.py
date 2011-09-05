@@ -47,15 +47,16 @@ def resnet_1d_logplot(ax, diff_coef, x1, x2, y1, y2,label):
     ax.plot(diffusion_space, diffusion, linestyle='--', label=label)
     
 
-def epsilon_1d_logplot(ax, epsilon, x1, x2, y1, y2,label):
+def power_law_logplot(ax, power, coeff, bbox,label):
     """ Plots 1d diffusion, treating the x value as log10.
     """
     #right bound:
-    xr = x2#xr = min((x2,  diff_coef*pi**2))
+    x1,x2,x3,x4 = bbox
+    xr_log = min((log10(x2), -log10(coeff)/power))
     xl = x1
-    diffusion_space = numpy.linspace(log10(xl), log10(xr), 100)
-    diffusion = (10**diffusion_space)**(epsilon/2)
-    ax.plot(diffusion_space, diffusion, linestyle='--', label=label)
+    power_space = numpy.linspace(log10(xl), xr_log, 100)
+    power_law = coeff*(10**power_space)**(power)
+    ax.plot(power_space, power_law, linestyle='--', label=label)
 
 
 ####################   Sample Plots ################
@@ -86,13 +87,14 @@ def plot_exp_model_permutation(ax, sample, epsilon = 0.1, end_log_time=1 ,show_t
 
 def sample_2d_theory(ax, sample, epsilon):
     """ """
-    n = sample.number_of_points/sample.volume
+    n = sample.n
+    r_0 = sample.r_0
     xi = sample.epsilon_to_xi(epsilon)
     left_end = numpy.log10(2) - sqrt(log10(sample.number_of_points)/(pi*n*xi**2))
     right_end = numpy.log10(2)
     #print "min : {0} max : {1}  minlog : {2}  maxlog : {3}".format(numpy.min(eigvals[0]),numpy.max(eigvals[0]), minvallog, maxvallog)
     theory_space= numpy.logspace(left_end, right_end,100)
-    theory = numpy.exp(-(pi)*n*(xi*numpy.log(theory_space/2))**2)
+    theory = numpy.exp(-(-pi*xi/(2*r_0)*log(10**theory_space))**2)
 
     xlim, ylim = ax.get_xlim(), ax.get_ylim()
     ax.plot(theory_space, theory, label=r"theory $\epsilon = {0}$".format(epsilon), linestyle="--")
@@ -127,11 +129,12 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample
         else:
             dis = dis*banded_ones(dis.shape[0], bandwidth)
     # new -renormalization
-    r_0 = dis.sum()/(dis.size)
-    print(r_0)
+    r_0_N = sample.r_0
+    r_0 = dis.sum()/(dis.shape[0]**2)
+    print("r_0_N", r_0_N)
+    print("old_r_0", r_0)
     r_0_mat = numpy.ones(dis.shape)*r_0
     ex1 = numpy.exp((r_0_mat-dis)/xi)
-
     # handle bandwidth for 1d. the default is 1.
     if sample.d ==  1:
         if bandwidth is None:
@@ -256,26 +259,41 @@ def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20):#used to be high_ep
     fig = plotdl.Figure()
     ax1 = fig.add_subplot(2,1,1)
     ax2 = fig.add_subplot(2,1,2,sharex=ax1)
+    ax1.label_outer()
+   
+    fig.subplots_adjust(hspace=0.001)
 #    ax3 = fig.add_subplot(2,1,3)#,sharex=ax1)
     ex = exp_model_matrix(sample, epsilon=epsilon)
     v,w = sparsedl.sorted_eigh(ex)
     logvals = log10((-v)[1:])
     cummulative_plot(ax1, logvals, label=r"$\epsilon = {0:.3G}$".format(epsilon))
     #D = sparsedl.resnet(ex,1)
-    D =  (epsilon-1)/epsilon
-    if D > 0:
-        resnet_1d_logplot(ax1, D, x1= (-v)[1], x2 = (-v)[-1], y1 = 1/len(v), y2 = 1, label=r"$D = \frac{{\epsilon-1}}{{\epsilon}} \approx {0:.3G}$".format(D))
-    else:
-        epsilon_1d_logplot(ax1, epsilon, x1= (-v)[1], x2 = (-v)[-1], y1 = 1/len(v), y2 = 1, label=r"$\epsilon \approx {0:.3G}$".format(epsilon))
-    plotdl.set_all(ax1, title="Cummulative eigenvalues $N={0}, \epsilon = {1}$".format(number_of_points, epsilon),
-                 xlabel=r"$\log_{10}\lambda$",legend_loc="best")
+    D1 =  ((epsilon-1)/(epsilon))
+    v_not_including_first = (-v)[1:]
+    bbox = [((v_not_including_first)[v_not_including_first>0])[0], (-v)[-1], 1/len(v),  1]
+    if sample.d ==1 :
+        if D1 > 0:
+            power_law_logplot(ax1, 0.5, 1/(sqrt(D1)*pi), bbox, label=r"$\frac{{D}}{{r_0^2}} = \frac{{\epsilon-1}}{{\epsilon}} \approx {0:.3G}$".format(D1))
+        else:
+            D_resnet = sparsedl.resnet(ex,1)
+            power_law_logplot(ax1, 0.5, 1/(sqrt(D_resnet)*pi), bbox, label=r"$ResNet D = {0:.3G}$".format(D_resnet))
+            power_law_logplot(ax1, epsilon/2, 1, bbox, label=r"$\lambda^{{\epsilon/2}}$".format())
+            power_law_logplot(ax1, epsilon, 1, bbox, label=r"$\lambda^{{\epsilon}}$".format())
+    if sample.d == 2:
+        D_resnet = sparsedl.avg_2d_resnet(ex,sample.periodic_distance_matrix(),sample.r_0)
+        power_law_logplot(ax1, 0.5, 1/(sqrt(D_resnet)*pi), bbox, label=r"$ResNet D = {0:.3G}$".format(D_resnet))
+        #sample_2d_theory(ax1, sample, epsilon)
     pn = ((w**4).sum(axis=0))**(-1)
     ax2.plot(logvals,pn[1:], marker=".", linestyle='')
     ax2.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
-    plotdl.set_all(ax2, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon),legend_loc="best")
+    plotdl.set_all(ax1, ylabel=r"$C(\lambda)$", legend_loc="best")  
+    plotdl.set_all(ax2, ylabel=r"PN", xlabel=r"$\log_{10}\lambda$", legend_loc="best")
     ax1.set_yscale('log')
     ax2.set_yscale('log')    
-    plotdl.save_fig(fig, "exp_{1}d_{0}_pn_log".format(epsilon, sample.d))
+    # There are two overlaping ticks, so we remove both
+    ax1.set_yticks(ax1.get_yticks()[1:])
+    ax2.set_yticks(ax2.get_yticks()[:-1])    
+    plotdl.save_fig(fig, "exp_{1}d_{0}_pn".format(epsilon, sample.d))
 
     #ax.clear()
     ax3 = plotdl.new_ax_for_file()
@@ -292,13 +310,22 @@ def all_plots(seed= 1, **kwargs):
     ax = plotdl.new_ax_for_file()
 
 
-    line = Sample(1,200)
+    line = Sample(1,800)
     random.seed(1)
-    plotf_eig_matshow_pn(line, epsilon=0.5)
+    plotf_eig_matshow_pn(line, epsilon=0.2)
     random.seed(1)
-    plotf_eig_matshow_pn(line, epsilon=20)
+    plotf_eig_matshow_pn(line, epsilon=1.5)
     random.seed(1)
     plotf_eig_matshow_pn(line, epsilon=5)
+
+    tor = Sample((1,1),800)
+    random.seed(1)
+    plotf_eig_matshow_pn(tor, epsilon=0.2)
+    random.seed(1)
+    plotf_eig_matshow_pn(tor, epsilon=1.5)
+    random.seed(1)
+    plotf_eig_matshow_pn(tor, epsilon=5)
+
 
     random.seed(seed)
     torus_3_plots()
