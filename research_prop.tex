@@ -27,7 +27,7 @@
 \fi
 
 % packages added by jarondl
-\usepackage{subfig}
+%\usepackage{subfig}  %% causes odd captions
 \usepackage{verbatim} % for multiline comments
 \usepackage{natbib} % change the bibliography style 
 \usepackage{fancybox} % allows putting boxes with borders
@@ -191,7 +191,7 @@ Where $r_{nm}$ is the distance between site $n$ and $m$, $r_0$ is the typical di
 { \bf Survival probability - $\mathcal{P}(t)$.--} 
 The survival probability is the probability to remain in the starting site. If the initial condition was $p_0(0)\;=\;1$, $p_i(0)\;=\;0 \textrm{  for  } i\neq 0$, then $\mathcal{P}(t)\;=\; p_0(t)$. The survival probability is directly related to the spectral properties of the transition matrices, and it can be shown that 
 \begin{align} \label{eq:p_t_spectrum}
-\mathcal{P}(t) \;=\; \frac{1}{N}\sum_\lambda e^{\lambda t}
+\mathcal{P}(t) \;=\; \frac{1}{N}\sum_\lambda e^{\lambda t} \;\rightarrow\;\frac{1}{N}\int e^{\lambda t}g(\lambda)d\lambda
 \end{align}
 where the $\lambda$s are the eigenvalues of the matrix, namely that the survival probability is the Laplace transform of the eigenvalue density.
 
@@ -201,10 +201,21 @@ A particle can be transmitted through the system from one end to the other. This
 \begin{align}
   S(t) \;=\; \sum_n (r_n(t)  )^2 p_n  %-\overline{r}(t)
 \end{align}
-Where $r_n$ is the location of the $n$th site. In \cite{Alexander:1981:RMP} it is shown that in $1d$ the spreading is related to the survival probability (which is itself related to the spectrum by \eqref{eq:p_t_spectrum}), by
+Where $r_n$ is the location of the $n$th site. In \cite{Alexander:1981:RMP} it is shown that in $1d$ the spreading is related to the survival probability by
 \begin{align}
-S(t)\sim \left(\frac{1}{\mathcal{P}(t)}\right)^2
+S(t) \;=\; \frac{1}{2\pi\mathcal{P}^2(t)}
 \end{align}
+For diffusive systems, 
+\begin{align}
+S(t) &\;=\; 2Dt  \\
+\mathcal{P}(t) &\;=\; \sqrt{\frac{1}{2\pi S(t)}} \;=\; \sqrt{\frac{1}{4\pi D t}}
+\end{align}
+We can combine this result with \eqref{eq:p_t_spectrum} to obtain a relation between $g(\lambda)$ and D:
+\begin{align}
+    g(\lambda) &\;=\; \mathcal{L}^{-1}[\mathcal{P}(t)] \;=\; \mathcal{L}^{-1}\left[\frac{1}{\sqrt{4\pi D t}}\right] \;=\; \frac{1}{\sqrt{4\pi^2 D\lambda}} \\
+    C(\lambda) &\;=\; \int_{\infty}^{\lambda} g(\lambda')d\lambda' \;=\; \sqrt{\frac{\lambda}{\pi^2 D}} \label{eq:C_D}
+\end{align}
+
 We do not know yet if a similar relation holds in $2d$. Another approach is the resistor network one. If we think of the network as a network of resistors, then we can characterize the transport by the conductance between two points. 
 
 %%%%%%%%%%%%%%%%%%%
@@ -234,24 +245,17 @@ $(\text{sparsity}\cdot \text{bandwidth}) \ll 1$. However, in this work it is not
 
 
 %%%%%%%%%%%%%%
-{\bf Resistor network in $1d$.--} We can find the diffusion coefficient $D$ using resistor network calculation. The basic idea is to apply incoming current (+1 in suitable units) in one site, outgoing in another (-1), and then compute the site occupation probability difference between them. This will give us the conductivity $G$, which in $1d$ is the conductance $\sigma$ times the distance:
-\begin{align}
-  \sigma \;=\; \frac{G}{r}
-\end{align} 
-For diffusive systems in $1d$, the eigenvalue density close to zero is 
-\begin{align} \label{eq:g_D}
-  g(\lambda) \approx \sqrt{\frac{\lambda}{D}}\frac{N}{\pi}
-\end{align}
-To compare this result to the obtained eigenvalues, we have created a $1d$ system with random log-normaly distributed transition rates, and calculted the diffusion, see figure \ref{fig:eigvals_lognormal}.
+
+To compare this result to the obtained eigenvalues, we have created a $1d$ system with random log-normaly distributed transition rates, and calculted the diffusion, see figure \ref{fig:quasi_1d}.
 \begin{figure}
-    \includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}
-    \caption{Cummulated eigenvalues, and the diffusion coefficient. No fitting parameters were used. There are $N\;=\;200$ points, and the rates were randomly drawn from a log-normal distribution, with the original normal distribution variance $\sigma^2\;=\;1$, and mean $\mu\;=\;0$. Matrices with different bandwidths were constructed, although we are only certain that theory holds for $b\;=\;1$. The lines mark \eqref{eq:g_D}, with $D$ as stated in the legend. }
-    \label{fig:eigvals_lognormal}
+    \includegraphics[clip, width=0.9\hsize]{quasi_1d}
+    \caption{Quasi-1d. No fitting parameters were used. $N\;=\;800$ points were randomly scattered on a $1d$ line. The transition rates between them are according to \eqref{eq:exp_dep}, with $\epsilon=\frac{\xi}{r_0}=10$. Each system was truncated at a different bandwidth, as stated in the legend. The dashed line marks \eqref{eq:C_D}, with $D$ calculated using the resistor network method \eqref{eq:resnet}. }
+    \label{fig:quasi_1d}
 \end{figure}
 
 %%%%%%%%%%%%
 { \bf The exponential dependence model in various dimensions.--} In this model we define the rates as 
-\begin{align}
+\begin{align} \label{eq:exp_dep}
   W_{nm}\;=\; w_0 e^{(r_0-r_{nm})/ \xi}
 \end{align}
 Where $r_0$ is the typical distance between points, $w_0$ is the transition rate between points at distance $r_0$, and $\xi$ is a scaling coefficient. It can be shown that the distances of randomly scattered points have a distribution described by 
@@ -267,7 +271,7 @@ In $1d$ resistor networks, the average resistance of a system is the mean of the
     D \;=\; \left(\overline{(w^{-1})}\right)^{-1}r_0^2 \;=\; \left[\int f(w) \frac{dw}{w}\right]^{-1} r_0^2
 \end{align}
 If $D>0$ then there is diffusion, else sub diffusion is implied. It is a known property of harmonic means, that because of their inverse dependence on values, the values closer to zero contribute most of the sum. Therefore, we are interested in the distribution of transition rates in the limit $w\rightarrow 0$. The $1d$ case of \eqref{eq:f_w} is:
-\begin{align}
+\begin{align}\label{eq:1d_D}
 f(w)dw &\;=\; \frac{\xi}{r_0} \left(\frac{w}{w_0}\right)^{\frac{\xi}{r_0} }\frac{dw}{w} \\
 D &\;=\; \left[\int_0^\infty  \frac{\xi}{r_0} \left(\frac{w}{w_0}\right)^{\frac{\xi}{r_0} } \frac{dw}{w^2}\right]^{-1} r_0^2 \;=\; 
 \begin{cases}
@@ -277,21 +281,25 @@ D &\;=\; \left[\int_0^\infty  \frac{\xi}{r_0} \left(\frac{w}{w_0}\right)^{\frac{
 \end{align}
 
 \begin{figure}
-\subfloat{
-    \includegraphics[clip, width=0.45\hsize]{exp_1d_0__2_pn.pdf}} 
-\subfloat{
-    \includegraphics[clip, width=0.45\hsize]{exp_2d_0__2_pn.pdf}}\\
-\subfloat{
-    \includegraphics[clip, width=0.45\hsize]{exp_1d_1__5_pn.pdf} }
-\subfloat{
-    \includegraphics[clip, width=0.45\hsize]{exp_2d_1__5_pn.pdf}}\\
-\subfloat{
-    \includegraphics[clip, width=0.45\hsize]{exp_1d_5_pn}}
-\subfloat{
-    \includegraphics[clip, width=0.45\hsize]{exp_2d_5_pn.pdf}}
 
+    \includegraphics[clip, width=0.49\hsize]{{{exp_1d_0.2_pn}}}   
+    \includegraphics[clip, width=0.49\hsize]{{{exp_2d_0.2_pn}}}   \\
+    \includegraphics[clip, width=0.49\hsize]{{{exp_1d_1.5_pn}}}   
+    \includegraphics[clip, width=0.49\hsize]{{{exp_2d_1.5_pn}}}   \\
+    \includegraphics[clip, width=0.49\hsize]{exp_1d_5_pn}         
+    \includegraphics[clip, width=0.49\hsize]{exp_2d_5_pn}         
+\caption{The exponential dependence model in $1d$ and $2d$. The sites' locations were randomly chosen with a uniform distribution. The transition rates between them are according to \eqref{eq:exp_dep}, with a different value of $\epsilon=\frac{\xi}{r_0}$ for each graph, as stated in their legend. For the $1d$ systems, where applicable, the expected eigenvalue density of diffusion modes was drawn, according to \eqref{eq:C_D} and \eqref{eq:1d_D}. For $2d$ systems, or for $1d$ systems with $D=0$, the diffusion density was drawn using Resistor Network calculation\eqref{eq:resnet}. }
 \end{figure}
 
+%%%%%%%%%%%%%
+{\bf Resistor network in $1d$.--} We can find the diffusion coefficient $D$ using resistor network calculation. The basic idea is to apply incoming current (+1 in suitable units) in one site, outgoing in another (-1), and then compute the site occupation probability difference between them. This will give us the conductivity $G$, which in $1d$ is the conductance $\sigma$ times the distance:
+\begin{align}
+  \sigma \;=\; \frac{G}{r}
+\end{align} 
+For diffusive systems in $1d$, the eigenvalue density close to zero is 
+\begin{align} \label{eq:g_D}
+  g(\lambda) \approx \sqrt{\frac{\lambda}{D}}\frac{N}{\pi}
+\end{align}
 %%%%%%%%%%%%%%%%
 {\bf Resistor network in $2d$.--} We do not know yet if the above criterion for diffusion works in dimensions higher than $1d$. If we put in the $2d$ distribution, the harmonic mean does not diverge. Hence, if the naive generalization from $1d$ to $2d$ holds, we should observe diffusion. A different approach is to resolve the resistor network for a $2d$ system. Instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
 \begin{align}
@@ -303,6 +311,7 @@ The superposition of an outgoing current just doubles the result, and we obtain:
     G \;=\; \frac{I}{V} \;=\; \frac{\pi\sigma }{\ln\frac{r}{r_0}}  \\
     \sigma \;=\; \frac{1}{\pi}G\ln\frac{r}{r_0}
 \end{align}
+
 
 
 %\bibliographystyle{plainnat}

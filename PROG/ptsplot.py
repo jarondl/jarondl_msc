@@ -139,19 +139,21 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample
     if sample.d ==  1:
         if bandwidth is None:
             ex1 = ex1*banded_ones(dis.shape[0], 1)
-        else:
+        elif bandwidth != 0: #### Zero means ignore bandwidth
             ex1 = ex1*banded_ones(dis.shape[0], bandwidth)
     sparsedl.zero_sum(ex1)
     #assert (ex1 == ex1.T).all()
     return ex1 #- numpy.eye(ex1.shape[0])*lamb_0
 
 
-def torus_3_plots(N=200):
+def torus_3_plots(N=200,epsilon=0.1):
     """
     """
     ax1 = plotdl.new_ax_for_file()
     torus = Sample((1,1), N)
-    plot_exp_model_permutation(ax1, torus)
+    plot_exp_model_permutation(ax1, torus, epsilon=epsilon)
+    ax1.set_yscale('log')
+    ax1.set_xscale('log')
     plotdl.save_ax(ax1, "torus")
     ax1.set_yscale('linear')
     ax1.set_xscale('linear')
@@ -213,6 +215,26 @@ def exp_models_D(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05, 0.1
         plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
         plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_{2}_zhist".format(sample.d, number_of_realizations, range_name))
         ax_exp.clear()
+        
+def plot_quasi_1d(ax, sample, bandwidth_list, epsilon=10):
+    """
+    """
+    ex =  exp_model_matrix(sample, epsilon=10, bandwidth=0)
+    for bandwidth in bandwidth_list:
+        rate_matrix = ex*banded_ones(ex.shape[0], bandwidth)
+        sparsedl.zero_sum(rate_matrix)
+        diff_coef = sparsedl.resnet(rate_matrix, bandwidth)
+        #eigvals= -linalg.eigvals(rate_matrix)
+        #eigvals.sort()
+        eigvals = sorted_eigvalsh(rate_matrix)
+        logvals = log10((eigvals)[1:])
+        cummulative_plot(ax, logvals, label=r"$\epsilon = {0:.3G}, b={1:.3G}$".format(epsilon, bandwidth))
+        bbox = [eigvals[1], eigvals[-1], 1/len(eigvals),  1]
+        print(bbox)
+        power_law_logplot(ax, 0.5, 1/(sqrt(diff_coef)*pi), bbox, label=r"$\frac{{D}}{{r_0^2}} \approx {0:.3G}$".format(diff_coef))
+        #diffusion_plot(ax, diff_coef, eigvals)
+    plotdl.set_all(ax, title="", legend_loc="best", xlabel=r"$\log_{10}\lambda$", ylabel=r"$C(\lambda)$")
+    ax.set_yscale('log')
 
 
 
@@ -309,7 +331,7 @@ def all_plots(seed= 1, **kwargs):
     """
     ax = plotdl.new_ax_for_file()
 
-
+    #### 1d PN and matshow
     line = Sample(1,800)
     random.seed(1)
     plotf_eig_matshow_pn(line, epsilon=0.2)
@@ -318,6 +340,7 @@ def all_plots(seed= 1, **kwargs):
     random.seed(1)
     plotf_eig_matshow_pn(line, epsilon=5)
 
+    #### 2d PN and matshow
     tor = Sample((1,1),800)
     random.seed(1)
     plotf_eig_matshow_pn(tor, epsilon=0.2)
@@ -326,6 +349,11 @@ def all_plots(seed= 1, **kwargs):
     random.seed(1)
     plotf_eig_matshow_pn(tor, epsilon=5)
 
+    #### quasi-1d
+    random.seed(seed)
+    plot_quasi_1d(ax, line, bandwidth_list=(1,2,4,8,16), epsilon=10)
+    plotdl.save_ax(ax, "quasi_1d")
+    ax.clear()
 
     random.seed(seed)
     torus_3_plots()
