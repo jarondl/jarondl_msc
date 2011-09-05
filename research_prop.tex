@@ -239,14 +239,13 @@ $(\text{sparsity}\cdot \text{bandwidth}) \ll 1$. However, in this work it is not
 
 \begin{figure}
     \includegraphics[clip, width=0.9\hsize]{torus}
-    \caption{{ \bf The geometric implications -} $N\;=\;200$ points were randomly scattered on a $2d$ $(1\times 1)$ surface. The transmission rates were calculated according to \eqref{eq:exp_rates}, with $\frac{\xi}{r_0} \;=\; 0.1$, and $w_0\;=\;1$}
+    \caption{{ \bf The geometric implications -} $N\;=\;800$ points were randomly scattered on a $2d$ $(1\times 1)$ surface. The transmission rates were calculated according to \eqref{eq:exp_rates}, with $\frac{\xi}{r_0} \;=\; 30$, and $w_0\;=\;1$. Then, the transition rates were shuffled, and the plot redrawn.}
     \label{fig:torus}
 \end{figure}
 
 
 %%%%%%%%%%%%%%
 
-To compare this result to the obtained eigenvalues, we have created a $1d$ system with random log-normaly distributed transition rates, and calculted the diffusion, see figure \ref{fig:quasi_1d}.
 \begin{figure}
     \includegraphics[clip, width=0.9\hsize]{quasi_1d}
     \caption{Quasi-1d. No fitting parameters were used. $N\;=\;800$ points were randomly scattered on a $1d$ line. The transition rates between them are according to \eqref{eq:exp_dep}, with $\epsilon=\frac{\xi}{r_0}=10$. Each system was truncated at a different bandwidth, as stated in the legend. The dashed line marks \eqref{eq:C_D}, with $D$ calculated using the resistor network method \eqref{eq:resnet}. }
@@ -292,16 +291,24 @@ D &\;=\; \left[\int_0^\infty  \frac{\xi}{r_0} \left(\frac{w}{w_0}\right)^{\frac{
 \end{figure}
 
 %%%%%%%%%%%%%
+%%%%%ENDING THE DOCUMENT. WORK IN PROGRESS
+%\bibliographystyle{plainnat}
+\bibliography{jarondl}
+\end{document}
+
+
+
+{\bf Resistor network.--}
+There is an analogy between the diffusion problem we have laid out, to electrical conductance. According to Fick's first law of diffusion, the mass flux is proportional to the gradient of the density:
+\begin{align}
+J = -D \nabla \phi 
+\end{align}
 {\bf Resistor network in $1d$.--} We can find the diffusion coefficient $D$ using resistor network calculation. The basic idea is to apply incoming current (+1 in suitable units) in one site, outgoing in another (-1), and then compute the site occupation probability difference between them. This will give us the conductivity $G$, which in $1d$ is the conductance $\sigma$ times the distance:
 \begin{align}
   \sigma \;=\; \frac{G}{r}
 \end{align} 
-For diffusive systems in $1d$, the eigenvalue density close to zero is 
-\begin{align} \label{eq:g_D}
-  g(\lambda) \approx \sqrt{\frac{\lambda}{D}}\frac{N}{\pi}
-\end{align}
 %%%%%%%%%%%%%%%%
-{\bf Resistor network in $2d$.--} We do not know yet if the above criterion for diffusion works in dimensions higher than $1d$. If we put in the $2d$ distribution, the harmonic mean does not diverge. Hence, if the naive generalization from $1d$ to $2d$ holds, we should observe diffusion. A different approach is to resolve the resistor network for a $2d$ system. Instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
+{\bf Resistor network in $2d$.--} We do not know yet what is the exact criterion for diffusion in dimensions higher than $1d$. If we put in the $2d$ distribution, the harmonic mean does not diverge. Hence, if the naive generalization from $1d$ to $2d$ holds, we should observe diffusion. A different approach is to resolve the resistor network for a $2d$ system. Instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
 \begin{align}
   E \;=\; \frac{J}{\sigma} \;=\; \frac{I}{2\pi r\sigma} \\
   V \;=\; \int E dr \;=\; \frac{I}{2\pi\sigma}\ln\frac{r}{r_0}
@@ -314,6 +321,5 @@ The superposition of an outgoing current just doubles the result, and we obtain:
 
 
 
-%\bibliographystyle{plainnat}
-\bibliography{jarondl}
-\end{document}
+
+

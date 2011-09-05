@@ -61,7 +61,7 @@ def power_law_logplot(ax, power, coeff, bbox,label):
 
 ####################   Sample Plots ################
 
-def plot_exp_model_permutation(ax, sample, epsilon = 0.1, end_log_time=1 ,show_theory=False):
+def plot_exp_model_permutation(ax, sample, epsilon = 0.1, end_log_time=1 ,show_theory=False, show_diag=False):
     """  Create A_ij for points on a torus: e^(-r_ij).
 
         :param N_points: Number of points, defaults to 100
@@ -77,12 +77,13 @@ def plot_exp_model_permutation(ax, sample, epsilon = 0.1, end_log_time=1 ,show_t
     ex3 = sparsedl.permute_diagonals(ex1)
     sparsedl.zero_sum(ex3)
     
-    cummulative_plot(ax, sorted_eigvalsh(ex1)[1:], "Original values")
-    cummulative_plot(ax, sorted_eigvalsh(ex2)[1:], "Permuted values")
-    cummulative_plot(ax, sorted_eigvalsh(ex3)[1:], "Diagonaly permuted values")
+    cummulative_plot(ax, log10(sorted_eigvalsh(ex1)[1:]), "Original values")
+    cummulative_plot(ax, log10(sorted_eigvalsh(ex2)[1:]), "Permuted values")
+    if show_diag:
+        cummulative_plot(ax, log10(sorted_eigvalsh(ex3)[1:]), "Diagonaly permuted values")
 
     plotdl.set_all(ax, title = r"{0}d, $w = e^{{-r/\xi}}$, $N ={1}$, $\epsilon={2}$".format(sample.d, sample.number_of_points, epsilon),
-                   legend_loc='lower right', xlabel=r"$\lambda$", ylabel=r"$C(\lambda)$")
+                   legend_loc='best', xlabel=r"$\log_{10}\lambda$", ylabel=r"$C(\lambda)$")
 
 
 def sample_2d_theory(ax, sample, epsilon):
@@ -146,14 +147,14 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample
     return ex1 #- numpy.eye(ex1.shape[0])*lamb_0
 
 
-def torus_3_plots(N=200,epsilon=0.1):
+def torus_3_plots(N=800,epsilon=30):
     """
     """
     ax1 = plotdl.new_ax_for_file()
     torus = Sample((1,1), N)
-    plot_exp_model_permutation(ax1, torus, epsilon=epsilon)
+    plot_exp_model_permutation(ax1, torus, epsilon=epsilon, show_diag=False)
     ax1.set_yscale('log')
-    ax1.set_xscale('log')
+    #ax1.set_xscale('log')
     plotdl.save_ax(ax1, "torus")
     ax1.set_yscale('linear')
     ax1.set_xscale('linear')
