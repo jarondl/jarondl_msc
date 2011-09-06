@@ -121,13 +121,15 @@ def lognormal_construction(N, mu=0, sigma=1, **kwargs):
     return scipy.exp(perm_y)  # Element-wise exponentiation.
 
 
-def resnet(W, b):
+def resnet(W, b, periodic=False):
     """
 
     """
     N = W.shape[0]
     N_high = N-(b+1)
     N_low = b
+    if periodic:
+        N_high, N_low = N//2, 0 
     I = numpy.zeros(N)
     I[[N_low, N_high]] =  [1, -1]
     #v = spsolve(W, I)
@@ -286,3 +288,10 @@ def banded_ones(N, bandwidth):
     """ returns a NxN banded matrix of ones
     """
     return numpy.tri(N, k=bandwidth)*numpy.tri(N,k=bandwidth).T
+
+def periodic_banded_ones(N, bandwidth):
+    """ returns a NxN banded matrix of ones
+    """
+    assert N > bandwidth*2
+    return (numpy.tri(N, k=bandwidth)*numpy.tri(N,k=bandwidth).T + 
+           numpy.tri(N, k=(bandwidth-N)) + numpy.tri(N,k=(bandwidth-N)).T)

@@ -17,7 +17,7 @@ import plotdl
 import geometry
 from geometry import Sample
 from eigenvalue_plots import eigenvalues_cummulative
-from sparsedl import sorted_eigvalsh, banded_ones
+from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones
 from plotdl import cummulative_plot
 
 ### Raise all float errors 
@@ -51,10 +51,10 @@ def power_law_logplot(ax, power, coeff, bbox,label):
     """ Plots 1d diffusion, treating the x value as log10.
     """
     #right bound:
-    x1,x2,x3,x4 = bbox
-    xr_log = min((log10(x2), -log10(coeff)/power))
-    xl = x1
-    power_space = numpy.linspace(log10(xl), xr_log, 100)
+    x1,x2,y1,y2 = bbox
+    xr_log = min((log10(x2), log10(y2/coeff)/power))
+    xl_log = max((log10(x1), log10(y1/coeff)/power))
+    power_space = numpy.linspace(xl_log, xr_log, 100)
     power_law = coeff*(10**power_space)**(power)
     ax.plot(power_space, power_law, linestyle='--', label=label)
 
@@ -124,14 +124,10 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample
     """
     xi = sample.epsilon_to_xi(epsilon)
     dis = sample.periodic_distance_matrix()
-    if sample.d ==  1:
-        if bandwidth is None:
-            dis = dis*banded_ones(dis.shape[0], 1)
-        else:
-            dis = dis*banded_ones(dis.shape[0], bandwidth)
     # new -renormalization
     r_0_N = sample.r_0
-    r_0 = dis.sum()/(dis.shape[0]**2)
+    r_0 = r_0_N
+    #r_0 = dis.sum()/(dis.shape[0]**2)
     print("r_0_N", r_0_N)
     print("old_r_0", r_0)
     r_0_mat = numpy.ones(dis.shape)*r_0
@@ -216,7 +212,8 @@ def exp_models_D(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05, 0.1
         plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
         plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_{2}_zhist".format(sample.d, number_of_realizations, range_name))
         ax_exp.clear()
-        
+
+
 def plot_quasi_1d(ax, sample, bandwidth_list, epsilon=10):
     """
     """
@@ -224,7 +221,7 @@ def plot_quasi_1d(ax, sample, bandwidth_list, epsilon=10):
     for bandwidth in bandwidth_list:
         rate_matrix = ex*banded_ones(ex.shape[0], bandwidth)
         sparsedl.zero_sum(rate_matrix)
-        diff_coef = sparsedl.resnet(rate_matrix, bandwidth)
+        diff_coef = sparsedl.resnet(rate_matrix, bandwidth, periodic=True)
         #eigvals= -linalg.eigvals(rate_matrix)
         #eigvals.sort()
         eigvals = sorted_eigvalsh(rate_matrix)
@@ -297,10 +294,12 @@ def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20):#used to be high_ep
     if sample.d ==1 :
         if D1 > 0:
             power_law_logplot(ax1, 0.5, 1/(sqrt(D1)*pi), bbox, label=r"$\frac{{D}}{{r_0^2}} = \frac{{\epsilon-1}}{{\epsilon}} \approx {0:.3G}$".format(D1))
+            power_law_logplot(ax1, epsilon, 1, bbox, label=r"$\lambda^{{\epsilon}}$".format())
         else:
             D_resnet = sparsedl.resnet(ex,1)
+
             power_law_logplot(ax1, 0.5, 1/(sqrt(D_resnet)*pi), bbox, label=r"$ResNet D = {0:.3G}$".format(D_resnet))
-            power_law_logplot(ax1, epsilon/2, 1, bbox, label=r"$\lambda^{{\epsilon/2}}$".format())
+            #power_law_logplot(ax1, epsilon/2, 1, bbox, label=r"$\lambda^{{\epsilon/2}}$".format())
             power_law_logplot(ax1, epsilon, 1, bbox, label=r"$\lambda^{{\epsilon}}$".format())
     if sample.d == 2:
         D_resnet = sparsedl.avg_2d_resnet(ex,sample.periodic_distance_matrix(),sample.r_0)
@@ -325,6 +324,24 @@ def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20):#used to be high_ep
     plotdl.save_ax(ax3, "exp_{2}d_{1}_matshow".format(number_of_points, epsilon,sample.d))
 
     #plotdl.save_fig(fig, "exp_1d_{0}_{1}_test".format(number_of_points, epsilon))
+
+def create_bloch_sample_1d(N):
+    """
+    """
+    bloch = Sample(1,N)
+    bloch.points = numpy.linspace(0,1,N, endpoint=False)
+    return bloch
+
+def create_bloch_sample_2d(N):
+    """
+    """
+    bloch = Sample((1,1),N*N)
+    pts = numpy.linspace(0,N,N*N, endpoint=False)
+    pts = numpy.mod(pts,1)
+    x = pts
+    y = numpy.sort(pts)
+    bloch.points = numpy.array((x,y)).T
+    return bloch
 
 ######## One function to plot them all
 def all_plots(seed= 1, **kwargs):
