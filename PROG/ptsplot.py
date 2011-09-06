@@ -123,13 +123,10 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample
         :param epsilon: the epsilon, defaults to 0.1
     """
     xi = sample.epsilon_to_xi(epsilon)
-    dis = sample.periodic_distance_matrix()
+    dis = sample.non_periodic_distance_matrix()
     # new -renormalization
-    r_0_N = sample.r_0
-    r_0 = r_0_N
+    r_0 = sample.r_0()
     #r_0 = dis.sum()/(dis.shape[0]**2)
-    print("r_0_N", r_0_N)
-    print("old_r_0", r_0)
     r_0_mat = numpy.ones(dis.shape)*r_0
     ex1 = numpy.exp((r_0_mat-dis)/xi)
     # handle bandwidth for 1d. the default is 1.
@@ -178,7 +175,7 @@ def exp_models_D(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05, 0.1
     print(epsilon_list)
     #epsilon_list = (0.05, 0.1,0.5,1,1.5,2,5,10)
     plot_title = "{0}d with {1} points, eigenvalues for a single realization, $n=1$".format(sample.d,sample.number_of_points)
-    hist_bins = sqrt(sample.number_of_points*number_of_realizations)
+    hist_bins = sqrt(sample.number_of_points()*number_of_realizations)
     
     ## First we create all the eigenvalues for all epsilons and realizations
     logvals = {} # empty dict
@@ -272,10 +269,10 @@ def sample_participation_number(ax, sample, epsilon=0.1):
     ax.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
 
 
-def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20):#used to be high_epsilons
+def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20, pnfilename="exp_{1}d_{0}_pn", matfilename="exp_{1}d_{0}_matshow"):#used to be high_epsilons
     """
     """
-    number_of_points = sample.number_of_points
+    number_of_points = sample.number_of_points()
     fig = plotdl.Figure()
     ax1 = fig.add_subplot(2,1,1)
     ax2 = fig.add_subplot(2,1,2,sharex=ax1)
@@ -287,26 +284,40 @@ def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20):#used to be high_ep
     v,w = sparsedl.sorted_eigh(ex)
     logvals = log10((-v)[1:])
     cummulative_plot(ax1, logvals, label=r"$\epsilon = {0:.3G}$".format(epsilon))
+    ### Permutation
+    if sample.d==2 : 
+        ex2 = sparsedl.permute_tri(ex)
+        sparsedl.zero_sum(ex2)
+        v2,w2 = sparsedl.sorted_eigh(ex2)
+        logvals2 = log10((-v2)[1:])
+        cummulative_plot(ax1, logvals2, label=r"Permuted rates".format(epsilon))
+
     #D = sparsedl.resnet(ex,1)
     D1 =  ((epsilon-1)/(epsilon))
     v_not_including_first = (-v)[1:]
     bbox = [((v_not_including_first)[v_not_including_first>0])[0], (-v)[-1], 1/len(v),  1]
-    if sample.d ==1 :
+    if sample.D is not None:
+        power_law_logplot(ax1, 0.5, 1/(sqrt(sample.D)*pi), bbox, label=sample.D_label)
+    elif sample.d ==1 :
         if D1 > 0:
             power_law_logplot(ax1, 0.5, 1/(sqrt(D1)*pi), bbox, label=r"$\frac{{D}}{{r_0^2}} = \frac{{\epsilon-1}}{{\epsilon}} \approx {0:.3G}$".format(D1))
             power_law_logplot(ax1, epsilon, 1, bbox, label=r"$\lambda^{{\epsilon}}$".format())
         else:
             D_resnet = sparsedl.resnet(ex,1)
-
-            power_law_logplot(ax1, 0.5, 1/(sqrt(D_resnet)*pi), bbox, label=r"$ResNet D = {0:.3G}$".format(D_resnet))
+            power_law_logplot(ax1, 0.5, 1/(sqrt(D_resnet)*pi), bbox, label=r"Resistor Network $D = {0:.3G}$".format(D_resnet))
             #power_law_logplot(ax1, epsilon/2, 1, bbox, label=r"$\lambda^{{\epsilon/2}}$".format())
             power_law_logplot(ax1, epsilon, 1, bbox, label=r"$\lambda^{{\epsilon}}$".format())
     if sample.d == 2:
-        D_resnet = sparsedl.avg_2d_resnet(ex,sample.periodic_distance_matrix(),sample.r_0)
-        power_law_logplot(ax1, 0.5, 1/(sqrt(D_resnet)*pi), bbox, label=r"$ResNet D = {0:.3G}$".format(D_resnet))
+        D = sparsedl.avg_2d_resnet(ex,sample.non_periodic_distance_matrix(),sample.r_0())
+        #D = sample.epsilon_to_xi(epsilon)
+        power_law_logplot(ax1, 0.5, 1/(sqrt(D)*pi), bbox, label=r"Resistor Network $D = {0:.3G}$".format(D))
         #sample_2d_theory(ax1, sample, epsilon)
     pn = ((w**4).sum(axis=0))**(-1)
     ax2.plot(logvals,pn[1:], marker=".", linestyle='')
+    #permutation
+    if sample.d ==2:
+        pn2 = ((w2**4).sum(axis=0))**(-1)
+        ax2.plot(logvals2,pn[1:], marker=".", linestyle='')
     ax2.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
     plotdl.set_all(ax1, ylabel=r"$C(\lambda)$", legend_loc="best")  
     plotdl.set_all(ax2, ylabel=r"PN", xlabel=r"$\log_{10}\lambda$", legend_loc="best")
@@ -315,13 +326,13 @@ def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20):#used to be high_ep
     # There are two overlaping ticks, so we remove both
     ax1.set_yticks(ax1.get_yticks()[1:])
     ax2.set_yticks(ax2.get_yticks()[:-1])    
-    plotdl.save_fig(fig, "exp_{1}d_{0}_pn".format(epsilon, sample.d))
+    plotdl.save_fig(fig, pnfilename.format(epsilon, sample.d))
 
     #ax.clear()
     ax3 = plotdl.new_ax_for_file()
     plotdl.matshow_cb(ax3, w**2, vmin=10**(-10), colorbar=True)
     plotdl.set_all(ax3, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
-    plotdl.save_ax(ax3, "exp_{2}d_{1}_matshow".format(number_of_points, epsilon,sample.d))
+    plotdl.save_ax(ax3, matfilename.format(epsilon, sample.d))
 
     #plotdl.save_fig(fig, "exp_1d_{0}_{1}_test".format(number_of_points, epsilon))
 
@@ -350,22 +361,34 @@ def all_plots(seed= 1, **kwargs):
     ax = plotdl.new_ax_for_file()
 
     #### 1d PN and matshow
-    line = Sample(1,800)
+    line = Sample(1,900)
     random.seed(1)
     plotf_eig_matshow_pn(line, epsilon=0.2)
     random.seed(1)
     plotf_eig_matshow_pn(line, epsilon=1.5)
     random.seed(1)
     plotf_eig_matshow_pn(line, epsilon=5)
+    
+    # 1d bloch:
+    bloch1d = create_bloch_sample_1d(900)
+    bloch1d.D = 1 
+    bloch1d.D_label=r"$\frac{D}{r_0^2}=1$"
+    for epsilon in (0.2,0.8,1.5,5):
+        plotf_eig_matshow_pn(bloch1d, epsilon=epsilon, pnfilename="bloch1d_pn{0}".format(epsilon), matfilename="bloch1d_mat{0}".format(epsilon))
 
     #### 2d PN and matshow
-    tor = Sample((1,1),800)
+    tor = Sample((1,1),900)
     random.seed(1)
     plotf_eig_matshow_pn(tor, epsilon=0.2)
     random.seed(1)
     plotf_eig_matshow_pn(tor, epsilon=1.5)
     random.seed(1)
     plotf_eig_matshow_pn(tor, epsilon=5)
+    
+    # 2d bloch:
+    bloch2d = create_bloch_sample_2d(30)
+    for epsilon in (0.2,0.8,1.5,5):
+        plotf_eig_matshow_pn(bloch2d, epsilon=epsilon, pnfilename="bloch2d_pn{0}".format(epsilon), matfilename="bloch2d_mat{0}".format(epsilon))
 
     #### quasi-1d
     random.seed(seed)
@@ -373,14 +396,14 @@ def all_plots(seed= 1, **kwargs):
     plotdl.save_ax(ax, "quasi_1d")
     ax.clear()
 
-    random.seed(seed)
-    torus_3_plots()
-    ax.clear()
+    #random.seed(seed)
+    #torus_3_plots()
+    #ax.clear()
     
-    random.seed(seed)
-    exp_models_D(Sample((1,),300), epsilon_ranges=((0.5,0.8,1,1.5,2,5,10),(0.5,0.8),(5,10)))
-    exp_models_D(Sample((1,1),300))
-    exp_models_D(Sample((1,1,1),300))
+    #random.seed(seed)
+    #exp_models_D(Sample((1,),300), epsilon_ranges=((0.5,0.8,1,1.5,2,5,10),(0.5,0.8),(5,10)))
+    #exp_models_D(Sample((1,1),300))
+    #exp_models_D(Sample((1,1,1),300))
     
     
 

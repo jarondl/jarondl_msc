@@ -17,7 +17,6 @@ class Sample(object):
         :param dimensions:  A tuple of the dimensions
         """
 
-        self.number_of_points = number_of_points
         # one int/float doesn't have length
         try:
             self.d = len(dimensions)
@@ -26,13 +25,14 @@ class Sample(object):
             self.d = 1
             self.dimensions = (dimensions,) # a one-tuple
         self.volume = np.prod(self.dimensions)
+        self.D = None # placeholder for diffusion coef
 
         if number_of_points is not None:
             self.generate_points(number_of_points)
 
     def generate_points(self, number_of_points=None):
         if number_of_points is None:
-            number_of_points = self.number_of_points
+            number_of_points = self.number_of_points()
         d_points = []
         for dimension in range(self.d):
             d_points += [numpy.random.uniform(0, self.dimensions[dimension], number_of_points)]
@@ -41,13 +41,17 @@ class Sample(object):
             self.points.sort()
         else:
             self.points = numpy.vstack(d_points).T
-        self.number_of_points = number_of_points
-        self.n = self.number_of_points / self.volume
-        self.r_0 = self.n**(-1/self.d)
+    def number_of_points(self):
+        return self.points.shape[0]
+    def n(self):
+        return self.number_of_points() / self.volume
+        self.n = self.number_of_points() / self.volume
+    def r_0(self):
+        return  self.n()**(-1/self.d)
 
     def epsilon_to_xi(self, epsilon):
         """ Returns xi, using the current sample density. Should raise an error if no points were created."""
-        return epsilon * self.n**(-1/self.d)
+        return epsilon * self.r_0()
 
     def periodic_distance_matrix(self):
         return fast_periodic_distance_matrix(self.points, self.dimensions)
@@ -76,7 +80,7 @@ def distance_matrix(points, distance_function=euclid):
             S[i, j] = distance_function(points[i], points[j])
     return S
 
-def fast_distance_matrix(points):
+def old_fast_distance_matrix(points):
     """
     """
     try:
@@ -98,6 +102,33 @@ def fast_distance_matrix(points):
     #  Check for symmetry
     assert (delta == delta.T).all()
     return numpy.sqrt(delta)
+
+
+def fast_distance_matrix(points, dimensions=(1,1)):
+    """ based on http://stackoverflow.com/questions/3518574/why-does-looping-beat-indexing-here
+    """
+    try:
+        n,m = points.shape
+    except ValueError:
+        n = points.shape[0]
+        m = 1
+    dims = np.tile(dimensions, (n,m))
+    if m == 1:
+        data = points
+    else:
+        data = points[:,0]
+    temp_delta = []
+    temp_delta += [(data - data[:,np.newaxis])**2]
+    temp_delta += [(dims[:,0] + data - data[:,np.newaxis])**2]
+    temp_delta += [(-dims[:,0] + data - data[:,np.newaxis])**2]
+    delta = numpy.dstack(temp_delta).min(axis=2)
+    for d in range(1,m):
+        data = points[:,d]
+        delta = (data - data[:,np.newaxis])**2
+        #  Check for symmetry
+    assert (delta == delta.T).any()
+    return numpy.sqrt(delta)
+
 
 def fast_periodic_distance_matrix(points, dimensions=(1,1)):
     """ based on http://stackoverflow.com/questions/3518574/why-does-looping-beat-indexing-here
