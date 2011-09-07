@@ -5,6 +5,7 @@
 from __future__ import division
 #from scipy.sparse import linalg as splinalg
 from numpy import linalg, random, pi, log10, sqrt, log
+from scipy.special import gamma
 from matplotlib.colors import LogNorm
 from matplotlib.cm import summer
 from matplotlib.widgets import Slider
@@ -272,7 +273,7 @@ def sample_participation_number(ax, sample, epsilon=0.1):
     ax.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
 
 class ExpModel(object):
-    def __init__(self, sample, epsilon):
+    def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}"):
         """ Take sample and epsilon, and calc eigvals and eigmodes"""
         self.epsilon = epsilon
         self.sample = sample
@@ -280,6 +281,7 @@ class ExpModel(object):
         self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
         self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.permuted = False
+        self.basename = basename.format(**self.vals_dict)
 
     def permute_and_store(self):
         """ Permute the rates and set perm_logvals and perm_eig_matrix """
@@ -293,42 +295,107 @@ class ExpModel(object):
         """ calculate eigmodes, and return logvals and eigmodes"""
         v,w = sparsedl.sorted_eigh(ex)
         return (v, log10((-v)[1:]), w)
+    
+    def plot_diff(self, ax, label = r"$\frac{{D}}{{r_0}} = {D:.3G} $", **kwargs):
+        """ """
+        D = self.diff_coef()
+        d2 = self.sample.d / 2
+        prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
+        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1]
+        power_law_logplot(ax, d2, prefactor, bbox, label=label.format(D=D, **self.vals_dict), **kwargs)
 
+class ExpModel_1d(ExpModel):
+    """ Subclassing exp model for 1d """
     def diff_coef(self):
-        """ calculate diffusion coeff """
-        ## for now, just max .. later
+        D = ((self.epsilon-1)/(self.epsilon))
+        if D < 0 :
+            D = sparsedl.resnet(self.ex,1)
+        return D
+    def old_plot_diff(self, ax, label_o_0=r"$\frac{{D}}{{r_0^2}}=\frac{{\epsilon-1}}{{epsilon}}$", label_u_0=r"Resistor network $\frac{{D}}{{r_0^2}}={D:.3G}$", **kwargs):
+        """ """
+        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1]
+        D = ((self.epsilon-1)/(self.epsilon))
+        if D < 0 :
+            D = sparsedl.resnet(self.ex,1)
+            label = label_u_0
+        else:
+            label = label_o_0
+        power_law_logplot(ax, 0.5, 1/(sqrt(D)*pi), bbox, label=label.format(D=D, **self.vals_dict), **kwargs)
+
+    def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
+        """ """
+        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1] 
+        power_law_logplot(ax, self.epsilon, 1, bbox, label=label.format(**self.vals_dict), **kwargs)
+        
+class ExpModel_Bloch_1d(ExpModel):
+    def diff_coef(self):
+        return 1
+    def old_plot_diff(self, ax, label=r"$\frac{{D}}{{r_0^2}}=1$ ", **kwargs):
+        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1] 
+        power_law_logplot(ax, 0.5, 1/(pi), bbox, label=label.format(**self.vals_dict), **kwargs)
+    def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
+                """ """
+                pass
+
+class ExpModel_2d(ExpModel):
+    """ Subclassing exp model for 2d """
+    def diff_coef(self):
         return self.ex.max()
+    def old_plot_diff(self, ax,  label=r"$\frac{{D}}{{r_0^2}}\approx{D:.3G}$", **kwargs):
+        """ """
+        D = self.ex.max()
+        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1]
+        print("bbox = " , bbox)
+        print ("D = ", D)
+        power_law_logplot(ax, 1, 1/(4*pi*D), bbox, label=label.format(D =D, **self.vals_dict), **kwargs)
+    def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
+        """ """
+        pass
+
+class ExpModel_Bloch_2d(ExpModel):
+    def diff_coef(self):
+        return 1
+    def old_plot_diff(self, ax, label=r"$\frac{{D}}{{r_0^2}}=1$ ", **kwargs):
+        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1] 
+        power_law_logplot(ax, 1, 1/(4*pi), bbox, label=label.format(**self.vals_dict), **kwargs)
+    def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
+        """ """
+        pass
 
 
-def plot_pn(ax, model):
+def plot_pn(ax, model, **kwargs):
     """ """
     pn = ((model.eig_matrix**4).sum(axis=0))**(-1)
-    ax.plot(model.logvals,pn[1:], marker=".", linestyle='')
+    ax.plot(model.logvals,pn[1:], marker=".", linestyle='', **kwargs)
 
-def plot_permuted_pn(ax, model):
+def plot_permuted_pn(ax, model, **kwargs):
     """ """
     if not model.permuted :
         model.permute_and_store()
     pn = ((model.perm_eig_matrix**4).sum(axis=0))**(-1)
-    ax.plot(model.perm_logvals,pn[1:], marker=".", linestyle='')
+    ax.plot(model.perm_logvals,pn[1:], marker=".", linestyle='', **kwargs)
 
-def plot_logvals(ax, model, label = r"$\epsilon = {epsilon:.3G}$"):
+def plot_logvals(ax, model, label = r"$\epsilon = {epsilon:.3G}$", **kwargs):
     """ """
-    cummulative_plot(ax, model.logvals, label=label.format(**model.vals_dict))
+    cummulative_plot(ax, model.logvals, label=label.format(**model.vals_dict), **kwargs)
 
-def plot_diffusion(ax, model, label="diff"):
-    """ """
-    D = model.diff_coef()
-    power_law_logplot(ax, 1, 1/(sqrt(D)*pi), bbox, label=label.format(**model.vals_dict), color="red")
-
-def plot_permuted_logvals(ax, model, label = r"Permuted"):
+def plot_permuted_logvals(ax, model, label = r"Permuted", **kwargs):
     """ """
     if not model.permuted :
         model.permute_and_store()
-    cummulative_plot(ax, model.logvals, label=label.format(**model.vals_dict))
+    cummulative_plot(ax, model.perm_logvals, label=label.format(**model.vals_dict), **kwargs)
+
+def plot_diffusion(ax, model, label="diff", **kwargs):
+    """ """
+    D = model.diff_coef()
+    bbox = [-model.eigvals[1],-model.eigvals[-1], 1/len(model.eigvals),  1]
+    print("bbox = " , bbox)
+    print ("D = ", D)
+    power_law_logplot(ax, 1, D, bbox, label=label.format(**model.vals_dict), **kwargs)
 
 
-def plotf_eig_matshow_pn_new(model):
+
+def plotf_logvals_pn(model):
     """ """
     fig = plotdl.Figure()
     ax1 = fig.add_subplot(2,1,1)
@@ -336,12 +403,22 @@ def plotf_eig_matshow_pn_new(model):
     ax1.label_outer()
     fig.subplots_adjust(hspace=0.001)
     plot_logvals(ax1, model)
+    model.plot_diff(ax1, color="red")
+    model.plot_rate_density(ax1, color="green")
     if model.sample.d ==2:
-        plot_permuted_logvals(ax1, model)
+        plot_permuted_logvals(ax1, model, color="green")
     plot_pn(ax2, model)
     if model.sample.d ==2:
-        plot_permuted_logvals(ax2, model) 
-
+        plot_permuted_pn(ax2, model, color="green") 
+    ax2.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
+    plotdl.set_all(ax1, ylabel=r"$C(\lambda)$", legend_loc="best")  
+    plotdl.set_all(ax2, ylabel=r"PN", xlabel=r"$\log_{10}\lambda$", legend_loc="best")
+    ax1.set_yscale('log')
+    ax2.set_yscale('log')    
+    # There are two overlaping ticks, so we remove both
+    ax1.set_yticks(ax1.get_yticks()[1:])
+    ax2.set_yticks(ax2.get_yticks()[:-1])
+    plotdl.save_fig(fig, model.basename + "_pn")
 
 
 def plot_diffusion_1d_high_epsilon(ax, model, label= r"$\frac{{D}}{{r_0^2}} = \frac{{\epsilon-1}}{{\epsilon}} \approx {D:.3G}$"):
@@ -444,33 +521,38 @@ def all_plots(seed= 1, **kwargs):
     #### 1d PN and matshow
     line = Sample(1,900)
     random.seed(1)
-    plotf_eig_matshow_pn(line, epsilon=0.2)
+    plotf_logvals_pn(ExpModel_1d(line, 0.2))
     random.seed(1)
-    plotf_eig_matshow_pn(line, epsilon=1.5)
+    plotf_logvals_pn(ExpModel_1d(line, 1.5))
+#    plotf_eig_matshow_pn(line, epsilon=1.5)
     random.seed(1)
-    plotf_eig_matshow_pn(line, epsilon=5)
+    plotf_logvals_pn(ExpModel_1d(line, 5))
+#    plotf_eig_matshow_pn(line, epsilon=5)
     
     # 1d bloch:
     bloch1d = create_bloch_sample_1d(900)
-    bloch1d.D = 1 
-    bloch1d.D_label=r"$\frac{D}{r_0^2}=1$"
+    #bloch1d.D = 1 
+    #bloch1d.D_label=r"$\frac{D}{r_0^2}=1$"
     for epsilon in (0.2,0.8,1.5,5):
-        plotf_eig_matshow_pn(bloch1d, epsilon=epsilon, pnfilename="bloch1d_pn{0}".format(epsilon), matfilename="bloch1d_mat{0}".format(epsilon))
+        plotf_logvals_pn(ExpModel_Bloch_1d(bloch1d, epsilon, basename="bloch_1d_{epsilon}"))
 
     #### 2d PN and matshow
     tor = Sample((1,1),900)
     random.seed(1)
-    plotf_eig_matshow_pn(tor, epsilon=0.2)
+ #   plotf_eig_matshow_pn(tor, epsilon=0.2)
+    plotf_logvals_pn(ExpModel_2d(tor, 0.2))
     random.seed(1)
-    plotf_eig_matshow_pn(tor, epsilon=1.5)
+#    plotf_eig_matshow_pn(tor, epsilon=1.5)
+    plotf_logvals_pn(ExpModel_2d(tor, 1.5))
     random.seed(1)
-    plotf_eig_matshow_pn(tor, epsilon=5)
+    plotf_logvals_pn(ExpModel_2d(tor, 5))
+#    plotf_eig_matshow_pn(tor, epsilon=5)
     
     # 2d bloch:
     bloch2d = create_bloch_sample_2d(30)
     for epsilon in (0.2,0.8,1.5,5):
-        plotf_eig_matshow_pn(bloch2d, epsilon=epsilon, pnfilename="bloch2d_pn{0}".format(epsilon), matfilename="bloch2d_mat{0}".format(epsilon))
-
+        plotf_logvals_pn(ExpModel_Bloch_2d(bloch2d, epsilon, basename="bloch_2d_{epsilon}"))
+        
     #### quasi-1d
     random.seed(seed)
     plot_quasi_1d(ax, line, bandwidth_list=(1,2,4,8,16), epsilon=10)
