@@ -204,27 +204,26 @@ where the $\lambda$s are the eigenvalues of the matrix, namely that the survival
 { \bf Transport and Spreading.--}  %add some S(t) or g, and add \sqrt{S(t)}\mathcal{P}(t)
 A particle can be transmitted through the system from one end to the other. This transport can be characterized in different ways. One way is to calculate the spreading $S(t)$, which is the variance (second moment) of the particle location, i.e:
 \begin{align}
-  S(t) \;=\; \sum_n \left(\frac{r_n(t)}{r_0(t)}\right)^2 p_n  %-\overline{r}(t)
+  S(t) \;=\; \sum_n \left(r_n(t)\right)^2 p_n  %-\overline{r}(t)
 \end{align}
 Where $r_n$ is the location of the $n$th site. The survival probability is related to the diffusion because of scaling considerations by:
 % In \cite{Alexander:1981:RMP} it is shown that in $1d$ the spreading is related to the survival probability by
 \begin{align}
-\mathcal{P}(t) &\;=\; \left(2\pi S(t)\right)^{-d/2}
+\mathcal{P}(t) &\;=\; \left(2\pi \frac{S(t)}{r_0^2}\right)^{-d/2}
 \end{align}
-For diffusive systems, 
+By definition, diffusive systems obey: 
 \begin{align}
 S(t) &\;=\; 2Dt  \\
-\mathcal{P}(t) &\;=\; \left(2\pi S(t)\right)^{-d/2} \;=\; \left(4\pi D t\right)^{-d/2}
+\mathcal{P}(t) &\;=\; \left(2\pi \frac{S(t)}{r_0^2}\right)^{-d/2} \;=\; \left(4\pi \frac{Dt}{r_0^2} \right)^{-d/2}
 \end{align}
 We can combine this result with \autoref{eq:p_t_spectrum} to obtain a relation between $g(\lambda)$ and D:
 \begin{align}
-    g(\lambda) &\;=\; \mathcal{L}^{-1}[\mathcal{P}(t)] \;=\; \mathcal{L}^{-1}\left[ \left(4\pi D t\right)^{-d/2}\right] \;=\; \frac{\lambda^{\frac{d}{2}-1}}{\Gamma\left(\frac{d}{2}\right)\left(4\pi D\right)^{d/2}}  \\
-    C(\lambda) &\;=\; \int_{\infty}^{\lambda} g(\lambda')d\lambda' \;=\; \frac{\lambda^{\frac{d}{2}}}{\frac{d}{2}\Gamma\left(\frac{d}{2}\right)\left(4\pi D\right)^{d/2}}
+    g(\lambda) &\;=\; \mathcal{L}^{-1}[\mathcal{P}(t)] \;=\; \mathcal{L}^{-1}\left[ \left(4\pi \frac{Dt}{r_0^2} \right)^{-d/2}\right] \;=\; \frac{\lambda^{\frac{d}{2}-1}}{\Gamma\left(\frac{d}{2}\right)\left(4\pi \frac{D}{r_0^2}\right)^{d/2}}  \\
+    C(\lambda) &\;=\; \int_{\infty}^{\lambda} g(\lambda')d\lambda' \;=\; \frac{\lambda^{\frac{d}{2}}}{\frac{d}{2}\Gamma\left(\frac{d}{2}\right)\left(4\pi \frac{D}{r_0^2}\right)^{d/2}}
 \label{eq:C_D}
 \end{align}
 
-
-Quantum spreading and transport is another subject we wish to tackle, following the lead of \cite{Jayannavar:1991}\cite{Guarneri:1989}\cite{Guarneri:1993}.
+{ \bf Quantum spreading and transport.--} is another subject we wish to tackle, following the lead of \cite{Jayannavar:1991}\cite{Guarneri:1989}\cite{Guarneri:1993}.
 
 
 %%%%%%%%%%%%%%%%%%%
@@ -291,27 +290,24 @@ D &\;=\; \left[\int_0^\infty  \frac{\xi}{r_0} \left(\frac{w}{w_0}\right)^{\frac{
 %% replace EQ{} with ref.
 \end{figure}
 
-
-
-
-
-{\bf Resistor network.--}
+{\bf Resistor networks.--}
 There is an analogy between the diffusion problem we have laid out, to electrical conductance. According to Fick's first law of diffusion, the mass flux is proportional to the gradient of the density:
 \begin{align}
-J = -D \nabla \phi 
+J = -D \nabla \phi = -D\cdot \frac{\rho_2-\rho_1}{L}
 \end{align}
-...
-%%%%%%%%%%%%%
-%%%%%ENDING THE DOCUMENT. WORK IN PROGRESS
-%\bibliographystyle{plainnat}
-\bibliography{jarondl}
-\end{document}
-{\bf Resistor network in $1d$.--} We can find the diffusion coefficient $D$ using resistor network calculation. The basic idea is to apply incoming current (+1 in suitable units) in one site, outgoing in another (-1), and then compute the site occupation probability difference between them. This will give us the conductivity $G$, which in $1d$ is the conductance $\sigma$ times the distance:
+On the other hand, electrical conductance relates current density to potential difference:
+\begin{align}
+J=\sigma E = -\sigma \frac{\rho_2-\rho_1}{L}
+\end{align}
+Therefore, we can treat the system as a network of resistors with the known rules of electrodynamics. We can create current through our system by applying incoming current (+1 in suitable units) in one site, outgoing in another (-1). Then, we can compute the site occupation probability difference between them. In other words, we try to solve 
+\begin{align}
+G = \frac{I}{V}
+\end{align}
+For $1d$, 
 \begin{align}
   \sigma \;=\; \frac{G}{r}
-\end{align} 
-%%%%%%%%%%%%%%%%
-{\bf Resistor network in $2d$.--} We do not know yet what is the exact criterion for diffusion in dimensions higher than $1d$. If we put in the $2d$ distribution, the harmonic mean does not diverge. Hence, if the naive generalization from $1d$ to $2d$ holds, we should observe diffusion. A different approach is to resolve the resistor network for a $2d$ system. Instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
+\end{align}
+For $2d$,  instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
 \begin{align}
   E \;=\; \frac{J}{\sigma} \;=\; \frac{I}{2\pi r\sigma} \\
   V \;=\; \int E dr \;=\; \frac{I}{2\pi\sigma}\ln\frac{r}{r_0}
@@ -322,7 +318,7 @@ The superposition of an outgoing current just doubles the result, and we obtain:
     \sigma \;=\; \frac{1}{\pi}G\ln\frac{r}{r_0}
 \end{align}
 
-
-
-
+%\bibliographystyle{plainnat}
+\bibliography{jarondl}
+\end{document}
 

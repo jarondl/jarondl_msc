@@ -4,7 +4,7 @@
 """
 from __future__ import division
 #from scipy.sparse import linalg as splinalg
-from numpy import linalg, random, pi, log10, sqrt, log
+from numpy import linalg, random, pi, log10, sqrt, log, exp
 from scipy.special import gamma
 from matplotlib.colors import LogNorm
 from matplotlib.cm import summer
@@ -55,13 +55,28 @@ def power_law_logplot(ax, power, coeff, bbox,label, color=None):
     x1,x2,y1,y2 = bbox
     xr_log = min((log10(x2), log10(y2/coeff)/power))
     xl_log = max((log10(x1), log10(y1/coeff)/power))
+
+
     power_space = numpy.linspace(xl_log, xr_log, 100)
+    
     power_law = coeff*(10**power_space)**(power)
     if color is not None:
         ax.plot(power_space, power_law, linestyle='--', label=label, color=color)
     else:
         ax.plot(power_space, power_law, linestyle='--', label=label)
 
+def exponent_law_logplot(ax, bbox, label, x0=0.1, **kwargs):
+    """
+    """
+    x1,x2,y1,y2 = bbox
+    #xr_log = min((log10(x2)))#, log10(y2/coeff)/power))
+    #xl_log = max((log10(x1)))#, log10(y1/coeff)/power))
+    xr_log = log10(x2)
+    xl_log = x0
+
+    exp_space = numpy.linspace(xl_log, xr_log, 100)
+    exp_law = 1 - exp(-2*(pi)*((exp_space-x0))**2)
+    ax.plot(exp_space, exp_law, linestyle='--', label=label, **kwargs)
 
 ####################   Sample Plots ################
 
@@ -296,7 +311,7 @@ class ExpModel(object):
         v,w = sparsedl.sorted_eigh(ex)
         return (v, log10((-v)[1:]), w)
     
-    def plot_diff(self, ax, label = r"$\frac{{D}}{{r_0}} = {D:.3G} $", **kwargs):
+    def plot_diff(self, ax, label = r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
         """ """
         D = self.diff_coef()
         d2 = self.sample.d / 2
@@ -311,53 +326,28 @@ class ExpModel_1d(ExpModel):
         if D < 0 :
             D = sparsedl.resnet(self.ex,1)
         return D
-    def old_plot_diff(self, ax, label_o_0=r"$\frac{{D}}{{r_0^2}}=\frac{{\epsilon-1}}{{epsilon}}$", label_u_0=r"Resistor network $\frac{{D}}{{r_0^2}}={D:.3G}$", **kwargs):
-        """ """
-        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1]
-        D = ((self.epsilon-1)/(self.epsilon))
-        if D < 0 :
-            D = sparsedl.resnet(self.ex,1)
-            label = label_u_0
-        else:
-            label = label_o_0
-        power_law_logplot(ax, 0.5, 1/(sqrt(D)*pi), bbox, label=label.format(D=D, **self.vals_dict), **kwargs)
-
     def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
         """ """
         bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1] 
         power_law_logplot(ax, self.epsilon, 1, bbox, label=label.format(**self.vals_dict), **kwargs)
         
-class ExpModel_Bloch_1d(ExpModel):
+class ExpModel_Bloch_1d(ExpModel_1d):
     def diff_coef(self):
         return 1
-    def old_plot_diff(self, ax, label=r"$\frac{{D}}{{r_0^2}}=1$ ", **kwargs):
-        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1] 
-        power_law_logplot(ax, 0.5, 1/(pi), bbox, label=label.format(**self.vals_dict), **kwargs)
-    def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
-                """ """
-                pass
 
 class ExpModel_2d(ExpModel):
     """ Subclassing exp model for 2d """
     def diff_coef(self):
-        return self.ex.max()
-    def old_plot_diff(self, ax,  label=r"$\frac{{D}}{{r_0^2}}\approx{D:.3G}$", **kwargs):
-        """ """
-        D = self.ex.max()
-        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1]
-        print("bbox = " , bbox)
-        print ("D = ", D)
-        power_law_logplot(ax, 1, 1/(4*pi*D), bbox, label=label.format(D =D, **self.vals_dict), **kwargs)
-    def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
-        """ """
-        pass
+        return self.epsilon*4
+    def plot_rate_density(self, ax, x0=0.1, label=r"$\lambda^\epsilon$", **kwargs):
 
-class ExpModel_Bloch_2d(ExpModel):
+        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1]
+        exponent_law_logplot(ax,bbox, label, x0, **kwargs)
+        
+
+class ExpModel_Bloch_2d(ExpModel_2d):
     def diff_coef(self):
-        return 1
-    def old_plot_diff(self, ax, label=r"$\frac{{D}}{{r_0^2}}=1$ ", **kwargs):
-        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1] 
-        power_law_logplot(ax, 1, 1/(4*pi), bbox, label=label.format(**self.vals_dict), **kwargs)
+        return self.epsilon*4
     def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
         """ """
         pass
