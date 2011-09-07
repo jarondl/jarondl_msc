@@ -117,14 +117,10 @@ def fast_distance_matrix(points, dimensions=(1,1)):
         data = points
     else:
         data = points[:,0]
-    temp_delta = []
-    temp_delta += [(data - data[:,np.newaxis])**2]
-    temp_delta += [(dims[:,0] + data - data[:,np.newaxis])**2]
-    temp_delta += [(-dims[:,0] + data - data[:,np.newaxis])**2]
-    delta = numpy.dstack(temp_delta).min(axis=2)
+    delta = (data - data[:,np.newaxis])**2
     for d in range(1,m):
         data = points[:,d]
-        delta = (data - data[:,np.newaxis])**2
+        delta += (data - data[:,np.newaxis])**2
         #  Check for symmetry
     assert (delta == delta.T).any()
     return numpy.sqrt(delta)

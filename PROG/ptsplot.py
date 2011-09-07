@@ -47,7 +47,7 @@ def resnet_1d_logplot(ax, diff_coef, x1, x2, y1, y2,label):
     ax.plot(diffusion_space, diffusion, linestyle='--', label=label)
     
 
-def power_law_logplot(ax, power, coeff, bbox,label):
+def power_law_logplot(ax, power, coeff, bbox,label, color=None):
     """ Plots 1d diffusion, treating the x value as log10.
     """
     #right bound:
@@ -56,7 +56,10 @@ def power_law_logplot(ax, power, coeff, bbox,label):
     xl_log = max((log10(x1), log10(y1/coeff)/power))
     power_space = numpy.linspace(xl_log, xr_log, 100)
     power_law = coeff*(10**power_space)**(power)
-    ax.plot(power_space, power_law, linestyle='--', label=label)
+    if color is not None:
+        ax.plot(power_space, power_law, linestyle='--', label=label, color=color)
+    else:
+        ax.plot(power_space, power_law, linestyle='--', label=label)
 
 
 ####################   Sample Plots ################
@@ -268,6 +271,84 @@ def sample_participation_number(ax, sample, epsilon=0.1):
     ax.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
     ax.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
 
+class ExpModel(object):
+    def __init__(self, sample, epsilon):
+        """ Take sample and epsilon, and calc eigvals and eigmodes"""
+        self.epsilon = epsilon
+        self.sample = sample
+        self.ex = exp_model_matrix(sample, epsilon=epsilon)
+        self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
+        self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
+        self.permuted = False
+
+    def permute_and_store(self):
+        """ Permute the rates and set perm_logvals and perm_eig_matrix """
+        self.permuted = True
+        perm_ex = sparsedl.permute_tri(self.ex)
+        sparsedl.zero_sum(perm_ex)
+        self.perm_eigvals, self.perm_logvals, self.perm_eig_matrix = self.calc_eigmodes(perm_ex)
+        return (self.perm_logvals, self.perm_eig_matrix)
+        
+    def calc_eigmodes(self, ex):
+        """ calculate eigmodes, and return logvals and eigmodes"""
+        v,w = sparsedl.sorted_eigh(ex)
+        return (v, log10((-v)[1:]), w)
+
+    def diff_coef(self):
+        """ calculate diffusion coeff """
+        ## for now, just max .. later
+        return self.ex.max()
+
+
+def plot_pn(ax, model):
+    """ """
+    pn = ((model.eig_matrix**4).sum(axis=0))**(-1)
+    ax.plot(model.logvals,pn[1:], marker=".", linestyle='')
+
+def plot_permuted_pn(ax, model):
+    """ """
+    if not model.permuted :
+        model.permute_and_store()
+    pn = ((model.perm_eig_matrix**4).sum(axis=0))**(-1)
+    ax.plot(model.perm_logvals,pn[1:], marker=".", linestyle='')
+
+def plot_logvals(ax, model, label = r"$\epsilon = {epsilon:.3G}$"):
+    """ """
+    cummulative_plot(ax, model.logvals, label=label.format(**model.vals_dict))
+
+def plot_diffusion(ax, model, label="diff"):
+    """ """
+    D = model.diff_coef()
+    power_law_logplot(ax, 1, 1/(sqrt(D)*pi), bbox, label=label.format(**model.vals_dict), color="red")
+
+def plot_permuted_logvals(ax, model, label = r"Permuted"):
+    """ """
+    if not model.permuted :
+        model.permute_and_store()
+    cummulative_plot(ax, model.logvals, label=label.format(**model.vals_dict))
+
+
+def plotf_eig_matshow_pn_new(model):
+    """ """
+    fig = plotdl.Figure()
+    ax1 = fig.add_subplot(2,1,1)
+    ax2 = fig.add_subplot(2,1,2,sharex=ax1)
+    ax1.label_outer()
+    fig.subplots_adjust(hspace=0.001)
+    plot_logvals(ax1, model)
+    if model.sample.d ==2:
+        plot_permuted_logvals(ax1, model)
+    plot_pn(ax2, model)
+    if model.sample.d ==2:
+        plot_permuted_logvals(ax2, model) 
+
+
+
+def plot_diffusion_1d_high_epsilon(ax, model, label= r"$\frac{{D}}{{r_0^2}} = \frac{{\epsilon-1}}{{\epsilon}} \approx {D:.3G}$"):
+    """ """
+    D =  ((model.epsilon-1)/(model.epsilon))
+    bbox = [model.logvals[0], model.logvals[-1], 1/len(model.logvals),  1]
+    power_law_logplot(ax, 0.5, 1/(sqrt(D)*pi), bbox, label=label.format(D=D, **model.vals_dict))
 
 def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20, pnfilename="exp_{1}d_{0}_pn", matfilename="exp_{1}d_{0}_matshow"):#used to be high_epsilons
     """
@@ -283,14 +364,14 @@ def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20, pnfilename="exp_{1}
     ex = exp_model_matrix(sample, epsilon=epsilon)
     v,w = sparsedl.sorted_eigh(ex)
     logvals = log10((-v)[1:])
-    cummulative_plot(ax1, logvals, label=r"$\epsilon = {0:.3G}$".format(epsilon))
+    cummulative_plot(ax1, logvals, label=r"$\epsilon = {0:.3G}$".format(epsilon), color="blue")
     ### Permutation
     if sample.d==2 : 
         ex2 = sparsedl.permute_tri(ex)
         sparsedl.zero_sum(ex2)
         v2,w2 = sparsedl.sorted_eigh(ex2)
         logvals2 = log10((-v2)[1:])
-        cummulative_plot(ax1, logvals2, label=r"Permuted rates".format(epsilon))
+        cummulative_plot(ax1, logvals2, label=r"Permuted rates".format(epsilon), color="green")
 
     #D = sparsedl.resnet(ex,1)
     D1 =  ((epsilon-1)/(epsilon))
@@ -300,24 +381,24 @@ def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20, pnfilename="exp_{1}
         power_law_logplot(ax1, 0.5, 1/(sqrt(sample.D)*pi), bbox, label=sample.D_label)
     elif sample.d ==1 :
         if D1 > 0:
-            power_law_logplot(ax1, 0.5, 1/(sqrt(D1)*pi), bbox, label=r"$\frac{{D}}{{r_0^2}} = \frac{{\epsilon-1}}{{\epsilon}} \approx {0:.3G}$".format(D1))
+            power_law_logplot(ax1, 0.5, 1/(sqrt(D1)*pi), bbox, label=r"$\frac{{D}}{{r_0^2}} = \frac{{\epsilon-1}}{{\epsilon}} \approx {0:.3G}$".format      (D1), color="red")
             power_law_logplot(ax1, epsilon, 1, bbox, label=r"$\lambda^{{\epsilon}}$".format())
         else:
             D_resnet = sparsedl.resnet(ex,1)
-            power_law_logplot(ax1, 0.5, 1/(sqrt(D_resnet)*pi), bbox, label=r"Resistor Network $D = {0:.3G}$".format(D_resnet))
+            power_law_logplot(ax1, 0.5, 1/(sqrt(D_resnet)*pi), bbox, label=r"Resistor Network $D = {0:.3G}$".format(D_resnet), color="red")
             #power_law_logplot(ax1, epsilon/2, 1, bbox, label=r"$\lambda^{{\epsilon/2}}$".format())
             power_law_logplot(ax1, epsilon, 1, bbox, label=r"$\lambda^{{\epsilon}}$".format())
     if sample.d == 2:
         D = sparsedl.avg_2d_resnet(ex,sample.non_periodic_distance_matrix(),sample.r_0())
         #D = sample.epsilon_to_xi(epsilon)
-        power_law_logplot(ax1, 0.5, 1/(sqrt(D)*pi), bbox, label=r"Resistor Network $D = {0:.3G}$".format(D))
+        power_law_logplot(ax1, 1, 1/(sqrt(D)*pi), bbox, label=r"Resistor Network  $ \lambda^1 \; D = {0:.3G}$".format(D),color="red")
         #sample_2d_theory(ax1, sample, epsilon)
     pn = ((w**4).sum(axis=0))**(-1)
     ax2.plot(logvals,pn[1:], marker=".", linestyle='')
     #permutation
     if sample.d ==2:
         pn2 = ((w2**4).sum(axis=0))**(-1)
-        ax2.plot(logvals2,pn[1:], marker=".", linestyle='')
+        ax2.plot(logvals2,pn2[1:], marker=".", linestyle='', color="green")
     ax2.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
     plotdl.set_all(ax1, ylabel=r"$C(\lambda)$", legend_loc="best")  
     plotdl.set_all(ax2, ylabel=r"PN", xlabel=r"$\log_{10}\lambda$", legend_loc="best")

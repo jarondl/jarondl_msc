@@ -145,11 +145,12 @@ def animate(plot_function, filename, variable_range, **kwargs):
 
     shutil.rmtree(tempdir)
 
-def cummulative_plot(ax, values, label=None):
+def cummulative_plot(ax, values, label=None, **kwargs):
     """  Plot cummulative values.
     """
     N = len(values)
-    ax.plot(numpy.sort(values), numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label)
+    #ax.plot(numpy.sort(values), numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label, **kwargs)
+    ax.plot(values, numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label, **kwargs)
 
 def matshow_cb(ax, matrix, vmin=10**(-10), colorbar=True):
     """
