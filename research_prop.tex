@@ -27,6 +27,7 @@
 \fi
 
 % packages added by jarondl
+%
 %\usepackage{subfig}  %% causes odd captions
 \usepackage{verbatim} % for multiline comments
 \usepackage{natbib} % change the bibliography style 
@@ -34,7 +35,6 @@
 \usepackage{cmap}  % for making pdf mathmode searchable
 %\usepackage{sectsty}
 \usepackage[pdftitle={Yaron de Leeuw's research proposal}]{hyperref}  % for hyperlinks in biblio. should be called last?
-
 \graphicspath{{figures_rp/},{PROG/figures/}}
 
 
@@ -152,9 +152,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\title{Diffusion properties of mesoscopic systems}
+\title{Survival and transport in glassy sparse systems}
 
-\author{Yaron de Leeuw \\ Adviser: Professor Doron Cohen}
+
+\author{Yaron de Leeuw  \\Adviser: Professor Doron Cohen }
 \affiliation{Physics Department, Ben Gurion University of the Negev}
 \date{\today}
 \maketitle
@@ -164,6 +165,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%
 \section{Background}
+%\sethebrew
+%הישרדות וניידות במערכות דלילות מזוגגות
+%\unsethebrew
 
 %%%%%%%%%%%
 There are diverse examples for extended systems whose dynamics is described by a rate equation. This include in particular the analysis of "random walk" where the transitions are between sites of a network. Another example is the study of energy absorption due to Fermi-Golden-Rule transitions between energy levels. In both cases there are two common questions that arise: (1) What is the survival probability of a particle  that has been prepared in a given site; (2) Is there normal diffusion or maybe only sub-diffusion, and how it is related to the survival probability.
@@ -187,7 +191,7 @@ The network (the values of $W_{nm}$) can be defined arbitrarily, but we wish to 
 \begin{align} \label{eq:exp_rates}
   W_{nm}\;=\; w_0 e^{(r_0-r_{nm})/ \xi}
 \end{align}
-Where $r_{nm}$ is the distance between site $n$ and $m$, $r_0$ is the typical distance between points, $w_0$ is the transition rate between points at distance $r_0$, and $\xi$ is a scaling coefficient, was studied in \cite{Amir:2010:PRL}, and is of particular interest for us.
+Where $r_{nm}$ is the distance between site $n$ and $m$, $r_0$ is the typical distance between points, $w_0$ is the transition rate between points at distance $r_0$, and $\xi$ is a scaling coefficient. In general, we are going to define $r_0 = n^{-1/d}$, where $n=\frac{N}{V}$ is the site denisty, and we are going to rescale time by setting $w_0=1$. This model was studied in \cite{Amir:2010:PRL}, and is of particular interest for us.
 
 %%%%%%%%%%%
 { \bf Dimensions.-- } The system may be in $1d$, $2d$, $3d$ etc., or in quasi-$1d$. The $1d$ system has been studied, among others, in\cite{Parris:1986}\cite{Alexander:1981:RMP}\cite{AslangulChvosta:1995}.  Quasi-$1d$ relates either to $1d$ systems where there are bonds between sites beyond the nearest neighbors, or to $2d$ systems with finite width (strip). Both these systems have banded matrices, with bandwidth $b$.
@@ -247,7 +251,7 @@ $(\text{sparsity}\cdot \text{bandwidth}) \ll 1$. However, in this work it is not
 
 \begin{figure}
     \includegraphics[clip, width=0.9\hsize]{quasi_1d}
-    \caption{Quasi-1d. No fitting parameters were used. $N\;=\;800$ points were randomly scattered on a $1d$ line. The transition rates between them are according to \autoref{eq:exp_dep}, with $\epsilon=\frac{\xi}{r_0}=10$. Each system was truncated at a different bandwidth, as stated in the legend. The dashed line marks \autoref{eq:C_D}, with $D$ calculated using the resistor network method \autoref{eq:resnet}. }
+    \caption{Quasi-1d. No fitting parameters were used. $N\;=\;800$ points were randomly scattered on a $1d$ line. The transition rates between them are according to \autoref{eq:exp_dep}, with $\epsilon=\frac{\xi}{r_0}=10$. Each system was truncated at a different bandwidth, as stated in the legend. The dashed line marks \autoref{eq:C_D}, with $D$ calculated using the resistor network method \autoref{eq:res_net_1d}. }
     \label{fig:quasi_1d}
 \end{figure}
 
@@ -286,7 +290,7 @@ D &\;=\; \left[\int_0^\infty  \frac{\xi}{r_0} \left(\frac{w}{w_0}\right)^{\frac{
     \includegraphics[clip, width=0.49\hsize]{{{exp_2d_5_pn}}}   \\
     \includegraphics[clip, width=0.49\hsize]{{{exp_1d_0.2_pn}}}         
     \includegraphics[clip, width=0.49\hsize]{{{exp_2d_0.2_pn}}}         
-\caption{A matrix $W_{nm}$, as defined in \autoref{eq:exp_dep}, has been generated and diagonalized. Each panel describes the results for a single realization, with the indicated value of $\xi$. The left panels are for a 1D system, and the right panels are for a 2D system. The upper panels are for a non-random rectangular network, while the middle and lower panels are for a random network, with large and small values of $\xi$ respectively. Each panel contains two sub-panels: the upper one is the cumulative histogram of the eignevalues, and the lower one is the participation number of each eigenstate. For sake of comparison we have added lines that describe the "raw" distribution of the rates Eq{}, and the expectation that is based  on a diffusion hypothesis \autoref{eq:C_D} \autoref{eq:1d_D}, and the result for a randomly permuted version of the matrix. See text for further discussion.}
+\caption{A matrix $W_{nm}$, as defined in \autoref{eq:exp_dep}, has been generated and diagonalized. Each panel describes the results for a single realization, with the indicated value of $\xi$. The left panels are for a 1D system, and the right panels are for a 2D system. The upper panels are for a non-random rectangular network, while the middle and lower panels are for a random network, with large and small values of $\xi$ respectively. Each panel contains two sub-panels: the upper one is the cumulative histogram of the eignevalues, and the lower one is the participation number of each eigenstate. For sake of comparison we have added lines that describe the "raw" distribution of the rates , and the expectation that is based  on a diffusion hypothesis \autoref{eq:C_D} \autoref{eq:1d_D}, and the result for a randomly permuted version of the matrix. See text for further discussion.}
 %% replace EQ{} with ref.
 \end{figure}
 
@@ -304,7 +308,7 @@ Therefore, we can treat the system as a network of resistors with the known rule
 G = \frac{I}{V}
 \end{align}
 For $1d$, 
-\begin{align}
+\begin{align}\label{eq:res_net_1d}
   \sigma \;=\; \frac{G}{r}
 \end{align}
 For $2d$,  instead of solving the problem with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :

@@ -291,6 +291,7 @@ class ExpModel(object):
     def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}"):
         """ Take sample and epsilon, and calc eigvals and eigmodes"""
         self.epsilon = epsilon
+        self.xi = sample.epsilon_to_xi(epsilon)
         self.sample = sample
         self.ex = exp_model_matrix(sample, epsilon=epsilon)
         self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
@@ -304,7 +305,7 @@ class ExpModel(object):
         perm_ex = sparsedl.permute_tri(self.ex)
         sparsedl.zero_sum(perm_ex)
         self.perm_eigvals, self.perm_logvals, self.perm_eig_matrix = self.calc_eigmodes(perm_ex)
-        return (self.perm_logvals, self.perm_eig_matrix)
+        #return (self.perm_logvals, self.perm_eig_matrix)
         
     def calc_eigmodes(self, ex):
         """ calculate eigmodes, and return logvals and eigmodes"""
@@ -329,21 +330,37 @@ class ExpModel_1d(ExpModel):
     def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
         """ """
         bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1] 
-        power_law_logplot(ax, self.epsilon, 1, bbox, label=label.format(**self.vals_dict), **kwargs)
+        power_law_logplot(ax, self.epsilon, 1, bbox, label=label.format(**self.vals_dict), color="green")
+        N = self.sample.number_of_points()
+        brates = numpy.triu(self.ex,k=1).ravel().copy()
+        brates.sort()
+        cummulative_plot(ax, log10(brates[-N:-1]), label="highest rates", color='purple')
         
 class ExpModel_Bloch_1d(ExpModel_1d):
     def diff_coef(self):
         return 1
+    def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
+        """ """
+        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1] 
+        power_law_logplot(ax, self.epsilon, 1, bbox, label=label.format(**self.vals_dict), color="green")
+
 
 class ExpModel_2d(ExpModel):
     """ Subclassing exp model for 2d """
     def diff_coef(self):
         return self.epsilon*4
-    def plot_rate_density(self, ax, x0=0.1, label=r"$\lambda^\epsilon$", **kwargs):
+    def old_plot_rate_density(self, ax, x0=0.1, label=r"$\lambda^\epsilon$", **kwargs):
 
         bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1]
         exponent_law_logplot(ax,bbox, label, x0, **kwargs)
-        
+
+    def plot_rate_density(self, ax, label="high rates", **kwargs):
+        N = self.sample.number_of_points()
+        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1]
+        brates = numpy.triu(self.ex, k=1).ravel().copy()
+        brates.sort()
+        cummulative_plot(ax, log10(brates[-N:-1]), label=label, color='purple')
+
 
 class ExpModel_Bloch_2d(ExpModel_2d):
     def diff_coef(self):
@@ -394,7 +411,7 @@ def plotf_logvals_pn(model):
     fig.subplots_adjust(hspace=0.001)
     plot_logvals(ax1, model)
     model.plot_diff(ax1, color="red")
-    model.plot_rate_density(ax1, color="green")
+    model.plot_rate_density(ax1, color="purple")
     if model.sample.d ==2:
         plot_permuted_logvals(ax1, model, color="green")
     plot_pn(ax2, model)
@@ -409,6 +426,19 @@ def plotf_logvals_pn(model):
     ax1.set_yticks(ax1.get_yticks()[1:])
     ax2.set_yticks(ax2.get_yticks()[:-1])
     plotdl.save_fig(fig, model.basename + "_pn")
+
+
+def plotf_all_raw_rates(sample, epsilons=(0.2,1,5)):
+    ax = plotdl.new_ax_for_file()
+    for eps in epsilons:
+        ax.cla()
+        b = ExpModel_2d(sample, eps)
+        N = sample.number_of_points()
+        brates = b.ex.ravel().copy()
+        brates.sort()
+        cummulative_plot(ax, brates[-N:-1])
+        ax.set_xscale('log')
+        plotdl.save_ax(ax, "raw_rates_{epsilon}".format(epsilon=eps))
 
 
 def plot_diffusion_1d_high_epsilon(ax, model, label= r"$\frac{{D}}{{r_0^2}} = \frac{{\epsilon-1}}{{\epsilon}} \approx {D:.3G}$"):
@@ -529,14 +559,14 @@ def all_plots(seed= 1, **kwargs):
     #### 2d PN and matshow
     tor = Sample((1,1),900)
     random.seed(1)
- #   plotf_eig_matshow_pn(tor, epsilon=0.2)
+    #   plotf_eig_matshow_pn(tor, epsilon=0.2)
     plotf_logvals_pn(ExpModel_2d(tor, 0.2))
     random.seed(1)
-#    plotf_eig_matshow_pn(tor, epsilon=1.5)
+    #    plotf_eig_matshow_pn(tor, epsilon=1.5)
     plotf_logvals_pn(ExpModel_2d(tor, 1.5))
     random.seed(1)
     plotf_logvals_pn(ExpModel_2d(tor, 5))
-#    plotf_eig_matshow_pn(tor, epsilon=5)
+    #    plotf_eig_matshow_pn(tor, epsilon=5)
     
     # 2d bloch:
     bloch2d = create_bloch_sample_2d(30)
