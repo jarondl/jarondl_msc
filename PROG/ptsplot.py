@@ -25,53 +25,26 @@ from plotdl import cummulative_plot
 numpy.seterr(all='warn')
 EXP_MAX_NEG = numpy.log(numpy.finfo( numpy.float).tiny)
 
-def resnet_1d_plot(ax, diff_coef, x1, x2, y1, y2):
-    """ Plots 1d diffusion, in the current xlims
-    """
-    #right bound:
-    xr = min((x2,  diff_coef*pi**2))
-    xl = x1
-    diffusion_space = numpy.linspace(xl, xr, 100)
-    diffusion = sqrt((diffusion_space)/(diff_coef))/pi
-    
-    ax.plot(diffusion_space, diffusion, linestyle='--', label=r"$D \approx {0:.3G}$".format(diff_coef))
 
-
-def resnet_1d_logplot(ax, diff_coef, x1, x2, y1, y2,label):
+def power_law_logplot(ax, power, coeff, logbbox,label, **kwargs):
     """ Plots 1d diffusion, treating the x value as log10.
     """
-    #right bound:
-    xr = min((x2,  diff_coef*pi**2))
-    xl = x1
-    diffusion_space = numpy.linspace(log10(xl), log10(xr), 100)
-    diffusion = (sqrt((10**diffusion_space)/(diff_coef))/pi)
-    ax.plot(diffusion_space, diffusion, linestyle='--', label=label)
-    
-
-def power_law_logplot(ax, power, coeff, bbox,label, color=None):
-    """ Plots 1d diffusion, treating the x value as log10.
-    """
-    #right bound:
-    x1,x2,y1,y2 = bbox
-    xr_log = min((log10(x2), log10(y2/coeff)/power))
-    xl_log = max((log10(x1), log10(y1/coeff)/power))
-
+    x1,x2,y1,y2 = logbbox
+    xl_log = min(x1, log10(y1/coeff)/power)
+    xr_log = min(x2, log10(y2/coeff)/power)
 
     power_space = numpy.linspace(xl_log, xr_log, 100)
     
     power_law = coeff*(10**power_space)**(power)
-    if color is not None:
-        ax.plot(power_space, power_law, linestyle='--', label=label, color=color)
-    else:
-        ax.plot(power_space, power_law, linestyle='--', label=label)
+    ax.plot(power_space, power_law, linestyle='--', label=label, **kwargs)
 
-def exponent_law_logplot(ax, bbox, label, x0=0.1, **kwargs):
+def exponent_law_logplot(ax, logbbox, label, x0=0.1, **kwargs):
     """
     """
-    x1,x2,y1,y2 = bbox
+    x1,x2,y1,y2 = logbbox
     #xr_log = min((log10(x2)))#, log10(y2/coeff)/power))
     #xl_log = max((log10(x1)))#, log10(y1/coeff)/power))
-    xr_log = log10(x2)
+    xr_log = x2
     xl_log = x0
 
     exp_space = numpy.linspace(xl_log, xr_log, 100)
@@ -80,59 +53,6 @@ def exponent_law_logplot(ax, bbox, label, x0=0.1, **kwargs):
 
 ####################   Sample Plots ################
 
-def plot_exp_model_permutation(ax, sample, epsilon = 0.1, end_log_time=1 ,show_theory=False, show_diag=False):
-    """  Create A_ij for points on a torus: e^(-r_ij).
-
-        :param N_points: Number of points, defaults to 100
-        :type N_points: int
-        :param dimensions: The 2d dimensions, as a 2-tuple. defaults to (10, 10)
-
-    """
-
-    ex1 = exp_model_matrix(sample, epsilon)
-    sparsedl.zero_sum(ex1)
-    ex2 = sparsedl.permute_tri(ex1)
-    sparsedl.zero_sum(ex2)
-    ex3 = sparsedl.permute_diagonals(ex1)
-    sparsedl.zero_sum(ex3)
-    
-    cummulative_plot(ax, log10(sorted_eigvalsh(ex1)[1:]), "Original values")
-    cummulative_plot(ax, log10(sorted_eigvalsh(ex2)[1:]), "Permuted values")
-    if show_diag:
-        cummulative_plot(ax, log10(sorted_eigvalsh(ex3)[1:]), "Diagonaly permuted values")
-
-    plotdl.set_all(ax, title = r"{0}d, $w = e^{{-r/\xi}}$, $N ={1}$, $\epsilon={2}$".format(sample.d, sample.number_of_points, epsilon),
-                   legend_loc='best', xlabel=r"$\log_{10}\lambda$", ylabel=r"$C(\lambda)$")
-
-
-def sample_2d_theory(ax, sample, epsilon):
-    """ """
-    n = sample.n
-    r_0 = sample.r_0
-    xi = sample.epsilon_to_xi(epsilon)
-    left_end = numpy.log10(2) - sqrt(log10(sample.number_of_points)/(pi*n*xi**2))
-    right_end = numpy.log10(2)
-    #print "min : {0} max : {1}  minlog : {2}  maxlog : {3}".format(numpy.min(eigvals[0]),numpy.max(eigvals[0]), minvallog, maxvallog)
-    theory_space= numpy.logspace(left_end, right_end,100)
-    theory = numpy.exp(-(-pi*xi/(2*r_0)*log(10**theory_space))**2)
-
-    xlim, ylim = ax.get_xlim(), ax.get_ylim()
-    ax.plot(theory_space, theory, label=r"theory $\epsilon = {0}$".format(epsilon), linestyle="--")
-    ax.set_xlim(xlim)
-    ax.set_ylim(ylim)
-
-
-def sample_collect_eigenvalues(sample, epsilon=0.1, number_of_runs=10):
-    """
-    """
-    collected_eigenvalues = []
-    for i in range(number_of_runs):
-        print( "{0:03} / {1}".format(i+1, number_of_runs))
-        sample.generate_points()
-        ex1 = exp_model_matrix(sample, epsilon)
-        collected_eigenvalues += [ -linalg.eigvals(ex1)]
-    all_eigenvalues = numpy.concatenate(collected_eigenvalues)
-    return all_eigenvalues
 
 def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample exp
     """ Creats W_{nm} = exp((r_0-r_{nm})/xi). The matrix is zero summed and should be symmetric.
@@ -159,94 +79,14 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample
     return ex1 #- numpy.eye(ex1.shape[0])*lamb_0
 
 
-def torus_3_plots(N=800,epsilon=30):
-    """
-    """
-    ax1 = plotdl.new_ax_for_file()
-    torus = Sample((1,1), N)
-    plot_exp_model_permutation(ax1, torus, epsilon=epsilon, show_diag=False)
-    ax1.set_yscale('log')
-    #ax1.set_xscale('log')
-    plotdl.save_ax(ax1, "torus")
-    ax1.set_yscale('linear')
-    ax1.set_xscale('linear')
-    plotdl.save_ax(ax1, "torus_linear")
-
-    ax2 = plotdl.new_ax_for_file()
-    ax2.scatter(torus.points[:,0], torus.points[:,1])
-    plotdl.set_all(ax2, title="Scatter plot of the points")
-    plotdl.save_ax(ax2, "torus_scatter")
-
-
-
-##########
-
-
-#### Sample one realization with diffusion, and same points for all realizations##
-def exp_models_D(sample, epsilon_ranges=((0.05, 0.1,0.5,1,1.5,2,5,10),(0.05, 0.1),(5,10)), epsilon_range_names=("all","low","high")):
-    """ creates files
-    """
-    #temp:
-    number_of_realizations = 1
-    ax_exp = plotdl.new_ax_for_file()
-    epsilon_list = set()
-    epsilon_list.update(*epsilon_ranges)
-    print(epsilon_list)
-    #epsilon_list = (0.05, 0.1,0.5,1,1.5,2,5,10)
-    plot_title = "{0}d with {1} points, eigenvalues for a single realization, $n=1$".format(sample.d,sample.number_of_points)
-    hist_bins = sqrt(sample.number_of_points()*number_of_realizations)
-    
-    ## First we create all the eigenvalues for all epsilons and realizations
-    logvals = {} # empty dict
-    rate_matrix = {}
-    for epsilon in epsilon_list:
-        ex1 = exp_model_matrix(sample, epsilon)
-        eigvals= -linalg.eigvals(ex1)
-        logvals[epsilon]= numpy.log(numpy.sort(eigvals)[1:])
-        rate_matrix[epsilon] = ex1.copy()
-        
-    
-    for range_name, epsilon_list in zip(epsilon_range_names, epsilon_ranges):
-        for epsilon in sorted(epsilon_list):
-            cummulative_plot(ax_exp, logvals[epsilon], label=r"$\epsilon = {0}$".format(epsilon))
-            ### diffusion
-            diff_coef = sparsedl.resnet(rate_matrix[epsilon], 1)
-            maxvallog = numpy.min((numpy.log(diff_coef*pi**2), logvals[epsilon][-1]))
-            print("maxvallog  " + str(numpy.log(diff_coef*pi**2))+ "  "+str(logvals[epsilon][-1]))
-            diffusion_space = numpy.exp(numpy.linspace(logvals[epsilon][0],maxvallog, 100))
-            diffusion = numpy.sqrt(diffusion_space/(diff_coef))/pi
-            ax_exp.plot(numpy.log(diffusion_space), diffusion, linestyle='--', label="")
-                
-        plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$C(\lambda)$", legend_loc="best")
-        plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_semilogx".format(sample.d, number_of_realizations, range_name))
-        ax_exp.set_yscale('log')
-        plotdl.save_ax(ax_exp, "exp_{0}d_{1:02}_{2}_loglog".format(sample.d, number_of_realizations, range_name))
-        ax_exp.clear()
-        ### Histogram
-        for epsilon in sorted(epsilon_list):
-            ax_exp.hist(logvals[epsilon], bins = hist_bins, label=r"$\epsilon = {0}$".format(epsilon), histtype='step', normed=True)
-        plotdl.set_all(ax_exp, title=plot_title, xlabel="$\log\lambda$", ylabel="$P(\lambda)$", legend_loc="best")
-        plotdl.save_ax(ax_exp,"exp_{0}d_{1:02}_{2}_zhist".format(sample.d, number_of_realizations, range_name))
-        ax_exp.clear()
-
-
 def plot_quasi_1d(ax, sample, bandwidth_list, epsilon=10):
+    """ diffusion doesn't work yet
     """
-    """
-    ex =  exp_model_matrix(sample, epsilon=10, bandwidth=0)
     for bandwidth in bandwidth_list:
-        rate_matrix = ex*banded_ones(ex.shape[0], bandwidth)
-        sparsedl.zero_sum(rate_matrix)
-        diff_coef = sparsedl.resnet(rate_matrix, bandwidth, periodic=True)
-        #eigvals= -linalg.eigvals(rate_matrix)
-        #eigvals.sort()
-        eigvals = sorted_eigvalsh(rate_matrix)
-        logvals = log10((eigvals)[1:])
-        cummulative_plot(ax, logvals, label=r"$\epsilon = {0:.3G}, b={1:.3G}$".format(epsilon, bandwidth))
-        bbox = [eigvals[1], eigvals[-1], 1/len(eigvals),  1]
-        print(bbox)
-        power_law_logplot(ax, 0.5, 1/(sqrt(diff_coef)*pi), bbox, label=r"$\frac{{D}}{{r_0^2}} \approx {0:.3G}$".format(diff_coef))
-        #diffusion_plot(ax, diff_coef, eigvals)
+        model =  ExpModel_1d(sample, epsilon=10, bandwidth1d=bandwidth)
+        cummulative_plot(ax, model.logvals, label=r"$\epsilon = {0:.3G}, b={1:.3G}$".format(epsilon, bandwidth))
+        diff_coef = sparsedl.resnet(model.ex, bandwidth, periodic=False)
+        power_law_logplot(ax, 0.5, 1/(sqrt(diff_coef)*pi), model.logbbox, label=r"$\frac{{D}}{{r_0^2}} \approx {0:.3G}$".format(diff_coef))
     plotdl.set_all(ax, title="", legend_loc="best", xlabel=r"$\log_{10}\lambda$", ylabel=r"$C(\lambda)$")
     ax.set_yscale('log')
 
@@ -288,16 +128,17 @@ def sample_participation_number(ax, sample, epsilon=0.1):
     ax.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
 
 class ExpModel(object):
-    def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}"):
+    def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",bandwidth1d = None):
         """ Take sample and epsilon, and calc eigvals and eigmodes"""
         self.epsilon = epsilon
         self.xi = sample.epsilon_to_xi(epsilon)
         self.sample = sample
-        self.ex = exp_model_matrix(sample, epsilon=epsilon)
+        self.ex = exp_model_matrix(sample, epsilon=epsilon, bandwidth=bandwidth1d)
         self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
         self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.permuted = False
         self.basename = basename.format(**self.vals_dict)
+        self.logbbox = [self.logvals[1], self.logvals[-1], 1/len(self.logvals), 1]
 
     def permute_and_store(self):
         """ Permute the rates and set perm_logvals and perm_eig_matrix """
@@ -317,8 +158,7 @@ class ExpModel(object):
         D = self.diff_coef()
         d2 = self.sample.d / 2
         prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
-        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1]
-        power_law_logplot(ax, d2, prefactor, bbox, label=label.format(D=D, **self.vals_dict), **kwargs)
+        power_law_logplot(ax, d2, prefactor, self.logbbox, label=label.format(D=D, **self.vals_dict), **kwargs)
 
 class ExpModel_1d(ExpModel):
     """ Subclassing exp model for 1d """
@@ -329,20 +169,19 @@ class ExpModel_1d(ExpModel):
         return D
     def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
         """ """
-        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1] 
-        power_law_logplot(ax, self.epsilon, 1, bbox, label=label.format(**self.vals_dict), color="green")
+        power_law_logplot(ax, self.epsilon, 1, self.logbbox, label=label.format(**self.vals_dict), color="green")
         N = self.sample.number_of_points()
         brates = numpy.triu(self.ex,k=1).ravel().copy()
         brates.sort()
-        cummulative_plot(ax, log10(brates[-N:-1]), label="highest rates", color='purple')
+#        brates *= exp(-1)
+        cummulative_plot(ax, log10(brates[-N:-1]), label="high rates ", color='purple')
         
 class ExpModel_Bloch_1d(ExpModel_1d):
     def diff_coef(self):
         return 1
     def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
         """ """
-        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1] 
-        power_law_logplot(ax, self.epsilon, 1, bbox, label=label.format(**self.vals_dict), color="green")
+        power_law_logplot(ax, self.epsilon, 1, self.logbbox, label=label.format(**self.vals_dict), color="green")
 
 
 class ExpModel_2d(ExpModel):
@@ -351,14 +190,13 @@ class ExpModel_2d(ExpModel):
         return self.epsilon*4
     def old_plot_rate_density(self, ax, x0=0.1, label=r"$\lambda^\epsilon$", **kwargs):
 
-        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1]
-        exponent_law_logplot(ax,bbox, label, x0, **kwargs)
+        exponent_law_logplot(ax,self.logbbox, label, x0, **kwargs)
 
-    def plot_rate_density(self, ax, label="high rates", **kwargs):
+    def plot_rate_density(self, ax, label=r"high rates $\cdot e^{r_0/xi}$", **kwargs):
         N = self.sample.number_of_points()
-        bbox = [-self.eigvals[1],-self.eigvals[-1], 1/len(self.eigvals),  1]
         brates = numpy.triu(self.ex, k=1).ravel().copy()
         brates.sort()
+        brates *= exp(self.sample.r_0()/ self.xi)
         cummulative_plot(ax, log10(brates[-N:-1]), label=label, color='purple')
 
 
@@ -427,6 +265,14 @@ def plotf_logvals_pn(model):
     ax2.set_yticks(ax2.get_yticks()[:-1])
     plotdl.save_fig(fig, model.basename + "_pn")
 
+def plotf_matshow(model):
+    """ """
+    ax = plotdl.new_ax_for_file()
+    w = model.eig_matrix
+    plotdl.matshow_cb(ax, w**2, vmin=10**(-10), colorbar=True)
+    plotdl.set_all(ax, title=r"$N={number_of_points}, \epsilon = {epsilon}$".format(**model.vals_dict))
+    plotdl.save_ax(ax, model.basename + "_mat")
+
 
 def plotf_all_raw_rates(sample, epsilons=(0.2,1,5)):
     ax = plotdl.new_ax_for_file()
@@ -440,79 +286,6 @@ def plotf_all_raw_rates(sample, epsilons=(0.2,1,5)):
         ax.set_xscale('log')
         plotdl.save_ax(ax, "raw_rates_{epsilon}".format(epsilon=eps))
 
-
-def plot_diffusion_1d_high_epsilon(ax, model, label= r"$\frac{{D}}{{r_0^2}} = \frac{{\epsilon-1}}{{\epsilon}} \approx {D:.3G}$"):
-    """ """
-    D =  ((model.epsilon-1)/(model.epsilon))
-    bbox = [model.logvals[0], model.logvals[-1], 1/len(model.logvals),  1]
-    power_law_logplot(ax, 0.5, 1/(sqrt(D)*pi), bbox, label=label.format(D=D, **model.vals_dict))
-
-def plotf_eig_matshow_pn(sample = Sample(1,200), epsilon=20, pnfilename="exp_{1}d_{0}_pn", matfilename="exp_{1}d_{0}_matshow"):#used to be high_epsilons
-    """
-    """
-    number_of_points = sample.number_of_points()
-    fig = plotdl.Figure()
-    ax1 = fig.add_subplot(2,1,1)
-    ax2 = fig.add_subplot(2,1,2,sharex=ax1)
-    ax1.label_outer()
-   
-    fig.subplots_adjust(hspace=0.001)
-#    ax3 = fig.add_subplot(2,1,3)#,sharex=ax1)
-    ex = exp_model_matrix(sample, epsilon=epsilon)
-    v,w = sparsedl.sorted_eigh(ex)
-    logvals = log10((-v)[1:])
-    cummulative_plot(ax1, logvals, label=r"$\epsilon = {0:.3G}$".format(epsilon), color="blue")
-    ### Permutation
-    if sample.d==2 : 
-        ex2 = sparsedl.permute_tri(ex)
-        sparsedl.zero_sum(ex2)
-        v2,w2 = sparsedl.sorted_eigh(ex2)
-        logvals2 = log10((-v2)[1:])
-        cummulative_plot(ax1, logvals2, label=r"Permuted rates".format(epsilon), color="green")
-
-    #D = sparsedl.resnet(ex,1)
-    D1 =  ((epsilon-1)/(epsilon))
-    v_not_including_first = (-v)[1:]
-    bbox = [((v_not_including_first)[v_not_including_first>0])[0], (-v)[-1], 1/len(v),  1]
-    if sample.D is not None:
-        power_law_logplot(ax1, 0.5, 1/(sqrt(sample.D)*pi), bbox, label=sample.D_label)
-    elif sample.d ==1 :
-        if D1 > 0:
-            power_law_logplot(ax1, 0.5, 1/(sqrt(D1)*pi), bbox, label=r"$\frac{{D}}{{r_0^2}} = \frac{{\epsilon-1}}{{\epsilon}} \approx {0:.3G}$".format      (D1), color="red")
-            power_law_logplot(ax1, epsilon, 1, bbox, label=r"$\lambda^{{\epsilon}}$".format())
-        else:
-            D_resnet = sparsedl.resnet(ex,1)
-            power_law_logplot(ax1, 0.5, 1/(sqrt(D_resnet)*pi), bbox, label=r"Resistor Network $D = {0:.3G}$".format(D_resnet), color="red")
-            #power_law_logplot(ax1, epsilon/2, 1, bbox, label=r"$\lambda^{{\epsilon/2}}$".format())
-            power_law_logplot(ax1, epsilon, 1, bbox, label=r"$\lambda^{{\epsilon}}$".format())
-    if sample.d == 2:
-        D = sparsedl.avg_2d_resnet(ex,sample.non_periodic_distance_matrix(),sample.r_0())
-        #D = sample.epsilon_to_xi(epsilon)
-        power_law_logplot(ax1, 1, 1/(sqrt(D)*pi), bbox, label=r"Resistor Network  $ \lambda^1 \; D = {0:.3G}$".format(D),color="red")
-        #sample_2d_theory(ax1, sample, epsilon)
-    pn = ((w**4).sum(axis=0))**(-1)
-    ax2.plot(logvals,pn[1:], marker=".", linestyle='')
-    #permutation
-    if sample.d ==2:
-        pn2 = ((w2**4).sum(axis=0))**(-1)
-        ax2.plot(logvals2,pn2[1:], marker=".", linestyle='', color="green")
-    ax2.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
-    plotdl.set_all(ax1, ylabel=r"$C(\lambda)$", legend_loc="best")  
-    plotdl.set_all(ax2, ylabel=r"PN", xlabel=r"$\log_{10}\lambda$", legend_loc="best")
-    ax1.set_yscale('log')
-    ax2.set_yscale('log')    
-    # There are two overlaping ticks, so we remove both
-    ax1.set_yticks(ax1.get_yticks()[1:])
-    ax2.set_yticks(ax2.get_yticks()[:-1])    
-    plotdl.save_fig(fig, pnfilename.format(epsilon, sample.d))
-
-    #ax.clear()
-    ax3 = plotdl.new_ax_for_file()
-    plotdl.matshow_cb(ax3, w**2, vmin=10**(-10), colorbar=True)
-    plotdl.set_all(ax3, title=r"$N={0}, \epsilon = {1}$".format(number_of_points, epsilon))
-    plotdl.save_ax(ax3, matfilename.format(epsilon, sample.d))
-
-    #plotdl.save_fig(fig, "exp_1d_{0}_{1}_test".format(number_of_points, epsilon))
 
 def create_bloch_sample_1d(N):
     """
@@ -540,34 +313,24 @@ def all_plots(seed= 1, **kwargs):
 
     #### 1d PN and matshow
     line = Sample(1,900)
-    random.seed(1)
-    plotf_logvals_pn(ExpModel_1d(line, 0.2))
-    random.seed(1)
-    plotf_logvals_pn(ExpModel_1d(line, 1.5))
-#    plotf_eig_matshow_pn(line, epsilon=1.5)
-    random.seed(1)
-    plotf_logvals_pn(ExpModel_1d(line, 5))
-#    plotf_eig_matshow_pn(line, epsilon=5)
+    for epsilon in (0.2, 1.5,5):
+        random.seed(1)
+        line_model = ExpModel_1d(line, epsilon)
+        plotf_logvals_pn(line_model)
+        plotf_matshow(line_model)
     
     # 1d bloch:
     bloch1d = create_bloch_sample_1d(900)
-    #bloch1d.D = 1 
-    #bloch1d.D_label=r"$\frac{D}{r_0^2}=1$"
     for epsilon in (0.2,0.8,1.5,5):
         plotf_logvals_pn(ExpModel_Bloch_1d(bloch1d, epsilon, basename="bloch_1d_{epsilon}"))
 
     #### 2d PN and matshow
-    tor = Sample((1,1),900)
-    random.seed(1)
-    #   plotf_eig_matshow_pn(tor, epsilon=0.2)
-    plotf_logvals_pn(ExpModel_2d(tor, 0.2))
-    random.seed(1)
-    #    plotf_eig_matshow_pn(tor, epsilon=1.5)
-    plotf_logvals_pn(ExpModel_2d(tor, 1.5))
-    random.seed(1)
-    plotf_logvals_pn(ExpModel_2d(tor, 5))
-    #    plotf_eig_matshow_pn(tor, epsilon=5)
-    
+    sample2d = Sample((1,1),900)
+    for epsilon in (0.2, 1.5, 5):
+        random.seed(1)
+        model2d = ExpModel_2d(sample2d, epsilon)
+        plotf_logvals_pn(model2d)
+        plotf_matshow(model2d)
     # 2d bloch:
     bloch2d = create_bloch_sample_2d(30)
     for epsilon in (0.2,0.8,1.5,5):
