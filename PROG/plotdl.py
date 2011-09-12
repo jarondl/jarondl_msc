@@ -35,7 +35,7 @@ from matplotlib import rc
 from matplotlib.colors import LogNorm
 try:
     from matplotlib import pyplot
-    from matplotlib.pyplot import draw
+    from matplotlib.pyplot import draw, draw_if_interactive
     X_AVAILABLE = True
     pyplot.ion()
 except RuntimeError:
@@ -151,6 +151,7 @@ def cummulative_plot(ax, values, label=None, **kwargs):
     N = len(values)
     #ax.plot(numpy.sort(values), numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label, **kwargs)
     ax.plot(values, numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label, **kwargs)
+    draw_if_interactive()
 
 def matshow_cb(ax, matrix, vmin=10**(-10), colorbar=True):
     """

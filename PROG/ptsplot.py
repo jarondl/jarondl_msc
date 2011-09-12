@@ -4,7 +4,7 @@
 """
 from __future__ import division
 #from scipy.sparse import linalg as splinalg
-from numpy import linalg, random, pi, log10, sqrt, log, exp
+from numpy import linalg, random, pi, log10, sqrt, log, exp, sort
 from scipy.special import gamma
 from matplotlib.colors import LogNorm
 from matplotlib.cm import summer
@@ -242,6 +242,20 @@ def plot_diffusion(ax, model, label="diff", **kwargs):
     print ("D = ", D)
     power_law_logplot(ax, 1, D, bbox, label=label.format(**model.vals_dict), **kwargs)
 
+
+def scatter_eigmode(ax, model, n, keepnorm=False):
+    """ """
+    if keepnorm:
+        vdict = {'vmin' :model.eig_matrix.min(), 'vmax':model.eig_matrix.max()}
+    else:
+        vdict = {}
+    sample = model.sample
+    ax.scatter(sample.points[:,0], sample.points[:,1], c=model.eig_matrix[:,n], edgecolors='none', **vdict)
+    
+def plot_diag_eigen(ax, model, **kwargs):
+
+    cummulative_plot(ax, sort(-model.ex.diagonal()), label=r"Main diagonal, $\epsilon = {epsilon}$".format(**model.vals_dict), **kwargs)
+    cummulative_plot(ax, sort(-model.eigvals), label=r"Eigenvalues, $\epsilon = {epsilon}$".format(**model.vals_dict), **kwargs)
 
 
 def plotf_logvals_pn(model):
