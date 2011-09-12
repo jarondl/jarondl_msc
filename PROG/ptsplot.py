@@ -38,6 +38,11 @@ def power_law_logplot(ax, power, coeff, logbbox,label, **kwargs):
     power_law = coeff*(10**power_space)**(power)
     ax.plot(power_space, power_law, linestyle='--', label=label, **kwargs)
 
+def plot_func_logplot(ax, func, logbboxs, label, **kwargs):
+    """ Plots function func in a logscale within the bounding box given by logbbox
+    """
+    
+
 def exponent_law_logplot(ax, logbbox, label, x0=0.1, **kwargs):
     """
     """
@@ -192,11 +197,10 @@ class ExpModel_2d(ExpModel):
 
         exponent_law_logplot(ax,self.logbbox, label, x0, **kwargs)
 
-    def plot_rate_density(self, ax, label=r"high rates $\cdot e^{r_0/xi}$", **kwargs):
+    def plot_rate_density(self, ax, label=r"high rates ", **kwargs):
         N = self.sample.number_of_points()
         brates = numpy.triu(self.ex, k=1).ravel().copy()
         brates.sort()
-        brates *= exp(self.sample.r_0()/ self.xi)
         cummulative_plot(ax, log10(brates[-N:-1]), label=label, color='purple')
 
 
