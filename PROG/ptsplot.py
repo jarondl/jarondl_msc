@@ -4,24 +4,18 @@
 """
 from __future__ import division
 #from scipy.sparse import linalg as splinalg
-from numpy import linalg, random, pi, log10, sqrt, log, exp, sort
+from numpy import random, pi, log10, sqrt,  exp, sort
 from scipy.special import gamma
-from matplotlib.colors import LogNorm
-from matplotlib.cm import summer
-from matplotlib.widgets import Slider
-from copy import deepcopy
 
 import numpy
 
 import sparsedl
 import plotdl
-import geometry
 from geometry import Sample
-from eigenvalue_plots import eigenvalues_cummulative
 from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones
 from plotdl import cummulative_plot
 
-### Raise all float errors 
+### Raise all float errors
 numpy.seterr(all='warn')
 EXP_MAX_NEG = numpy.log(numpy.finfo( numpy.float).tiny)
 
@@ -47,10 +41,6 @@ def exponent_law_logplot(ax, logxlim, label, x0=0.1, **kwargs):
     """
     """
     x1,x2 = logxlim
-    #xr_log = min((log10(x2)))#, log10(y2/coeff)/power))
-    #xl_log = max((log10(x1)))#, log10(y1/coeff)/power))
-    xr_log = x2
-    xl_log = x0
 
     exp_space = numpy.linspace(x1,x2, 100)
     exp_law = 1 - exp(-2*(pi)*((exp_space-x0))**2)
@@ -109,7 +99,7 @@ def plot_several_vectors(fig, matrix, vec_indices, x_values = None):
     """
     num_of_vectors = len(vec_indices)
     axes = {} # empty_dict
-    
+
     for n,m in enumerate(vec_indices):
         if n==0:
             axes[n] = fig.add_subplot(num_of_vectors,1,n+1)
@@ -152,12 +142,12 @@ class ExpModel(object):
         sparsedl.zero_sum(perm_ex)
         self.perm_eigvals, self.perm_logvals, self.perm_eig_matrix = self.calc_eigmodes(perm_ex)
         #return (self.perm_logvals, self.perm_eig_matrix)
-        
+
     def calc_eigmodes(self, ex):
         """ calculate eigmodes, and return logvals and eigmodes"""
         v,w = sparsedl.sorted_eigh(ex)
         return (v, log10((-v)[1:]), w)
-    
+
     def plot_diff(self, ax, label = r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
         """ """
         D = self.diff_coef()
@@ -180,7 +170,7 @@ class ExpModel_1d(ExpModel):
         brates.sort()
 #        brates *= exp(-1)
         cummulative_plot(ax, log10(brates[-N:-1]), label="high rates ", color='purple')
-        
+
 class ExpModel_Bloch_1d(ExpModel_1d):
     def diff_coef(self):
         return 1
@@ -237,9 +227,8 @@ def plot_permuted_logvals(ax, model, label = r"Permuted", **kwargs):
 def plot_diffusion(ax, model, label="diff", **kwargs):
     """ """
     D = model.diff_coef()
-    #bbox = [-model.eigvals[1],-model.eigvals[-1], 1/len(model.eigvals),  1]
     xlim = model.logvals[[1,-1]]
-    print("bbox = " , bbox)
+
     print ("D = ", D)
     return power_law_logplot(ax, 1, D, xlim, label=label.format(**model.vals_dict), **kwargs)
 
@@ -252,7 +241,7 @@ def scatter_eigmode(ax, model, n, keepnorm=False):
         vdict = {}
     sample = model.sample
     return ax.scatter(sample.points[:,0], sample.points[:,1], c=model.eig_matrix[:,n], edgecolors='none', **vdict)
-    
+
 def plot_diag_eigen(ax, model, **kwargs):
 
     line1, = cummulative_plot(ax, sort(-model.ex.diagonal()), label=r"Main diagonal, $\epsilon = {epsilon}$".format(**model.vals_dict), **kwargs)
@@ -275,12 +264,12 @@ def plotf_logvals_pn(model):
         lines_for_scale += plot_permuted_logvals(ax1, model, color="green")
     plot_pn(ax2, model)
     if model.sample.d ==2:
-        plot_permuted_pn(ax2, model, color="green") 
+        plot_permuted_pn(ax2, model, color="green")
     ax2.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
-    plotdl.set_all(ax1, ylabel=r"$C(\lambda)$", legend_loc="best")  
+    plotdl.set_all(ax1, ylabel=r"$C(\lambda)$", legend_loc="best")
     plotdl.set_all(ax2, ylabel=r"PN", xlabel=r"$\log_{10}\lambda$", legend_loc="best")
     ax1.set_yscale('log')
-    ax2.set_yscale('log')    
+    ax2.set_yscale('log')
     # There are two overlaping ticks, so we remove both
     ax1.set_yticks(ax1.get_yticks()[1:])
     ax2.set_yticks(ax2.get_yticks()[:-1])
@@ -340,7 +329,7 @@ def all_plots(seed= 1, **kwargs):
         line_model = ExpModel_1d(line, epsilon)
         plotf_logvals_pn(line_model)
         plotf_matshow(line_model)
-    
+
     # 1d bloch:
     bloch1d = create_bloch_sample_1d(900)
     for epsilon in (0.2,0.8,1.5,5):
@@ -357,7 +346,7 @@ def all_plots(seed= 1, **kwargs):
     bloch2d = create_bloch_sample_2d(30)
     for epsilon in (0.2,0.8,1.5,5):
         plotf_logvals_pn(ExpModel_Bloch_2d(bloch2d, epsilon, basename="bloch_2d_{epsilon}"))
-        
+
     #### quasi-1d
     random.seed(seed)
     plot_quasi_1d(ax, line, bandwidth_list=(1,2,4,8,16), epsilon=10)
@@ -367,13 +356,13 @@ def all_plots(seed= 1, **kwargs):
     #random.seed(seed)
     #torus_3_plots()
     #ax.clear()
-    
+
     #random.seed(seed)
     #exp_models_D(Sample((1,),300), epsilon_ranges=((0.5,0.8,1,1.5,2,5,10),(0.5,0.8),(5,10)))
     #exp_models_D(Sample((1,1),300))
     #exp_models_D(Sample((1,1,1),300))
-    
-    
+
+
 
 if __name__ ==  "__main__":
     all_plots()

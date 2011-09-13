@@ -16,7 +16,7 @@
         # do something with the ax, e.g. ax.plot(x, y) or call a function to plot on it.
         plotdl.save_ax(ax, "filename")
 
-    You can also use :func:`set_all` to set multiple plot parameters for a axis, 
+    You can also use :func:`set_all` to set multiple plot parameters for a axis,
     for example the title and legend location.
 """
 from __future__ import division  # makes true division instead of integer division
@@ -29,7 +29,7 @@ import subprocess
 from matplotlib.backends.backend_agg import FigureCanvasAgg  # For raster rendering, e.g. png
 #from matplotlib.backends.backend_cairo import FigureCanvasCairo # For vector rendering e.g. pdf, eps  ###Doesn't have tex
 from matplotlib.backends.backend_pdf import FigureCanvasPdf
-from matplotlib.backends.backend_ps import FigureCanvasPS
+#from matplotlib.backends.backend_ps import FigureCanvasPS
 from matplotlib.figure import Figure
 from matplotlib import rc
 from matplotlib.colors import LogNorm
@@ -47,7 +47,7 @@ import numpy
 
 
 
-### Raise all float errors 
+### Raise all float errors
 numpy.seterr(all='warn')
 
 ## I use some latex info to derive optimial default sizes
@@ -70,7 +70,7 @@ def set_all(ax, title=None, xlabel=None, ylabel=None, legend_loc=False):
         :param legend_loc: sets the location of the legend. Use "best" for defualt location
     """
     ## REMOVE all titles temporarily for "production"
-    #if title: ax.set_title(title)  
+    #if title: ax.set_title(title)
     if xlabel: ax.set_xlabel(xlabel)
     if ylabel: ax.set_ylabel(ylabel)
     if legend_loc: ax.legend(loc=legend_loc)
@@ -128,7 +128,7 @@ def animate(plot_function, filename, variable_range, **kwargs):
     """
     # Create temporary dir:
     tempdir = tempfile.mkdtemp()
-    
+
     fig = Figure()
     ax = fig.add_subplot(1, 1, 1)
 
@@ -137,7 +137,7 @@ def animate(plot_function, filename, variable_range, **kwargs):
         tempname = os.path.join(tempdir, "img{0:04}".format(num))
         save_fig_to_png(fig, tempname)
         ax.clear()
-    
+
     # make a movie
     command = ("mencoder", "mf://{0}/img*.png".format(tempdir), "-ovc", "lavc", "-speed", "0.2", "-o", filename + ".mpg")
     try:
@@ -175,4 +175,3 @@ def autoscale_based_on(ax, lines):
         ax.dataLim.update_from_data_xy(xy, ignore=False)
     print ("limits changed to ", ax.dataLim)
     ax.autoscale_view()
-

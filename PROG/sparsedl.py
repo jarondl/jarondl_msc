@@ -9,10 +9,9 @@ import numpy
 from numpy import sqrt, cos, pi, diagflat, log
 from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
-from scipy.sparse.linalg import spsolve
 from scipy.maxentropy import logsumexp
 
-### Raise all float errors 
+### Raise all float errors
 numpy.seterr(all='warn')
 
 ##############  Create and manipulate matrices
@@ -67,7 +66,6 @@ def permute_diagonals(mat):
 def permute_rows(mat):
     """ Randomly permute every row of the upper triangle of mat, and then transposes it to the lower triangle.
     """
-    upper = numpy.triu(mat, k=1)
     mat_size = mat.shape[0]
     retval = numpy.zeros(mat.shape)
     for row in range(mat_size):
@@ -129,7 +127,7 @@ def resnet(W, b, periodic=False):
     N_high = N-(b+1)
     N_low = b
     if periodic:
-        N_high, N_low = N//2, 0 
+        N_high, N_low = N//2, 0
     I = numpy.zeros(N)
     I[[N_low, N_high]] =  [1, -1]
     #v = spsolve(W, I)
@@ -221,16 +219,6 @@ def var(x, y):
     return mean(xarr ** 2, yarr) - mean(xarr, yarr) ** 2
 
 
-def initial(nodes):
-    """  Some convient initial values, usefull for an interactive session.
-        e.g   >>>  rho0, A, xcoord = initial(200)  """
-    rho0 = scipy.zeros(nodes)
-    rho0[nodes // 2] = 1
-    A = NN_matrix(nodes)
-    xcoord = scipy.linspace(-nodes / 2, (nodes / 2) - 1, nodes)
-    return rho0, A, xcoord
-
-
 
 def sparsity(mat):
     """  Calculate the sparsity parameters of a matrix
@@ -276,7 +264,7 @@ def sorted_eigvalsh(matrix):
     """ """
     eigvals =  - linalg.eigvalsh(matrix)
     eigvals.sort()
-    return eigvals    
+    return eigvals
 
 def descrete_spatial_fourier2(k , points, values):
     """ """
@@ -293,5 +281,5 @@ def periodic_banded_ones(N, bandwidth):
     """ returns a NxN banded matrix of ones
     """
     assert N > bandwidth*2
-    return (numpy.tri(N, k=bandwidth)*numpy.tri(N,k=bandwidth).T + 
+    return (numpy.tri(N, k=bandwidth)*numpy.tri(N,k=bandwidth).T +
            numpy.tri(N, k=(bandwidth-N)) + numpy.tri(N,k=(bandwidth-N)).T)
