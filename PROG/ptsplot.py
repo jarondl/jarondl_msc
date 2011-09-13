@@ -26,35 +26,35 @@ numpy.seterr(all='warn')
 EXP_MAX_NEG = numpy.log(numpy.finfo( numpy.float).tiny)
 
 
-def power_law_logplot(ax, power, coeff, logbbox,label, **kwargs):
+def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
     """ Plots 1d diffusion, treating the x value as log10.
     """
-    x1,x2,y1,y2 = logbbox
-    xl_log = min(x1, log10(y1/coeff)/power)
-    xr_log = min(x2, log10(y2/coeff)/power)
-
-    power_space = numpy.linspace(xl_log, xr_log, 100)
-    
+    x1,x2 = logxlim
+    power_space = numpy.linspace(x1, x2, 100)
     power_law = coeff*(10**power_space)**(power)
-    ax.plot(power_space, power_law, linestyle='--', label=label, **kwargs)
+    return ax.plot(power_space, power_law, linestyle='--', label=label, **kwargs)
 
-def plot_func_logplot(ax, func, logbboxs, label, **kwargs):
+def plot_func_logplot(ax, func, logxlim, label, **kwargs):
     """ Plots function func in a logscale within the bounding box given by logbbox
     """
-    
+    x1, x2 = logxlim
+    func_space = numpy.linspace(x1,x2,200)
+    func_y = func(10**func_space)
+    print(func_y)
+    return ax.plot(func_space, func_y, linestyle='--', label=label, **kwargs)
 
-def exponent_law_logplot(ax, logbbox, label, x0=0.1, **kwargs):
+def exponent_law_logplot(ax, logxlim, label, x0=0.1, **kwargs):
     """
     """
-    x1,x2,y1,y2 = logbbox
+    x1,x2 = logxlim
     #xr_log = min((log10(x2)))#, log10(y2/coeff)/power))
     #xl_log = max((log10(x1)))#, log10(y1/coeff)/power))
     xr_log = x2
     xl_log = x0
 
-    exp_space = numpy.linspace(xl_log, xr_log, 100)
+    exp_space = numpy.linspace(x1,x2, 100)
     exp_law = 1 - exp(-2*(pi)*((exp_space-x0))**2)
-    ax.plot(exp_space, exp_law, linestyle='--', label=label, **kwargs)
+    return ax.plot(exp_space, exp_law, linestyle='--', label=label, **kwargs)
 
 ####################   Sample Plots ################
 
@@ -91,7 +91,7 @@ def plot_quasi_1d(ax, sample, bandwidth_list, epsilon=10):
         model =  ExpModel_1d(sample, epsilon=10, bandwidth1d=bandwidth)
         cummulative_plot(ax, model.logvals, label=r"$\epsilon = {0:.3G}, b={1:.3G}$".format(epsilon, bandwidth))
         diff_coef = sparsedl.resnet(model.ex, bandwidth, periodic=False)
-        power_law_logplot(ax, 0.5, 1/(sqrt(diff_coef)*pi), model.logbbox, label=r"$\frac{{D}}{{r_0^2}} \approx {0:.3G}$".format(diff_coef))
+        power_law_logplot(ax, 0.5, 1/(sqrt(diff_coef)*pi), model.logxlim, label=r"$\frac{{D}}{{r_0^2}} \approx {0:.3G}$".format(diff_coef))
     plotdl.set_all(ax, title="", legend_loc="best", xlabel=r"$\log_{10}\lambda$", ylabel=r"$C(\lambda)$")
     ax.set_yscale('log')
 
@@ -143,7 +143,7 @@ class ExpModel(object):
         self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.permuted = False
         self.basename = basename.format(**self.vals_dict)
-        self.logbbox = [self.logvals[1], self.logvals[-1], 1/len(self.logvals), 1]
+        self.logxlim = self.logvals[[1,-1]]
 
     def permute_and_store(self):
         """ Permute the rates and set perm_logvals and perm_eig_matrix """
@@ -163,7 +163,7 @@ class ExpModel(object):
         D = self.diff_coef()
         d2 = self.sample.d / 2
         prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
-        power_law_logplot(ax, d2, prefactor, self.logbbox, label=label.format(D=D, **self.vals_dict), **kwargs)
+        power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict), **kwargs)
 
 class ExpModel_1d(ExpModel):
     """ Subclassing exp model for 1d """
@@ -174,7 +174,7 @@ class ExpModel_1d(ExpModel):
         return D
     def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
         """ """
-        power_law_logplot(ax, self.epsilon, 1, self.logbbox, label=label.format(**self.vals_dict), color="green")
+        power_law_logplot(ax, self.epsilon, 1, self.logxlim, label=label.format(**self.vals_dict), color="green")
         N = self.sample.number_of_points()
         brates = numpy.triu(self.ex,k=1).ravel().copy()
         brates.sort()
@@ -186,7 +186,7 @@ class ExpModel_Bloch_1d(ExpModel_1d):
         return 1
     def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
         """ """
-        power_law_logplot(ax, self.epsilon, 1, self.logbbox, label=label.format(**self.vals_dict), color="green")
+        power_law_logplot(ax, self.epsilon, 1, self.logxlim, label=label.format(**self.vals_dict), color="green")
 
 
 class ExpModel_2d(ExpModel):
@@ -195,7 +195,7 @@ class ExpModel_2d(ExpModel):
         return self.epsilon*4
     def old_plot_rate_density(self, ax, x0=0.1, label=r"$\lambda^\epsilon$", **kwargs):
 
-        exponent_law_logplot(ax,self.logbbox, label, x0, **kwargs)
+        exponent_law_logplot(ax,self.logxlim, label, x0, **kwargs)
 
     def plot_rate_density(self, ax, label=r"high rates ", **kwargs):
         N = self.sample.number_of_points()
@@ -215,32 +215,33 @@ class ExpModel_Bloch_2d(ExpModel_2d):
 def plot_pn(ax, model, **kwargs):
     """ """
     pn = ((model.eig_matrix**4).sum(axis=0))**(-1)
-    ax.plot(model.logvals,pn[1:], marker=".", linestyle='', **kwargs)
+    return ax.plot(model.logvals,pn[1:], marker=".", linestyle='', **kwargs)
 
 def plot_permuted_pn(ax, model, **kwargs):
     """ """
     if not model.permuted :
         model.permute_and_store()
     pn = ((model.perm_eig_matrix**4).sum(axis=0))**(-1)
-    ax.plot(model.perm_logvals,pn[1:], marker=".", linestyle='', **kwargs)
+    return ax.plot(model.perm_logvals,pn[1:], marker=".", linestyle='', **kwargs)
 
 def plot_logvals(ax, model, label = r"$\epsilon = {epsilon:.3G}$", **kwargs):
     """ """
-    cummulative_plot(ax, model.logvals, label=label.format(**model.vals_dict), **kwargs)
+    return cummulative_plot(ax, model.logvals, label=label.format(**model.vals_dict), **kwargs)
 
 def plot_permuted_logvals(ax, model, label = r"Permuted", **kwargs):
     """ """
     if not model.permuted :
         model.permute_and_store()
-    cummulative_plot(ax, model.perm_logvals, label=label.format(**model.vals_dict), **kwargs)
+    return cummulative_plot(ax, model.perm_logvals, label=label.format(**model.vals_dict), **kwargs)
 
 def plot_diffusion(ax, model, label="diff", **kwargs):
     """ """
     D = model.diff_coef()
-    bbox = [-model.eigvals[1],-model.eigvals[-1], 1/len(model.eigvals),  1]
+    #bbox = [-model.eigvals[1],-model.eigvals[-1], 1/len(model.eigvals),  1]
+    xlim = model.logvals[[1,-1]]
     print("bbox = " , bbox)
     print ("D = ", D)
-    power_law_logplot(ax, 1, D, bbox, label=label.format(**model.vals_dict), **kwargs)
+    return power_law_logplot(ax, 1, D, xlim, label=label.format(**model.vals_dict), **kwargs)
 
 
 def scatter_eigmode(ax, model, n, keepnorm=False):
@@ -250,26 +251,28 @@ def scatter_eigmode(ax, model, n, keepnorm=False):
     else:
         vdict = {}
     sample = model.sample
-    ax.scatter(sample.points[:,0], sample.points[:,1], c=model.eig_matrix[:,n], edgecolors='none', **vdict)
+    return ax.scatter(sample.points[:,0], sample.points[:,1], c=model.eig_matrix[:,n], edgecolors='none', **vdict)
     
 def plot_diag_eigen(ax, model, **kwargs):
 
-    cummulative_plot(ax, sort(-model.ex.diagonal()), label=r"Main diagonal, $\epsilon = {epsilon}$".format(**model.vals_dict), **kwargs)
-    cummulative_plot(ax, sort(-model.eigvals), label=r"Eigenvalues, $\epsilon = {epsilon}$".format(**model.vals_dict), **kwargs)
+    line1, = cummulative_plot(ax, sort(-model.ex.diagonal()), label=r"Main diagonal, $\epsilon = {epsilon}$".format(**model.vals_dict), **kwargs)
+    line2, = cummulative_plot(ax, sort(-model.eigvals), label=r"Eigenvalues, $\epsilon = {epsilon}$".format(**model.vals_dict), **kwargs)
+    return [line1, line2]
 
 
 def plotf_logvals_pn(model):
     """ """
+    lines_for_scale = [] # I use this list to autoscale only with certain lines
     fig = plotdl.Figure()
     ax1 = fig.add_subplot(2,1,1)
     ax2 = fig.add_subplot(2,1,2,sharex=ax1)
     ax1.label_outer()
     fig.subplots_adjust(hspace=0.001)
-    plot_logvals(ax1, model)
+    lines_for_scale += plot_logvals(ax1, model)
     model.plot_diff(ax1, color="red")
     model.plot_rate_density(ax1, color="purple")
     if model.sample.d ==2:
-        plot_permuted_logvals(ax1, model, color="green")
+        lines_for_scale += plot_permuted_logvals(ax1, model, color="green")
     plot_pn(ax2, model)
     if model.sample.d ==2:
         plot_permuted_pn(ax2, model, color="green") 
@@ -281,6 +284,7 @@ def plotf_logvals_pn(model):
     # There are two overlaping ticks, so we remove both
     ax1.set_yticks(ax1.get_yticks()[1:])
     ax2.set_yticks(ax2.get_yticks()[:-1])
+    plotdl.autoscale_based_on(ax1, lines_for_scale)
     plotdl.save_fig(fig, model.basename + "_pn")
 
 def plotf_matshow(model):

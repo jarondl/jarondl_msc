@@ -33,6 +33,7 @@ from matplotlib.backends.backend_ps import FigureCanvasPS
 from matplotlib.figure import Figure
 from matplotlib import rc
 from matplotlib.colors import LogNorm
+from matplotlib.transforms import Bbox
 try:
     from matplotlib import pyplot
     from matplotlib.pyplot import draw, draw_if_interactive
@@ -43,6 +44,7 @@ except RuntimeError:
     print("X is not available, non interactive use only")
 
 import numpy
+
 
 
 ### Raise all float errors 
@@ -150,8 +152,9 @@ def cummulative_plot(ax, values, label=None, **kwargs):
     """
     N = len(values)
     #ax.plot(numpy.sort(values), numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label, **kwargs)
-    ax.plot(values, numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label, **kwargs)
+    line_return = ax.plot(values, numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label, **kwargs)
     draw_if_interactive()
+    return line_return
 
 def matshow_cb(ax, matrix, vmin=10**(-10), colorbar=True):
     """
@@ -161,4 +164,15 @@ def matshow_cb(ax, matrix, vmin=10**(-10), colorbar=True):
     if colorbar:
         ax.figure.colorbar(ms)
 
+
+def autoscale_based_on(ax, lines):
+    """ http://stackoverflow.com/questions/7386872/make-matplotlib-autoscaling-ignore-some-of-the-plots/7396313#7396313 """
+    ax.dataLim = Bbox.unit()
+    xy = numpy.vstack(lines[0].get_data()).T
+    ax.dataLim.update_from_data_xy(xy, ignore=True)
+    for line in lines[1:]:
+        xy = numpy.vstack(line.get_data()).T
+        ax.dataLim.update_from_data_xy(xy, ignore=False)
+    print ("limits changed to ", ax.dataLim)
+    ax.autoscale_view()
 
