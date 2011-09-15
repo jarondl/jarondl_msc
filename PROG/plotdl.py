@@ -42,6 +42,8 @@ try:
 except RuntimeError:
     X_AVAILABLE = False
     print("X is not available, non interactive use only")
+    def draw_if_interactive():
+        pass
 
 import numpy
 

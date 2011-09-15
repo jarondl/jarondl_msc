@@ -44,7 +44,7 @@
 \newcommand{\abs}[1]{\left|#1\right|}
 \newcommand{\varphiJ}{\bm{\varphi}}
 \newcommand{\thetaJ}{\bm{\theta}}
-%\renewcommand{\includegraphics}[2][0]{FIGURE}
+%\renewcommand{\includegraphics}[2][0]{figure}[h!]
 
 
 % math symbols I
@@ -548,12 +548,12 @@ or equivalently if $p \ll 1$ or $q \ll 1$.
 The direct calculation for the survival in a log normal banded matrix is depicted in figure \ref{fig:p_lognormal_band}. For each value of $b$, a matrix (currently $100
 \times 100$) with a band b filled with log-normally distributed ($\sigma=1$) values was constructed. Then, the eigenvalues were numerically calculated, and then the Laplace sum $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$.
 %%%
-%\begin{figure}
+%\begin{figure}[h!]
 %\includegraphics[clip, width=0.9\hsize]{P_lognormal_band.pdf}
 %\caption{$\mathcal{P}(t)$ for constant sparsity, and variable bandwidth. The survival was calculated using $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$ \eqref{eq:surv_eigenvalues} with numerical diagonalization of the transition matrix.
 %}
 %\label{fig:p_lognormal_band}
-%\end{figure}
+%\end{figure}[h!]
 
 %%%%%%%%%%
 \section{Resistor Network Calculation} \label{sec:res_net}
@@ -579,25 +579,25 @@ y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x)
 \end{align}
 
 To check ourselves, we have plotted the eigenvalue distribution for the lognoraml banded matrix, and a uniform random matrix in figure \ref{fig:eigenvalue_distribution}, and also compared between $b=5$ and $b=10$ in figure \ref{fig:eigenvalue_distribution_5_10}
-\begin{figure}
+\begin{figure}[h!]
     \subfloat[Uniform distribution ]{\includegraphics[clip, width=0.9\hsize]{eigvals_uniform}}
     \\ \subfloat[Lognoraml nearest neighbor matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}}
     \caption{Cumulative eigenvalue distribution.}
     \label{fig:eigenvalue_distribution}
-\end{figure}
-\begin{figure}
+\end{figure}[h!]
+\begin{figure}[h!]
     \includegraphics[clip,width=0.9\hsize]{eigvals_lognormal_normal}
     \caption{Cumulative eigenvalue distribution, in a normal scale}
-\end{figure}
-\begin{figure}
+\end{figure}[h!]
+\begin{figure}[h!]
     \includegraphics[clip, width=0.9\hsize]{eigvals_ones_loglog}
-\end{figure}
-\begin{figure}
+\end{figure}[h!]
+\begin{figure}[h!]
     \includegraphics[clip, width=0.9\hsize]{eigvals_alter_loglog}
-\end{figure}
-\begin{figure}
+\end{figure}[h!]
+\begin{figure}[h!]
     \includegraphics[clip, width=0.9\hsize]{eigvals_box_loglog}
-\end{figure}
+\end{figure}[h!]
 
 %%%%%%%%%%%%%
 \section{Geometry's role} \label{sec:geometry}
@@ -622,18 +622,26 @@ The superposition of the sink just doubles the result, and we obtain:
 
 
 %%%%%%%%%%%
-\section{Dissecting the $w=e^{-r/\xi}$ models}
-
-
-\begin{figure}
-    \includegraphics[clip]{torus}
-    \caption{Cumulative eigenvalue distribution for points on a torus with $W_{ij} = e^{-r_{ij}}$, and with permuted matrices.}
-    \label{fig:distance}
-\end{figure}
-%\begin{figure}
-%    \includegraphics[clip, width=0.9\hsize]{torus_avg}
-%    \caption{averaging over 20 realizations, with 300 points}
-%\end{figure}
+\section{After the Research Proposal - Spacing statistics}
+We are working on a model with the following rates:
+\begin{align}
+    w(r) = w_0e^{(1-\frac{r}{r_0})/\epsilon}\\
+    \frac{r}{r_0} = 1 - \epsilon\ln \left(\frac{w}{w_0}\right)
+\end{align}
+The spacing (nearest neighbor) statistics have the following cummulative distribution:
+\begin{align}
+    C(r) = 1-e^{-\frac{\Omega_d}{d}\left(\frac{r}{r_0}\right)^2}
+\end{align}
+So the cummulative distribution of the nearest neighbor rates is:
+\begin{align}
+    C(r(w)) &= \exp\left[{-\frac{\Omega_d}{d}\left(1-\epsilon\ln \left(\frac{w}{w_0}\right)\right)^d}\right] \\
+&= \begin{cases} 
+    e^{-2}w^{2\epsilon} &d=1 \\
+e^{-\pi(1-\epsilon\ln w)^2} &d=2 \\
+e^{-\frac{4}{3}\pi(1-\epsilon\ln w)^3} &d=3 \\
+   \end{cases}
+\end{align}
+With $w < \exp(\frac{1}{\epsilon})$.
 
 %\bibliographystyle{plainnat}
 \bibliography{jarondl}

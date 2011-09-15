@@ -2,3 +2,6 @@
 *.log
 *.blg
 *.bbl
+*.out
+*.pdf
+*.mpg

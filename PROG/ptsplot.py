@@ -34,7 +34,16 @@ def plot_func_logplot(ax, func, logxlim, label, **kwargs):
     x1, x2 = logxlim
     func_space = numpy.linspace(x1,x2,200)
     func_y = func(10**func_space)
-    print(func_y)
+    #print(func_y)
+    return ax.plot(func_space, func_y, linestyle='--', label=label, **kwargs)
+
+def plot_func(ax, func, xlim, label, **kwargs):
+    """ Plots function func in a logscale within the bounding box given by logbbox
+    """
+    x1, x2 = xlim
+    func_space = numpy.linspace(x1,x2,200)
+    func_y = func(func_space)
+    #print(func_y)
     return ax.plot(func_space, func_y, linestyle='--', label=label, **kwargs)
 
 def exponent_law_logplot(ax, logxlim, label, x0=0.1, **kwargs):
@@ -56,19 +65,20 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample
         :type sample: geometry.Sample
         :param epsilon: the epsilon, defaults to 0.1
     """
-    xi = sample.epsilon_to_xi(epsilon)
-    dis = sample.non_periodic_distance_matrix()
+    #xi = sample.epsilon_to_xi(epsilon)
+    #dis = sample.non_periodic_distance_matrix()
     # new -renormalization
-    r_0 = sample.r_0()
+    #r_0 = sample.r_0()
     #r_0 = dis.sum()/(dis.shape[0]**2)
-    r_0_mat = numpy.ones(dis.shape)*r_0
-    ex1 = numpy.exp((r_0_mat-dis)/xi)
+    #r_0_mat = numpy.ones(dis.shape)*r_0
+    #ex1 = numpy.exp((r_0_mat-dis)/xi)
     # handle bandwidth for 1d. the default is 1.
+    ex1 = (sample.exponent_1_minus_r())**(1/epsilon)
     if sample.d ==  1:
         if bandwidth is None:
-            ex1 = ex1*banded_ones(dis.shape[0], 1)
+            ex1 = ex1*banded_ones(ex1.shape[0], 1)
         elif bandwidth != 0: #### Zero means ignore bandwidth
-            ex1 = ex1*banded_ones(dis.shape[0], bandwidth)
+            ex1 = ex1*banded_ones(ex1.shape[0], bandwidth)
     sparsedl.zero_sum(ex1)
     #assert (ex1 == ex1.T).all()
     return ex1 #- numpy.eye(ex1.shape[0])*lamb_0
@@ -129,6 +139,8 @@ class ExpModel(object):
         self.xi = sample.epsilon_to_xi(epsilon)
         self.sample = sample
         self.ex = exp_model_matrix(sample, epsilon=epsilon, bandwidth=bandwidth1d)
+        #self.ex = (sample.exponent_1_minus_r())**epsilon
+        #sparsedl.zero_sum(self.ex)
         self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
         self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.permuted = False
@@ -166,7 +178,7 @@ class ExpModel_1d(ExpModel):
         """ """
         power_law_logplot(ax, self.epsilon, 1, self.logxlim, label=label.format(**self.vals_dict), color="green")
         N = self.sample.number_of_points()
-        brates = numpy.triu(self.ex,k=1).ravel().copy()
+        brates = numpy.triu(self.ex,k=1).flatten()
         brates.sort()
 #        brates *= exp(-1)
         cummulative_plot(ax, log10(brates[-N:-1]), label="high rates ", color='purple')
@@ -189,7 +201,7 @@ class ExpModel_2d(ExpModel):
 
     def plot_rate_density(self, ax, label=r"high rates ", **kwargs):
         N = self.sample.number_of_points()
-        brates = numpy.triu(self.ex, k=1).ravel().copy()
+        brates = numpy.triu(self.ex, k=1).flatten()
         brates.sort()
         cummulative_plot(ax, log10(brates[-N:-1]), label=label, color='purple')
 
@@ -262,7 +274,7 @@ def plotf_logvals_pn(model):
     model.plot_rate_density(ax1, color="purple")
     if model.sample.d ==2:
         lines_for_scale += plot_permuted_logvals(ax1, model, color="green")
-    plot_pn(ax2, model)
+    plot_pn(ax2, model, zorder=2.5)
     if model.sample.d ==2:
         plot_permuted_pn(ax2, model, color="green")
     ax2.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
@@ -291,11 +303,33 @@ def plotf_all_raw_rates(sample, epsilons=(0.2,1,5)):
         ax.cla()
         b = ExpModel_2d(sample, eps)
         N = sample.number_of_points()
-        brates = b.ex.ravel().copy()
+        brates = b.ex.flatten()
         brates.sort()
         cummulative_plot(ax, brates[-N:-1])
         ax.set_xscale('log')
         plotdl.save_ax(ax, "raw_rates_{epsilon}".format(epsilon=eps))
+
+def plotf_distance_statistics():
+    #1d : 
+    ax = plotdl.new_ax_for_file()
+    samp = Sample(1,1000)
+    dist = sort(samp.non_periodic_distance_matrix().diagonal(1) / samp.r_0())
+    cummulative_plot(ax, dist, label=r"$1d$, $\frac{r}{r_0}$")
+    plot_func(ax, lambda r: 1-exp(-r), dist[[0,-1]], r"$1-e^{-x}$")
+    plotdl.set_all(ax, xlabel=r"$\frac{r}{r_0}$", ylabel=r"$C(\frac{r}{r_0})$", legend_loc="best")
+    plotdl.save_ax(ax, "dist_1d_1000")
+
+    #2d : 
+    ax.cla()
+    samp = Sample((1,1),1000)
+    non_per = numpy.triu(samp.non_periodic_distance_matrix())
+    dist_triu = non_per[non_per.nonzero()]
+    dist = sort(dist_triu / samp.r_0())[:1000]
+    cummulative_plot(ax, dist, label=r"$2d$, $\frac{r}{r_0}$ first N points")
+    plot_func(ax, lambda r: 1-exp(-(pi/2)*(r**2)), dist[[0,-1]], r"$1-e^{-\frac{pi}{2}\cdot x^2}$")
+    plotdl.set_all(ax, xlabel=r"$\frac{r}{r_0}$", ylabel=r"$C(\frac{r}{r_0})$", legend_loc="best")
+    plotdl.save_ax(ax, "dist_2d_1000")
+
 
 
 def create_bloch_sample_1d(N):
