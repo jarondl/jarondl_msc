@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('agg')
 import pylab
 import sparsedl
-from scipy import stats, linalg
+from scipy import linalg
 import scipy
 
 def survival():
