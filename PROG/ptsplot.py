@@ -4,10 +4,10 @@
 """
 from __future__ import division
 #from scipy.sparse import linalg as splinalg
-from numpy import random, pi, log10, sqrt,  exp, sort
+from numpy import random, pi, log10, sqrt,  exp, sort, eye, nanmin, nanmax
 from scipy.special import gamma
 
-import numpy
+import numpy as np
 
 import sparsedl
 import plotdl
@@ -16,15 +16,15 @@ from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones
 from plotdl import cummulative_plot
 
 ### Raise all float errors
-numpy.seterr(all='warn')
-EXP_MAX_NEG = numpy.log(numpy.finfo( numpy.float).tiny)
+np.seterr(all='warn')
+EXP_MAX_NEG = np.log(np.finfo( np.float).tiny)
 
 
 def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
     """ Plots 1d diffusion, treating the x value as log10.
     """
     x1,x2 = logxlim
-    power_space = numpy.linspace(x1, x2, 100)
+    power_space = np.linspace(x1, x2, 100)
     power_law = coeff*(10**power_space)**(power)
     return ax.plot(power_space, power_law, linestyle='--', label=label, **kwargs)
 
@@ -32,7 +32,7 @@ def plot_func_logplot(ax, func, logxlim, label, **kwargs):
     """ Plots function func in a logscale within the bounding box given by logbbox
     """
     x1, x2 = logxlim
-    func_space = numpy.linspace(x1,x2,200)
+    func_space = np.linspace(x1,x2,200)
     func_y = func(10**func_space)
     #print(func_y)
     return ax.plot(func_space, func_y, linestyle='--', label=label, **kwargs)
@@ -41,7 +41,7 @@ def plot_func(ax, func, xlim, label, **kwargs):
     """ Plots function func in a logscale within the bounding box given by logbbox
     """
     x1, x2 = xlim
-    func_space = numpy.linspace(x1,x2,200)
+    func_space = np.linspace(x1,x2,200)
     func_y = func(func_space)
     #print(func_y)
     return ax.plot(func_space, func_y, linestyle='--', label=label, **kwargs)
@@ -51,7 +51,7 @@ def exponent_law_logplot(ax, logxlim, label, x0=0.1, **kwargs):
     """
     x1,x2 = logxlim
 
-    exp_space = numpy.linspace(x1,x2, 100)
+    exp_space = np.linspace(x1,x2, 100)
     exp_law = 1 - exp(-2*(pi)*((exp_space-x0))**2)
     return ax.plot(exp_space, exp_law, linestyle='--', label=label, **kwargs)
 
@@ -70,8 +70,8 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample
     # new -renormalization
     #r_0 = sample.r_0()
     #r_0 = dis.sum()/(dis.shape[0]**2)
-    #r_0_mat = numpy.ones(dis.shape)*r_0
-    #ex1 = numpy.exp((r_0_mat-dis)/xi)
+    #r_0_mat = np.ones(dis.shape)*r_0
+    #ex1 = np.exp((r_0_mat-dis)/xi)
     # handle bandwidth for 1d. the default is 1.
     ex1 = (sample.exponent_1_minus_r())**(1/epsilon)
     if sample.d ==  1:
@@ -81,7 +81,7 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample
             ex1 = ex1*banded_ones(ex1.shape[0], bandwidth)
     sparsedl.zero_sum(ex1)
     #assert (ex1 == ex1.T).all()
-    return ex1 #- numpy.eye(ex1.shape[0])*lamb_0
+    return ex1 #- np.eye(ex1.shape[0])*lamb_0
 
 
 def plot_quasi_1d(ax, sample, bandwidth_list, epsilon=10):
@@ -136,16 +136,14 @@ class ExpModel(object):
     def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",bandwidth1d = None):
         """ Take sample and epsilon, and calc eigvals and eigmodes"""
         self.epsilon = epsilon
-        self.xi = sample.epsilon_to_xi(epsilon)
         self.sample = sample
         self.ex = exp_model_matrix(sample, epsilon=epsilon, bandwidth=bandwidth1d)
-        #self.ex = (sample.exponent_1_minus_r())**epsilon
-        #sparsedl.zero_sum(self.ex)
         self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
         self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.permuted = False
         self.basename = basename.format(**self.vals_dict)
-        self.logxlim = self.logvals[[1,-1]]
+        #self.logxlim = self.logvals[[1,-1]]
+        self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
 
     def permute_and_store(self):
         """ Permute the rates and set perm_logvals and perm_eig_matrix """
@@ -178,7 +176,7 @@ class ExpModel_1d(ExpModel):
         """ """
         power_law_logplot(ax, self.epsilon, 1, self.logxlim, label=label.format(**self.vals_dict), color="green")
         N = self.sample.number_of_points()
-        brates = numpy.triu(self.ex,k=1).flatten()
+        brates = np.triu(self.ex,k=1).flatten()
         brates.sort()
 #        brates *= exp(-1)
         cummulative_plot(ax, log10(brates[-N:-1]), label="high rates ", color='purple')
@@ -196,14 +194,12 @@ class ExpModel_2d(ExpModel):
     def diff_coef(self):
         return self.epsilon*4
     def old_plot_rate_density(self, ax, x0=0.1, label=r"$\lambda^\epsilon$", **kwargs):
-
         exponent_law_logplot(ax,self.logxlim, label, x0, **kwargs)
 
-    def plot_rate_density(self, ax, label=r"high rates ", **kwargs):
+    def plot_rate_density(self, ax, label=r"Highest rate per row", **kwargs):
         N = self.sample.number_of_points()
-        brates = numpy.triu(self.ex, k=1).flatten()
-        brates.sort()
-        cummulative_plot(ax, log10(brates[-N:-1]), label=label, color='purple')
+        brates = self.ex.max(axis=0)
+        cummulative_plot(ax, log10(sort(brates)), label=label, color='purple')
 
 
 class ExpModel_Bloch_2d(ExpModel_2d):
@@ -309,56 +305,63 @@ def plotf_all_raw_rates(sample, epsilons=(0.2,1,5)):
         ax.set_xscale('log')
         plotdl.save_ax(ax, "raw_rates_{epsilon}".format(epsilon=eps))
 
-def plotf_distance_statistics():
-    #1d : 
+def plotf_distance_statistics(N=1000):
+    """ plot to file the nearest distance statistics and theory for 1d 2d 3d. """
+    dict1d = { 'sample' : Sample(1,N),
+               'fit_func' : lambda r: 1-exp(-r*2),
+               'fit_func_txt' : r"$1-e^{-2x}$",
+               'filename': "dist_1d_1000"}
+    dict2d = { 'sample' : Sample((1,1),N),
+               'fit_func' : lambda r: 1-exp(-(pi)*(r**2)),
+               'fit_func_txt' : r"$1-e^{-\pi\cdot x^2}$",
+               'filename': "dist_2d_1000"}
+    dict3d = { 'sample' : Sample((1,1,1),N),
+               'fit_func' : lambda r: 1-exp(-(4*pi/3)*(r**3)),
+               'fit_func_txt' : r"$1-e^{-\frac{4\pi}{3}\cdot x^3}$",
+               'filename': "dist_3d_1000"}
+
     ax = plotdl.new_ax_for_file()
-    samp = Sample(1,1000)
-    dist = sort(samp.non_periodic_distance_matrix().diagonal(1) / samp.r_0())
-    cummulative_plot(ax, dist, label=r"$1d$, $\frac{r}{r_0}$")
-    plot_func(ax, lambda r: 1-exp(-r), dist[[0,-1]], r"$1-e^{-x}$")
-    plotdl.set_all(ax, xlabel=r"$\frac{r}{r_0}$", ylabel=r"$C(\frac{r}{r_0})$", legend_loc="best")
-    plotdl.save_ax(ax, "dist_1d_1000")
-
-    #2d : 
-    ax.cla()
-    samp = Sample((1,1),1000)
-    non_per = numpy.triu(samp.non_periodic_distance_matrix())
-    dist_triu = non_per[non_per.nonzero()]
-    dist = sort(dist_triu / samp.r_0())[:1000]
-    cummulative_plot(ax, dist, label=r"$2d$, $\frac{r}{r_0}$ first N points")
-    plot_func(ax, lambda r: 1-exp(-(pi/2)*(r**2)), dist[[0,-1]], r"$1-e^{-\frac{pi}{2}\cdot x^2}$")
-    plotdl.set_all(ax, xlabel=r"$\frac{r}{r_0}$", ylabel=r"$C(\frac{r}{r_0})$", legend_loc="best")
-    plotdl.save_ax(ax, "dist_2d_1000")
 
 
+    for di in (dict1d, dict2d, dict3d):
+        dist = (di['sample'].normalized_distance_matrix() +N*eye(N) ).min(axis=0)
+        dist.sort()
+        cummulative_plot(ax, dist)
+        plot_func(ax, di['fit_func'], dist[[0,-1]], di['fit_func_txt'])
+        plotdl.set_all(ax, xlabel=r"$\frac{r}{r_0}$", ylabel=r"$C(\frac{r}{r_0})$", legend_loc="best")
+        plotdl.save_ax(ax, di['filename'])
+        ax.cla()
 
 def create_bloch_sample_1d(N):
     """
     """
     bloch = Sample(1,N)
-    bloch.points = numpy.linspace(0,1,N, endpoint=False)
+    bloch.points = np.linspace(0,1,N, endpoint=False)
     return bloch
 
 def create_bloch_sample_2d(N):
     """
     """
     bloch = Sample((1,1),N*N)
-    pts = numpy.linspace(0,N,N*N, endpoint=False)
-    pts = numpy.mod(pts,1)
+    pts = np.linspace(0,N,N*N, endpoint=False)
+    pts = np.mod(pts,1)
     x = pts
-    y = numpy.sort(pts)
-    bloch.points = numpy.array((x,y)).T
+    y = np.sort(pts)
+    bloch.points = np.array((x,y)).T
     return bloch
 
 ######## One function to plot them all
 def all_plots(seed= 1, **kwargs):
     """  Create all of the figures. Please note that it might take some time.
     """
+
+    plotf_distance_statistics()
+    
     ax = plotdl.new_ax_for_file()
 
     #### 1d PN and matshow
     line = Sample(1,900)
-    for epsilon in (0.2, 1.5,5):
+    for epsilon in (0.01, 0.2, 1.5,5):
         random.seed(1)
         line_model = ExpModel_1d(line, epsilon)
         plotf_logvals_pn(line_model)
@@ -371,7 +374,7 @@ def all_plots(seed= 1, **kwargs):
 
     #### 2d PN and matshow
     sample2d = Sample((1,1),900)
-    for epsilon in (0.2, 1.5, 5):
+    for epsilon in (0.01, 0.2, 1.5, 5):
         random.seed(1)
         model2d = ExpModel_2d(sample2d, epsilon)
         plotf_logvals_pn(model2d)

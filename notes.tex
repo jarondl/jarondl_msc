@@ -26,11 +26,12 @@
 \usepackage{epsfig}
 \fi
 
-%by jarondl
-\usepackage{subfig}
+% packages added by jarondl
+%
+%\usepackage{subfig}  %% causes odd captions
 \usepackage{verbatim} % for multiline comments
-\usepackage{natbib} 
-\usepackage{fancybox}
+\usepackage{natbib} % change the bibliography style 
+\usepackage{fancybox} % allows putting boxes with borders
 \usepackage{cmap}  % for making pdf mathmode searchable
 %\usepackage{sectsty}
 \usepackage[pdftitle={Notes by Jarondl}]{hyperref}  % for hyperlinks in biblio. should be called last?
@@ -553,7 +554,7 @@ The direct calculation for the survival in a log normal banded matrix is depicte
 %\caption{$\mathcal{P}(t)$ for constant sparsity, and variable bandwidth. The survival was calculated using $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$ \eqref{eq:surv_eigenvalues} with numerical diagonalization of the transition matrix.
 %}
 %\label{fig:p_lognormal_band}
-%\end{figure}[h!]
+%\end{figure}
 
 %%%%%%%%%%
 \section{Resistor Network Calculation} \label{sec:res_net}
@@ -580,24 +581,28 @@ y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x)
 
 To check ourselves, we have plotted the eigenvalue distribution for the lognoraml banded matrix, and a uniform random matrix in figure \ref{fig:eigenvalue_distribution}, and also compared between $b=5$ and $b=10$ in figure \ref{fig:eigenvalue_distribution_5_10}
 \begin{figure}[h!]
-    \subfloat[Uniform distribution ]{\includegraphics[clip, width=0.9\hsize]{eigvals_uniform}}
-    \\ \subfloat[Lognoraml nearest neighbor matrix]{\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}}
-    \caption{Cumulative eigenvalue distribution.}
+    {\includegraphics[clip, width=0.9\hsize]{eigvals_uniform}}
+\caption{Uniform distribution}
     \label{fig:eigenvalue_distribution}
-\end{figure}[h!]
+\end{figure}
+\begin{figure}[h!]
+    {\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}}
+    \caption{Lognoraml nearest neighbor matrix}
+
+\end{figure}
 \begin{figure}[h!]
     \includegraphics[clip,width=0.9\hsize]{eigvals_lognormal_normal}
     \caption{Cumulative eigenvalue distribution, in a normal scale}
-\end{figure}[h!]
+\end{figure}
 \begin{figure}[h!]
     \includegraphics[clip, width=0.9\hsize]{eigvals_ones_loglog}
-\end{figure}[h!]
+\end{figure}
 \begin{figure}[h!]
     \includegraphics[clip, width=0.9\hsize]{eigvals_alter_loglog}
-\end{figure}[h!]
+\end{figure}
 \begin{figure}[h!]
     \includegraphics[clip, width=0.9\hsize]{eigvals_box_loglog}
-\end{figure}[h!]
+\end{figure}
 
 %%%%%%%%%%%%%
 \section{Geometry's role} \label{sec:geometry}
@@ -625,13 +630,33 @@ The superposition of the sink just doubles the result, and we obtain:
 \section{After the Research Proposal - Spacing statistics}
 We are working on a model with the following rates:
 \begin{align}
-    w(r) = w_0e^{(1-\frac{r}{r_0})/\epsilon}\\
+    w(r) = w_0 e^{\frac{r_0-r}{\xi}}=w_0e^{(1-\frac{r}{r_0})/\epsilon} = w_0 \left(e^{1-\frac{r}{r_0}}\right)^\frac{1}{\epsilon}\\
     \frac{r}{r_0} = 1 - \epsilon\ln \left(\frac{w}{w_0}\right)
 \end{align}
+For the sake of simplicity, we shall take $w_0=1$.
+
 The spacing (nearest neighbor) statistics have the following cummulative distribution:
 \begin{align}
-    C(r) = 1-e^{-\frac{\Omega_d}{d}\left(\frac{r}{r_0}\right)^2}
+    C(r) = 1-e^{-\frac{\Omega_d}{d}\left(\frac{r}{r_0}\right)^d}
 \end{align}
+This works well for $1d$, $2d$ and $3d$ (see figures \ref{fig:1d_dist},\ref{fig:2d_dist},\ref{fig:3d_dist}). There is some issue of a factor of $2$. The problem is with the definition of the spacing. What I did in those plots is to take the minimum of each row. However, those minimums are not unique, because more often than not we count the same rate twice, once for each "direction". This is particulary prevalent in the lower distances.
+
+\begin{figure}[h!]
+    \includegraphics[clip,width=0.9\hsize]{dist_1d_1000}
+    \caption{Cumulative distance distribution, in a normal scale}
+    \label{fig:1d_dist}
+\end{figure}
+\begin{figure}[h!]
+    \includegraphics[clip,width=0.9\hsize]{dist_2d_1000}
+    \caption{Cumulative distance distribution, in a normal scale}
+    \label{fig:2d_dist}
+\end{figure}
+\begin{figure}[h!]
+    \includegraphics[clip,width=0.9\hsize]{dist_3d_1000}
+    \caption{Cumulative distance distribution, in a normal scale}
+    \label{fig:3d_dist}
+\end{figure}
+
 So the cummulative distribution of the nearest neighbor rates is:
 \begin{align}
     C(r(w)) &= \exp\left[{-\frac{\Omega_d}{d}\left(1-\epsilon\ln \left(\frac{w}{w_0}\right)\right)^d}\right] \\
@@ -641,7 +666,7 @@ e^{-\pi(1-\epsilon\ln w)^2} &d=2 \\
 e^{-\frac{4}{3}\pi(1-\epsilon\ln w)^3} &d=3 \\
    \end{cases}
 \end{align}
-With $w < \exp(\frac{1}{\epsilon})$.
+The highest possible rate is $r=0\rightarrow w=\exp(\frac{1}{\epsilon})$, which means that $w < \exp(\frac{1}{\epsilon})$.
 
 %\bibliographystyle{plainnat}
 \bibliography{jarondl}
