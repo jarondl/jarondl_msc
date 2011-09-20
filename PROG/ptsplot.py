@@ -3,8 +3,10 @@
 """ Survival and spreading for log normal distribution.
 """
 from __future__ import division
+
+from collections import namedtuple
 #from scipy.sparse import linalg as splinalg
-from numpy import random, pi, log10, sqrt,  exp, sort, eye, nanmin, nanmax
+from numpy import random, pi, log10, sqrt,  exp, sort, eye, nanmin, nanmax, log
 from scipy.special import gamma
 
 import numpy as np
@@ -18,6 +20,11 @@ from plotdl import cummulative_plot
 ### Raise all float errors
 np.seterr(all='warn')
 EXP_MAX_NEG = np.log(np.finfo( np.float).tiny)
+
+#Equation = namedtuple('Equation', ['function','text'])
+#eq_rates_1d = Equation(lambda x: exp(-2*(1-x)), r"e^{-2\cdot(1-\epsilon\ln(w))}")
+#eq_rates_2d = Equation(lambda x: exp(-pi*(1-x)**2), r"e^{-2\cdot(1-\epsilon\ln(w))^2}")
+#eq_rates_3d = Equation(lambda x: exp(-(4*pi/3)*(1-x)**3), r"e^{-2\cdot(1-\epsilon\ln(w))^3}")
 
 
 def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
@@ -132,6 +139,9 @@ def sample_participation_number(ax, sample, epsilon=0.1):
     ax.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
     ax.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
 
+
+
+
 class ExpModel(object):
     def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",bandwidth1d = None):
         """ Take sample and epsilon, and calc eigvals and eigmodes"""
@@ -160,10 +170,13 @@ class ExpModel(object):
 
     def plot_diff(self, ax, label = r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
         """ """
-        D = self.diff_coef()
+        D = self.diff_coef()#exp(1/self.epsilon)/(4*pi)#1#self.epsilon#
         d2 = self.sample.d / 2
+        #d2  = self.sample.d
         prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
-        power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict), **kwargs)
+        #power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict), **kwargs)
+        f = lambda x: prefactor*x**d2
+        plot_func_logplot(ax, f, self.logxlim, "Diffusion")
 
 class ExpModel_1d(ExpModel):
     """ Subclassing exp model for 1d """
@@ -172,14 +185,16 @@ class ExpModel_1d(ExpModel):
         if D < 0 :
             D = sparsedl.resnet(self.ex,1)
         return D
-    def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
+    def plot_rate_density(self, ax, label=r"Highest rate / row", **kwargs):
         """ """
-        power_law_logplot(ax, self.epsilon, 1, self.logxlim, label=label.format(**self.vals_dict), color="green")
         N = self.sample.number_of_points()
-        brates = np.triu(self.ex,k=1).flatten()
-        brates.sort()
-#        brates *= exp(-1)
-        cummulative_plot(ax, log10(brates[-N:-1]), label="high rates ", color='purple')
+        brates = nanmax(self.ex, axis=0)
+        logbrates = log10(brates)
+        if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
+            print "len(logbrates)", len(logbrates)
+            cummulative_plot(ax, sort(logbrates), label=label, color='purple')
+            plot_func_logplot(ax, lambda w: exp(-2*(1-self.epsilon*log(w))),self.logxlim, r"$e^{-2\cdot(1-\epsilon\ln(w))}$")
+
 
 class ExpModel_Bloch_1d(ExpModel_1d):
     def diff_coef(self):
@@ -195,11 +210,20 @@ class ExpModel_2d(ExpModel):
         return self.epsilon*4
     def old_plot_rate_density(self, ax, x0=0.1, label=r"$\lambda^\epsilon$", **kwargs):
         exponent_law_logplot(ax,self.logxlim, label, x0, **kwargs)
+    def old_diff_plot(self, ax, label = r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
+        """ """
+        D = self.epsilon*4
+        d2 = self.sample.d / 2
+        prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
+        power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict))
 
-    def plot_rate_density(self, ax, label=r"Highest rate per row", **kwargs):
+    def plot_rate_density(self, ax, label=r"Highest rate / row", **kwargs):
         N = self.sample.number_of_points()
         brates = self.ex.max(axis=0)
-        cummulative_plot(ax, log10(sort(brates)), label=label, color='purple')
+        logbrates = log10(brates)
+        if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
+            cummulative_plot(ax, sort(logbrates), label=label, color='purple')
+            plot_func_logplot(ax, lambda w: exp(-pi*(1-self.epsilon*log(w))**2),self.logxlim, r"$e^{-\pi\cdot(1-\epsilon\ln(w))^2}$")
 
 
 class ExpModel_Bloch_2d(ExpModel_2d):
@@ -225,6 +249,10 @@ def plot_permuted_pn(ax, model, **kwargs):
 def plot_logvals(ax, model, label = r"$\epsilon = {epsilon:.3G}$", **kwargs):
     """ """
     return cummulative_plot(ax, model.logvals, label=label.format(**model.vals_dict), **kwargs)
+    
+def plot_log_decay(ax, model, label = r"$\gamma$" ,**kwargs):
+    """ """
+    return cummulative_plot(ax, log10(sort(-model.ex.diagonal())), label = label,**kwargs)
 
 def plot_permuted_logvals(ax, model, label = r"Permuted", **kwargs):
     """ """
@@ -266,13 +294,18 @@ def plotf_logvals_pn(model):
     ax1.label_outer()
     fig.subplots_adjust(hspace=0.001)
     lines_for_scale += plot_logvals(ax1, model)
+    ### new - test
+    lines_for_scale += plot_log_decay(ax1, model, color="magenta")
+    ###
     model.plot_diff(ax1, color="red")
     model.plot_rate_density(ax1, color="purple")
     if model.sample.d ==2:
-        lines_for_scale += plot_permuted_logvals(ax1, model, color="green")
+        #lines_for_scale += plot_permuted_logvals(ax1, model, color="green")
+        pass
     plot_pn(ax2, model, zorder=2.5)
     if model.sample.d ==2:
-        plot_permuted_pn(ax2, model, color="green")
+        #plot_permuted_pn(ax2, model, color="green")
+        pass
     ax2.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
     plotdl.set_all(ax1, ylabel=r"$C(\lambda)$", legend_loc="best")
     plotdl.set_all(ax2, ylabel=r"PN", xlabel=r"$\log_{10}\lambda$", legend_loc="best")
@@ -331,6 +364,11 @@ def plotf_distance_statistics(N=1000):
         plotdl.set_all(ax, xlabel=r"$\frac{r}{r_0}$", ylabel=r"$C(\frac{r}{r_0})$", legend_loc="best")
         plotdl.save_ax(ax, di['filename'])
         ax.cla()
+        
+def plotf_decay_vs_eigvals():
+    """ The decay coefficients are the diagonal. """
+    ax = plotdl.new_ax_for_file()
+    
 
 def create_bloch_sample_1d(N):
     """
@@ -361,11 +399,10 @@ def all_plots(seed= 1, **kwargs):
 
     #### 1d PN and matshow
     line = Sample(1,900)
-    for epsilon in (0.01, 0.2, 1.5,5):
-        random.seed(1)
+    for epsilon in (0.05, 0.2, 1.5,5):
         line_model = ExpModel_1d(line, epsilon)
         plotf_logvals_pn(line_model)
-        plotf_matshow(line_model)
+        #plotf_matshow(line_model)
 
     # 1d bloch:
     bloch1d = create_bloch_sample_1d(900)
@@ -374,11 +411,11 @@ def all_plots(seed= 1, **kwargs):
 
     #### 2d PN and matshow
     sample2d = Sample((1,1),900)
-    for epsilon in (0.01, 0.2, 1.5, 5):
+    for epsilon in (0.05, 0.2, 1.5, 5):
         random.seed(1)
         model2d = ExpModel_2d(sample2d, epsilon)
         plotf_logvals_pn(model2d)
-        plotf_matshow(model2d)
+        #plotf_matshow(model2d)
     # 2d bloch:
     bloch2d = create_bloch_sample_2d(30)
     for epsilon in (0.2,0.8,1.5,5):
