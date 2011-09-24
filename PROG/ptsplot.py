@@ -162,6 +162,8 @@ class ExpModel(object):
         sparsedl.zero_sum(perm_ex)
         self.perm_eigvals, self.perm_logvals, self.perm_eig_matrix = self.calc_eigmodes(perm_ex)
         #return (self.perm_logvals, self.perm_eig_matrix)
+    def maximal_rate_per_row(self):
+        return self.ex.max(axis=0)
 
     def calc_eigmodes(self, ex):
         """ calculate eigmodes, and return logvals and eigmodes"""
