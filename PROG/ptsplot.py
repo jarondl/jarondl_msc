@@ -196,6 +196,7 @@ class ExpModel_1d(ExpModel):
             print "len(logbrates)", len(logbrates)
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
             plot_func_logplot(ax, lambda w: exp(-2*(1-self.epsilon*log(w))),self.logxlim, r"$e^{-2\cdot(1-\epsilon\ln(w))}$")
+            plot_func_logplot(ax, lambda w: exp(-(1-self.epsilon*log(w*0.5))),self.logxlim, r"$e^{-\cdot(1-\epsilon\ln(\frac{w}{2}))}$")
 
 
 class ExpModel_Bloch_1d(ExpModel_1d):
@@ -226,6 +227,7 @@ class ExpModel_2d(ExpModel):
         if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
             plot_func_logplot(ax, lambda w: exp(-pi*(1-self.epsilon*log(w))**2),self.logxlim, r"$e^{-\pi\cdot(1-\epsilon\ln(w))^2}$")
+            plot_func_logplot(ax, lambda w: exp(-0.5*pi*(1-self.epsilon*log(0.5*w))**2),self.logxlim, r"$e^{-\frac{\pi}{2}\cdot(1-\epsilon\ln(\frac{w}{2}))^2}$")
 
 
 class ExpModel_Bloch_2d(ExpModel_2d):
