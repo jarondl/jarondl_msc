@@ -4,7 +4,6 @@
 """
 from __future__ import division
 
-from collections import namedtuple
 #from scipy.sparse import linalg as splinalg
 from numpy import random, pi, log10, sqrt,  exp, sort, eye, nanmin, nanmax, log
 from scipy.special import gamma
@@ -20,11 +19,6 @@ from plotdl import cummulative_plot
 ### Raise all float errors
 np.seterr(all='warn')
 EXP_MAX_NEG = np.log(np.finfo( np.float).tiny)
-
-#Equation = namedtuple('Equation', ['function','text'])
-#eq_rates_1d = Equation(lambda x: exp(-2*(1-x)), r"e^{-2\cdot(1-\epsilon\ln(w))}")
-#eq_rates_2d = Equation(lambda x: exp(-pi*(1-x)**2), r"e^{-2\cdot(1-\epsilon\ln(w))^2}")
-#eq_rates_3d = Equation(lambda x: exp(-(4*pi/3)*(1-x)**3), r"e^{-2\cdot(1-\epsilon\ln(w))^3}")
 
 
 def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
@@ -53,14 +47,7 @@ def plot_func(ax, func, xlim, label, **kwargs):
     #print(func_y)
     return ax.plot(func_space, func_y, linestyle='--', label=label, **kwargs)
 
-def exponent_law_logplot(ax, logxlim, label, x0=0.1, **kwargs):
-    """
-    """
-    x1,x2 = logxlim
 
-    exp_space = np.linspace(x1,x2, 100)
-    exp_law = 1 - exp(-2*(pi)*((exp_space-x0))**2)
-    return ax.plot(exp_space, exp_law, linestyle='--', label=label, **kwargs)
 
 ####################   Sample Plots ################
 
@@ -72,13 +59,6 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample
         :type sample: geometry.Sample
         :param epsilon: the epsilon, defaults to 0.1
     """
-    #xi = sample.epsilon_to_xi(epsilon)
-    #dis = sample.non_periodic_distance_matrix()
-    # new -renormalization
-    #r_0 = sample.r_0()
-    #r_0 = dis.sum()/(dis.shape[0]**2)
-    #r_0_mat = np.ones(dis.shape)*r_0
-    #ex1 = np.exp((r_0_mat-dis)/xi)
     # handle bandwidth for 1d. the default is 1.
     ex1 = (sample.exponent_1_minus_r())**(1/epsilon)
     if sample.d ==  1:
@@ -187,7 +167,7 @@ class ExpModel_1d(ExpModel):
         if D < 0 :
             D = sparsedl.resnet(self.ex,1)
         return D
-    def plot_rate_density(self, ax, label=r"Highest rate / row", **kwargs):
+    def plot_rate_density(self, ax, label=r"Max. rate / row", **kwargs):
         """ """
         N = self.sample.number_of_points()
         brates = nanmax(self.ex, axis=0)
@@ -211,8 +191,6 @@ class ExpModel_2d(ExpModel):
     """ Subclassing exp model for 2d """
     def diff_coef(self):
         return self.epsilon*4
-    def old_plot_rate_density(self, ax, x0=0.1, label=r"$\lambda^\epsilon$", **kwargs):
-        exponent_law_logplot(ax,self.logxlim, label, x0, **kwargs)
     def old_diff_plot(self, ax, label = r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
         """ """
         D = self.epsilon*4
@@ -220,7 +198,7 @@ class ExpModel_2d(ExpModel):
         prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
         power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict))
 
-    def plot_rate_density(self, ax, label=r"Highest rate / row", **kwargs):
+    def plot_rate_density(self, ax, label=r"Max. rate / row", **kwargs):
         N = self.sample.number_of_points()
         brates = self.ex.max(axis=0)
         logbrates = log10(brates)
@@ -231,11 +209,38 @@ class ExpModel_2d(ExpModel):
 
 
 class ExpModel_Bloch_2d(ExpModel_2d):
-    def diff_coef(self):
+    def old_diff_coef(self):
         return self.epsilon*4
+    def diff_coef(self):
+        r = self.sample.periodic_distance_matrix()
+        D = (self.ex*r**2).sum(axis=0).mean()
+        return D
     def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
         """ """
         pass
+    
+class ExpModel_alter_1d(ExpModel_1d):
+    def __init__(self, sample, epsilon, basename="exp_alter_{dimensions}d_{epsilon}",bandwidth1d = None):
+        """ This should be similar to ExpModel.__init__, and eventually recombined there.
+            This model has its alternating sites nulled"""
+        self.epsilon = epsilon
+        self.sample = sample
+        N = self.sample.number_of_points()
+        self.ex = exp_model_matrix(sample, epsilon=epsilon, bandwidth=1)
+        offd = np.arange(1, N-1, 2 )
+        self.ex[[offd, offd-1]] = 0
+        self.ex[[offd-1, offd]] = 0
+        sparsedl.zero_sum(self.ex)
+        self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
+        self.eigvals = self.eigvals[N//2:]
+        self.logvals = self.logvals[N//2:]
+        self.eig_matrix = self.eig_matrix[:,N//2:]
+        self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
+        self.permuted = False
+        self.basename = basename.format(**self.vals_dict)
+        #self.logxlim = self.logvals[[1,-1]]
+        self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
+
 
 
 def plot_pn(ax, model, **kwargs):
@@ -263,14 +268,6 @@ def plot_permuted_logvals(ax, model, label = r"Permuted", **kwargs):
     if not model.permuted :
         model.permute_and_store()
     return cummulative_plot(ax, model.perm_logvals, label=label.format(**model.vals_dict), **kwargs)
-
-def plot_diffusion(ax, model, label="diff", **kwargs):
-    """ """
-    D = model.diff_coef()
-    xlim = model.logvals[[1,-1]]
-
-    print ("D = ", D)
-    return power_law_logplot(ax, 1, D, xlim, label=label.format(**model.vals_dict), **kwargs)
 
 
 def scatter_eigmode(ax, model, n, keepnorm=False):
@@ -369,10 +366,6 @@ def plotf_distance_statistics(N=1000):
         plotdl.save_ax(ax, di['filename'])
         ax.cla()
         
-def plotf_decay_vs_eigvals():
-    """ The decay coefficients are the diagonal. """
-    ax = plotdl.new_ax_for_file()
-    
 
 def create_bloch_sample_1d(N):
     """
@@ -407,7 +400,9 @@ def all_plots(seed= 1, **kwargs):
         line_model = ExpModel_1d(line, epsilon)
         plotf_logvals_pn(line_model)
         #plotf_matshow(line_model)
-
+    for epsilon in (0.2,5):
+        alter_model = ExpModel_alter_1d(line, epsilon,basename="exp_alter_{dimensions}d_{epsilon}")
+        plotf_logvals_pn(alter_model)
     # 1d bloch:
     bloch1d = create_bloch_sample_1d(900)
     for epsilon in (0.2,0.8,1.5,5):
