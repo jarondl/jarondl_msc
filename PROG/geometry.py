@@ -59,13 +59,16 @@ class Sample(object):
     def non_periodic_distance_matrix(self):
         return fast_distance_matrix(self.points)
     
-    def normalized_distance_matrix(self):
-        return self.non_periodic_distance_matrix()/self.r_0()
+    def normalized_distance_matrix(self, periodic = False):
+        if periodic:
+            return self.periodic_distance_matrix()/self.r_0()
+        else:
+            return self.non_periodic_distance_matrix()/self.r_0()
     
-    def exponent_1_minus_r(self):
+    def exponent_1_minus_r(self, periodic=False):
         N = self.number_of_points()
         one_matrix = np.ones([N,N]) - np.eye(N)
-        return np.exp(one_matrix-self.normalized_distance_matrix()) - np.eye(N)
+        return np.exp(one_matrix-self.normalized_distance_matrix(periodic)) - np.eye(N)
 
 
 def euclid(point1, point2):

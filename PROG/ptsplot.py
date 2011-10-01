@@ -52,7 +52,7 @@ def plot_func(ax, func, xlim, label, **kwargs):
 ####################   Sample Plots ################
 
 
-def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample exp
+def exp_model_matrix(sample, epsilon=0.1, bandwidth=None, periodic=False): ## rename from sample exp
     """ Creats W_{nm} = exp((r_0-r_{nm})/xi). The matrix is zero summed and should be symmetric.
 
         :param sample: The sample, with generated points.
@@ -60,7 +60,7 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None): ## rename from sample
         :param epsilon: the epsilon, defaults to 0.1
     """
     # handle bandwidth for 1d. the default is 1.
-    ex1 = (sample.exponent_1_minus_r())**(1/epsilon)
+    ex1 = (sample.exponent_1_minus_r(periodic))**(1/epsilon)
     if sample.d ==  1:
         if bandwidth is None:
             ex1 = ex1*banded_ones(ex1.shape[0], 1)
@@ -123,11 +123,12 @@ def sample_participation_number(ax, sample, epsilon=0.1):
 
 
 class ExpModel(object):
-    def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",bandwidth1d = None):
+    def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",bandwidth1d = None, periodic=True):
         """ Take sample and epsilon, and calc eigvals and eigmodes"""
         self.epsilon = epsilon
         self.sample = sample
-        self.ex = exp_model_matrix(sample, epsilon=epsilon, bandwidth=bandwidth1d)
+        self.periodic=periodic
+        self.ex = exp_model_matrix(sample, epsilon=epsilon, bandwidth=bandwidth1d, periodic=periodic)
         self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
         self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.permuted = False
@@ -152,13 +153,16 @@ class ExpModel(object):
 
     def plot_diff(self, ax, label = r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
         """ """
-        D = self.diff_coef()#exp(1/self.epsilon)/(4*pi)#1#self.epsilon#
+        #D = self.diff_coef()#exp(1/self.epsilon)/(4*pi)#1#self.epsilon#
+        r = self.sample.normalized_distance_matrix(self.periodic)
+        D = (r*self.ex**2).sum(axis=0).mean()
+        
         d2 = self.sample.d / 2
         #d2  = self.sample.d
         prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
         #power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict), **kwargs)
         f = lambda x: prefactor*x**d2
-        plot_func_logplot(ax, f, self.logxlim, "Diffusion")
+        plot_func_logplot(ax, f, self.logxlim, "D = {D:.3G}".format(D=D))
 
 class ExpModel_1d(ExpModel):
     """ Subclassing exp model for 1d """
@@ -220,11 +224,12 @@ class ExpModel_Bloch_2d(ExpModel_2d):
         pass
     
 class ExpModel_alter_1d(ExpModel_1d):
-    def __init__(self, sample, epsilon, basename="exp_alter_{dimensions}d_{epsilon}",bandwidth1d = None):
+    def __init__(self, sample, epsilon, basename="exp_alter_{dimensions}d_{epsilon}",bandwidth1d = None, periodic=True):
         """ This should be similar to ExpModel.__init__, and eventually recombined there.
             This model has its alternating sites nulled"""
         self.epsilon = epsilon
         self.sample = sample
+        self.periodic  = periodic
         N = self.sample.number_of_points()
         self.ex = exp_model_matrix(sample, epsilon=epsilon, bandwidth=1)
         offd = np.arange(1, N-1, 2 )
