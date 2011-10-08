@@ -58,6 +58,17 @@ class Sample(object):
 
     def non_periodic_distance_matrix(self):
         return fast_distance_matrix(self.points)
+
+
+    def dist_for_axis(self, axis, periodic=False):
+        try:
+            points_on_axis = self.points[:,axis]
+        except IndexError: # 1d case
+            points_on_axis = self.points
+        if periodic:
+            return fast_1d_distance_matrix(points_on_axis, periodic=True, Lx= self.dimensions[axis])
+        else:
+            return fast_1d_distance_matrix(points_on_axis, periodic=False)
     
     def normalized_distance_matrix(self, periodic = False):
         if periodic:
@@ -115,8 +126,9 @@ def old_fast_distance_matrix(points):
     return numpy.sqrt(delta)
 
 
-def fast_distance_matrix(points, dimensions=(1,1)):
+def fast_distance_matrix(points, dimensions=(1,1)): # Why do I need dimensions here?
     """ based on http://stackoverflow.com/questions/3518574/why-does-looping-beat-indexing-here
+        the dimensions
     """
     try:
         n,m = points.shape
@@ -136,9 +148,23 @@ def fast_distance_matrix(points, dimensions=(1,1)):
     assert (delta == delta.T).any()
     return numpy.sqrt(delta)
 
+def fast_1d_distance_matrix(points, periodic=False, Lx = 1):
+    """ This is intended to find x_ij. Please note that the values can get negative. The matrix should be anti-symmetric.
+    """
+    n = points.shape[0]
+    # np.newaxis nests the values, so the array is like a single cell containing the data. Then, the substraction is between each value and the entire array.
+    diff = points - points[:,np.newaxis]
+    if periodic:
+        temp_delta = np.dstack([diff, diff+Lx, diff-Lx])
+        amin = abs(temp_delta).argmin(axis=2)
+        k,j = np.meshgrid(np.arange(n), np.arange(n))
+        diff = temp_delta[j,k,amin]
+    return diff
+
 
 def fast_periodic_distance_matrix(points, dimensions=(1,1)):
     """ based on http://stackoverflow.com/questions/3518574/why-does-looping-beat-indexing-here
+        the dimensions are of the sample [(x,y) physical size].
     """
     try:
         n,m = points.shape

@@ -5,7 +5,7 @@
 from __future__ import division
 
 #from scipy.sparse import linalg as splinalg
-from numpy import random, pi, log10, sqrt,  exp, sort, eye, nanmin, nanmax, log
+from numpy import random, pi, log10, sqrt,  exp, sort, eye, nanmin, nanmax, log, cos
 from scipy.special import gamma
 
 import numpy as np
@@ -63,9 +63,9 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None, periodic=False): ## re
     ex1 = (sample.exponent_1_minus_r(periodic))**(1/epsilon)
     if sample.d ==  1:
         if bandwidth is None:
-            ex1 = ex1*banded_ones(ex1.shape[0], 1)
+            ex1 = ex1*periodic_banded_ones(ex1.shape[0], 1)
         elif bandwidth != 0: #### Zero means ignore bandwidth
-            ex1 = ex1*banded_ones(ex1.shape[0], bandwidth)
+            ex1 = ex1*periodic_banded_ones(ex1.shape[0], bandwidth)
     sparsedl.zero_sum(ex1)
     #assert (ex1 == ex1.T).all()
     return ex1 #- np.eye(ex1.shape[0])*lamb_0
@@ -188,7 +188,11 @@ class ExpModel_Bloch_1d(ExpModel_1d):
         return 1
     def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
         """ """
-        power_law_logplot(ax, self.epsilon, 1, self.logxlim, label=label.format(**self.vals_dict), color="green")
+        #power_law_logplot(ax, self.epsilon, 1, self.logxlim, label=label.format(**self.vals_dict), color="green")
+        N = self.sample.number_of_points()
+        nn, xx = np.meshgrid(np.arange(N), np.arange(N))
+        ev = sort((exp(1-nn/self.epsilon)*cos(2*nn*xx*pi/N)).sum(axis=1))
+        cummulative_plot(ax, sort(ev),color="green")
 
 
 class ExpModel_2d(ExpModel):
