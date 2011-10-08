@@ -154,7 +154,13 @@ def cummulative_plot(ax, values, label=None, **kwargs):
     """
     N = len(values)
     #ax.plot(numpy.sort(values), numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label, **kwargs)
-    line_return = ax.plot(values, numpy.linspace(1/N, 1, N), marker=".", linestyle='', label=label, **kwargs)
+    # set default kwargs:
+    if 'marker' not in kwargs:
+        print("replacing marker")
+        kwargs['marker']="."
+    if 'linestyle' not in kwargs:
+        kwargs['linestyle']=""
+    line_return = ax.plot(values, numpy.linspace(1/N, 1, N), label=label, **kwargs)
     draw_if_interactive()
     return line_return
 

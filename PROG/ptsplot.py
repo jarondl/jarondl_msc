@@ -13,7 +13,7 @@ import numpy as np
 import sparsedl
 import plotdl
 from geometry import Sample
-from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones
+from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum
 from plotdl import cummulative_plot
 
 ### Raise all float errors
@@ -87,9 +87,8 @@ def plot_quasi_1d(ax, sample, bandwidth_list, epsilon=10):
 def plot_participation_number(ax, matrix):
     """
     """
-    pn = ((matrix**2).sum(axis=0))**(-1)
-    ax.plot(pn)
-
+    pn = ((matrix**4).sum(axis=0))**(-1)
+    return ax.plot(pn[1:], marker=".", linestyle='')
 
 def plot_several_vectors(fig, matrix, vec_indices, x_values = None):
     """
@@ -193,6 +192,11 @@ class ExpModel_Bloch_1d(ExpModel_1d):
         nn, xx = np.meshgrid(np.arange(N), np.arange(N))
         ev = sort((exp(1-nn/self.epsilon)*cos(2*nn*xx*pi/N)).sum(axis=1))
         cummulative_plot(ax, sort(ev),color="green")
+    def plot_theoretical_eigvals(self, ax):
+        N = self.sample.number_of_points()
+        qx = 2*pi/N*np.arange(N)
+        z = sort(2*(cos(qx)+1 ).flatten())[1:]  # the 1: is to remove the 0 mode
+        cummulative_plot(ax, z, label="$2+2\cos(q_x)$" ,color="red", marker="x")
 
 
 class ExpModel_2d(ExpModel):
@@ -226,6 +230,26 @@ class ExpModel_Bloch_2d(ExpModel_2d):
     def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
         """ """
         pass
+    
+class ExpModel_Bloch_2d_only4nn(ExpModel):
+    def __init__(self, sample, basename="bloch4nn_{dimensions}d", periodic=True):
+        """ Take sample and epsilon, and calc eigvals and eigmodes"""
+        self.sample = sample
+        self.periodic=periodic
+        r = sample.normalized_distance_matrix(periodic)
+        ## r is normalized, so r=1 means n.n. 
+        self.ex = exp(1-r)*(r<1.001)
+        zero_sum(self.ex)
+        self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
+        self.vals_dict = {"dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
+        self.basename = basename.format(**self.vals_dict)
+        self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
+        
+    def plot_theoretical_eigvals(self, ax):
+        N = sqrt(self.sample.number_of_points())
+        qy, qx = np.meshgrid(2*pi/N*np.arange(N),2*pi/N*np.arange(N))
+        z = sort(2*(cos(qx) + cos(qy) +2 ).flatten())[1:]  # the 1: is to remove 0
+        cummulative_plot(ax, z, label="$4+2\cos(q_x)+2\cos(q_y) $" ,color="red", marker="x")
     
 class ExpModel_alter_1d(ExpModel_1d):
     def __init__(self, sample, epsilon, basename="exp_alter_{dimensions}d_{epsilon}",bandwidth1d = None, periodic=True):
@@ -326,6 +350,14 @@ def plotf_logvals_pn(model):
     ax2.set_yticks(ax2.get_yticks()[:-1])
     plotdl.autoscale_based_on(ax1, lines_for_scale)
     plotdl.save_fig(fig, model.basename + "_pn")
+    
+def plotf_eigvals_bloch(model):
+    """ """
+    ax = plotdl.new_ax_for_file()
+    cummulative_plot(ax, -model.eigvals[1:], label="$\lambda$",color="blue")
+    model.plot_theoretical_eigvals(ax)
+    plotdl.set_all(ax, ylabel=r"$C(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax, model.basename + "eig")
 
 def plotf_matshow(model):
     """ """
