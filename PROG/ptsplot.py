@@ -180,6 +180,11 @@ class ExpModel_1d(ExpModel):
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
             plot_func_logplot(ax, lambda w: exp(-2*(1-self.epsilon*log(w))),self.logxlim, r"$e^{-2\cdot(1-\epsilon\ln(w))}$")
             plot_func_logplot(ax, lambda w: exp(-(1-self.epsilon*log(w*0.5))),self.logxlim, r"$e^{-\cdot(1-\epsilon\ln(\frac{w}{2}))}$")
+    def plot_theoretical_eigvals(self, ax):
+        N = self.sample.number_of_points()
+        qx = 2*pi/N*np.arange(N)
+        z = sort(2*(cos(qx)+1 ).flatten())[1:]  # the 1: is to remove the 0 mode
+        cummulative_plot(ax, z, label="$2+2\cos(q_x)$" ,color="red", marker="x")
 
 
 class ExpModel_Bloch_1d(ExpModel_1d):
@@ -218,6 +223,11 @@ class ExpModel_2d(ExpModel):
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
             plot_func_logplot(ax, lambda w: exp(-pi*(1-self.epsilon*log(w))**2),self.logxlim, r"$e^{-\pi\cdot(1-\epsilon\ln(w))^2}$")
             plot_func_logplot(ax, lambda w: exp(-0.5*pi*(1-self.epsilon*log(0.5*w))**2),self.logxlim, r"$e^{-\frac{\pi}{2}\cdot(1-\epsilon\ln(\frac{w}{2}))^2}$")
+    def plot_theoretical_eigvals(self, ax):
+        N = sqrt(self.sample.number_of_points())
+        qy, qx = np.meshgrid(2*pi/N*np.arange(N),2*pi/N*np.arange(N))
+        z = sort(2*(cos(qx) + cos(qy) +2 ).flatten())[1:]  # the 1: is to remove 0
+        cummulative_plot(ax, z, label="$4+2\cos(q_x)+2\cos(q_y) $" ,color="red", marker="x")
 
 
 class ExpModel_Bloch_2d(ExpModel_2d):
@@ -250,6 +260,28 @@ class ExpModel_Bloch_2d_only4nn(ExpModel):
         qy, qx = np.meshgrid(2*pi/N*np.arange(N),2*pi/N*np.arange(N))
         z = sort(2*(cos(qx) + cos(qy) +2 ).flatten())[1:]  # the 1: is to remove 0
         cummulative_plot(ax, z, label="$4+2\cos(q_x)+2\cos(q_y) $" ,color="red", marker="x")
+        
+class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
+    def __init__(self, sample, epsilon, basename="bloch4nn_random_{dimensions}d", periodic=True):
+        """ Take sample and epsilon, and calc eigvals and eigmodes"""
+        self.sample = sample
+        self.epsilon = epsilon
+        self.periodic=periodic
+        r = sample.normalized_distance_matrix(periodic)
+        ## r is normalized, so r=1 means n.n. 
+        # lower triangle nearest neighbor
+        lnn = np.tri(r.shape[0])*(r>0.99)*(r<1.001)
+        W = exp(1-np.sqrt(-log(np.linspace(0,1, 2*r.shape[0]+1)[1:])/pi))**(1/self.epsilon)
+        ex = np.zeros(r.shape)
+        print ex[lnn==1].shape
+        print W.shape
+        ex[lnn==1] = np.random.permutation(W)
+        self.ex = ex + ex.T
+        zero_sum(self.ex)
+        self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
+        self.vals_dict = {"dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
+        self.basename = basename.format(**self.vals_dict)
+        self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
     
 class ExpModel_alter_1d(ExpModel_1d):
     def __init__(self, sample, epsilon, basename="exp_alter_{dimensions}d_{epsilon}",bandwidth1d = None, periodic=True):
@@ -351,13 +383,11 @@ def plotf_logvals_pn(model):
     plotdl.autoscale_based_on(ax1, lines_for_scale)
     plotdl.save_fig(fig, model.basename + "_pn")
     
-def plotf_eigvals_bloch(model):
+def plot_eigvals_theory(ax, model):
     """ """
-    ax = plotdl.new_ax_for_file()
     cummulative_plot(ax, -model.eigvals[1:], label="$\lambda$",color="blue")
     model.plot_theoretical_eigvals(ax)
     plotdl.set_all(ax, ylabel=r"$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax, model.basename + "eig")
 
 def plotf_matshow(model):
     """ """
@@ -440,6 +470,13 @@ def all_plots(seed= 1, **kwargs):
     for epsilon in (0.05, 0.2, 1.5,5):
         line_model = ExpModel_1d(line, epsilon)
         plotf_logvals_pn(line_model)
+        plot_eigvals_theory(ax, line_model)
+        plotdl.save_ax(ax, "exp_1d_{epsilon}_eig".format(epsilon=epsilon))
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        plotdl.save_ax(ax, "exp_1d_{epsilon}_log_eig".format(epsilon=epsilon))
+        ax.cla()
+
         #plotf_matshow(line_model)
     for epsilon in (0.2,5):
         alter_model = ExpModel_alter_1d(line, epsilon,basename="exp_alter_{dimensions}d_{epsilon}")
@@ -448,6 +485,31 @@ def all_plots(seed= 1, **kwargs):
     bloch1d = create_bloch_sample_1d(900)
     for epsilon in (0.2,0.8,1.5,5):
         plotf_logvals_pn(ExpModel_Bloch_1d(bloch1d, epsilon, basename="bloch_1d_{epsilon}"))
+ 
+    bloch1d100 = create_bloch_sample_1d(100)
+    plot_eigvals_theory(ax, ExpModel_Bloch_1d(bloch1d100, epsilon=1, basename="bloch_1d"))
+    plotdl.save_ax(ax, "bloch_1d_eig")
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    plotdl.save_ax(ax, "bloch_1d_log_eig")
+    ax.cla()
+    
+    #1d two epsilons and theory at once.
+    line_model0_2 = ExpModel_1d(line, 0.2)
+    for epsilon in (0.5,0.8,1,2,5):
+        line_model = ExpModel_1d(line, epsilon)
+        cummulative_plot(ax, -line_model.eigvals[1:], label="$\epsilon={epsilon}$".format(epsilon=epsilon))
+    line_model0_2.plot_theoretical_eigvals(ax)
+
+    plotdl.set_all(ax, ylabel=r"$C(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax, "exp_1d_5_0_2_eig")
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    plotdl.save_ax(ax, "exp_1d_5_0_2_log_eig")
+    ax.cla()
+    
+
+    
 
     #### 2d PN and matshow
     sample2d = Sample((1,1),900)
@@ -455,9 +517,21 @@ def all_plots(seed= 1, **kwargs):
         random.seed(1)
         model2d = ExpModel_2d(sample2d, epsilon)
         plotf_logvals_pn(model2d)
-        #plotf_matshow(model2d)
+        plot_eigvals_theory(ax, model2d)
+        plotdl.save_ax(ax, "exp_2d_{epsilon}_eig".format(epsilon=epsilon))
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        plotdl.save_ax(ax, "exp_2d_{epsilon}_log_eig".format(epsilon=epsilon))
+        ax.cla()        #plotf_matshow(model2d)
     # 2d bloch:
     bloch2d = create_bloch_sample_2d(30)
+    plot_eigvals_theory(ax, ExpModel_Bloch_2d_only4nn(bloch2d, basename="bloch_2d"))
+    plotdl.save_ax(ax, "bloch_2d_eig")
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    plotdl.save_ax(ax, "bloch_2d_log_eig")
+    ax.cla()
+
     for epsilon in (0.2,0.8,1.5,5):
         plotf_logvals_pn(ExpModel_Bloch_2d(bloch2d, epsilon, basename="bloch_2d_{epsilon}"))
 
