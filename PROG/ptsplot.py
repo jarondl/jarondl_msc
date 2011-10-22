@@ -251,7 +251,7 @@ class ExpModel_Bloch_2d_only4nn(ExpModel):
         self.ex = exp(1-r)*(r<1.001)
         zero_sum(self.ex)
         self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
-        self.vals_dict = {"dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
+        self.vals_dict = {"epsilon" : epsilon,"dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.basename = basename.format(**self.vals_dict)
         self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
         
@@ -271,15 +271,17 @@ class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
         ## r is normalized, so r=1 means n.n. 
         # lower triangle nearest neighbor
         lnn = np.tri(r.shape[0])*(r>0.99)*(r<1.001)
-        W = exp(1-np.sqrt(-log(np.linspace(0,1, 2*r.shape[0]+1)[1:])/pi))**(1/self.epsilon)
+        #W = exp(1-np.sqrt(-log(np.linspace(0,1, 2*r.shape[0]+1)[1:])/pi))**(1/self.epsilon)
         ex = np.zeros(r.shape)
+        W = exp(1-np.sqrt(-log(np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:])/pi))**(1/self.epsilon)
+
         print ex[lnn==1].shape
         print W.shape
         ex[lnn==1] = np.random.permutation(W)
         self.ex = ex + ex.T
         zero_sum(self.ex)
         self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
-        self.vals_dict = {"dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
+        self.vals_dict = {"epsilon" : epsilon,"dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.basename = basename.format(**self.vals_dict)
         self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
     
@@ -441,20 +443,27 @@ def plotf_distance_statistics(N=1000):
 def create_bloch_sample_1d(N):
     """
     """
-    bloch = Sample(1,N)
+    bloch = Sample(1)
     bloch.points = np.linspace(0,1,N, endpoint=False)
     return bloch
 
 def create_bloch_sample_2d(N):
+    """ Create NxN 2d bloch sample.  (matrix size is N^4)
     """
-    """
-    bloch = Sample((1,1),N*N)
+    bloch = Sample((1,1))
     pts = np.linspace(0,N,N*N, endpoint=False)
     pts = np.mod(pts,1)
     x = pts
     y = np.sort(pts)
     bloch.points = np.array((x,y)).T
     return bloch
+
+def nn_mesh(normalized_distance_matrix):
+    """ Take a matrix, and pick the points with distance approx. 1.
+    """
+    upper_lim = normalized_distance_matrix < 1.0001
+    lower_lim =  normalized_distance_matrix > 0.9999
+    return upper_lim*lower_lim*normalized_distance_matrix  # The last multiplication makes the type correct (i.e. not boolean)
 
 ######## One function to plot them all
 def all_plots(seed= 1, **kwargs):
