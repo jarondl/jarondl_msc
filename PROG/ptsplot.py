@@ -118,22 +118,34 @@ def sample_participation_number(ax, sample, epsilon=0.1):
     ax.axhline(y=1, label="1 - the minimal PN possible", linestyle="--", color="red")
     ax.axhline(y=2, label="2 - dimer", linestyle="--", color="green")
 
-
+############ ExpModel matrices
 
 
 class ExpModel(object):
+    """ The current table of inheritance is:
+        
+      --+  ExpModel
+        +-+- ExpModel_1d
+          +--- ExpModel_Bloch_1d
+        +---
+    """
     def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",bandwidth1d = None, periodic=True):
         """ Take sample and epsilon, and calc eigvals and eigmodes"""
         self.epsilon = epsilon
         self.sample = sample
         self.periodic=periodic
-        self.ex = exp_model_matrix(sample, epsilon=epsilon, bandwidth=bandwidth1d, periodic=periodic)
+        self.bandwidth1d = bandwidth1d
+        self.ex = self.rate_matrix()#exp_model_matrix(sample, epsilon=epsilon, bandwidth=bandwidth1d, periodic=periodic)
         self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
         self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.permuted = False
         self.basename = basename.format(**self.vals_dict)
         #self.logxlim = self.logvals[[1,-1]]
         self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
+    def rate_matrix(self):
+        """  Return the rate matrix of the model. It is here mainly to be subclassed.
+        """
+        return exp_model_matrix(self.sample, epsilon=self.epsilon, bandwidth=self.bandwidth1d, periodic=self.periodic)
 
     def permute_and_store(self):
         """ Permute the rates and set perm_logvals and perm_eig_matrix """
@@ -251,7 +263,7 @@ class ExpModel_Bloch_2d_only4nn(ExpModel):
         self.ex = exp(1-r)*(r<1.001)
         zero_sum(self.ex)
         self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
-        self.vals_dict = {"epsilon" : epsilon,"dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
+        self.vals_dict = {"dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.basename = basename.format(**self.vals_dict)
         self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
         
@@ -262,12 +274,9 @@ class ExpModel_Bloch_2d_only4nn(ExpModel):
         cummulative_plot(ax, z, label="$4+2\cos(q_x)+2\cos(q_y) $" ,color="red", marker="x")
         
 class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
-    def __init__(self, sample, epsilon, basename="bloch4nn_random_{dimensions}d", periodic=True):
-        """ Take sample and epsilon, and calc eigvals and eigmodes"""
-        self.sample = sample
-        self.epsilon = epsilon
-        self.periodic=periodic
-        r = sample.normalized_distance_matrix(periodic)
+    def rate_matrix(self):
+        """ 4 nn (u,d,l,r)"""
+        r = self.sample.normalized_distance_matrix(periodic)
         ## r is normalized, so r=1 means n.n. 
         # lower triangle nearest neighbor
         lnn = np.tri(r.shape[0])*(r>0.99)*(r<1.001)
@@ -278,12 +287,10 @@ class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
         print ex[lnn==1].shape
         print W.shape
         ex[lnn==1] = np.random.permutation(W)
-        self.ex = ex + ex.T
-        zero_sum(self.ex)
-        self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
-        self.vals_dict = {"epsilon" : epsilon,"dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
-        self.basename = basename.format(**self.vals_dict)
-        self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
+        sym_ex = ex + ex.T
+        zero_sum(sym_ex)
+        return sym_ex
+
     
 class ExpModel_alter_1d(ExpModel_1d):
     def __init__(self, sample, epsilon, basename="exp_alter_{dimensions}d_{epsilon}",bandwidth1d = None, periodic=True):
