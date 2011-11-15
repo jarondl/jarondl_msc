@@ -26,22 +26,27 @@ import os
 import shutil
 import subprocess
 
+from matplotlib import use
+if 'DISPLAY' in os.environ.keys() :
+    use('qt4agg')
+    X_AVAILABLE = True
+else:
+    X_AVAILABLE = False
+    use('agg')
 from matplotlib.backends.backend_agg import FigureCanvasAgg  # For raster rendering, e.g. png
 #from matplotlib.backends.backend_cairo import FigureCanvasCairo # For vector rendering e.g. pdf, eps  ###Doesn't have tex
-from matplotlib.backends.backend_pdf import FigureCanvasPdf
+#from matplotlib.backends.backend_pdf import FigureCanvasPdf
+from matplotlib.backends.backend_cairo import FigureCanvasCairo as FigureCanvasPdf
 #from matplotlib.backends.backend_ps import FigureCanvasPS
 from matplotlib.figure import Figure
 from matplotlib import rc
 from matplotlib.colors import LogNorm
 from matplotlib.transforms import Bbox
-try:
+if X_AVAILABLE :
     from matplotlib import pyplot
     from matplotlib.pyplot import draw, draw_if_interactive
-    X_AVAILABLE = True
     pyplot.ion()
-except RuntimeError:
-    X_AVAILABLE = False
-    print("X is not available, non interactive use only")
+else:
     def draw_if_interactive():
         pass
 

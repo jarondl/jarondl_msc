@@ -4,6 +4,8 @@
 """
 from __future__ import division
 
+import itertools
+
 #from scipy.sparse import linalg as splinalg
 from numpy import random, pi, log10, sqrt,  exp, sort, eye, nanmin, nanmax, log, cos
 from scipy.special import gamma
@@ -142,6 +144,7 @@ class ExpModel(object):
         self.basename = basename.format(**self.vals_dict)
         #self.logxlim = self.logvals[[1,-1]]
         self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
+
     def rate_matrix(self):
         """  Return the rate matrix of the model. It is here mainly to be subclassed.
         """
@@ -220,12 +223,6 @@ class ExpModel_2d(ExpModel):
     """ Subclassing exp model for 2d """
     def diff_coef(self):
         return self.epsilon*4
-    def old_diff_plot(self, ax, label = r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
-        """ """
-        D = self.epsilon*4
-        d2 = self.sample.d / 2
-        prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
-        power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict))
 
     def plot_rate_density(self, ax, label=r"Max. rate / row", **kwargs):
         N = self.sample.number_of_points()
@@ -254,18 +251,11 @@ class ExpModel_Bloch_2d(ExpModel_2d):
         pass
     
 class ExpModel_Bloch_2d_only4nn(ExpModel):
-    def __init__(self, sample, basename="bloch4nn_{dimensions}d", periodic=True):
-        """ Take sample and epsilon, and calc eigvals and eigmodes"""
-        self.sample = sample
-        self.periodic=periodic
-        r = sample.normalized_distance_matrix(periodic)
-        ## r is normalized, so r=1 means n.n. 
-        self.ex = exp(1-r)*(r<1.001)
-        zero_sum(self.ex)
-        self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
-        self.vals_dict = {"dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
-        self.basename = basename.format(**self.vals_dict)
-        self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
+    def rate_matrix(self):
+        r = self.sample.normalized_distance_matrix(self.periodic)
+        ex = exp(1-r)*(r<1.001)
+        zero_sum(ex)
+        return ex
         
     def plot_theoretical_eigvals(self, ax):
         N = sqrt(self.sample.number_of_points())
@@ -276,7 +266,7 @@ class ExpModel_Bloch_2d_only4nn(ExpModel):
 class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
     def rate_matrix(self):
         """ 4 nn (u,d,l,r)"""
-        r = self.sample.normalized_distance_matrix(periodic)
+        r = self.sample.normalized_distance_matrix(self.periodic)
         ## r is normalized, so r=1 means n.n. 
         # lower triangle nearest neighbor
         lnn = np.tri(r.shape[0])*(r>0.99)*(r<1.001)
@@ -291,29 +281,33 @@ class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
         zero_sum(sym_ex)
         return sym_ex
 
+class ExpModel_Bloch_1d_only2nn_randomized(ExpModel_1d):
+    def rate_matrix(self):
+        """ 2 nn (l,r)"""
+        r = self.sample.normalized_distance_matrix(self.periodic)
+        ## r is normalized, so r=1 means n.n. 
+        # lower triangle nearest neighbor
+        lnn = np.tri(r.shape[0])*(r>0.99)*(r<1.001)
+        #W = exp(1-np.sqrt(-log(np.linspace(0,1, 2*r.shape[0]+1)[1:])/pi))**(1/self.epsilon)
+        ex = np.zeros(r.shape)
+        W = exp(1/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(2*self.epsilon))
+
+        print ex[lnn==1].shape
+        print W.shape
+        ex[lnn==1] = np.random.permutation(W)
+        sym_ex = ex + ex.T
+        zero_sum(sym_ex)
+        return sym_ex
+
     
 class ExpModel_alter_1d(ExpModel_1d):
-    def __init__(self, sample, epsilon, basename="exp_alter_{dimensions}d_{epsilon}",bandwidth1d = None, periodic=True):
-        """ This should be similar to ExpModel.__init__, and eventually recombined there.
-            This model has its alternating sites nulled"""
-        self.epsilon = epsilon
-        self.sample = sample
-        self.periodic  = periodic
+    def rate_matrix(self):
         N = self.sample.number_of_points()
-        self.ex = exp_model_matrix(sample, epsilon=epsilon, bandwidth=1)
+        ex = exp_model_matrix(self.sample, epsilon=self.epsilon, bandwidth=1)
         offd = np.arange(1, N-1, 2 )
-        self.ex[[offd, offd-1]] = 0
-        self.ex[[offd-1, offd]] = 0
-        sparsedl.zero_sum(self.ex)
-        self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
-        self.eigvals = self.eigvals[N//2:]
-        self.logvals = self.logvals[N//2:]
-        self.eig_matrix = self.eig_matrix[:,N//2:]
-        self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
-        self.permuted = False
-        self.basename = basename.format(**self.vals_dict)
-        #self.logxlim = self.logvals[[1,-1]]
-        self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
+        ex[[offd, offd-1]] = 0
+        ex[[offd-1, offd]] = 0
+        return ex
 
 
 
@@ -472,14 +466,44 @@ def nn_mesh(normalized_distance_matrix):
     lower_lim =  normalized_distance_matrix > 0.9999
     return upper_lim*lower_lim*normalized_distance_matrix  # The last multiplication makes the type correct (i.e. not boolean)
 
+def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1)):
+
+    ## 2d scatter same garphs as 4nn 
+    colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
+    sample2d = Sample((1,1),900)
+    bloch2d = create_bloch_sample_2d(30)
+    ex = ExpModel_2d(sample2d, epsilon=1)
+    ex.plot_theoretical_eigvals(ax)
+    for epsilon in epsilon_range:
+        color = colors.next()
+        model = ExpModel_2d(sample2d, epsilon=epsilon)
+        model_bloch = ExpModel_2d(bloch2d, epsilon = epsilon)
+        pl = cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon), color=color)
+        #pl_color = pl[0].get_color()
+        cummulative_plot(ax,-model_bloch.eigvals[1:], None, marker='o', mfc='none', mec=color)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
+
+
 ######## One function to plot them all
 def all_plots(seed= 1, **kwargs):
     """  Create all of the figures. Please note that it might take some time.
     """
-
-    plotf_distance_statistics()
-    
     ax = plotdl.new_ax_for_file()
+    #plotf_distance_statistics()
+    
+    #plotf_eig_scatter_and_bloch_2d()
+    plot_eig_scatter_and_bloch_2d(ax)
+    plotdl.save_ax(ax, 'scatter_and_bloch_2d')
+    ax.cla()
+    plot_eig_scatter_and_bloch_2d(ax,epsilon_range=0.1*np.arange(1,5))
+    plotdl.save_ax(ax, 'scatter_and_bloch_2d_small')
+    ax.cla()
+    plot_eig_scatter_and_bloch_2d(ax,epsilon_range=(0.4,0.8,1.6,3.2,6.4))
+    plotdl.save_ax(ax, 'scatter_and_bloch_2d_large')
+    ax.cla()
+
 
     #### 1d PN and matshow
     line = Sample(1,900)
@@ -541,7 +565,7 @@ def all_plots(seed= 1, **kwargs):
         ax.cla()        #plotf_matshow(model2d)
     # 2d bloch:
     bloch2d = create_bloch_sample_2d(30)
-    plot_eigvals_theory(ax, ExpModel_Bloch_2d_only4nn(bloch2d, basename="bloch_2d"))
+    plot_eigvals_theory(ax, ExpModel_Bloch_2d_only4nn(bloch2d, epsilon= 1, basename="bloch_2d")) #epsilon has no meaning here, but it's easier than reimplementing
     plotdl.save_ax(ax, "bloch_2d_eig")
     ax.set_xscale('log')
     ax.set_yscale('log')
@@ -550,6 +574,46 @@ def all_plots(seed= 1, **kwargs):
 
     for epsilon in (0.2,0.8,1.5,5):
         plotf_logvals_pn(ExpModel_Bloch_2d(bloch2d, epsilon, basename="bloch_2d_{epsilon}"))
+
+    # four nearest neighbor randomized
+    ex4nnrand = ExpModel_Bloch_2d_only4nn_randomized(bloch2d, epsilon=1, basename="bloch_2d_4nn_rand_{epsilon}")
+    ex4nnrand.plot_theoretical_eigvals(ax)
+    for epsilon in (5,2,1,0.5,0.2):
+        model = ExpModel_Bloch_2d_only4nn_randomized(bloch2d, epsilon=epsilon, basename="bloch_2d_4nn_rand_{epsilon}")
+        cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon))
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax, "bloch_2d_4nn_rand_log_eig")
+    ax.cla()
+
+    ## 2d scatter same garphs as 4nn 
+    sample2d = Sample((1,1),900)
+    ex = ExpModel_2d(sample2d, epsilon=1)
+    ex.plot_theoretical_eigvals(ax)
+    for epsilon in (5,2,1,0.5,0.2):
+        model = ExpModel_2d(sample2d, epsilon=epsilon)
+        model_bloch = ExpModel_2d(bloch2d, epsilon = epsilon)
+        pl = cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon))
+        pl_color = pl[0].get_color()
+        cummulative_plot(ax,-model_bloch.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon), marker='o', mfc='none', mec=pl_color)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax, "sample_scattter_bloch_log_eig")
+    ax.cla()
+
+    # 1d - two nearest neighbor randomized
+    ex2nnrand = ExpModel_Bloch_1d_only2nn_randomized(bloch1d, epsilon=1)
+    ex2nnrand.plot_theoretical_eigvals(ax)
+    for epsilon in (5,2,1,0.5,0.2):
+        model = ExpModel_Bloch_1d_only2nn_randomized(bloch1d, epsilon=epsilon)
+        cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon))
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
+    plotdl.save_ax(ax, "bloch_1d_2nn_rand_log_eig")
+    ax.cla()
 
     #### quasi-1d
     random.seed(seed)
