@@ -180,6 +180,12 @@ class ExpModel(object):
 
 class ExpModel_1d(ExpModel):
     """ Subclassing exp model for 1d """
+    def plot_diff(self, ax, label=r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
+        D = self.diff_coef()
+        prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
+        #power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict), **kwargs)
+        f = lambda x: prefactor*x**d2
+        plot_func(ax, f, "D = {D:.3G}".format(D=D))
     def diff_coef(self):
         D = ((self.epsilon-1)/(self.epsilon))
         if D < 0 :
@@ -290,7 +296,8 @@ class ExpModel_Bloch_1d_only2nn_randomized(ExpModel_1d):
         lnn = np.tri(r.shape[0])*(r>0.99)*(r<1.001)
         #W = exp(1-np.sqrt(-log(np.linspace(0,1, 2*r.shape[0]+1)[1:])/pi))**(1/self.epsilon)
         ex = np.zeros(r.shape)
-        W = exp(1/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(2*self.epsilon))
+#        W = exp(1/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(2*self.epsilon))
+        W = exp(1/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(self.epsilon))
 
         print ex[lnn==1].shape
         print W.shape
@@ -346,6 +353,18 @@ def scatter_eigmode(ax, model, n, keepnorm=False):
         vdict = {}
     sample = model.sample
     return ax.scatter(sample.points[:,0], sample.points[:,1], c=model.eig_matrix[:,n], edgecolors='none', **vdict)
+
+def scatter_eigmode_slider(fig, model):
+    """ """
+    ax = fig.add_axes([0.05,0.15,0.9,0.8])
+    n_range = np.arange(1,model.sample.number_of_points())
+    ax_slider = fig.add_axes([0.05,0.01,0.9,0.03])
+    slider = plotdl.Slider(ax_slider, 'N', 1,model.sample.number_of_points(), valinit=1, valfmt="%d")
+    def update_num(num):
+        n = int(slider.val)
+        scatter_eigmode(ax, model, n)
+        plotdl.draw()
+    slider.on_changed(update_num)
 
 def plot_diag_eigen(ax, model, **kwargs):
 
@@ -468,7 +487,7 @@ def nn_mesh(normalized_distance_matrix):
 
 def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1)):
 
-    ## 2d scatter same garphs as 4nn 
+    ## 2d scatter same graphs as 4nn 
     colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     sample2d = Sample((1,1),900)
     bloch2d = create_bloch_sample_2d(30)
@@ -485,6 +504,48 @@ def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1)):
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
 
+def plot_several_pn_graphs(fig, epsilon_range=(0.1,0.2,0.5,1,2,4,5)):
+    """  plot pn graphs on ax1, and a pn**2 graph on ax2. """
+    colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
+    sample2d = Sample((1,1),900)
+    ex = ExpModel_2d(sample2d, epsilon=1)
+    lines_to_scale = []
+    fig.subplots_adjust(hspace=0.001, wspace=0.001)
+    N = len(epsilon_range)    
+    for n, epsilon in enumerate(epsilon_range):
+        color = colors.next()
+        model = ExpModel_2d(sample2d, epsilon=epsilon)
+        pn = ((model.eig_matrix**4).sum(axis=0)**(-1))
+
+        if n==0:
+            ax0 = fig.add_subplot(N,2,2*n+1)
+            ax =ax0
+            ax1 = fig.add_subplot(N,2,2*n+2)
+            ax_r = ax1
+        else:
+            ax = fig.add_subplot(N,2,2*n+1, sharex = ax0, sharey=ax0)
+            ax_r = fig.add_subplot(N,2,2*n+2, sharex = ax1, sharey=ax1)
+
+        lines_to_scale += ax.plot(-model.eigvals[1:],pn[1:], label=r"$\epsilon={epsilon}$".format(epsilon=epsilon),marker=".", linestyle='', color = color)
+        ax_r.plot(pn[1:], label=r"$\epsilon={epsilon}$".format(epsilon=epsilon),marker=".", linestyle='', color = color)
+
+        ax.legend()
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        ax_r.legend()
+        ax_r.set_xscale('log')
+        ax_r.set_yscale('log')
+
+def plot_super_pn_graph(ax,epsilon_range=np.arange(0.1,5,0.05)):
+    sample2d = Sample((1,1),900)
+    super_pn = list()
+    for epsilon in epsilon_range:
+        model = ExpModel_2d(sample2d,epsilon=epsilon)
+        pn = ((model.eig_matrix**4).sum(axis=0)**(-1))
+        super_pn += [(((pn/pn.sum())**2).sum())**(-1)]
+    ax.plot(epsilon_range, super_pn,'b.')
+    plotdl.set_all(ax, xlabel=r"$\epsilon$", ylabel="PN(PN)")
+        
 
 ######## One function to plot them all
 def all_plots(seed= 1, **kwargs):
@@ -493,16 +554,34 @@ def all_plots(seed= 1, **kwargs):
     ax = plotdl.new_ax_for_file()
     #plotf_distance_statistics()
     
+
     #plotf_eig_scatter_and_bloch_2d()
+    plotd = lambda n: ax.plot([10**(n-3), 10**(n)],[10**(-3),10**(0)], ':', color='0.2')
     plot_eig_scatter_and_bloch_2d(ax)
+    [plotd(n) for n in np.arange(0,5,0.5)]
     plotdl.save_ax(ax, 'scatter_and_bloch_2d')
     ax.cla()
+
     plot_eig_scatter_and_bloch_2d(ax,epsilon_range=0.1*np.arange(1,5))
+    [plotd(n) for n in np.arange(0,2,0.5)]
     plotdl.save_ax(ax, 'scatter_and_bloch_2d_small')
     ax.cla()
+
+
     plot_eig_scatter_and_bloch_2d(ax,epsilon_range=(0.4,0.8,1.6,3.2,6.4))
+    [plotd(n) for n in np.arange(1,5,0.5)]
     plotdl.save_ax(ax, 'scatter_and_bloch_2d_large')
     ax.cla()
+
+
+    plot_super_pn_graph(ax)
+    plotdl.save_ax(ax, 'super_pn')
+    ax.cla()
+
+
+    fig = plotdl.Figure()
+    plot_several_pn_graphs(fig)
+    plotdl.save_fig(fig, 'several_pn', size_factor=[1,2])
 
 
     #### 1d PN and matshow
@@ -547,6 +626,7 @@ def all_plots(seed= 1, **kwargs):
     ax.set_yscale('log')
     plotdl.save_ax(ax, "exp_1d_5_0_2_log_eig")
     ax.cla()
+
     
 
     
@@ -584,6 +664,7 @@ def all_plots(seed= 1, **kwargs):
     ax.set_xscale('log')
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
+    [plotd(n) for n in np.arange(1,3,0.5)]
     plotdl.save_ax(ax, "bloch_2d_4nn_rand_log_eig")
     ax.cla()
 
@@ -606,12 +687,14 @@ def all_plots(seed= 1, **kwargs):
     # 1d - two nearest neighbor randomized
     ex2nnrand = ExpModel_Bloch_1d_only2nn_randomized(bloch1d, epsilon=1)
     ex2nnrand.plot_theoretical_eigvals(ax)
-    for epsilon in (5,2,1,0.5,0.2):
+    for epsilon in (5,2,1,0.6,0.5,0.4,0.2):
         model = ExpModel_Bloch_1d_only2nn_randomized(bloch1d, epsilon=epsilon)
         cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon))
     ax.set_xscale('log')
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
+    plotd1d = lambda n: ax.plot([10**(n), 10**(n+6)],[10**(-3),10**(0)], ':', color='0.2')
+    [plotd1d(n) for n in np.arange(-6,-2,0.5)]
     plotdl.save_ax(ax, "bloch_1d_2nn_rand_log_eig")
     ax.cla()
 

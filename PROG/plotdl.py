@@ -49,6 +49,7 @@ if X_AVAILABLE :
 else:
     def draw_if_interactive():
         pass
+from matplotlib.widgets import Slider
 
 import numpy
 

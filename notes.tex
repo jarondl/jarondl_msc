@@ -693,6 +693,56 @@ For high $\epsilon$, in $2d$, many values contribute to the sum, and it can be o
     \caption{$2d$, $\epsilon = 5$}
 \end{figure}
 
+%%%% 
+\section{eigenvalue distribution for 2d lattices}
+Scattered points on a $2d$ surface were considered. We define the transition rates between the sites to be 
+\[ W_{nm} = w_0 e^{(r_0-r_nm)/(r_0\epsilon)} \]
+In the following plots, the eigenvalue distibution of the $2d$ points (small circles, $900$ points), are compared to the distribution of ordered bloch networks (empty circles, $30\times30=900$ points). The crosses represent the theoratical eigenvalue distribution for a nearest neighbor bloch model. The grey dots are straight lines (in logspace), with slope $1$. First comes a plot for a wide range of epsilons, and it is followed by plots for small ($<1$) and large ($>1$) epsilons.
+
+%%%%%%%%%
+\begin{figure}[h!]
+\includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d}
+\end{figure}
+\begin{figure}[h!]
+\includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_small}
+\end{figure}
+\begin{figure}[h!]
+\includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_large}
+\end{figure}
+
+%%%%%%%%%
+Next, come several plots of the participation numbers of the eigenmodes. For each epsilon, the plot shows the PN of every eigenmode. On the left, the $x$ axis is eigenvalue, and on the right, the $x$ axis is just the eigenmode number.
+\begin{figure}[h!]
+\includegraphics[clip, width=0.9\hsize]{several_pn}
+\end{figure}
+
+%%%% 
+For $1d$, the situation is more clear. While $\epsilon > 0.5$, the eigenvalue distribution matches diffusion, with changing diffusion coefficients, while for $0<\epsilon<0.5$, sub diffusion occurs, exactly as expected from the well defined theory :
+\begin{align}\label{eq:1d_D}
+D =
+\begin{cases}
+    \frac{\frac{\xi}{r_0} -1}{\frac{\xi}{r_0}}w_0^{\frac{\xi}{r_0}} r_0^2 &\qquad \frac{\xi}{r_0} > 1\\
+    0  &\qquad \frac{2\xi}{r_0} < 1
+\end{cases}
+\end{align}
+\begin{figure}[h!]
+\includegraphics[clip, width=0.9\hsize]{bloch_1d_2nn_rand_log_eig}
+\end{figure}
+
+The last plot is of a bloch model, with randomized values for the 4 nn jumps. Note the reversal of order.
+%\begin{figure}[h!]
+\includegraphics[clip,width=0.9\hsize]{bloch_2d_4nn_rand_log_eig}
+%\end{figure}
+
+
+
+\section{Current Agenda}
+Finding the effective grid. We have some random network and we wish to create an effective grid representing the same hopping coeffecients. We can use a Mott-like approach, where we replace the the $r_0$ with a varational variable. It should represent the hopping coefficient together with the probability to "find" the site. Thus it should somehow maximize the probability times the hopping. 
+
+%%% 1d :bloch_1d_2nn_rand_log_eig
+
+%%% 2d 4nn: bloch_2d_4nn_rand_log_eig
+
 %\bibliographystyle{plainnat}
 \bibliography{jarondl}
 \end{document}
