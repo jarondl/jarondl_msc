@@ -694,6 +694,26 @@ For high $\epsilon$, in $2d$, many values contribute to the sum, and it can be o
 \end{figure}
 
 %%%% 
+\section{eigenvalue distribution for 1d lattices}
+We know already that the rate distribution for 1d lattices follows:
+\begin{align}
+C(w) = e^{-1}w^{\epsilon}
+\end{align}
+According to Alexander, we have two regimes. One is when $\epsilon > 1$, where we have diffusion with the following properties:
+\begin{align}
+D = \frac{\epsilon-1}{\epsilon} \\
+\mathcal{P}(t) = \sqrt{\frac{1}{4\pi D t}} \\
+g(\lambda) = \mathcal{L}^{-1}[\mathcal{P}(t)] = \sqrt{\frac{1}{\pi^2 D \lambda}} \\ 
+C(\lambda) = \sqrt{\frac{\lambda}{\pi^2 D}}
+\end{align}
+The other regime is where $\epsilon <1 $, where the survival, and by extension the eigenvalue distribution are:
+\begin{align}
+  \mathcal{P}(t) = \frac{1}{\Gamma\left(\frac{1}{1+\epsilon}\right)}t^{-\frac{\epsilon}{1+\epsilon}} \\
+  C(\lambda) = \sinc\left(\frac{\epsilon}{1+\epsilon}\right)e^{-1}\lambda^{\frac{\epsilon}{1+\epsilon}}
+\end{align}
+(Side note to me: $\mathcal{L}[\lambda^{\eta-1}] = \Gamma(\eta)w^{-\eta}$, and some $\Gamma$ function identities lead to this result. Also: $\sinc=\frac{\sin(\pi x)}{\pi x}$)
+
+
 \section{eigenvalue distribution for 2d lattices}
 Scattered points on a $2d$ surface were considered. We define the transition rates between the sites to be 
 \[ W_{nm} = w_0 e^{(r_0-r_nm)/(r_0\epsilon)} \]

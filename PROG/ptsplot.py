@@ -7,7 +7,7 @@ from __future__ import division
 import itertools
 
 #from scipy.sparse import linalg as splinalg
-from numpy import random, pi, log10, sqrt,  exp, sort, eye, nanmin, nanmax, log, cos
+from numpy import random, pi, log10, sqrt,  exp, sort, eye, nanmin, nanmax, log, cos, sinc
 from scipy.special import gamma
 
 import numpy as np
@@ -40,14 +40,15 @@ def plot_func_logplot(ax, func, logxlim, label, **kwargs):
     #print(func_y)
     return ax.plot(func_space, func_y, linestyle='--', label=label, **kwargs)
 
-def plot_func(ax, func, xlim, label, **kwargs):
+def plot_func(ax, func, xlim, **kwargs):
     """ Plots function func in a logscale within the bounding box given by logbbox
     """
     x1, x2 = xlim
     func_space = np.linspace(x1,x2,200)
     func_y = func(func_space)
+    kwargs.setdefault('linestyle','--') # add linestyle if it's not in kwargs already
     #print(func_y)
-    return ax.plot(func_space, func_y, linestyle='--', label=label, **kwargs)
+    return ax.plot(func_space, func_y,  **kwargs)
 
 
 
@@ -143,6 +144,7 @@ class ExpModel(object):
         self.permuted = False
         self.basename = basename.format(**self.vals_dict)
         #self.logxlim = self.logvals[[1,-1]]
+        self.xlim = [-self.eigvals[1], -self.eigvals[-1]]
         self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
 
     def rate_matrix(self):
@@ -171,7 +173,7 @@ class ExpModel(object):
         r = self.sample.normalized_distance_matrix(self.periodic)
         D = (r*self.ex**2).sum(axis=0).mean()
         
-        d2 = self.sample.d / 2
+        d2 = self.sample.d / 2.0
         #d2  = self.sample.d
         prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
         #power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict), **kwargs)
@@ -180,12 +182,22 @@ class ExpModel(object):
 
 class ExpModel_1d(ExpModel):
     """ Subclassing exp model for 1d """
-    def plot_diff(self, ax, label=r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
+    def temp_disables_plot_diff(self, ax, label=r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
         D = self.diff_coef()
+        d2 = self.sample.d /2.0
         prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
         #power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict), **kwargs)
         f = lambda x: prefactor*x**d2
-        plot_func(ax, f, "D = {D:.3G}".format(D=D))
+        plot_func(ax, f, label="D = {D:.3G}".format(D=D))
+    def plot_alexander(self, ax, **kwargs):
+        """ plots Alexander's solution """
+        epsilon = self.epsilon
+        if epsilon > 1:
+            f = lambda x: sqrt( x * epsilon / (epsilon - 1)) / pi
+        else:
+            f = lambda x: exp(-1)*sinc(epsilon/(epsilon+1))*x**(epsilon/(epsilon+1))
+        plot_func(ax, f, self.xlim, **kwargs)
+        
     def diff_coef(self):
         D = ((self.epsilon-1)/(self.epsilon))
         if D < 0 :
@@ -454,7 +466,7 @@ def plotf_distance_statistics(N=1000):
         dist = (di['sample'].normalized_distance_matrix() +N*eye(N) ).min(axis=0)
         dist.sort()
         cummulative_plot(ax, dist)
-        plot_func(ax, di['fit_func'], dist[[0,-1]], di['fit_func_txt'])
+        plot_func(ax, di['fit_func'], dist[[0,-1]], label=di['fit_func_txt'])
         plotdl.set_all(ax, xlabel=r"$\frac{r}{r_0}$", ylabel=r"$C(\frac{r}{r_0})$", legend_loc="best")
         plotdl.save_ax(ax, di['filename'])
         ax.cla()
@@ -689,7 +701,9 @@ def all_plots(seed= 1, **kwargs):
     ex2nnrand.plot_theoretical_eigvals(ax)
     for epsilon in (5,2,1,0.6,0.5,0.4,0.2):
         model = ExpModel_Bloch_1d_only2nn_randomized(bloch1d, epsilon=epsilon)
-        cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon))
+        pl = cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon))
+        pl_color = pl[0].get_color()
+        model.plot_alexander(ax, linestyle=":", color= pl_color)
     ax.set_xscale('log')
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
