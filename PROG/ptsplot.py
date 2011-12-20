@@ -497,6 +497,15 @@ def nn_mesh(normalized_distance_matrix):
     lower_lim =  normalized_distance_matrix > 0.9999
     return upper_lim*lower_lim*normalized_distance_matrix  # The last multiplication makes the type correct (i.e. not boolean)
 
+def plot_linear_fits(ax, models, **kwargs):
+    
+    y = np.linspace(1.0/899,1,899)
+    ar = np.arange(899)
+    w = (ar%4==3 )*exp(-ar/3.0)
+    xs,epss = zip(*((-mod.eigvals[1:], mod.epsilon) for mod in models))
+    pfs = [sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w) for x in xs]
+    ax.plot(epss, pfs, ".", **kwargs)
+
 def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1)):
 
     ## 2d scatter same graphs as 4nn 
@@ -505,6 +514,9 @@ def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1)):
     bloch2d = create_bloch_sample_2d(30)
     ex = ExpModel_2d(sample2d, epsilon=1)
     ex.plot_theoretical_eigvals(ax)
+    y = np.linspace(1.0/899,1,899)
+    ar = np.arange(899)
+    w = (ar%4==3 )*exp(-ar/3.0)
     for epsilon in epsilon_range:
         color = colors.next()
         model = ExpModel_2d(sample2d, epsilon=epsilon)
@@ -512,6 +524,13 @@ def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1)):
         pl = cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon), color=color)
         #pl_color = pl[0].get_color()
         cummulative_plot(ax,-model_bloch.eigvals[1:], None, marker='o', mfc='none', mec=color)
+        #new - try to fit a curve
+        x = -model.eigvals[1:]
+        [a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
+	xlim = (model.xlim[0], min(model.xlim[1], 0.9*exp(-a)))
+        #plot_func(ax, lambda x: x*exp(a), xlim, label="{:3}".format(a), color= color)
+        plot_func(ax, lambda x: x*exp(a), xlim,  color= color)
+
     ax.set_xscale('log')
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
@@ -579,19 +598,30 @@ def all_plots(seed= 1, **kwargs):
     #plotf_eig_scatter_and_bloch_2d()
     plotd = lambda n: ax.plot([10**(n-3), 10**(n)],[10**(-3),10**(0)], ':', color='0.2')
     plot_eig_scatter_and_bloch_2d(ax)
-    [plotd(n) for n in np.arange(0,5,0.5)]
+    #[plotd(n) for n in np.arange(0,5,0.5)]
     plotdl.save_ax(ax, 'scatter_and_bloch_2d')
     ax.cla()
 
     plot_eig_scatter_and_bloch_2d(ax,epsilon_range=0.1*np.arange(1,5))
-    [plotd(n) for n in np.arange(0,2,0.5)]
+    #[plotd(n) for n in np.arange(0,2,0.5)]
     plotdl.save_ax(ax, 'scatter_and_bloch_2d_small')
     ax.cla()
 
 
     plot_eig_scatter_and_bloch_2d(ax,epsilon_range=(0.4,0.8,1.6,3.2,6.4))
-    [plotd(n) for n in np.arange(1,5,0.5)]
+    #[plotd(n) for n in np.arange(1,5,0.5)]
     plotdl.save_ax(ax, 'scatter_and_bloch_2d_large')
+    ax.cla()
+
+    epsilons = np.linspace(0.1,5,30)
+    sample2d = Sample((1,1),900)
+    scatter_models = (ExpModel_2d(sample2d, epsilon=eps) for eps in epsilons)
+    plot_linear_fits(ax, scatter_models, label="scatter")
+    bloch2d = create_bloch_sample_2d(30)
+    bloch_4nn_models = (ExpModel_Bloch_2d_only4nn_randomized(bloch2d, epsilon=eps) for eps in epsilons)
+    plot_linear_fits(ax, bloch_4nn_models, label="Bloch 4nn")
+    plotdl.set_all(ax, xlabel=r"$\epsilon$", legend_loc="best")
+    plotdl.save_ax(ax, "linear_fits")
     ax.cla()
 
 
@@ -681,11 +711,19 @@ def all_plots(seed= 1, **kwargs):
     ex4nnrand.plot_theoretical_eigvals(ax)
     for epsilon in (5,2,1,0.5,0.2):
         model = ExpModel_Bloch_2d_only4nn_randomized(bloch2d, epsilon=epsilon, basename="bloch_2d_4nn_rand_{epsilon}")
-        cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon))
+        pl = cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon))
+        #new - try to fit a curve
+        x = -model.eigvals[1:]
+        y = np.linspace(1.0/len(x),1,len(x))
+        ar = np.arange(899)
+        w = (ar%4==3 )*exp(-ar/10.0)
+        [a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
+        plot_func(ax, lambda x: x*exp(a), model.xlim, label="{:3}".format(a), color= pl[0].getcolor())
+
     ax.set_xscale('log')
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
-    [plotd(n) for n in np.arange(1,3,0.5)]
+    #[plotd(n) for n in np.arange(1,3,0.5)]
     plotdl.save_ax(ax, "bloch_2d_4nn_rand_log_eig")
     ax.cla()
 

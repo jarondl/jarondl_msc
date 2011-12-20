@@ -45,7 +45,7 @@
 \newcommand{\abs}[1]{\left|#1\right|}
 \newcommand{\varphiJ}{\bm{\varphi}}
 \newcommand{\thetaJ}{\bm{\theta}}
-%\renewcommand{\includegraphics}[2][0]{figure}[h!]
+%\renewcommand{\includegraphics}[2][0]{figure}[H]
 
 
 % math symbols I
@@ -549,7 +549,7 @@ or equivalently if $p \ll 1$ or $q \ll 1$.
 The direct calculation for the survival in a log normal banded matrix is depicted in figure \ref{fig:p_lognormal_band}. For each value of $b$, a matrix (currently $100
 \times 100$) with a band b filled with log-normally distributed ($\sigma=1$) values was constructed. Then, the eigenvalues were numerically calculated, and then the Laplace sum $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$.
 %%%
-%\begin{figure}[h!]
+%\begin{figure}[H]
 %\includegraphics[clip, width=0.9\hsize]{P_lognormal_band.pdf}
 %\caption{$\mathcal{P}(t)$ for constant sparsity, and variable bandwidth. The survival was calculated using $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$ \eqref{eq:surv_eigenvalues} with numerical diagonalization of the transition matrix.
 %}
@@ -580,27 +580,27 @@ y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x)
 \end{align}
 
 To check ourselves, we have plotted the eigenvalue distribution for the lognoraml banded matrix, and a uniform random matrix in figure \ref{fig:eigenvalue_distribution}, and also compared between $b=5$ and $b=10$ in figure \ref{fig:eigenvalue_distribution_5_10}
-\begin{figure}[h!]
+\begin{figure}[H]
     {\includegraphics[clip, width=0.9\hsize]{eigvals_uniform}}
 \caption{Uniform distribution}
     \label{fig:eigenvalue_distribution}
 \end{figure}
-\begin{figure}[h!]
+\begin{figure}[H]
     {\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}}
     \caption{Lognoraml nearest neighbor matrix}
 
 \end{figure}
-\begin{figure}[h!]
+\begin{figure}[H]
     \includegraphics[clip,width=0.9\hsize]{eigvals_lognormal_normal}
     \caption{Cumulative eigenvalue distribution, in a normal scale}
 \end{figure}
-\begin{figure}[h!]
+\begin{figure}[H]
     \includegraphics[clip, width=0.9\hsize]{eigvals_ones_loglog}
 \end{figure}
-\begin{figure}[h!]
+\begin{figure}[H]
     \includegraphics[clip, width=0.9\hsize]{eigvals_alter_loglog}
 \end{figure}
-\begin{figure}[h!]
+\begin{figure}[H]
     \includegraphics[clip, width=0.9\hsize]{eigvals_box_loglog}
 \end{figure}
 
@@ -641,17 +641,17 @@ The spacing (nearest neighbor) statistics have the following cummulative distrib
 \end{align}
 This works well for $1d$, $2d$ and $3d$ (see figures \ref{fig:1d_dist},\ref{fig:2d_dist},\ref{fig:3d_dist}). There is some issue of a factor of $2$. The problem is with the definition of the spacing. What I did in those plots is to take the minimum of each row. However, those minimums are not unique, because more often than not we count the same rate twice, once for each "direction". This is particulary prevalent in the lower distances.
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \includegraphics[clip,width=0.9\hsize]{dist_1d_1000}
     \caption{Cumulative distance distribution for $1d$, in a normal scale}
     \label{fig:1d_dist}
 \end{figure}
-\begin{figure}[h!]
+\begin{figure}[H]
     \includegraphics[clip,width=0.9\hsize]{dist_2d_1000}
     \caption{Cumulative distance distribution for $2d$, in a normal scale}
     \label{fig:2d_dist}
 \end{figure}
-\begin{figure}[h!]
+\begin{figure}[H]
     \includegraphics[clip,width=0.9\hsize]{dist_3d_1000}
     \caption{Cumulative distance distribution for $3d$, in a normal scale}
     \label{fig:3d_dist}
@@ -670,25 +670,25 @@ The highest possible rate is $r=0\rightarrow w=\exp(\frac{1}{\epsilon})$, which 
 
 For low $\epsilon$, the decay values (the main diagonal of the matrix), almost equal the highest rates per row, because the highest value contributes most of the sum. Then we get the dimer approximation, with $\lambda \approx 2\gamma \approx 2w$. 
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \includegraphics[clip,width=0.9\hsize]{{{exp_1d_0.2_pn}}}
     \caption{$1d$, $\epsilon = 0.2$}
 \end{figure}
-\begin{figure}[h!]
+\begin{figure}[H]
     \includegraphics[clip,width=0.9\hsize]{{{exp_2d_0.05_pn}}}
     \caption{$2d$, $\epsilon = 0.05$}
 \end{figure}
 
 For high $\epsilon$, in $1d$, both rates, "to the left", and "to the right", are of the same order of magnitude, so that $\gamma \approx 2w$. The eigenmodes are long-range.
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \includegraphics[clip,width=0.9\hsize]{{{exp_1d_5_pn}}}
     \caption{$1d$, $\epsilon = 5$}
 \end{figure}
 
 For high $\epsilon$, in $2d$, many values contribute to the sum, and it can be orders of magnitude more than the "highest rate per row". For those systems $\lambda \approx \gamma \gg w$. 
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \includegraphics[clip,width=0.9\hsize]{{{exp_2d_5_pn}}}
     \caption{$2d$, $\epsilon = 5$}
 \end{figure}
@@ -712,10 +712,15 @@ The other regime is where $\epsilon <1 $, where the survival, and by extension t
   C(\lambda) = \sinc\left(\frac{\epsilon}{1+\epsilon}\right)e^{-1}\lambda^{\frac{\epsilon}{1+\epsilon}}
 \end{align}
 (Side note to me: $\mathcal{L}[\lambda^{\eta-1}] = \Gamma(\eta)w^{-\eta}$, and some $\Gamma$ function identities lead to this result. Also, the sinc is normalized: $\sinc=\frac{\sin(\pi x)}{\pi x}$)
-\begin{figure}[h!]
+\begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{bloch_1d_2nn_rand_log_eig}
+\caption{$1d$ network, the dotted lines represent the theoretical distributions}
 \end{figure}
 
+\begin{figure}[H]
+\includegraphics[clip, width=0.9\hsize]{alexander_1d_theory}
+\caption{$1d$ theoretical diffusion and power}
+\end{figure}
 
 %%%%%%%%%%%%
 \section{eigenvalue distribution for 2d lattices}
@@ -724,26 +729,26 @@ Scattered points on a $2d$ surface were considered. We define the transition rat
 In the following plots, the eigenvalue distibution of the $2d$ points (small circles, $900$ points), are compared to the distribution of ordered bloch networks (empty circles, $30\times30=900$ points). The crosses represent the theoratical eigenvalue distribution for a nearest neighbor bloch model. The grey dots are straight lines (in logspace), with slope $1$. First comes a plot for a wide range of epsilons, and it is followed by plots for small ($<1$) and large ($>1$) epsilons.
 
 %%%%%%%%%
-\begin{figure}[h!]
+\begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d}
 \end{figure}
-\begin{figure}[h!]
+\begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_small}
 \end{figure}
-\begin{figure}[h!]
+\begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_large}
 \end{figure}
 
 %%%%%%%%%
 Next, come several plots of the participation numbers of the eigenmodes. For each epsilon, the plot shows the PN of every eigenmode. On the left, the $x$ axis is eigenvalue, and on the right, the $x$ axis is just the eigenmode number.
-\begin{figure}[h!]
+\begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{several_pn}
 \end{figure}
 
 %%%% 
 
 The last plot is of a bloch model, with randomized values for the 4 nn jumps. Note the reversal of order.
-%\begin{figure}[h!]
+%\begin{figure}[H]
 \includegraphics[clip,width=0.9\hsize]{bloch_2d_4nn_rand_log_eig}
 %\end{figure}
 
