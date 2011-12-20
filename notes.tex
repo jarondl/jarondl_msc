@@ -701,7 +701,7 @@ C(w) = e^{-1}w^{\epsilon}
 \end{align}
 According to Alexander, we have two regimes. One is when $\epsilon > 1$, where we have diffusion with the following properties:
 \begin{align}
-D = \frac{\epsilon-1}{\epsilon} \\
+D = \frac{\epsilon-1}{\epsilon}e^{\frac{1}{\epsilon}} \\
 \mathcal{P}(t) = \sqrt{\frac{1}{4\pi D t}} \\
 g(\lambda) = \mathcal{L}^{-1}[\mathcal{P}(t)] = \sqrt{\frac{1}{\pi^2 D \lambda}} \\ 
 C(\lambda) = \sqrt{\frac{\lambda}{\pi^2 D}}
@@ -711,9 +711,13 @@ The other regime is where $\epsilon <1 $, where the survival, and by extension t
   \mathcal{P}(t) = \frac{1}{\Gamma\left(\frac{1}{1+\epsilon}\right)}t^{-\frac{\epsilon}{1+\epsilon}} \\
   C(\lambda) = \sinc\left(\frac{\epsilon}{1+\epsilon}\right)e^{-1}\lambda^{\frac{\epsilon}{1+\epsilon}}
 \end{align}
-(Side note to me: $\mathcal{L}[\lambda^{\eta-1}] = \Gamma(\eta)w^{-\eta}$, and some $\Gamma$ function identities lead to this result. Also: $\sinc=\frac{\sin(\pi x)}{\pi x}$)
+(Side note to me: $\mathcal{L}[\lambda^{\eta-1}] = \Gamma(\eta)w^{-\eta}$, and some $\Gamma$ function identities lead to this result. Also, the sinc is normalized: $\sinc=\frac{\sin(\pi x)}{\pi x}$)
+\begin{figure}[h!]
+\includegraphics[clip, width=0.9\hsize]{bloch_1d_2nn_rand_log_eig}
+\end{figure}
 
 
+%%%%%%%%%%%%
 \section{eigenvalue distribution for 2d lattices}
 Scattered points on a $2d$ surface were considered. We define the transition rates between the sites to be 
 \[ W_{nm} = w_0 e^{(r_0-r_nm)/(r_0\epsilon)} \]
@@ -737,17 +741,6 @@ Next, come several plots of the participation numbers of the eigenmodes. For eac
 \end{figure}
 
 %%%% 
-For $1d$, the situation is more clear. While $\epsilon > 0.5$, the eigenvalue distribution matches diffusion, with changing diffusion coefficients, while for $0<\epsilon<0.5$, sub diffusion occurs, exactly as expected from the well defined theory :
-\begin{align}\label{eq:1d_D}
-D =
-\begin{cases}
-    \frac{\frac{\xi}{r_0} -1}{\frac{\xi}{r_0}}w_0^{\frac{\xi}{r_0}} r_0^2 &\qquad \frac{\xi}{r_0} > 1\\
-    0  &\qquad \frac{2\xi}{r_0} < 1
-\end{cases}
-\end{align}
-\begin{figure}[h!]
-\includegraphics[clip, width=0.9\hsize]{bloch_1d_2nn_rand_log_eig}
-\end{figure}
 
 The last plot is of a bloch model, with randomized values for the 4 nn jumps. Note the reversal of order.
 %\begin{figure}[h!]

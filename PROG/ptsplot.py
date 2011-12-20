@@ -193,7 +193,7 @@ class ExpModel_1d(ExpModel):
         """ plots Alexander's solution """
         epsilon = self.epsilon
         if epsilon > 1:
-            f = lambda x: sqrt( x * epsilon / (epsilon - 1)) / pi
+            f = lambda x: sqrt( x * exp(-1/epsilon) *epsilon / (epsilon - 1)) / pi
         else:
             f = lambda x: exp(-1)*sinc(epsilon/(epsilon+1))*x**(epsilon/(epsilon+1))
         plot_func(ax, f, self.xlim, **kwargs)
@@ -557,6 +557,15 @@ def plot_super_pn_graph(ax,epsilon_range=np.arange(0.1,5,0.05)):
         super_pn += [(((pn/pn.sum())**2).sum())**(-1)]
     ax.plot(epsilon_range, super_pn,'b.')
     plotdl.set_all(ax, xlabel=r"$\epsilon$", ylabel="PN(PN)")
+
+def plot_1d_alexander_theory(ax):
+    eps_0_1 = np.linspace(0,1,100)
+    eps_1_5 = np.linspace(1,5,200)
+    ax.plot(eps_0_1, -eps_0_1/(eps_0_1+1), color="blue", linestyle="-", label=r"$\mathcal{P}(t)\propto t^\alpha$, The plot is of $\alpha$")
+    ax.plot(eps_1_5, -0.5*np.ones_like(eps_1_5), color="blue", linestyle="-")
+    ax.plot(eps_1_5, exp(1/eps_1_5)*(eps_1_5-1)/eps_1_5, color="red", linestyle="-", label=r"The diffusion coefficient $D$")
+    plotdl.set_all(ax, xlabel=r"$\epsilon$",legend_loc="best")
+
         
 
 ######## One function to plot them all
@@ -689,11 +698,20 @@ def all_plots(seed= 1, **kwargs):
         model_bloch = ExpModel_2d(bloch2d, epsilon = epsilon)
         pl = cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon))
         pl_color = pl[0].get_color()
-        cummulative_plot(ax,-model_bloch.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon), marker='o', mfc='none', mec=pl_color)
+        cummulative_plot(ax,-model_bloch.eigvals[1:], marker='o', mfc='none', mec=pl_color)
+        
+        #new - try to fit a curve
+        x = -model.eigvals[1:]
+        y = np.linspace(1.0/len(x),1,len(x))
+        ar = np.arange(899)
+        w = (ar%4==3 )*exp(-ar/100.0)
+        [a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
+        plot_func(ax, lambda x: x*exp(a), model.xlim, label="{:3}".format(a), color= pl_color)
+
     ax.set_xscale('log')
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
-    plotdl.save_ax(ax, "sample_scattter_bloch_log_eig")
+    plotdl.save_ax(ax, "sample_scatter_bloch_log_eig")
     ax.cla()
 
     # 1d - two nearest neighbor randomized
@@ -704,12 +722,17 @@ def all_plots(seed= 1, **kwargs):
         pl = cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon))
         pl_color = pl[0].get_color()
         model.plot_alexander(ax, linestyle=":", color= pl_color)
+
     ax.set_xscale('log')
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$\lambda$",ylabel=r"$C(\lambda)$", legend_loc="best")
-    plotd1d = lambda n: ax.plot([10**(n), 10**(n+6)],[10**(-3),10**(0)], ':', color='0.2')
-    [plotd1d(n) for n in np.arange(-6,-2,0.5)]
+    #plotd1d = lambda n: ax.plot([10**(n), 10**(n+6)],[10**(-3),10**(0)], ':', color='0.2')
+    #[plotd1d(n) for n in np.arange(-6,-2,0.5)]
     plotdl.save_ax(ax, "bloch_1d_2nn_rand_log_eig")
+    ax.cla()
+
+    plot_1d_alexander_theory(ax)
+    plotdl.save_ax(ax, "alexander_1d_theory")
     ax.cla()
 
     #### quasi-1d

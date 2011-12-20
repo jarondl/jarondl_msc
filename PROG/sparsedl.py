@@ -6,6 +6,7 @@
 from __future__ import division  # makes true division instead of integer division
 import scipy
 import numpy
+import numpy as np
 from numpy import sqrt, cos, pi, diagflat, log
 from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
@@ -171,8 +172,11 @@ def _general_function(params, xdata, ydata, function):
     #based on scipy 0.9's minpack
     return function(xdata, *params) - ydata
 
+def _weighted_function(params, xdata, ydata, function, weights):
+    return weights*(function(xdata, *params) -ydata)
 
-def cvfit(f, xdata, ydata, p0):
+
+def cvfit(f, xdata, ydata, p0, w=None):
     """  Fit data to a function.
 
     :param f: A function that accepts 1+len(p0) arguments, first one will be x
@@ -181,7 +185,9 @@ def cvfit(f, xdata, ydata, p0):
     :param p0: The initial guess, put [1, 1, 1, ..] if uncertain.
 
     """
-    res = optimize.leastsq(_general_function, p0, args=(xdata, ydata, f))
+    if w is None:
+        w = np.ones_like(xdata)
+    res = optimize.leastsq(_weighted_function, p0, args=(xdata, ydata, f, w))
     return res[0]
 
 
