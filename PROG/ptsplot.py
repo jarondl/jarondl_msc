@@ -588,6 +588,9 @@ def plot_1d_alexander_theory(ax):
     ax.plot(eps_1_5, exp(1/eps_1_5)*(eps_1_5-1)/eps_1_5, color="red", linestyle="-", label=r"The diffusion coefficient $D$")
     plotdl.set_all(ax, xlabel=r"$\epsilon$",legend_loc="best")
 
+
+def plot_x_exp_x(ax,epsilon=1):
+    plot_func(ax, lambda x: x*exp(-x/epsilon), [0,epsilon*5])
         
 
 ######## One function to plot them all

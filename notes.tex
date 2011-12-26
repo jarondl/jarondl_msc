@@ -773,7 +773,13 @@ All the $2d$ plots have a linear fit for the low eigenvalues. The fit function i
 \includegraphics[clip, width=0.9\hsize]{linear_fits}
 \end{figure}
 
-
+\section{VRH}
+The idea of the VRH scheme is to consider the probability of finding a site when considering the probability to transit to this site. In the $2d$ scatter model, the space is homogenous, so the probabilty of finding a site is equal to the density times the volume. The probability to find a site {\bf up to} distance $r$, is:
+\[ N(r) = n\cdot \pi r^2 = \pi \left(\frac{r}{r_0}\right)^2\]
+Therefore, the probability density is:
+\[ n(r)dr = \frac{dN(r)}{dr}dr = 2\pi \frac{r}{r_0}\frac{dr}{r_0}\]
+The transition probability density per unit time is:
+\[p(r)dr = w(r)n(r)dr = w_0 e^{-\frac{r}{r_0\epsilon}}2\pi \frac{r}{r_0}\frac{dr}{r_0}=2\pi w_0 e^{-\frac{r}{r_0\epsilon} + \log\frac{r}{r_0}}\frac{dr}{r_0}\]
 \section{Current Agenda}
 Finding the effective grid. We have some random network and we wish to create an effective grid representing the same hopping coeffecients. We can use a Mott-like approach, where we replace the the $r_0$ with a varational variable. It should represent the hopping coefficient together with the probability to "find" the site. Thus it should somehow maximize the probability times the hopping. 
 
