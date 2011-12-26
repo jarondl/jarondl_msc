@@ -80,6 +80,10 @@ class Sample(object):
         N = self.number_of_points()
         one_matrix = np.ones([N,N]) - np.eye(N)
         return np.exp(one_matrix-self.normalized_distance_matrix(periodic)) - np.eye(N)
+    
+    def exponent_minus_r(self, periodic=True):
+        N = self.number_of_points()
+        return np.exp(-self.normalized_distance_matrix(periodic)) - np.eye(N)
 
 
 def euclid(point1, point2):

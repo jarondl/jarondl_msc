@@ -63,7 +63,7 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None, periodic=False): ## re
         :param epsilon: the epsilon, defaults to 0.1
     """
     # handle bandwidth for 1d. the default is 1.
-    ex1 = (sample.exponent_1_minus_r(periodic))**(1/epsilon)
+    ex1 = (sample.exponent_minus_r(periodic))**(1/epsilon)
     if sample.d ==  1:
         if bandwidth is None:
             ex1 = ex1*periodic_banded_ones(ex1.shape[0], 1)
@@ -193,9 +193,9 @@ class ExpModel_1d(ExpModel):
         """ plots Alexander's solution """
         epsilon = self.epsilon
         if epsilon > 1:
-            f = lambda x: sqrt( x * exp(-1/epsilon) *epsilon / (epsilon - 1)) / pi
+            f = lambda x: sqrt( x * epsilon / (epsilon - 1)) / pi
         else:
-            f = lambda x: exp(-1)*sinc(epsilon/(epsilon+1))*x**(epsilon/(epsilon+1))
+            f = lambda x: sinc(epsilon/(epsilon+1))*x**(epsilon/(epsilon+1))
         plot_func(ax, f, self.xlim, **kwargs)
         
     def diff_coef(self):
@@ -211,8 +211,8 @@ class ExpModel_1d(ExpModel):
         if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
             print "len(logbrates)", len(logbrates)
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
-            plot_func_logplot(ax, lambda w: exp(-2*(1-self.epsilon*log(w))),self.logxlim, r"$e^{-2\cdot(1-\epsilon\ln(w))}$")
-            plot_func_logplot(ax, lambda w: exp(-(1-self.epsilon*log(w*0.5))),self.logxlim, r"$e^{-\cdot(1-\epsilon\ln(\frac{w}{2}))}$")
+            plot_func_logplot(ax, lambda w: exp(-2*(-self.epsilon*log(w))),self.logxlim, r"$e^{-2\cdot(1-\epsilon\ln(w))}$")
+            plot_func_logplot(ax, lambda w: exp(-(-self.epsilon*log(w*0.5))),self.logxlim, r"$e^{-\cdot(1-\epsilon\ln(\frac{w}{2}))}$")
     def plot_theoretical_eigvals(self, ax):
         N = self.sample.number_of_points()
         qx = 2*pi/N*np.arange(N)
@@ -228,7 +228,7 @@ class ExpModel_Bloch_1d(ExpModel_1d):
         #power_law_logplot(ax, self.epsilon, 1, self.logxlim, label=label.format(**self.vals_dict), color="green")
         N = self.sample.number_of_points()
         nn, xx = np.meshgrid(np.arange(N), np.arange(N))
-        ev = sort((exp(1-nn/self.epsilon)*cos(2*nn*xx*pi/N)).sum(axis=1))
+        ev = sort((exp(-nn/self.epsilon)*cos(2*nn*xx*pi/N)).sum(axis=1))
         cummulative_plot(ax, sort(ev),color="green")
     def plot_theoretical_eigvals(self, ax):
         N = self.sample.number_of_points()
@@ -248,8 +248,8 @@ class ExpModel_2d(ExpModel):
         logbrates = log10(brates)
         if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
-            plot_func_logplot(ax, lambda w: exp(-pi*(1-self.epsilon*log(w))**2),self.logxlim, r"$e^{-\pi\cdot(1-\epsilon\ln(w))^2}$")
-            plot_func_logplot(ax, lambda w: exp(-0.5*pi*(1-self.epsilon*log(0.5*w))**2),self.logxlim, r"$e^{-\frac{\pi}{2}\cdot(1-\epsilon\ln(\frac{w}{2}))^2}$")
+            plot_func_logplot(ax, lambda w: exp(-pi*(-self.epsilon*log(w))**2),self.logxlim, r"$e^{-\pi\cdot(1-\epsilon\ln(w))^2}$")
+            plot_func_logplot(ax, lambda w: exp(-0.5*pi*(-self.epsilon*log(0.5*w))**2),self.logxlim, r"$e^{-\frac{\pi}{2}\cdot(1-\epsilon\ln(\frac{w}{2}))^2}$")
     def plot_theoretical_eigvals(self, ax):
         N = sqrt(self.sample.number_of_points())
         qy, qx = np.meshgrid(2*pi/N*np.arange(N),2*pi/N*np.arange(N))
@@ -271,7 +271,7 @@ class ExpModel_Bloch_2d(ExpModel_2d):
 class ExpModel_Bloch_2d_only4nn(ExpModel):
     def rate_matrix(self):
         r = self.sample.normalized_distance_matrix(self.periodic)
-        ex = exp(1-r)*(r<1.001)
+        ex = exp(-r)*(r<1.001)
         zero_sum(ex)
         return ex
         
@@ -290,7 +290,7 @@ class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
         lnn = np.tri(r.shape[0])*(r>0.99)*(r<1.001)
         #W = exp(1-np.sqrt(-log(np.linspace(0,1, 2*r.shape[0]+1)[1:])/pi))**(1/self.epsilon)
         ex = np.zeros(r.shape)
-        W = exp(1-np.sqrt(-log(np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:])/pi))**(1/self.epsilon)
+        W = exp(-np.sqrt(-log(np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:])/pi))**(1/self.epsilon)
 
         print ex[lnn==1].shape
         print W.shape
@@ -309,7 +309,7 @@ class ExpModel_Bloch_1d_only2nn_randomized(ExpModel_1d):
         #W = exp(1-np.sqrt(-log(np.linspace(0,1, 2*r.shape[0]+1)[1:])/pi))**(1/self.epsilon)
         ex = np.zeros(r.shape)
 #        W = exp(1/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(2*self.epsilon))
-        W = exp(1/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(self.epsilon))
+        W = np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(self.epsilon))
 
         print ex[lnn==1].shape
         print W.shape
@@ -526,10 +526,11 @@ def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1)):
         cummulative_plot(ax,-model_bloch.eigvals[1:], None, marker='o', mfc='none', mec=color)
         #new - try to fit a curve
         x = -model.eigvals[1:]
-        [a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
-	xlim = (model.xlim[0], min(model.xlim[1], 0.9*exp(-a)))
+        #[a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
+        xlim = (model.xlim[0], min(model.xlim[1], 0.9*(24*pi*epsilon**4)))
         #plot_func(ax, lambda x: x*exp(a), xlim, label="{:3}".format(a), color= color)
-        plot_func(ax, lambda x: x*exp(a), xlim,  color= color)
+        #plot_func(ax, lambda x: x*exp(a), xlim,  color= color)
+        plot_func(ax, lambda x: x/(24*pi*(model.epsilon**4)),xlim,  color= color)
 
     ax.set_xscale('log')
     ax.set_yscale('log')
@@ -566,6 +567,8 @@ def plot_several_pn_graphs(fig, epsilon_range=(0.1,0.2,0.5,1,2,4,5)):
         ax_r.legend()
         ax_r.set_xscale('log')
         ax_r.set_yscale('log')
+
+    plotdl.autoscale_based_on(ax0, lines_to_scale)
 
 def plot_super_pn_graph(ax,epsilon_range=np.arange(0.1,5,0.05)):
     sample2d = Sample((1,1),900)
