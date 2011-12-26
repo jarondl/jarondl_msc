@@ -718,7 +718,7 @@ def all_plots(seed= 1, **kwargs):
         ar = np.arange(899)
         w = (ar%4==3 )*exp(-ar/10.0)
         [a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
-        plot_func(ax, lambda x: x*exp(a), model.xlim, label="{:3}".format(a), color= pl[0].getcolor())
+        plot_func(ax, lambda x: x*exp(a), model.xlim, label="{:3}".format(a), color= pl[0].get_color())
 
     ax.set_xscale('log')
     ax.set_yscale('log')

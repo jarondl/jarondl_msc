@@ -748,11 +748,15 @@ Next, come several plots of the participation numbers of the eigenmodes. For eac
 %%%% 
 
 The last plot is of a bloch model, with randomized values for the 4 nn jumps. Note the reversal of order.
-%\begin{figure}[H]
+\begin{figure}[H]
 \includegraphics[clip,width=0.9\hsize]{bloch_2d_4nn_rand_log_eig}
-%\end{figure}
+\end{figure}
 
+All the $2d$ plots have a linear fit for the low eigenvalues. The fit function is $\log(y) = \log(x) + a$. The following plot is of $a$ as a function of $\epsilon$.
 
+\begin{figure}[H]
+\includegraphics[clip, width=0.9\hsize]{linear_fits}
+\end{figure}
 
 \section{Current Agenda}
 Finding the effective grid. We have some random network and we wish to create an effective grid representing the same hopping coeffecients. We can use a Mott-like approach, where we replace the the $r_0$ with a varational variable. It should represent the hopping coefficient together with the probability to "find" the site. Thus it should somehow maximize the probability times the hopping. 
