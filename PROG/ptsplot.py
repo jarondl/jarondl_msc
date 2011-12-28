@@ -506,16 +506,16 @@ def plot_linear_fits(ax, models, **kwargs):
     pfs = [sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w) for x in xs]
     ax.plot(epss, pfs, ".", **kwargs)
 
-def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1)):
+def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), number_of_sites = 900):
 
     ## 2d scatter same graphs as 4nn 
     colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
-    sample2d = Sample((1,1),900)
+    sample2d = Sample((1,1),number_of_sites)
     bloch2d = create_bloch_sample_2d(30)
     ex = ExpModel_2d(sample2d, epsilon=1)
     ex.plot_theoretical_eigvals(ax)
-    y = np.linspace(1.0/899,1,899)
-    ar = np.arange(899)
+    y = np.linspace(1.0/(number_of_sites-1),1,1.0/(number_of_sites-1))
+    ar = np.arange((number_of_sites-1))
     w = (ar%4==3 )*exp(-ar/3.0)
     for epsilon in epsilon_range:
         color = colors.next()
@@ -527,10 +527,10 @@ def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1)):
         #new - try to fit a curve
         x = -model.eigvals[1:]
         #[a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
-        xlim = (model.xlim[0], min(model.xlim[1], 0.9*(24*pi*epsilon**4)))
+        xlim = (max((1.0/(number_of_sites-1))*12*pi*epsilon**4,model.xlim[0]), min(model.xlim[1], 0.9*(12*pi*epsilon**4)))
         #plot_func(ax, lambda x: x*exp(a), xlim, label="{:3}".format(a), color= color)
         #plot_func(ax, lambda x: x*exp(a), xlim,  color= color)
-        plot_func(ax, lambda x: x/(24*pi*(model.epsilon**4)),xlim,  color= color)
+        plot_func(ax, lambda x: x/(12*pi*(model.epsilon**4)),xlim,  color= color)
 
     ax.set_xscale('log')
     ax.set_yscale('log')
