@@ -209,7 +209,7 @@ class ExpModel_1d(ExpModel):
         brates = nanmax(self.ex, axis=0)
         logbrates = log10(brates)
         if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
-            print "len(logbrates)", len(logbrates)
+            #print "len(logbrates)", len(logbrates)
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
             plot_func_logplot(ax, lambda w: exp(-2*(-self.epsilon*log(w))),self.logxlim, r"$e^{-2\cdot(1-\epsilon\ln(w))}$")
             plot_func_logplot(ax, lambda w: exp(-(-self.epsilon*log(w*0.5))),self.logxlim, r"$e^{-\cdot(1-\epsilon\ln(\frac{w}{2}))}$")
@@ -292,8 +292,8 @@ class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
         ex = np.zeros(r.shape)
         W = exp(-np.sqrt(-log(np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:])/pi))**(1/self.epsilon)
 
-        print ex[lnn==1].shape
-        print W.shape
+        #print ex[lnn==1].shape
+        #print W.shape
         ex[lnn==1] = np.random.permutation(W)
         sym_ex = ex + ex.T
         zero_sum(sym_ex)
@@ -311,8 +311,8 @@ class ExpModel_Bloch_1d_only2nn_randomized(ExpModel_1d):
 #        W = exp(1/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(2*self.epsilon))
         W = np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(self.epsilon))
 
-        print ex[lnn==1].shape
-        print W.shape
+        #print ex[lnn==1].shape
+        #print W.shape
         ex[lnn==1] = np.random.permutation(W)
         sym_ex = ex + ex.T
         zero_sum(sym_ex)
@@ -504,14 +504,20 @@ def plot_linear_fits(ax, models, **kwargs):
     w = (ar%4==3 )*exp(-ar/3.0)
     xs,epss = zip(*((-mod.eigvals[1:], mod.epsilon) for mod in models))
     pfs = [sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w) for x in xs]
-    ax.plot(epss, pfs, ".", **kwargs)
+    epss_ar = np.array(epss) # makes them reusable
+    ax.plot(epss_ar, 1/(2*pi*exp(pfs)), ".", **kwargs)
+    
+    #theor_D = epss_ar**(4)*(6*pi)
+    #ax.plot(epss_ar, theor_D, "x", **kwargs)
 
-def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), number_of_sites = 900):
+def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), root_number_of_sites = 30):
 
     ## 2d scatter same graphs as 4nn 
+    number_of_sites = root_number_of_sites**2
     colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     sample2d = Sample((1,1),number_of_sites)
-    bloch2d = create_bloch_sample_2d(30)
+    r_squared = sample2d.normalized_distance_matrix(periodic=True)**2
+    bloch2d = create_bloch_sample_2d(root_number_of_sites)
     ex = ExpModel_2d(sample2d, epsilon=1)
     ex.plot_theoretical_eigvals(ax)
     y = np.linspace(1.0/(number_of_sites-1),1,1.0/(number_of_sites-1))
@@ -524,13 +530,20 @@ def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), number_
         pl = cummulative_plot(ax,-model.eigvals[1:], r"$\epsilon={epsilon}$".format(epsilon=epsilon), color=color)
         #pl_color = pl[0].get_color()
         cummulative_plot(ax,-model_bloch.eigvals[1:], None, marker='o', mfc='none', mec=color)
-        #new - try to fit a curve
+        ###new - try to fit a curve
+        # Linear response with theortical D
         x = -model.eigvals[1:]
         #[a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
-        xlim = (max((1.0/(number_of_sites-1))*12*pi*epsilon**4,model.xlim[0]), min(model.xlim[1], 0.9*(12*pi*epsilon**4)))
+        xlim = (max((1.0/(number_of_sites-1))*12*pi*pi*epsilon**4,model.xlim[0]), min(model.xlim[1], 0.9*(12*pi*pi*epsilon**4)))
         #plot_func(ax, lambda x: x*exp(a), xlim, label="{:3}".format(a), color= color)
         #plot_func(ax, lambda x: x*exp(a), xlim,  color= color)
-        plot_func(ax, lambda x: x/(12*pi*(model.epsilon**4)),xlim,  color= color)
+        plot_func(ax, lambda x: x/(12*pi*pi*(model.epsilon**4)),xlim,  color= color)
+
+        # Linear response with numerical D:
+	D = (model.ex*r_squared).sum()/(2*number_of_sites)
+        
+        xlim = (max((1.0/(number_of_sites-1))*2*pi*D, model.xlim[0]), min(model.xlim[1], 0.9*(2*pi*D)))
+	plot_func(ax, lambda x: x/(2*pi*D), xlim, color=color, linestyle="-", alpha=0.5)
 
     ax.set_xscale('log')
     ax.set_yscale('log')
@@ -619,7 +632,7 @@ def all_plots(seed= 1, **kwargs):
     plotdl.save_ax(ax, 'scatter_and_bloch_2d_large')
     ax.cla()
 
-    epsilons = np.linspace(0.1,5,30)
+    epsilons = np.linspace(0.3,5,30)
     sample2d = Sample((1,1),900)
     scatter_models = (ExpModel_2d(sample2d, epsilon=eps) for eps in epsilons)
     plot_linear_fits(ax, scatter_models, label="scatter")

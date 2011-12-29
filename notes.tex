@@ -631,7 +631,7 @@ The superposition of the sink just doubles the result, and we obtain:
 %%%%%%%%%%%
 \section{Spacing statistics}
 
-{\bf We have decided to change the convention!} Instead of defining $w_0$ to be the rate between sites at distance $r_0$, we define $w_0$ to be the rate between sites at distance $0$.
+ {\bf I have decided to try out another convention.} Instead of defining $w_0$ to be the rate between sites at distance $r_0$, we define $w_0$ to be the rate between sites at distance $0$. This is less numerically stable at low $\epsilon$s, but gives better insight on $\epsilon$s close to one.
 
 The previous model had the following rates:
 \begin{align}
@@ -639,7 +639,7 @@ The previous model had the following rates:
     \frac{r}{r_0} = 1 - \epsilon\ln \left(\frac{w}{w_0}\right)
 \end{align}
 
-The new convention is :
+The new convention is (on trial):
 \begin{align}
     w(r) = w_0 e^{\frac{-r}{\xi}}=w_0e^{(-\frac{r}{r_0})/\epsilon} = w_0 \left(e^{-\frac{r}{r_0}}\right)^\frac{1}{\epsilon}\\
     \frac{r}{r_0} = - \epsilon\ln \left(\frac{w}{w_0}\right)
@@ -751,7 +751,7 @@ In the following plots, the eigenvalue distibution of the $2d$ points (small cir
 %%%%%%%%%
 \begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d}
-\caption{The filled dots are the eigenvalues of a $2d$-scatter system. The empty circles are of an ordered lattice with the same all-to-all transitions. The crosses are the theoretical values for a bloch n.n. model. The lines are fitted linear lines with tangent 1.}
+\caption{The filled dots are the eigenvalues of a $2d$-scatter system. The empty circles are of an ordered lattice with the same all-to-all transitions. The crosses are the theoretical values for a bloch n.n. model. The dashed lines are based on the theoretical average Diffusion coefficient according to \eqref{eq:LRT_D}. The solid lines are computed by numeric summing.}
 \end{figure}
 \begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_small}
@@ -764,12 +764,12 @@ In the following plots, the eigenvalue distibution of the $2d$ points (small cir
 
 %%%% 
 
-The last plot is of a bloch model, with randomized values for the 4 nn jumps. Note the reversal of order.
+The last plot is of a bloch model, with randomized values for the 4 nn jumps. 
 \begin{figure}[H]
 \includegraphics[clip,width=0.9\hsize]{bloch_2d_4nn_rand_log_eig}
 \end{figure}
 
-All the $2d$ plots have a linear fit for the low eigenvalues. The fit function is $\log(y) = \log(x) + a$. The following plot is of $a$ as a function of $\epsilon$.
+All the $2d$ plots have a linear fit for the low eigenvalues. The fit function is $\log(y) = \log(x) + a$. The following plot is of the diffusion constant found by $D = \frac{1}{2\pi e^a}$ as a function of $\epsilon$.
 
 \begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{linear_fits}
@@ -789,7 +789,7 @@ So we can convert the diffusion calculation sum to an integral:
   D &= \frac{1}{2}\int_0^\infty w(r) r^2 2\pi \frac{r}{r_0} \frac{dr}{r_0} \\
   D/r_0^2 &= \pi \int_0^\infty w_0 e^{-\frac{r}{r_0\epsilon}} \left(\frac{r}{r_0}\right)^3 \frac{dr}{r_0} \\
   D/r_0^2 &= \pi w_0\int_0^\infty  e^{-x} (x\epsilon)^3 \epsilon dx\\
-  D/r_0^2 &= 6\pi w_0 \epsilon^4 
+  D/r_0^2 &= 6\pi w_0 \epsilon^4 \label{eq:LRT_D}
 \end{align}
 \section{VRH}
 The idea of the VRH scheme is to consider the probability of finding a site when considering the probability to transit to this site. In the $2d$ scatter model, the space is homogenous, so the probabilty of finding a site is equal to the density times the volume. The probability to find a site {\bf up to} distance $r$, is:
