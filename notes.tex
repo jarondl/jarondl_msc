@@ -46,8 +46,6 @@
 \newcommand{\varphiJ}{\bm{\varphi}}
 \newcommand{\thetaJ}{\bm{\theta}}
 %\renewcommand{\includegraphics}[2][0]{figure}[H]
-%\renewcommand\[{\begin{align}}
-%\renewcommand\]{\end{align}}
 
 
 % math symbols I
@@ -629,23 +627,12 @@ The superposition of the sink just doubles the result, and we obtain:
 
 
 %%%%%%%%%%%
-\section{Spacing statistics}
-
- {\bf I have decided to try out another convention.} Instead of defining $w_0$ to be the rate between sites at distance $r_0$, we define $w_0$ to be the rate between sites at distance $0$. This is less numerically stable at low $\epsilon$s, but gives better insight on $\epsilon$s close to one.
-
-The previous model had the following rates:
+\section{After the Research Proposal - Spacing statistics}
+We are working on a model with the following rates:
 \begin{align}
     w(r) = w_0 e^{\frac{r_0-r}{\xi}}=w_0e^{(1-\frac{r}{r_0})/\epsilon} = w_0 \left(e^{1-\frac{r}{r_0}}\right)^\frac{1}{\epsilon}\\
     \frac{r}{r_0} = 1 - \epsilon\ln \left(\frac{w}{w_0}\right)
 \end{align}
-
-The new convention is (on trial):
-\begin{align}
-    w(r) = w_0 e^{\frac{-r}{\xi}}=w_0e^{(-\frac{r}{r_0})/\epsilon} = w_0 \left(e^{-\frac{r}{r_0}}\right)^\frac{1}{\epsilon}\\
-    \frac{r}{r_0} = - \epsilon\ln \left(\frac{w}{w_0}\right)
-\end{align}
-
-
 For the sake of simplicity, we shall take $w_0=1$.
 
 The spacing (nearest neighbor) statistics have the following cummulative distribution:
@@ -672,14 +659,14 @@ This works well for $1d$, $2d$ and $3d$ (see figures \ref{fig:1d_dist},\ref{fig:
 
 So the cummulative distribution of the nearest neighbor rates is:
 \begin{align}
-    C(r(w)) &= \exp\left[{-\frac{\Omega_d}{d}\left(-\epsilon\ln \left(\frac{w}{w_0}\right)\right)^d}\right] \\
+    C(r(w)) &= \exp\left[{-\frac{\Omega_d}{d}\left(1-\epsilon\ln \left(\frac{w}{w_0}\right)\right)^d}\right] \\
 &= \begin{cases} 
-    \left(\frac{w}{w_0}\right)^{\epsilon} &d=1 \\
-e^{-\pi(-\epsilon\ln \frac{w}{w_0})^2} &d=2 \\
-e^{-\frac{4}{3}\pi(-\epsilon\ln \frac{w}{w_0})^3} &d=3 \\
+    e^{-2}w^{2\epsilon} &d=1 \\
+e^{-\pi(1-\epsilon\ln w)^2} &d=2 \\
+e^{-\frac{4}{3}\pi(1-\epsilon\ln w)^3} &d=3 \\
    \end{cases}
 \end{align}
-The highest possible rate is $r=0\rightarrow w=w_0$, which means that $w < w_0$.
+The highest possible rate is $r=0\rightarrow w=\exp(\frac{1}{\epsilon})$, which means that $w < \exp(\frac{1}{\epsilon})$.
 
 For low $\epsilon$, the decay values (the main diagonal of the matrix), almost equal the highest rates per row, because the highest value contributes most of the sum. Then we get the dimer approximation, with $\lambda \approx 2\gamma \approx 2w$. 
 
@@ -710,11 +697,11 @@ For high $\epsilon$, in $2d$, many values contribute to the sum, and it can be o
 \section{eigenvalue distribution for 1d lattices}
 We know already that the rate distribution for 1d lattices follows:
 \begin{align}
-C(w) = \left(\frac{w}{w_0}\right)^{\epsilon}
+C(w) = e^{-1}w^{\epsilon}
 \end{align}
 According to Alexander, we have two regimes. One is when $\epsilon > 1$, where we have diffusion with the following properties:
 \begin{align}
-D = \frac{\epsilon-1}{\epsilon}w_0 \\
+D = \frac{\epsilon-1}{\epsilon}e^{\frac{1}{\epsilon}} \\
 \mathcal{P}(t) = \sqrt{\frac{1}{4\pi D t}} \\
 g(\lambda) = \mathcal{L}^{-1}[\mathcal{P}(t)] = \sqrt{\frac{1}{\pi^2 D \lambda}} \\ 
 C(\lambda) = \sqrt{\frac{\lambda}{\pi^2 D}}
@@ -722,12 +709,12 @@ C(\lambda) = \sqrt{\frac{\lambda}{\pi^2 D}}
 The other regime is where $\epsilon <1 $, where the survival, and by extension the eigenvalue distribution are:
 \begin{align}
   \mathcal{P}(t) = \frac{1}{\Gamma\left(\frac{1}{1+\epsilon}\right)}t^{-\frac{\epsilon}{1+\epsilon}} \\
-  C(\lambda) = \sinc\left(\frac{\epsilon}{1+\epsilon}\right)\lambda^{\frac{\epsilon}{1+\epsilon}}
+  C(\lambda) = \sinc\left(\frac{\epsilon}{1+\epsilon}\right)e^{-1}\lambda^{\frac{\epsilon}{1+\epsilon}}
 \end{align}
 (Side note to me: $\mathcal{L}[\lambda^{\eta-1}] = \Gamma(\eta)w^{-\eta}$, and some $\Gamma$ function identities lead to this result. Also, the sinc is normalized: $\sinc=\frac{\sin(\pi x)}{\pi x}$)
 \begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{bloch_1d_2nn_rand_log_eig}
-\caption{$1d$ n.n. network, the dotted lines represent the theoretical distributions}
+\caption{$1d$ network, the dotted lines represent the theoretical distributions}
 \end{figure}
 
 \begin{figure}[H]
@@ -738,65 +725,39 @@ The other regime is where $\epsilon <1 $, where the survival, and by extension t
 %%%%%%%%%%%%
 \section{eigenvalue distribution for 2d lattices}
 Scattered points on a $2d$ surface were considered. We define the transition rates between the sites to be 
-\begin{align}   W_{nm} = w_0 e^{(-r_nm)/(r_0\epsilon)} \end{align}  
-Assuming that we have diffusion, we can using scaling to get:
-\begin{align} 
-    \mathcal{P}(t) \cdot \pi <r^2> &\sim 1 \\
-    \mathcal{P}(t) &\sim \frac{1}{2\pi Dt}\\
-    g(\lambda)\mathcal{L}^{-1}\left[\mathcal{P}(t)\right]&= \frac{1}{2\pi D} \\
-    C(\lambda) &= \int g(\lambda) = \frac{1}{2\pi D}\lambda
-\end{align}
+\[ W_{nm} = w_0 e^{(r_0-r_nm)/(r_0\epsilon)} \]
 In the following plots, the eigenvalue distibution of the $2d$ points (small circles, $900$ points), are compared to the distribution of ordered bloch networks (empty circles, $30\times30=900$ points). The crosses represent the theoratical eigenvalue distribution for a nearest neighbor bloch model. The grey dots are straight lines (in logspace), with slope $1$. First comes a plot for a wide range of epsilons, and it is followed by plots for small ($<1$) and large ($>1$) epsilons.
 
 %%%%%%%%%
 \begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d}
-\caption{The filled dots are the eigenvalues of a $2d$-scatter system. The empty circles are of an ordered lattice with the same all-to-all transitions. The crosses are the theoretical values for a bloch n.n. model. The dashed lines are based on the theoretical average Diffusion coefficient according to \eqref{eq:LRT_D}. The solid lines are computed by numeric summing.}
 \end{figure}
 \begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_small}
-\caption{}
 \end{figure}
 \begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_large}
 \end{figure}
 
+%%%%%%%%%
+Next, come several plots of the participation numbers of the eigenmodes. For each epsilon, the plot shows the PN of every eigenmode. On the left, the $x$ axis is eigenvalue, and on the right, the $x$ axis is just the eigenmode number.
+\begin{figure}[H]
+\includegraphics[clip, width=0.9\hsize]{several_pn}
+\end{figure}
 
 %%%% 
 
-The last plot is of a bloch model, with randomized values for the 4 nn jumps. 
+The last plot is of a bloch model, with randomized values for the 4 nn jumps. Note the reversal of order.
 \begin{figure}[H]
 \includegraphics[clip,width=0.9\hsize]{bloch_2d_4nn_rand_log_eig}
 \end{figure}
 
-All the $2d$ plots have a linear fit for the low eigenvalues. The fit function is $\log(y) = \log(x) + a$. The following plot is of the diffusion constant found by $D = \frac{1}{2\pi e^a}$ as a function of $\epsilon$.
+All the $2d$ plots have a linear fit for the low eigenvalues. The fit function is $\log(y) = \log(x) + a$. The following plot is of $a$ as a function of $\epsilon$.
 
 \begin{figure}[H]
 \includegraphics[clip, width=0.9\hsize]{linear_fits}
 \end{figure}
 
-\section{Linear Response}
-After an infinitisimal amount of time $\delta t$, the spreading is:
-\begin{align}   <r^2> = \sum_n w(r_n) r_n^2 \delta t \end{align}  
-Therefore, the diffusion is:
-\begin{align}   D = \frac{<r^2>}{2t} =  \overline{\frac{1}{2} \sum_n w(r_n) r_n^2} = \frac{1}{2}\sum_n \overline{w(r_n)r_n^2}\end{align}  
-The number of sites upto a distance $r$ is:
-\begin{align}   N(r) = n\cdot \pi r^2 = 2\pi\left(\frac{r}{r_0}\right)^2\end{align}  
-Therefore, the probability density is:
-\begin{align}   n(r)dr = \frac{dN(r)}{dr}dr = 2\pi \frac{r}{r_0}\frac{dr}{r_0}\end{align}  
-So we can convert the diffusion calculation sum to an integral:
-\begin{align} 
-  D &= \frac{1}{2}\int_0^\infty w(r) r^2 2\pi \frac{r}{r_0} \frac{dr}{r_0} \\
-  D/r_0^2 &= \pi \int_0^\infty w_0 e^{-\frac{r}{r_0\epsilon}} \left(\frac{r}{r_0}\right)^3 \frac{dr}{r_0} \\
-  D/r_0^2 &= \pi w_0\int_0^\infty  e^{-x} (x\epsilon)^3 \epsilon dx\\
-  D/r_0^2 &= 6\pi w_0 \epsilon^4 \label{eq:LRT_D}
-\end{align}
-\section{VRH}
-The idea of the VRH scheme is to consider the probability of finding a site when considering the probability to transit to this site. In the $2d$ scatter model, the space is homogenous, so the probabilty of finding a site is equal to the density times the volume. The probability to find a site {\bf up to} distance $r$, is:
-\begin{align}   N(r) = n\cdot \pi r^2 = \pi \left(\frac{r}{r_0}\right)^2\end{align}  
-\begin{align}   n(r)dr = \frac{dN(r)}{dr}dr = 2\pi \frac{r}{r_0}\frac{dr}{r_0}\end{align}  
-The transition probability density per unit time is:
-\begin{align}  p(r)dr = w(r)n(r)dr = w_0 e^{-\frac{r}{r_0\epsilon}}2\pi \frac{r}{r_0}\frac{dr}{r_0}=2\pi w_0 e^{-\frac{r}{r_0\epsilon} + \log\frac{r}{r_0}}\frac{dr}{r_0}\end{align}  
 \section{Current Agenda}
 Finding the effective grid. We have some random network and we wish to create an effective grid representing the same hopping coeffecients. We can use a Mott-like approach, where we replace the the $r_0$ with a varational variable. It should represent the hopping coefficient together with the probability to "find" the site. Thus it should somehow maximize the probability times the hopping. 
 
