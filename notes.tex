@@ -727,7 +727,7 @@ The other regime is where $\epsilon <1 $, where the survival, and by extension t
 %%%%%%%%%%%%
 \section{eigenvalue distribution for 2d lattices}
 Scattered points on a $2d$ surface were considered. We define the transition rates between the sites to be 
-\begin{align}   W_{nm} = w_0 e^{(-r_nm)/(r_0\epsilon)} \end{align}  
+\begin{align}   W_{nm} = w_0 e^{(r_0 - r_{nm})/(r_0\epsilon)} \end{align}  
 Assuming that we have diffusion, we can using scaling to get:
 \begin{align} 
     \mathcal{P}(t) \cdot \pi <r^2> &\sim 1 \\
@@ -776,9 +776,9 @@ Therefore, the probability density is:
 So we can convert the diffusion calculation sum to an integral:
 \begin{align} 
   D &= \frac{1}{2}\int_0^\infty w(r) r^2 2\pi \frac{r}{r_0} \frac{dr}{r_0} \\
-  D/r_0^2 &= \pi \int_0^\infty w_0 e^{-\frac{r}{r_0\epsilon}} \left(\frac{r}{r_0}\right)^3 \frac{dr}{r_0} \\
-  D/r_0^2 &= \pi w_0\int_0^\infty  e^{-x} (x\epsilon)^3 \epsilon dx\\
-  D/r_0^2 &= 6\pi w_0 \epsilon^4 
+  D/r_0^2 &= \pi \int_0^\infty w_0 e^{\frac{1}{\epsilon}-\frac{r}{r_0\epsilon}} \left(\frac{r}{r_0}\right)^3 \frac{dr}{r_0} \\
+  D/r_0^2 &= \pi w_0 e^{\frac{1}{\epsilon}\int_0^\infty  e^{-x} (x\epsilon)^3 \epsilon dx\\
+  D/r_0^2 &= 6\pi w_0 e^{\frac{1}{\epsilon}\epsilon^4 
 \end{align}
 \section{VRH}
 The idea of the VRH scheme is to consider the probability of finding a site when considering the probability to transit to this site. In the $2d$ scatter model, the space is homogenous, so the probabilty of finding a site is equal to the density times the volume. The probability to find a site {\bf up to} distance $r$, is:

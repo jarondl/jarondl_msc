@@ -5,6 +5,7 @@
 from __future__ import division
 
 import itertools
+import logging
 
 #from scipy.sparse import linalg as splinalg
 from numpy import random, pi, log10, sqrt,  exp, sort, eye, nanmin, nanmax, log, cos, sinc
@@ -22,6 +23,11 @@ from plotdl import cummulative_plot
 np.seterr(all='warn')
 EXP_MAX_NEG = np.log(np.finfo( np.float).tiny)
 
+#set up logging:
+logger = logging.getLogger(__name__)
+info = logger.info
+warning = logger.warning
+debug = logger.debug
 
 def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
     """ Plots 1d diffusion, treating the x value as log10.
@@ -209,7 +215,7 @@ class ExpModel_1d(ExpModel):
         brates = nanmax(self.ex, axis=0)
         logbrates = log10(brates)
         if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
-            print "len(logbrates)", len(logbrates)
+            #print "len(logbrates)", len(logbrates)
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
             plot_func_logplot(ax, lambda w: exp(-2*(1-self.epsilon*log(w))),self.logxlim, r"$e^{-2\cdot(1-\epsilon\ln(w))}$")
             plot_func_logplot(ax, lambda w: exp(-(1-self.epsilon*log(w*0.5))),self.logxlim, r"$e^{-\cdot(1-\epsilon\ln(\frac{w}{2}))}$")
@@ -292,8 +298,8 @@ class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
         ex = np.zeros(r.shape)
         W = exp(1-np.sqrt(-log(np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:])/pi))**(1/self.epsilon)
 
-        print ex[lnn==1].shape
-        print W.shape
+        debug("ex[lnn=1].shape = %d", ex[lnn==1].shape)
+        #print W.shape
         ex[lnn==1] = np.random.permutation(W)
         sym_ex = ex + ex.T
         zero_sum(sym_ex)
@@ -311,8 +317,8 @@ class ExpModel_Bloch_1d_only2nn_randomized(ExpModel_1d):
 #        W = exp(1/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(2*self.epsilon))
         W = exp(1/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(self.epsilon))
 
-        print ex[lnn==1].shape
-        print W.shape
+        #print ex[lnn==1].shape
+        #print W.shape
         ex[lnn==1] = np.random.permutation(W)
         sym_ex = ex + ex.T
         zero_sum(sym_ex)
@@ -506,12 +512,13 @@ def plot_linear_fits(ax, models, **kwargs):
     pfs = [sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w) for x in xs]
     ax.plot(epss, pfs, ".", **kwargs)
 
-def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), number_of_sites = 900):
+def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), root_number_of_sites = 30):
 
+    number_of_sites = root_number_of_sites**2
     ## 2d scatter same graphs as 4nn 
     colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     sample2d = Sample((1,1),number_of_sites)
-    bloch2d = create_bloch_sample_2d(30)
+    bloch2d = create_bloch_sample_2d(root_number_of_sites)
     ex = ExpModel_2d(sample2d, epsilon=1)
     ex.plot_theoretical_eigvals(ax)
     y = np.linspace(1.0/(number_of_sites-1),1,1.0/(number_of_sites-1))
@@ -527,10 +534,11 @@ def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), number_
         #new - try to fit a curve
         x = -model.eigvals[1:]
         #[a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
-        xlim = (max((1.0/(number_of_sites-1))*12*pi*epsilon**4,model.xlim[0]), min(model.xlim[1], 0.9*(12*pi*epsilon**4)))
+        xlim = (max((1.0/(number_of_sites-1))*12*pi*epsilon**4*exp(1/epsilon),model.xlim[0]), min(model.xlim[1], 0.9*(12*pi*epsilon**4*exp(1/epsilon))))
         #plot_func(ax, lambda x: x*exp(a), xlim, label="{:3}".format(a), color= color)
         #plot_func(ax, lambda x: x*exp(a), xlim,  color= color)
-        plot_func(ax, lambda x: x/(12*pi*(model.epsilon**4)),xlim,  color= color)
+        info(" epsilon = %f , epsilon**4*exp(1/epsilon) = %f ",epsilon, epsilon**4*exp(1/epsilon))
+        plot_func(ax, lambda x: x/(12*pi*(model.epsilon**4*exp(1/epsilon))),xlim,  color= color)
 
     ax.set_xscale('log')
     ax.set_yscale('log')
