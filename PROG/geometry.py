@@ -76,14 +76,11 @@ class Sample(object):
         else:
             return self.non_periodic_distance_matrix()/self.r_0()
     
-    def exponent_1_minus_r(self, periodic=False):
+    def exponent_minus_r(self, periodic=False, convention = 1):
         N = self.number_of_points()
-        one_matrix = np.ones([N,N]) - np.eye(N)
+        one_matrix = convention*(np.ones([N,N]) - np.eye(N))
         return np.exp(one_matrix-self.normalized_distance_matrix(periodic)) - np.eye(N)
     
-    def exponent_minus_r(self, periodic=True):
-        N = self.number_of_points()
-        return np.exp(-self.normalized_distance_matrix(periodic)) - np.eye(N)
 
 
 def euclid(point1, point2):

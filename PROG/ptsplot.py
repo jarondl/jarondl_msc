@@ -61,7 +61,7 @@ def plot_func(ax, func, xlim, **kwargs):
 ####################   Sample Plots ################
 
 
-def exp_model_matrix(sample, epsilon=0.1, bandwidth=None, periodic=False): ## rename from sample exp
+def exp_model_matrix(sample, epsilon=0.1, convention=1, bandwidth=None, periodic=False): ## rename from sample exp
     """ Creats W_{nm} = exp((r_0-r_{nm})/xi). The matrix is zero summed and should be symmetric.
 
         :param sample: The sample, with generated points.
@@ -69,7 +69,10 @@ def exp_model_matrix(sample, epsilon=0.1, bandwidth=None, periodic=False): ## re
         :param epsilon: the epsilon, defaults to 0.1
     """
     # handle bandwidth for 1d. the default is 1.
-    ex1 = (sample.exponent_1_minus_r(periodic))**(1/epsilon)
+    if convention == 1:
+        ex1 = (sample.exponent_1_minus_r(periodic))**(1/epsilon)
+    else:
+        ex1 = (sample.exponent_minus_r(periodic))**(1/epsilon)
     if sample.d ==  1:
         if bandwidth is None:
             ex1 = ex1*periodic_banded_ones(ex1.shape[0], 1)
@@ -138,13 +141,13 @@ class ExpModel(object):
           +--- ExpModel_Bloch_1d
         +---
     """
-    def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",bandwidth1d = None, periodic=True):
+    def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",bandwidth1d = None, periodic=True, convention=1):
         """ Take sample and epsilon, and calc eigvals and eigmodes"""
         self.epsilon = epsilon
         self.sample = sample
         self.periodic=periodic
         self.bandwidth1d = bandwidth1d
-        self.ex = self.rate_matrix()#exp_model_matrix(sample, epsilon=epsilon, bandwidth=bandwidth1d, periodic=periodic)
+        self.ex = self.rate_matrix(convention)#exp_model_matrix(sample, epsilon=epsilon, bandwidth=bandwidth1d, periodic=periodic)
         self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
         self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.permuted = False
@@ -153,10 +156,10 @@ class ExpModel(object):
         self.xlim = [-self.eigvals[1], -self.eigvals[-1]]
         self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
 
-    def rate_matrix(self):
+    def rate_matrix(self, convention):
         """  Return the rate matrix of the model. It is here mainly to be subclassed.
         """
-        return exp_model_matrix(self.sample, epsilon=self.epsilon, bandwidth=self.bandwidth1d, periodic=self.periodic)
+        raise Exception("Unimplemented")
 
     def permute_and_store(self):
         """ Permute the rates and set perm_logvals and perm_eig_matrix """
@@ -188,20 +191,23 @@ class ExpModel(object):
 
 class ExpModel_1d(ExpModel):
     """ Subclassing exp model for 1d """
-    def temp_disables_plot_diff(self, ax, label=r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
-        D = self.diff_coef()
-        d2 = self.sample.d /2.0
-        prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
-        #power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict), **kwargs)
-        f = lambda x: prefactor*x**d2
-        plot_func(ax, f, label="D = {D:.3G}".format(D=D))
-    def plot_alexander(self, ax, **kwargs):
+    def rate_matrix(self, convention):
+        ex1 = (self.sample.exponent_minus_r(self.periodic, convention))**(1/self.epsilon)
+        if self.bandwidth1d is None:
+            ex1 = ex1*periodic_banded_ones(ex1.shape[0], 1)
+        elif self.bandwidth1d != 0: #### Zero means ignore bandwidth
+            ex1 = ex1*periodic_banded_ones(ex1.shape[0], self.bandwidth1d)
+        sparsedl.zero_sum(ex1)
+        return ex1 
+
+
+    def plot_alexander(self, ax, convention=1, **kwargs):
         """ plots Alexander's solution """
         epsilon = self.epsilon
         if epsilon > 1:
-            f = lambda x: sqrt( x * exp(-1/epsilon) *epsilon / (epsilon - 1)) / pi
+            f = lambda x: sqrt( x * exp(-convention/epsilon) *epsilon / (epsilon - 1)) / pi
         else:
-            f = lambda x: exp(-1)*sinc(epsilon/(epsilon+1))*x**(epsilon/(epsilon+1))
+            f = lambda x: exp(-convention)*sinc(epsilon/(epsilon+1))*x**(epsilon/(epsilon+1))
         plot_func(ax, f, self.xlim, **kwargs)
         
     def diff_coef(self):
@@ -209,7 +215,7 @@ class ExpModel_1d(ExpModel):
         if D < 0 :
             D = sparsedl.resnet(self.ex,1)
         return D
-    def plot_rate_density(self, ax, label=r"Max. rate / row", **kwargs):
+    def plot_rate_density(self, ax, label=r"Max. rate / row",convention=1, **kwargs):
         """ """
         N = self.sample.number_of_points()
         brates = nanmax(self.ex, axis=0)
@@ -217,8 +223,10 @@ class ExpModel_1d(ExpModel):
         if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
             #print "len(logbrates)", len(logbrates)
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
-            plot_func_logplot(ax, lambda w: exp(-2*(1-self.epsilon*log(w))),self.logxlim, r"$e^{-2\cdot(1-\epsilon\ln(w))}$")
-            plot_func_logplot(ax, lambda w: exp(-(1-self.epsilon*log(w*0.5))),self.logxlim, r"$e^{-\cdot(1-\epsilon\ln(\frac{w}{2}))}$")
+            plot_func_logplot(ax, lambda w: exp(-2*(convention-self.epsilon*log(w))),
+                self.logxlim, r"$e^{{-2\cdot({}-\epsilon\ln(w))}}$".format(convention))
+            plot_func_logplot(ax, lambda w: exp(-(convention-self.epsilon*log(w*0.5))),
+                self.logxlim, r"$e^{{-\cdot({}-\epsilon\ln(\frac{{w}}{{2}}))}}$".format(convention))
     def plot_theoretical_eigvals(self, ax):
         N = self.sample.number_of_points()
         qx = 2*pi/N*np.arange(N)
@@ -245,17 +253,25 @@ class ExpModel_Bloch_1d(ExpModel_1d):
 
 class ExpModel_2d(ExpModel):
     """ Subclassing exp model for 2d """
-    def diff_coef(self):
-        return self.epsilon*4
+    def rate_matrix(self, convention):
+        ex1 = (self.sample.exponent_minus_r(self.periodic, convention))**(1/self.epsilon)
+        sparsedl.zero_sum(ex1)
+        return ex1 
 
-    def plot_rate_density(self, ax, label=r"Max. rate / row", **kwargs):
+    def LRT_diff_coef(self, convention = 1):
+        return 6*pi*exp(convention/epsilon)*self.epsilon**4
+
+    def plot_rate_density(self, ax, label=r"Max. rate / row", convention=1, **kwargs):
         N = self.sample.number_of_points()
         brates = self.ex.max(axis=0)
         logbrates = log10(brates)
         if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
-            plot_func_logplot(ax, lambda w: exp(-pi*(1-self.epsilon*log(w))**2),self.logxlim, r"$e^{-\pi\cdot(1-\epsilon\ln(w))^2}$")
-            plot_func_logplot(ax, lambda w: exp(-0.5*pi*(1-self.epsilon*log(0.5*w))**2),self.logxlim, r"$e^{-\frac{\pi}{2}\cdot(1-\epsilon\ln(\frac{w}{2}))^2}$")
+            plot_func_logplot(ax, lambda w: exp(-pi*(convention-self.epsilon*log(w))**2),
+                self.logxlim, r"$e^{{-\pi\cdot({}-\epsilon\ln(w))^2}}$".format(convention))
+            plot_func_logplot(ax, lambda w: exp(-0.5*pi*(convention-self.epsilon*log(0.5*w))**2),
+                self.logxlim, r"$e^{{-\frac{{\pi}}{{2}}\cdot({}-\epsilon\ln(\frac{{w}}{{2}}))^2}}$".format(convention))
+
     def plot_theoretical_eigvals(self, ax):
         N = sqrt(self.sample.number_of_points())
         qy, qx = np.meshgrid(2*pi/N*np.arange(N),2*pi/N*np.arange(N))
@@ -274,8 +290,8 @@ class ExpModel_Bloch_2d(ExpModel_2d):
         """ """
         pass
     
-class ExpModel_Bloch_2d_only4nn(ExpModel):
-    def rate_matrix(self):
+class ExpModel_Bloch_2d_only4nn(ExpModel_2d):
+    def rate_matrix(self,convention):
         r = self.sample.normalized_distance_matrix(self.periodic)
         ex = exp(1-r)*(r<1.001)
         zero_sum(ex)
@@ -288,7 +304,7 @@ class ExpModel_Bloch_2d_only4nn(ExpModel):
         cummulative_plot(ax, z, label="$4+2\cos(q_x)+2\cos(q_y) $" ,color="red", marker="x")
         
 class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
-    def rate_matrix(self):
+    def rate_matrix(self, convention):
         """ 4 nn (u,d,l,r)"""
         r = self.sample.normalized_distance_matrix(self.periodic)
         ## r is normalized, so r=1 means n.n. 
@@ -296,7 +312,7 @@ class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
         lnn = np.tri(r.shape[0])*(r>0.99)*(r<1.001)
         #W = exp(1-np.sqrt(-log(np.linspace(0,1, 2*r.shape[0]+1)[1:])/pi))**(1/self.epsilon)
         ex = np.zeros(r.shape)
-        W = exp(1-np.sqrt(-log(np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:])/pi))**(1/self.epsilon)
+        W = exp(convention - np.sqrt( -log(np.linspace(0, 1, ex[lnn==1].shape[0] + 1)[1:])/pi))**(1/self.epsilon)
 
         debug("ex[lnn=1].shape = %d", ex[lnn==1].shape)
         #print W.shape
@@ -306,7 +322,7 @@ class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
         return sym_ex
 
 class ExpModel_Bloch_1d_only2nn_randomized(ExpModel_1d):
-    def rate_matrix(self):
+    def rate_matrix(self,convention):
         """ 2 nn (l,r)"""
         r = self.sample.normalized_distance_matrix(self.periodic)
         ## r is normalized, so r=1 means n.n. 
@@ -315,7 +331,7 @@ class ExpModel_Bloch_1d_only2nn_randomized(ExpModel_1d):
         #W = exp(1-np.sqrt(-log(np.linspace(0,1, 2*r.shape[0]+1)[1:])/pi))**(1/self.epsilon)
         ex = np.zeros(r.shape)
 #        W = exp(1/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(2*self.epsilon))
-        W = exp(1/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(self.epsilon))
+        W = exp(convention/self.epsilon)*np.linspace(0,1, ex[lnn==1].shape[0]+1)[1:]**(1/(self.epsilon))
 
         #print ex[lnn==1].shape
         #print W.shape
@@ -326,9 +342,11 @@ class ExpModel_Bloch_1d_only2nn_randomized(ExpModel_1d):
 
     
 class ExpModel_alter_1d(ExpModel_1d):
-    def rate_matrix(self):
+    def rate_matrix(self,convention):
         N = self.sample.number_of_points()
-        ex = exp_model_matrix(self.sample, epsilon=self.epsilon, bandwidth=1)
+        ex = (self.sample.exponent_minus_r(self.periodic, convention))**(1/self.epsilon)
+        ex = ex*periodic_banded_ones(ex.shape[0], 1)
+        sparsedl.zero_sum(ex)
         offd = np.arange(1, N-1, 2 )
         ex[[offd, offd-1]] = 0
         ex[[offd-1, offd]] = 0
@@ -508,11 +526,11 @@ def plot_linear_fits(ax, models, **kwargs):
     y = np.linspace(1.0/899,1,899)
     ar = np.arange(899)
     w = (ar%4==3 )*exp(-ar/3.0)
-    xs,epss = zip(*((-mod.eigvals[1:], mod.epsilon) for mod in models))
+    xs,epss = zip(*[(-mod.eigvals[1:], mod.epsilon) for mod in models])
     pfs = [sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w) for x in xs]
     ax.plot(epss, pfs, ".", **kwargs)
 
-def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), root_number_of_sites = 30):
+def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), root_number_of_sites = 30, convention=1):
 
     number_of_sites = root_number_of_sites**2
     ## 2d scatter same graphs as 4nn 
@@ -534,11 +552,11 @@ def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), root_nu
         #new - try to fit a curve
         x = -model.eigvals[1:]
         #[a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
-        xlim = (max((1.0/(number_of_sites-1))*12*pi*epsilon**4*exp(1/epsilon),model.xlim[0]), min(model.xlim[1], 0.9*(12*pi*epsilon**4*exp(1/epsilon))))
+        xlim = (max((1.0/(number_of_sites-1))*12*pi*epsilon**4*exp(convention/epsilon),model.xlim[0]), min(model.xlim[1], 0.9*(12*pi*epsilon**4*exp(convention/epsilon))))
         #plot_func(ax, lambda x: x*exp(a), xlim, label="{:3}".format(a), color= color)
         #plot_func(ax, lambda x: x*exp(a), xlim,  color= color)
         info(" epsilon = %f , epsilon**4*exp(1/epsilon) = %f ",epsilon, epsilon**4*exp(1/epsilon))
-        plot_func(ax, lambda x: x/(12*pi*(model.epsilon**4*exp(1/epsilon))),xlim,  color= color)
+        plot_func(ax, lambda x: x/(12*pi*(model.epsilon**4*exp(convention/epsilon))),xlim,  color= color)
 
     ax.set_xscale('log')
     ax.set_yscale('log')
