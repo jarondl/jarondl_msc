@@ -16,7 +16,7 @@ import numpy as np
 import sparsedl
 import plotdl
 from geometry import Sample
-from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum
+from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum, lazyprop
 from plotdl import cummulative_plot
 
 ### Raise all float errors
@@ -145,16 +145,13 @@ class ExpModel(object):
         """ Take sample and epsilon, and calc eigvals and eigmodes"""
         self.epsilon = epsilon
         self.sample = sample
+        self.convention = convention
         self.periodic=periodic
         self.bandwidth1d = bandwidth1d
-        self.ex = self.rate_matrix(convention)#exp_model_matrix(sample, epsilon=epsilon, bandwidth=bandwidth1d, periodic=periodic)
-        self.eigvals, self.logvals, self.eig_matrix = self.calc_eigmodes(self.ex)
         self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.permuted = False
         self.basename = basename.format(**self.vals_dict)
         #self.logxlim = self.logvals[[1,-1]]
-        self.xlim = [-self.eigvals[1], -self.eigvals[-1]]
-        self.logxlim = [nanmin(self.logvals), nanmax(self.logvals)]
 
     def rate_matrix(self, convention):
         """  Return the rate matrix of the model. It is here mainly to be subclassed.
@@ -170,12 +167,32 @@ class ExpModel(object):
         #return (self.perm_logvals, self.perm_eig_matrix)
     def maximal_rate_per_row(self):
         return self.ex.max(axis=0)
+    
+    @lazyprop
+    def eigvals(self):
+	    return sparsedl.sorted_eigvalsh(self.ex)
 
-    def calc_eigmodes(self, ex):
-        """ calculate eigmodes, and return logvals and eigmodes"""
-        v,w = sparsedl.sorted_eigh(ex)
-        return (v, log10((-v)[1:]), w)
+    @lazyprop
+    def eig_matrix(self):
+        (self.eigvals, w) = sparsedl.sorted_eigh(self.ex)
+        return w
 
+    @lazyprop
+    def logvals(self):
+        return log10((-self.eigvals)[1:])
+
+    @lazyprop
+    def ex(self):
+        return self.rate_matrix(self.convention)
+
+    @lazyprop
+    def xlim(self):
+        return [-self.eigvals[1], -self.eigvals[-1]]
+
+    @lazyprop
+    def logxlim(self):
+        return [nanmin(self.logvals), nanmax(self.logvals)]
+    
     def plot_diff(self, ax, label = r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
         """ """
         #D = self.diff_coef()#exp(1/self.epsilon)/(4*pi)#1#self.epsilon#

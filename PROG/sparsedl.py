@@ -270,7 +270,7 @@ def sorted_eigvalsh(matrix):
     """ """
     eigvals =  - linalg.eigvalsh(matrix)
     eigvals.sort()
-    return eigvals
+    return -eigvals
 
 def descrete_spatial_fourier2(k , points, values):
     """ """
@@ -289,3 +289,17 @@ def periodic_banded_ones(N, bandwidth):
     assert N > bandwidth*2
     return (numpy.tri(N, k=bandwidth)*numpy.tri(N,k=bandwidth).T +
            numpy.tri(N, k=(bandwidth-N)) + numpy.tri(N,k=(bandwidth-N)).T)
+
+def lazyprop(fn):
+    """ based on http://stackoverflow.com/questions/3012421/python-lazy-property-decorator"""
+    attr_name = '_lazy_' + fn.__name__
+    @property
+    def _lazyprop(self):
+        if not hasattr(self, attr_name):
+            setattr(self, attr_name, fn(self))
+        return getattr(self, attr_name)
+
+    @_lazyprop.setter
+    def _lazyprop(self, value):
+        setattr(self, attr_name, value)
+    return _lazyprop
