@@ -259,7 +259,22 @@ class ExpModel_2d(ExpModel):
         return ex1 
 
     def LRT_diff_coef(self, convention = 1):
-        return 6*pi*exp(convention/epsilon)*self.epsilon**4
+        return 6*pi*exp(convention/self.epsilon)*self.epsilon**4
+
+    def fit_diff_coef(self, convention = 1):
+        fitN = self.sample.number_of_points() - 1
+        y = np.linspace(1.0/(fitN),1,fitN)
+        ar = np.arange(fitN)
+        #w = (ar%4==3 )*exp(-ar/3.0)
+        ### Trying to cheat less : 
+        w = exp(-ar/3.0)
+        x = -self.eigvals[1:]
+        #prefactor  = sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w)
+        #D = exp(-prefactor)/(2*pi)
+        ## Keep things simple:
+        [D] = sparsedl.cvfit((lambda x, D: x/(2*pi*D)), x, y, [1], w)
+        return D
+
 
     def plot_rate_density(self, ax, label=r"Max. rate / row", convention=1, **kwargs):
         N = self.sample.number_of_points()
@@ -523,12 +538,8 @@ def nn_mesh(normalized_distance_matrix):
 
 def plot_linear_fits(ax, models, **kwargs):
     
-    y = np.linspace(1.0/899,1,899)
-    ar = np.arange(899)
-    w = (ar%4==3 )*exp(-ar/3.0)
-    xs,epss = zip(*[(-mod.eigvals[1:], mod.epsilon) for mod in models])
-    pfs = [sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w) for x in xs]
-    ax.plot(epss, pfs, ".", **kwargs)
+    Ds, epss = zip(*[(mod.fit_diff_coef(), mod.epsilon) for mod in models])
+    ax.plot(epss, Ds, ".", **kwargs)
 
 def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), root_number_of_sites = 30, convention=1):
 
@@ -539,9 +550,6 @@ def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), root_nu
     bloch2d = create_bloch_sample_2d(root_number_of_sites)
     ex = ExpModel_2d(sample2d, epsilon=1)
     ex.plot_theoretical_eigvals(ax)
-    y = np.linspace(1.0/(number_of_sites-1),1,1.0/(number_of_sites-1))
-    ar = np.arange((number_of_sites-1))
-    w = (ar%4==3 )*exp(-ar/3.0)
     for epsilon in epsilon_range:
         color = colors.next()
         model = ExpModel_2d(sample2d, epsilon=epsilon)

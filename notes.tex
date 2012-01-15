@@ -777,15 +777,22 @@ So we can convert the diffusion calculation sum to an integral:
 \begin{align} 
   D &= \frac{1}{2}\int_0^\infty w(r) r^2 2\pi \frac{r}{r_0} \frac{dr}{r_0} \\
   D/r_0^2 &= \pi \int_0^\infty w_0 e^{\frac{1}{\epsilon}-\frac{r}{r_0\epsilon}} \left(\frac{r}{r_0}\right)^3 \frac{dr}{r_0} \\
-  D/r_0^2 &= \pi w_0 e^{\frac{1}{\epsilon}\int_0^\infty  e^{-x} (x\epsilon)^3 \epsilon dx\\
-  D/r_0^2 &= 6\pi w_0 e^{\frac{1}{\epsilon}\epsilon^4 
+  D/r_0^2 &= \pi w_0 e^{\frac{1}{\epsilon}}\int_0^\infty  e^{-x} (x\epsilon)^3 \epsilon dx\\
+  D/r_0^2 &= 6\pi w_0 e^{\frac{1}{\epsilon}}\epsilon^4 
 \end{align}
 \section{VRH}
 The idea of the VRH scheme is to consider the probability of finding a site when considering the probability to transit to this site. In the $2d$ scatter model, the space is homogenous, so the probabilty of finding a site is equal to the density times the volume. The probability to find a site {\bf up to} distance $r$, is:
 \begin{align}   N(r) = n\cdot \pi r^2 = \pi \left(\frac{r}{r_0}\right)^2\end{align}  
 \begin{align}   n(r)dr = \frac{dN(r)}{dr}dr = 2\pi \frac{r}{r_0}\frac{dr}{r_0}\end{align}  
 The transition probability density per unit time is:
-\begin{align}  p(r)dr = w(r)n(r)dr = w_0 e^{-\frac{r}{r_0\epsilon}}2\pi \frac{r}{r_0}\frac{dr}{r_0}=2\pi w_0 e^{-\frac{r}{r_0\epsilon} + \log\frac{r}{r_0}}\frac{dr}{r_0}\end{align}  
+\begin{align}  p(r)dr = w(r)n(r)dr = w_0 e^{-\frac{r}{r_0\epsilon}}2\pi \frac{r}{r_0}\frac{dr}{r_0}=2\pi w_0 e^{-\frac{r}{r_0\epsilon} + \log\frac{r}{r_0}}\frac{dr}{r_0}
+\end{align}  
+
+%%%%%%%%
+\section{"Rigorous VRH"}
+
+
+%
 \section{Current Agenda}
 Finding the effective grid. We have some random network and we wish to create an effective grid representing the same hopping coeffecients. We can use a Mott-like approach, where we replace the the $r_0$ with a varational variable. It should represent the hopping coefficient together with the probability to "find" the site. Thus it should somehow maximize the probability times the hopping. 
 
