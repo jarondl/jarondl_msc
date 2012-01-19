@@ -32,7 +32,9 @@ debug = logger.debug
 
 #Setting up some lambda functions:
 #  D* = D - DELTA_D  # comes from "rigorous VRH"
-DELTA_D = lambda eps, rstar : 2*pi*(exp(1/eps)*eps*(6*eps**3-exp(-rstar/eps)*(6*eps**3+ 6*eps**2*rstar + 3*eps*rstar**2 + rstar**3)) - rstar**4*exp((1-rstar)/eps)/4)
+#DELTA_D = lambda eps, rstar : 2*pi*(exp(1/eps)*eps*(6*eps**3-exp(-rstar/eps)*(6*eps**3+ 6*eps**2*rstar + 3*eps*rstar**2 + rstar**3)) - rstar**4*exp((1-rstar)/eps)/4)
+D_LRT = lambda eps : 6*pi*exp(1/eps)*eps**4
+DELTA_D = lambda eps, rstar : (pi/4)*exp((1-rstar)/eps)*(24*(-1+exp(rstar/eps))*eps**4-24*eps**3*rstar - 12*eps**2*rstar**2-4*eps*rstar**3-rstar**4)
 
 def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
     """ Plots 1d diffusion, treating the x value as log10.
@@ -654,8 +656,14 @@ def plot_D_fit_vs_LRT(ax):
     plot_linear_fits(ax, bloch_4nn_models, label="Bloch 4nn")
     DLRT = lambda eps : 6*pi*exp(1/eps)*eps**4
     ax.plot(epsilons , DLRT(epsilons), linestyle="--")
-    DLRT_star = lambda eps: DLRT(eps) - DELTA_D(eps, 1/sqrt(2*pi))
-    ax.plot(epsilons , DLRT_star(epsilons), linestyle="--")
+    DLRT_star = lambda eps: DLRT(eps) - DELTA_D(eps, 1/sqrt(pi))
+    ax.plot(epsilons , DLRT_star(epsilons), linestyle="--", label=r"D^*(1/\sqrt(\pi))")
+    DLRT_star1_5 = lambda eps: DLRT(eps) - DELTA_D(eps, 1))
+    ax.plot(epsilons , DLRT_star1_5(epsilons), linestyle="--", label=r"D^*(1))")
+    DLRT_star2 = lambda eps: DLRT(eps) - DELTA_D(eps, 4/sqrt(2*pi))
+    ax.plot(epsilons , DLRT_star2(epsilons), linestyle="--", label=r"D^*(4/\sqrt(\pi))")
+    DLRT_star3 = lambda eps: DLRT(eps) - DELTA_D(eps, 20/sqrt(2*pi))
+    ax.plot(epsilons , DLRT_star3(epsilons), linestyle="--", label=r"D^*(20/\sqrt(\pi))")
     ax.set_xscale('log')
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$\epsilon$", legend_loc="best")
@@ -694,18 +702,7 @@ def all_plots(seed= 1, **kwargs):
     plotdl.save_ax(ax, 'scatter_and_bloch_2d_large')
     ax.cla()
 
-    epsilons = np.logspace(-1.5,1,40)
-    sample2d = Sample((1,1),900)
-    scatter_models = (ExpModel_2d(sample2d, epsilon=eps) for eps in epsilons)
-    plot_linear_fits(ax, scatter_models, label="scatter")
-    bloch2d = create_bloch_sample_2d(30)
-    bloch_4nn_models = (ExpModel_Bloch_2d_only4nn_randomized(bloch2d, epsilon=eps) for eps in epsilons)
-    plot_linear_fits(ax, bloch_4nn_models, label="Bloch 4nn")
-    DLRT = lambda eps : 6*pi*exp(1/eps)*eps**4
-    plot_func( ax, DLRT, [10**(-1.5), 10**1])
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    plotdl.set_all(ax, xlabel=r"$\epsilon$", legend_loc="best")
+    plot_D_fit_vs_LRT(ax)
     plotdl.save_ax(ax, "linear_fits")
     ax.cla()
 

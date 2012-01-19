@@ -789,8 +789,24 @@ The transition probability density per unit time is:
 \end{align}  
 
 %%%%%%%%
-\section{"Rigorous VRH"}
+\section{"Truncated Transition Rates"}
+The linear response calculation for the diffusion is: (with $r_0=1$)
+\begin{align}
+  D_\textrm{LRT} &=\pi \int_0^\infty w(r) r^3 dr =  \pi w_0\int_0^\infty e^{(1-r)/\xi} r^3 dr = 6\pi w_0 e^{1/\xi} \xi^4
+\end{align}
+We suggest to replace this by:
+\begin{align}
+  D^* &= \pi \int_0^\infty \operatorname{min}(w(r), w^*) r^3 dr = \pi \int_0^{r^*}  w^* r^3 dr + \pi\int_{r^*}^\infty w_0 e^{(1-r)/\xi} r^3 dr \\
+     &= D_\textrm{LRT} - \pi\int_0^{r^*} (w_0 e^{(1-r)/\xi} - w^*) r^3 dr \\&= D_\textrm{LRT} - \frac{\pi}{4} e^{\frac{1-r^*}{\xi}} w_0 \left(24 \left(-1+e^{\frac{r^*}{\xi}}\right) \xi^4-24 \xi^3 r^*-12 \xi^2 {r^*}^2-4 \xi {r^*}^3-{r^*}^4\right)
+\end{align}
+Where $w^* = w(r^*) = w_0e^{(1-r^*)/\xi}$
 
+We may define $r^*$ by a percolation ratio:
+\begin{align}
+  \int_0^{r^*} \rho(r) dr &= p_c\\
+  \int_0^{r^*} \pi r dr =\pi {r^*}^2 &= p_c\\
+  r^* &= \sqrt{\frac{p_c}{\pi}}
+\end{align}
 
 %
 \section{Current Agenda}
