@@ -758,12 +758,6 @@ The last plot is of a bloch model, with randomized values for the 4 nn jumps. No
 \includegraphics[clip,width=0.9\hsize]{bloch_2d_4nn_rand_log_eig}
 \end{figure}
 
-All the $2d$ plots have a linear fit for the low eigenvalues. The fit function is $\log(y) = \log(x) + a$. The following plot is of $a$ as a function of $\epsilon$.
-
-\begin{figure}[H]
-\includegraphics[clip, width=0.9\hsize]{linear_fits}
-\end{figure}
-
 \section{Linear Response}
 After an infinitisimal amount of time $\delta t$, the spreading is:
 \begin{align}   <r^2> = \sum_n w(r_n) r_n^2 \delta t \end{align}  
@@ -807,6 +801,11 @@ We may define $r^*$ by a percolation ratio:
   \int_0^{r^*} \pi r dr =\pi {r^*}^2 &= p_c\\
   r^* &= \sqrt{\frac{p_c}{\pi}}
 \end{align}
+I have fitted all the eigenvalue distribution to a linear line. The following plot is of $D$ as a function of $\epsilon$.
+\begin{figure}[H]
+\includegraphics[clip, width=0.9\hsize]{linear_fits}
+\end{figure}
+
 
 %
 \section{Current Agenda}

@@ -8,7 +8,7 @@ import itertools
 import logging
 
 #from scipy.sparse import linalg as splinalg
-from numpy import random, pi, log10, sqrt,  exp, sort, eye, nanmin, nanmax, log, cos, sinc
+from numpy import random, pi, log10, sqrt,  exp, expm1, sort, eye, nanmin, nanmax, log, cos, sinc
 from scipy.special import gamma
 
 import numpy as np
@@ -34,7 +34,7 @@ debug = logger.debug
 #  D* = D - DELTA_D  # comes from "rigorous VRH"
 #DELTA_D = lambda eps, rstar : 2*pi*(exp(1/eps)*eps*(6*eps**3-exp(-rstar/eps)*(6*eps**3+ 6*eps**2*rstar + 3*eps*rstar**2 + rstar**3)) - rstar**4*exp((1-rstar)/eps)/4)
 D_LRT = lambda eps : 6*pi*exp(1/eps)*eps**4
-DELTA_D = lambda eps, rstar : (pi/4)*exp((1-rstar)/eps)*(24*(-1+exp(rstar/eps))*eps**4-24*eps**3*rstar - 12*eps**2*rstar**2-4*eps*rstar**3-rstar**4)
+DELTA_D = lambda eps, rstar : (pi/4)*exp((1-rstar)/eps)*(24*(expm1(rstar/eps))*eps**4-24*eps**3*rstar - 12*eps**2*rstar**2-4*eps*rstar**3-rstar**4)
 
 def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
     """ Plots 1d diffusion, treating the x value as log10.
@@ -658,7 +658,7 @@ def plot_D_fit_vs_LRT(ax):
     ax.plot(epsilons , DLRT(epsilons), linestyle="--")
     DLRT_star = lambda eps: DLRT(eps) - DELTA_D(eps, 1/sqrt(pi))
     ax.plot(epsilons , DLRT_star(epsilons), linestyle="--", label=r"D^*(1/\sqrt(\pi))")
-    DLRT_star1_5 = lambda eps: DLRT(eps) - DELTA_D(eps, 1))
+    DLRT_star1_5 = lambda eps: DLRT(eps) - DELTA_D(eps, 1)
     ax.plot(epsilons , DLRT_star1_5(epsilons), linestyle="--", label=r"D^*(1))")
     DLRT_star2 = lambda eps: DLRT(eps) - DELTA_D(eps, 4/sqrt(2*pi))
     ax.plot(epsilons , DLRT_star2(epsilons), linestyle="--", label=r"D^*(4/\sqrt(\pi))")
