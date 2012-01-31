@@ -93,7 +93,7 @@ def zero_sum(mat, tol=1E-12):
         if numpy.max((mat.sum(axis=0), mat.sum(axis=1))) > tol:
             #print(mat)
             #print(mat-mat.T)
-            print(numpy.max((mat.sum(axis=0), mat.sum(axis=1))))
+            #print(numpy.max((mat.sum(axis=0), mat.sum(axis=1))))
         #    raise Exception("Failed to make sums zero, is the matrix symmetric?")
         return False
 

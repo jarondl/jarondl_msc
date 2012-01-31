@@ -623,7 +623,30 @@ The errata KBD model.
 
 \clearpage
 
-
+\section{ERH calculation}
+Let us do the ERH calculation for our specific case where $w =w_0 e^{-\frac{r}{s}}$, and $\rho(r) = \pi r$.
+%
+\begin{align}
+\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon \quad &= \quad p_c, \\
+\int_0^{r^*} \pi r dr \quad &=\quad p_c \\
+r^*  &= \sqrt\frac{ 2 p_c}{\pi}
+\end{align}
+%
+Then we calculate $D$ as follows:
+%
+\begin{align}
+  D_{\tbox{ERH}}[\bm{w}] &= \iint \min\{w(r,\epsilon),w^*\} \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr \\
+  &= \int_0^{r^*} w^* r^2\rho(r) dr  + \int_{r^*}^\infty w(r) r^2\rho(r)dr \\
+  &= \int_0^{r^*} w^* r^2 \pi rdr  + \int_{r^*}^\infty w_0e^{-\frac{r}{s}} r^2 \pi rdr \\
+  &=  \frac{\pi}{4}w_0 e^{-\frac{r^*}{s}} + \pi w_0  e^{-\frac{r^*}{s}}\left( \left(\frac{r^*}{s}\right)^3 + 3\left(\frac{r^*}{s}\right)^2 + 6\left(\frac{r^*}{s}\right) +6 \right) s^4 \\
+  &=  e^{-\frac{r^*}{s}}\pi w_0\left[\frac{1}{4} +  {r^*}^3 s + 3{r^*}^2 s^2 + 6r^*s^3 +6 s^4  \right]
+\end{align}
+%
+For large $s$ that becomes:
+\beq
+  D_{\tbox{ERH}}[\bm{w}] = 6\pi w_0 s^4 e^{-\sqrt\frac{2p_c}{\pi}\frac{1}{s}}
+\eeq
+This calculation converges with the Linear response calculation for $r^* \rightarrow 0$.
 \section{Introduction}
 This work concerns the survival probality and spreading (defined in section \ref{sec:definitions}) for systems with multiple intercontected sites. We will study which physical and mathematical properties are necessary to describe the system. The systems are defined using the transition rates between sites (and sometimes the energy of the sites). Some sort of random distribution is used for building th systems, either by randomly setting the transition rates themselves, or by randomly positioning them in space, obtaining the transition rates from their distances. These physical systems are mapped to matrices, which are then further studied. The matrices have random origin, but are not completely random, due to physical or topological considirations.
 
