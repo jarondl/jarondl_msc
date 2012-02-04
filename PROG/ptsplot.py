@@ -639,12 +639,14 @@ def plot_super_pn_graph(ax,epsilon_range=np.arange(0.1,5,0.05)):
     plotdl.set_all(ax, xlabel=r"$\epsilon$", ylabel="PN(PN)")
 
 def plot_1d_alexander_theory(ax):
-    eps_0_1 = np.linspace(0,1,100)
-    eps_1_5 = np.linspace(1,5,200)
-    ax.plot(eps_0_1, -eps_0_1/(eps_0_1+1), color="blue", linestyle="-", label=r"$\mathcal{P}(t)\propto t^\alpha$, The plot is of $\alpha$")
-    ax.plot(eps_1_5, -0.5*np.ones_like(eps_1_5), color="blue", linestyle="-")
-    ax.plot(eps_1_5, exp(1/eps_1_5)*(eps_1_5-1)/eps_1_5, color="red", linestyle="-", label=r"The diffusion coefficient $D$")
-    plotdl.set_all(ax, xlabel=r"$\epsilon$",legend_loc="best")
+    #### changed to plotting the exponent of S(t) instead of P(t), as is the custom
+    s_0_1 = np.linspace(0,1,40)
+    s_1_5 = np.linspace(1,5,80)
+    ax.plot(s_0_1, 2*s_0_1/(s_0_1+1), color="blue", linestyle="-", label=r"$\alpha$  [$S(t)\propto t^\alpha$]")
+    ax.plot(s_1_5, np.ones_like(s_1_5), color="blue", linestyle="-")
+    ax.plot(s_1_5, (s_1_5-1)/s_1_5, color="red", linestyle="-", label=r"$D$")
+    ax.set_ylim(-0.1,1.1)
+    plotdl.set_all(ax, xlabel=r"$s$",legend_loc="best")
 
 def plot_D_fit_vs_LRT(ax):
     epsilons = np.logspace(-1.5,1,40)

@@ -357,12 +357,13 @@ For flat band $B(r)=1$ for ${r \leq b}$, and zero otherwise,
 where $1{+}2b$ is the bandwidth. For a model with near-neighbor transitions only $b=1$.
 The density of sites relative to some site is characterized  by a joint distribution function 
 %
-\beq
+\beq\label{eq:density_distribution}
 \rho(r,\epsilon)drd\epsilon \ \ = \ \ \frac{\Omega_d \, r^{d-1}dr}{r_0^{d}} \ f(\epsilon)d\epsilon,     
 \ \ \ \ \ \ \ \ \Omega_d=2,2\pi,4\pi, \ \ \ \ \ \ \ \ f(\epsilon)=\mbox{uniform or normalized}
 \eeq
 %
-The constant $r_0^d$ is the "unit volume". 
+The constant $r_0^d$ is the "unit volume", and it is defined by $Nr_0^d = L^d$, 
+where $N$ is the number of sites, and $L^d$ is the volume of the system.
 It is ${r_0=1}$ in the banded lattice model, 
 while in the random site model it sets the units of length.
 %  
@@ -417,6 +418,10 @@ S(t) \ \ &\propto& \ \ t^{2s/(1+s)}   \\
 \mathcal{P}(t) \ \ &\propto& \ \ t^{-s/(1+s)}
 \eeq
 
+These results are summed up in the following figure:
+\begin{figure}[H]
+\includegraphics{alexander}
+\end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Linear response theory (LRT) estimate}
 
@@ -430,7 +435,7 @@ This expression is strictly {\em linear}.
 For the infinite temperature variation of 2D random site model we get  
 %
 \beq
-D \ \ = \ \ 6\pi \, s^4 \, w_0
+D \ \ = \ \ 12\pi \, s^4 \, w_0
 \eeq
 %
 This expression will not work for ${s<1}$ because sparse contribution 
@@ -624,12 +629,12 @@ The errata KBD model.
 \clearpage
 
 \section{ERH calculation}
-Let us do the ERH calculation for our specific case where $w =w_0 e^{-\frac{r}{s}}$, and $\rho(r) = \pi r$.
+Let us do the ERH calculation for our specific case where $w =w_0 e^{-\frac{r}{s}}$, and $\rho(r) = 2\pi r$ \eqref{eq:density_distribution}.
 %
 \begin{align}
-\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon \quad &= \quad p_c, \\
-\int_0^{r^*} \pi r dr \quad &=\quad p_c \\
-r^*  &= \sqrt\frac{ 2 p_c}{\pi}
+  \iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon \quad &= \quad p_c, \\
+  \int_0^{r^*} 2\pi r dr \quad &=\quad p_c \\
+  r^*  &= \sqrt\frac{p_c}{\pi}
 \end{align}
 %
 Then we calculate $D$ as follows:
@@ -637,16 +642,15 @@ Then we calculate $D$ as follows:
 \begin{align}
   D_{\tbox{ERH}}[\bm{w}] &= \iint \min\{w(r,\epsilon),w^*\} \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr \\
   &= \int_0^{r^*} w^* r^2\rho(r) dr  + \int_{r^*}^\infty w(r) r^2\rho(r)dr \\
-  &= \int_0^{r^*} w^* r^2 \pi rdr  + \int_{r^*}^\infty w_0e^{-\frac{r}{s}} r^2 \pi rdr \\
-  &=  \frac{\pi}{4}w_0 e^{-\frac{r^*}{s}} + \pi w_0  e^{-\frac{r^*}{s}}\left( \left(\frac{r^*}{s}\right)^3 + 3\left(\frac{r^*}{s}\right)^2 + 6\left(\frac{r^*}{s}\right) +6 \right) s^4 \\
-  &=  e^{-\frac{r^*}{s}}\pi w_0\left[\frac{1}{4} +  {r^*}^3 s + 3{r^*}^2 s^2 + 6r^*s^3 +6 s^4  \right]
+  &= \int_0^{r^*} w^* r^2 2\pi rdr  + \int_{r^*}^\infty w_0e^{-\frac{r}{s}} r^2 2\pi rdr \\
+  &=  \frac{\pi}{2}w_0 e^{-\frac{r^*}{s}}{r^*}^4 + \pi w_0  e^{-\frac{r^*}{s}}\left( \left(\frac{r^*}{s}\right)^3 + 3\left(\frac{r^*}{s}\right)^2 + 6\left(\frac{r^*}{s}\right) +6 \right) s^4 \\
+  &=  e^{-\frac{r^*}{s}}\pi w_0\left[\frac{1}{2}{r^*}^4 +  2{r^*}^3 s + 6{r^*}^2 s^2 + 12r^*s^3 +12 s^4  \right]
 \end{align}
 %
-For large $s$ that becomes:
+When $r^* \rightarrow 0$, the solution converges to the known LRT solution: \rmrk{After removing the dubious $\frac{1}{2}$ from the LRT equation}
 \beq
-  D_{\tbox{ERH}}[\bm{w}] = 6\pi w_0 s^4 e^{-\sqrt\frac{2p_c}{\pi}\frac{1}{s}}
+  D_{\tbox{ERH}}[\bm{w}] = 12\pi w_0 s^4 
 \eeq
-This calculation converges with the Linear response calculation for $r^* \rightarrow 0$.
 
 %%%%%%%%%%%%%%%%5
 \section{Expressions of $P(t)$ and $S(t)$ in the case of diffusion in $1d$ and $2d$}
@@ -655,13 +659,30 @@ We define
   S(t) = <r^2(t)>
 \eeq
 For an isotropic $d$-dimensional system, there is no correlation between the different axes. We can therefore seperate $S(t)$ to 
+%
 \beq 
-  S(t) =<r^2(t)> = < \left(\sum_{i=1}^d x_i(t) \left)^2 > = \sum_{i=1}^d <x_i(t)^2> = d<x^2(t)>
+  S(t) =<r^2(t)> = < \left(\sum_{i=1}^d x_i(t) \right)^2 > = \sum_{i=1}^d <x_i(t)^2> = d<x^2(t)>
 \eeq
+%
+For diffusive systems, meaning that the spreading is linear in time, we follow the usual definition of a diffusion coefficient, i.e.
+%
+\beq
+  D \quad = \quad \lim_{t\rightarrow \infty} \frac{<x^2(t)>}{2t}
+\eeq
+%
+Using scaling, we may write:
+%
+\beq
+  \mathcal{P}(t) = \left(\frac{1}{2\pi d S(t)}\right)^{d/2}
+\eeq
+%
+Whereby we obtain:
+%
+\beq
+  \mathcal{P}(t) = \frac{d}{\Omega_d}{<r^2(t)>}^\frac{-d}{2} 
+\eeq
+%
 
-
-
-%%%%%%%%%%%%
 \section{Introduction}
 This work concerns the survival probality and spreading (defined in section \ref{sec:definitions}) for systems with multiple intercontected sites. We will study which physical and mathematical properties are necessary to describe the system. The systems are defined using the transition rates between sites (and sometimes the energy of the sites). Some sort of random distribution is used for building th systems, either by randomly setting the transition rates themselves, or by randomly positioning them in space, obtaining the transition rates from their distances. These physical systems are mapped to matrices, which are then further studied. The matrices have random origin, but are not completely random, due to physical or topological considirations.
 
