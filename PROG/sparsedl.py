@@ -91,11 +91,12 @@ def zero_sum(mat, tol=1E-12):
         mat -= numpy.diagflat(row_sum)
         maxdev  = numpy.max((mat.sum(axis=0), mat.sum(axis=1)))
         if numpy.max((mat.sum(axis=0), mat.sum(axis=1))) > tol:
+            pass
             #print(mat)
             #print(mat-mat.T)
             #print(numpy.max((mat.sum(axis=0), mat.sum(axis=1))))
         #    raise Exception("Failed to make sums zero, is the matrix symmetric?")
-        return False
+    return False
 
 def new_zero_sum(mat):
     """ Same as zero_sum, up to a diagonal constant
