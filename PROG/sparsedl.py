@@ -12,6 +12,7 @@ from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
 from scipy.maxentropy import logsumexp
 
+
 ### Raise all float errors
 numpy.seterr(all='warn')
 
@@ -304,3 +305,9 @@ def lazyprop(fn):
     def _lazyprop(self, value):
         setattr(self, attr_name, value)
     return _lazyprop
+
+
+######### Mathematical aux functions
+def omega_d(d):
+    """ The d-dimensional solid angle """
+    return 2*pi**(d/2)/special.gamma(d/2)

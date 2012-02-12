@@ -10,13 +10,14 @@ import logging
 #from scipy.sparse import linalg as splinalg
 from numpy import random, pi, log10, sqrt,  exp, expm1, sort, eye, nanmin, nanmax, log, cos, sinc
 from scipy.special import gamma
+from matplotlib.ticker import FuncFormatter
 
 import numpy as np
 
 import sparsedl
 import plotdl
 from geometry import Sample
-from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum, lazyprop
+from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum, lazyprop, omega_d
 from plotdl import cummulative_plot
 
 ### Raise all float errors
@@ -33,8 +34,9 @@ debug = logger.debug
 #Setting up some lambda functions:
 #  D* = D - DELTA_D  # comes from "rigorous VRH"
 #DELTA_D = lambda eps, rstar : 2*pi*(exp(1/eps)*eps*(6*eps**3-exp(-rstar/eps)*(6*eps**3+ 6*eps**2*rstar + 3*eps*rstar**2 + rstar**3)) - rstar**4*exp((1-rstar)/eps)/4)
-D_LRT = lambda eps : 6*pi*exp(1/eps)*eps**4
+D_LRT = lambda eps : 6*pi*exp(1/eps)*eps**4 ###  WRONG!
 DELTA_D = lambda eps, rstar : (pi/4)*exp((1-rstar)/eps)*(24*(expm1(rstar/eps))*eps**4-24*eps**3*rstar - 12*eps**2*rstar**2-4*eps*rstar**3-rstar**4)
+D_ERH_0 = lambda s,rstar: exp(-rstar/s)*pi*0.5*(0.25*rstar**4 + rstar**3*s + 3*rstar**2*s**2 + 6*rstar*s**3 + 6*s**4)
 
 def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
     """ Plots 1d diffusion, treating the x value as log10.
@@ -204,7 +206,7 @@ class ExpModel(object):
         """ """
         #D = self.diff_coef()#exp(1/self.epsilon)/(4*pi)#1#self.epsilon#
         r = self.sample.normalized_distance_matrix(self.periodic)
-        D = (r*self.ex**2).sum(axis=0).mean()
+        D = (r*self.ex**2).sum(axis=0).mean()#############WRONG r should be squared!!!!
         
         d2 = self.sample.d / 2.0
         #d2  = self.sample.d
@@ -212,6 +214,25 @@ class ExpModel(object):
         #power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict), **kwargs)
         f = lambda x: prefactor*x**d2
         plot_func_logplot(ax, f, self.logxlim, "D = {D:.3G}".format(D=D))
+
+    def fit_diff_coef(self):
+        fitN = self.sample.number_of_points() - 1
+        y = np.linspace(1.0/(fitN),1,fitN)
+        ar = np.arange(fitN)
+        #w = (ar%4==3 )*exp(-ar/3.0)
+        ### Trying to cheat less : 
+        w = exp(-ar/3.0)
+        x = -self.eigvals[1:]
+        #prefactor  = sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w)
+        #D = exp(-prefactor)/(2*pi)
+        ## Keep things simple:
+        D = sparsedl.cvfit(self.diff_density(), x, y, [1], w)
+        return D
+    def diff_density(self):
+        """ The expected eigenvalue cummulative distribution for a diffusive system"""
+        d = self.sample.d
+        return lambda x, D: (omega_d(d)/d )* (x/(4*D*pi**2))**(d/2)
+
 
 class ExpModel_1d(ExpModel):
     """ Subclassing exp model for 1d """
@@ -284,20 +305,6 @@ class ExpModel_2d(ExpModel):
 
     def LRT_diff_coef(self, convention = 1):
         return 6*pi*exp(convention/self.epsilon)*self.epsilon**4
-
-    def fit_diff_coef(self, convention = 1):
-        fitN = self.sample.number_of_points() - 1
-        y = np.linspace(1.0/(fitN),1,fitN)
-        ar = np.arange(fitN)
-        #w = (ar%4==3 )*exp(-ar/3.0)
-        ### Trying to cheat less : 
-        w = exp(-ar/3.0)
-        x = -self.eigvals[1:]
-        #prefactor  = sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w)
-        #D = exp(-prefactor)/(2*pi)
-        ## Keep things simple:
-        D = sparsedl.cvfit((lambda x, D: x/(2*pi*D)), x, y, [1], w)
-        return D
 
 
     def plot_rate_density(self, ax, label=r"Max. rate / row", convention=1, **kwargs):
@@ -672,7 +679,23 @@ def plot_D_fit_vs_LRT(ax):
     #plotdl.save_ax(ax, "linear_fits")
     #ax.cla()
 
-
+def plot_D_fittings2(ax, inv_s = np.linspace(0.01, 20, 80 )):
+    sample2d = Sample((1,1),900)
+    models = (ExpModel_2d(sample2d, epsilon = s ) for s in inv_s**(-1))
+    D_fits = np.fromiter((model.fit_diff_coef() for model in models), dtype = np.float64, count=len(inv_s))
+    D_C0 = D_fits*exp(-inv_s)  ### I'm changing convention back to 0.
+    ax.plot(inv_s, D_C0, "ro", label=r"Numerical $D$")
+    x = np.linspace(max(inv_s), min(inv_s), 150)
+    ax.plot(x, D_ERH_0(x**(-1), 0), "b--", label=r"$p_c =0$")
+    ax.plot(x, D_ERH_0(x**(-1), sqrt(1/pi)), "g-", label=r"$p_c =1$")
+    ax.plot(x, D_ERH_0(x**(-1),  sqrt(5/pi)),"m-", label=r"$p_c =5$")
+    ax.plot(x, D_ERH_0(x**(-1), sqrt(8/pi)), "y-", label=r"$p_c =8$")
+    ax.set_xlim(max(inv_s),min(inv_s))
+    inv_formatter = lambda x, pos : "{0:.3f}".format(x**(-1))
+    ax.xaxis.set_major_formatter(FuncFormatter(inv_formatter))
+    ax.set_yscale('log')
+    plotdl.set_all(ax, xlabel=r"$s$", legend_loc="best", ylabel=r"$D$")
+ 
 
 def plot_x_exp_x(ax,epsilon=1):
     plot_func(ax, lambda x: x*exp(-x/epsilon), [0,epsilon*5])
