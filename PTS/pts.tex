@@ -160,12 +160,17 @@
 %\def\@hangfroms@section#1#2{#1\MakeTextUppercase{#2}}%
 \def\@hangfrom@section#1#2#3{\@hangfrom{#1#2}{#3}}%
 \def\@hangfroms@section#1#2{#1{#2}}%
+
+%%%%%%change numbering:
+\def\thesection  {\arabic{section}}
+\def\thesubsection  {\thesection.\arabic{subsection}}
+
 \makeatother
 
 
 
 
-\renewcommand{\includegraphics}[2][]{\ \\ \ FIGURE: \ \\ \ }
+\newcommand{\dontincludegraphics}[2][]{\ \\ \ FIGURE: \ \\ \ }
 
 
 
@@ -420,7 +425,8 @@ S(t) \ \ &\propto& \ \ t^{2s/(1+s)}   \\
 
 These results are summed up in the following figure:
 \begin{figure}[H]
-\includegraphics{alexander}
+  \includegraphics{alexander}
+  \caption{Theoretical results for a chain model. The blue line is the power of the spreading. It shows a sub-diffusive regime where $0<s<1$, and a diffusive regime for $s>1$. The red line is of the diffusion constant $D$, which can only be defined for the diffusive regime $s>1$. It is dimensionless as we set $r_0=1$.}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Linear response theory (LRT) estimate}
@@ -428,7 +434,7 @@ These results are summed up in the following figure:
 If we had an ordered lattice, then the exact result for $D$ would be 
 %
 \beq
-D \ \ = \ \ D_{\tbox{LRT}}[\bm{w}]  \ \ = \ \ \frac{1}{4}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
+D \ \ = \ \ D_{\tbox{LRT}}[\bm{w}]  \ \ = \ \ \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
 \eeq
 %
 This expression is strictly {\em linear}.
@@ -455,7 +461,7 @@ through the requirement
 %
 \beq
 \iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon \ \ = \ \ p_c, 
-\ \ \ \ \ \ \ \ \ \mbox{with $p_c\sim 1/2$}
+\ \ \ \ \ \ \ \ \ \mbox{with $p_c\sim 5$}
 \eeq
 %
 Then we calculate $D$ as follows:
@@ -557,7 +563,7 @@ D_{\tbox{ERH}}[\bm{w}] \quad&=\quad \frac{1}{4}\iint \min\{w(r,\epsilon),w^*\} \
 If $r^* \rightarrow 0$, the solution approaches the LRT estimate: 
 %
 \beq
-D_{\tbox{ERH}}[\bm{w}] = 3\pi w_0 s^4 
+D_{\tbox{LRT}}[\bm{w}] = 3\pi w_0 s^4 
 \eeq
 
 
@@ -592,7 +598,7 @@ where the possible values of the momentum are determined
 by the periodic boundary conditions as $q=(2\pi/L)\vec{n}$. 
 It follows that the cumulative number of eigenstates is  
 %
-\beq
+\beq \label{eq:expected_D_2d}
 \mathcal{N}(\lambda) \ \ = \ \ 
 \int_0^\lambda g(\lambda')d\lambda' \quad 
 = \quad \left(\frac{L}{2\pi}\right)^d
@@ -602,10 +608,10 @@ It follows that the cumulative number of eigenstates is
 
 
 
-It is well knows that the survival probability 
+It is well known that the survival probability 
 is related to the eigenvalues of $\bm{w}$ through the relation
 %
-\beq
+\beq \label{eq:survival}
 \mathcal{P}(t) \ \ = \ \ \frac{1}{N}\sum_\lambda \eexp{\lambda t} \ \ \equiv \ \ \int_0^{\infty} g(\lambda)d\lambda \ \eexp{\lambda t}
 \eeq
 %
@@ -623,6 +629,30 @@ In contrast to that for large $\lambda$ we expect $g(\lambda)$ to coincide
 with the distribution of the decay rates $\gamma_n=\sum_{m}w_{mn}$, 
 reflecting localized modes.
 
+
+%%%%%%%%%%%%%%%%%%5
+\begin{figure}[H]
+\includegraphics[clip,width=0.9\hsize]{exp_2d_D_vs_subD}
+\caption{ Cummulative eigenvalue distribution, 
+for several values of $s$.
+ The dots represent numerical diagonalization. The dashed lines are the expected diffusion results according to \eqref{eq:expected_D_2d}, with $D$ as a fit parameter. The solid lines are according to Ariel's result, as presented in \eqref{eq:amir_expected} . } \label{fig:exp_2d_D_vs_subD}
+\end{figure}
+
+%%%%%%%%%%%%%%%%
+\begin{figure}[H]
+\includegraphics[clip,width=0.9\hsize]{ERH}
+\caption{Diffusion coefficient, numerical fit results vs ERH. The dots are numerical fit results, extracted from plots such as \ref{fig:exp_2d_D_vs_subD}. The dashed line is of the LRT result, and the solid lines are for ERH with several selections of $p_c$. It can be seen that $p_c = 5$ is a plausible option.}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+\section{Perspective on Amir's work}
+
+**prelimanery**
+
+In Amir's article, they approximate the low density solution by assuming dimerical behaviour. While this approximation holds for most of the eigenvalue distribution space, it is inaccurate on the lowest eigenvalues. However, the lowest eigenvalues are the most promiment in the survival expression \eqref{eq:survival}. We present a graph of the lowest eigenvalues in figure \ref{fig:exp_2d_D_vs_subD}, including a line for equation (3) in \cite{amir}, 
+\beq\label{eq:amir_expected}
+  C(\lambda) \quad = \quad \exp\left( -\frac{\Omega_d}{2d} \left(-s\cdot \log(\lambda/2)\right)^d \right)
+\eeq
 
 
 \clearpage
@@ -1080,7 +1110,7 @@ The direct calculation for the survival in a log normal banded matrix is depicte
 \times 100$) with a band b filled with log-normally distributed ($\sigma=1$) values was constructed. Then, the eigenvalues were numerically calculated, and then the Laplace sum $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$.
 %%%
 %\begin{figure}[H]
-%\includegraphics[clip, width=0.9\hsize]{P_lognormal_band.pdf}
+%\dontincludegraphics[clip, width=0.9\hsize]{P_lognormal_band.pdf}
 %\caption{$\mathcal{P}(t)$ for constant sparsity, and variable bandwidth. The survival was calculated using $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$ \eqref{eq:surv_eigenvalues} with numerical diagonalization of the transition matrix.
 %}
 %\label{fig:p_lognormal_band}
@@ -1111,27 +1141,27 @@ y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x)
 
 To check ourselves, we have plotted the eigenvalue distribution for the lognoraml banded matrix, and a uniform random matrix in figure \ref{fig:eigenvalue_distribution}, and also compared between $b=5$ and $b=10$ in figure \ref{fig:eigenvalue_distribution_5_10}
 \begin{figure}[H]
-    {\includegraphics[clip, width=0.9\hsize]{eigvals_uniform}}
+    {\dontincludegraphics[clip, width=0.9\hsize]{eigvals_uniform}}
 \caption{Uniform distribution}
     \label{fig:eigenvalue_distribution}
 \end{figure}
 \begin{figure}[H]
-    {\includegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}}
+    {\dontincludegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}}
     \caption{Lognoraml nearest neighbor matrix}
 
 \end{figure}
 \begin{figure}[H]
-    \includegraphics[clip,width=0.9\hsize]{eigvals_lognormal_normal}
+    \dontincludegraphics[clip,width=0.9\hsize]{eigvals_lognormal_normal}
     \caption{Cumulative eigenvalue distribution, in a normal scale}
 \end{figure}
 \begin{figure}[H]
-    \includegraphics[clip, width=0.9\hsize]{eigvals_ones_loglog}
+    \dontincludegraphics[clip, width=0.9\hsize]{eigvals_ones_loglog}
 \end{figure}
 \begin{figure}[H]
-    \includegraphics[clip, width=0.9\hsize]{eigvals_alter_loglog}
+    \dontincludegraphics[clip, width=0.9\hsize]{eigvals_alter_loglog}
 \end{figure}
 \begin{figure}[H]
-    \includegraphics[clip, width=0.9\hsize]{eigvals_box_loglog}
+    \dontincludegraphics[clip, width=0.9\hsize]{eigvals_box_loglog}
 \end{figure}
 
 %%%%%%%%%%%%%
@@ -1172,17 +1202,17 @@ The spacing (nearest neighbor) statistics have the following cummulative distrib
 This works well for $1d$, $2d$ and $3d$ (see figures \ref{fig:1d_dist},\ref{fig:2d_dist},\ref{fig:3d_dist}). There is some issue of a factor of $2$. The problem is with the definition of the spacing. What I did in those plots is to take the minimum of each row. However, those minimums are not unique, because more often than not we count the same rate twice, once for each "direction". This is particulary prevalent in the lower distances.
 
 \begin{figure}[H]
-    \includegraphics[clip,width=0.9\hsize]{dist_1d_1000}
+    \dontincludegraphics[clip,width=0.9\hsize]{dist_1d_1000}
     \caption{Cumulative distance distribution for $1d$, in a normal scale}
     \label{fig:1d_dist}
 \end{figure}
 \begin{figure}[H]
-    \includegraphics[clip,width=0.9\hsize]{dist_2d_1000}
+    \dontincludegraphics[clip,width=0.9\hsize]{dist_2d_1000}
     \caption{Cumulative distance distribution for $2d$, in a normal scale}
     \label{fig:2d_dist}
 \end{figure}
 \begin{figure}[H]
-    \includegraphics[clip,width=0.9\hsize]{dist_3d_1000}
+    \dontincludegraphics[clip,width=0.9\hsize]{dist_3d_1000}
     \caption{Cumulative distance distribution for $3d$, in a normal scale}
     \label{fig:3d_dist}
 \end{figure}
@@ -1201,25 +1231,25 @@ The highest possible rate is $r=0\rightarrow w=\exp(\frac{1}{\epsilon})$, which 
 For low $\epsilon$, the decay values (the main diagonal of the matrix), almost equal the highest rates per row, because the highest value contributes most of the sum. Then we get the dimer approximation, with $\lambda \approx 2\gamma \approx 2w$. 
 
 \begin{figure}[H]
-    \includegraphics[clip,width=0.9\hsize]{{{exp_1d_0.2_pn}}}
+    \dontincludegraphics[clip,width=0.9\hsize]{{{exp_1d_0.2_pn}}}
     \caption{$1d$, $\epsilon = 0.2$}
 \end{figure}
 \begin{figure}[H]
-    \includegraphics[clip,width=0.9\hsize]{{{exp_2d_0.05_pn}}}
+    \dontincludegraphics[clip,width=0.9\hsize]{{{exp_2d_0.05_pn}}}
     \caption{$2d$, $\epsilon = 0.05$}
 \end{figure}
 
 For high $\epsilon$, in $1d$, both rates, "to the left", and "to the right", are of the same order of magnitude, so that $\gamma \approx 2w$. The eigenmodes are long-range.
 
 \begin{figure}[H]
-    \includegraphics[clip,width=0.9\hsize]{{{exp_1d_5_pn}}}
+    \dontincludegraphics[clip,width=0.9\hsize]{{{exp_1d_5_pn}}}
     \caption{$1d$, $\epsilon = 5$}
 \end{figure}
 
 For high $\epsilon$, in $2d$, many values contribute to the sum, and it can be orders of magnitude more than the "highest rate per row". For those systems $\lambda \approx \gamma \gg w$. 
 
 \begin{figure}[H]
-    \includegraphics[clip,width=0.9\hsize]{{{exp_2d_5_pn}}}
+    \dontincludegraphics[clip,width=0.9\hsize]{{{exp_2d_5_pn}}}
     \caption{$2d$, $\epsilon = 5$}
 \end{figure}
 
@@ -1243,12 +1273,12 @@ The other regime is where $\epsilon <1 $, where the survival, and by extension t
 \end{align}
 (Side note to me: $\mathcal{L}[\lambda^{\eta-1}] = \Gamma(\eta)w^{-\eta}$, and some $\Gamma$ function identities lead to this result. Also, the sinc is normalized: $\sinc=\frac{\sin(\pi x)}{\pi x}$)
 \begin{figure}[H]
-\includegraphics[clip, width=0.9\hsize]{bloch_1d_2nn_rand_log_eig}
+\dontincludegraphics[clip, width=0.9\hsize]{bloch_1d_2nn_rand_log_eig}
 \caption{$1d$ network, the dotted lines represent the theoretical distributions}
 \end{figure}
 
 \begin{figure}[H]
-\includegraphics[clip, width=0.9\hsize]{alexander_1d_theory}
+\dontincludegraphics[clip, width=0.9\hsize]{alexander_1d_theory}
 \caption{$1d$ theoretical diffusion and power}
 \end{figure}
 
@@ -1267,15 +1297,15 @@ In the following plots, the eigenvalue distibution of the $2d$ points (small cir
 
 %%%%%%%%%
 \begin{figure}[H]
-\includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d}
+\dontincludegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d}
 \caption{The filled dots are the eigenvalues of a $2d$-scatter system. The empty circles are of an ordered lattice with the same all-to-all transitions. The crosses are the theoretical values for a bloch n.n. model. The lines are fitted linear lines with tangent 1.}
 \end{figure}
 \begin{figure}[H]
-\includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_small}
+\dontincludegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_small}
 \caption{}
 \end{figure}
 \begin{figure}[H]
-\includegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_large}
+\dontincludegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_large}
 \end{figure}
 
 
@@ -1283,7 +1313,7 @@ In the following plots, the eigenvalue distibution of the $2d$ points (small cir
 
 The last plot is of a bloch model, with randomized values for the 4 nn jumps. Note the reversal of order.
 \begin{figure}[H]
-\includegraphics[clip,width=0.9\hsize]{bloch_2d_4nn_rand_log_eig}
+\dontincludegraphics[clip,width=0.9\hsize]{bloch_2d_4nn_rand_log_eig}
 \end{figure}
 
 \section{Linear Response}
@@ -1331,7 +1361,7 @@ We may define $r^*$ by a percolation ratio:
 \end{align}
 I have fitted all the eigenvalue distribution to a linear line. The following plot is of $D$ as a function of $\epsilon$.
 \begin{figure}[H]
-\includegraphics[clip, width=0.9\hsize]{linear_fits}
+\dontincludegraphics[clip, width=0.9\hsize]{linear_fits}
 \end{figure}
 
 

@@ -46,14 +46,14 @@ def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
     power_law = coeff*(10**power_space)**(power)
     return ax.plot(power_space, power_law, linestyle='--', label=label, **kwargs)
 
-def plot_func_logplot(ax, func, logxlim, label, **kwargs):
+def plot_func_logplot(ax, func, logxlim,  **kwargs):
     """ Plots function func in a logscale within the bounding box given by logbbox
     """
     x1, x2 = logxlim
     func_space = np.linspace(x1,x2,200)
     func_y = func(10**func_space)
     #print(func_y)
-    return ax.plot(func_space, func_y, linestyle='--', label=label, **kwargs)
+    return ax.plot(func_space, func_y, linestyle='--', **kwargs)
 
 def plot_func(ax, func, xlim, **kwargs):
     """ Plots function func in a logscale within the bounding box given by logbbox
@@ -196,7 +196,7 @@ class ExpModel(object):
 
     @lazyprop
     def xlim(self):
-        return [-self.eigvals[1], -self.eigvals[-1]]
+        return -self.eigvals[[1,-1]]
 
     @lazyprop
     def logxlim(self):
@@ -221,7 +221,7 @@ class ExpModel(object):
         ar = np.arange(fitN)
         #w = (ar%4==3 )*exp(-ar/3.0)
         ### Trying to cheat less : 
-        w = exp(-ar/3.0)
+        w = ar*exp(-ar/4.0)
         x = -self.eigvals[1:]
         #prefactor  = sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w)
         #D = exp(-prefactor)/(2*pi)
@@ -250,9 +250,9 @@ class ExpModel_1d(ExpModel):
         """ plots Alexander's solution """
         epsilon = self.epsilon
         if epsilon > 1:
-            f = lambda x: sqrt( x * exp(-convention/epsilon) *epsilon / (epsilon - 1)) / pi
+            f = lambda x: sqrt( (x) * exp(-convention/epsilon) *epsilon / (epsilon - 1)) / pi
         else:
-            f = lambda x: exp(-convention)*sinc(epsilon/(epsilon+1))*x**(epsilon/(epsilon+1))
+            f = lambda x: exp(-convention)*sinc(epsilon/(epsilon+1))*(x)**(epsilon/(epsilon+1))
         plot_func(ax, f, self.xlim, **kwargs)
         
     def diff_coef(self):
@@ -652,6 +652,8 @@ def plot_1d_alexander_theory(ax):
     ax.plot(s_0_1, 2*s_0_1/(s_0_1+1), color="blue", linestyle="-", label=r"$\alpha$  [$S(t)\propto t^\alpha$]")
     ax.plot(s_1_5, np.ones_like(s_1_5), color="blue", linestyle="-")
     ax.plot(s_1_5, (s_1_5-1)/s_1_5, color="red", linestyle="-", label=r"$D$")
+    ax.plot(s_0_1, np.zeros_like(s_0_1), color="red", linestyle="-")
+    ax.axvline(1, color="black", linestyle="--")
     ax.set_ylim(-0.1,1.1)
     plotdl.set_all(ax, xlabel=r"$s$",legend_loc="best")
 
@@ -684,18 +686,58 @@ def plot_D_fittings2(ax, inv_s = np.linspace(0.01, 20, 80 )):
     models = (ExpModel_2d(sample2d, epsilon = s ) for s in inv_s**(-1))
     D_fits = np.fromiter((model.fit_diff_coef() for model in models), dtype = np.float64, count=len(inv_s))
     D_C0 = D_fits*exp(-inv_s)  ### I'm changing convention back to 0.
-    ax.plot(inv_s, D_C0, "ro", label=r"Numerical $D$")
+    ax.plot(inv_s, D_C0, "r.", label=r"Numerical $D$")
     x = np.linspace(max(inv_s), min(inv_s), 150)
     ax.plot(x, D_ERH_0(x**(-1), 0), "b--", label=r"$p_c =0$")
-    ax.plot(x, D_ERH_0(x**(-1), sqrt(1/pi)), "g-", label=r"$p_c =1$")
+#    ax.plot(x, D_ERH_0(x**(-1), sqrt(1/pi)), "g-", label=r"$p_c =1$")
     ax.plot(x, D_ERH_0(x**(-1),  sqrt(5/pi)),"m-", label=r"$p_c =5$")
-    ax.plot(x, D_ERH_0(x**(-1), sqrt(8/pi)), "y-", label=r"$p_c =8$")
+#    ax.plot(x, D_ERH_0(x**(-1), sqrt(8/pi)), "y-", label=r"$p_c =8$")
     ax.set_xlim(max(inv_s),min(inv_s))
     inv_formatter = lambda x, pos : "{0:.3f}".format(x**(-1))
     ax.xaxis.set_major_formatter(FuncFormatter(inv_formatter))
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$s$", legend_loc="best", ylabel=r"$D$")
  
+
+def plot_me_vs_amir(ax, eps_range = (0.05, 0.1, 0.15)):
+    """ Plotting the eigenvalue dist with D vs amir's result"""
+    colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
+    sample2d = Sample((1,1),900)
+    for eps in eps_range:
+        color=colors.next()
+        m = ExpModel_2d(sample2d,eps)
+        ev = - m.eigvals[1:]*exp(-1/eps)
+        cummulative_plot(ax, ev, label=r"$s = {}$".format(eps), color=color)
+        D = m.fit_diff_coef()*exp(-1/eps)
+        plot_func(ax, lambda x: m.diff_density()(x,D), xlim=m.xlim*exp(-1/eps), color=color)
+        x = np.logspace(log10(ev[1]), log10(ev[-1]))
+        ax.plot(x,exp(-0.5*pi*eps**2*log(0.5*x)**2), color=color)
+    ax.set_xlim(2*exp(-sqrt(2*log(900)/(pi*min(eps_range)**2))), 2 )
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    ax.set_ylim(1/900,1)
+    plotdl.set_all(ax, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="best")
+
+
+def plot_1d_cummulative(ax, eps_range = (2, 1, 0.6, 0.4, 0.2)):
+    """ Plotting the eigenvalue dist 1d"""
+    colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
+    sample1d = Sample((1),900)
+    for eps in eps_range:
+        color=colors.next()
+        m = ExpModel_1d(sample1d,eps)
+        ev = - m.eigvals[1:]*exp(-1/eps)
+        cummulative_plot(ax, ev, label=r"$s = {}$".format(eps), color=color)
+        D = m.fit_diff_coef()*exp(-1/eps)
+        #plot_func(ax, lambda x: m.diff_density()(x,D), xlim=m.xlim*exp(-1/eps), color=color)
+        m.plot_alexander(ax, convention=0, color=color)
+        #x = np.logspace(log10(ev[1]), log10(ev[-1]))
+        #ax.plot(x,exp(-0.5*pi*eps**2*log(0.5*x)**2), color=color)
+    #ax.set_xlim(2*exp(-sqrt(2*log(900)/(pi*min(eps_range)**2))), 2 )
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    ax.set_ylim(1/900,1)
+    plotdl.set_all(ax, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="best")
 
 def plot_x_exp_x(ax,epsilon=1):
     plot_func(ax, lambda x: x*exp(-x/epsilon), [0,epsilon*5])

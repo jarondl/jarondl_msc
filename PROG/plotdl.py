@@ -37,7 +37,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg  # For raster render
 #from matplotlib.backends.backend_cairo import FigureCanvasCairo # For vector rendering e.g. pdf, eps  ###Doesn't have tex
 #from matplotlib.backends.backend_pdf import FigureCanvasPdf
 from matplotlib.backends.backend_cairo import FigureCanvasCairo as FigureCanvasPdf
-#from matplotlib.backends.backend_ps import FigureCanvasPS
+from matplotlib.backends.backend_ps import FigureCanvasPS
 from matplotlib.figure import Figure
 from matplotlib import rc
 from matplotlib.colors import LogNorm
@@ -53,23 +53,27 @@ from matplotlib.widgets import Slider
 
 import numpy
 
-
+from handle_tight import tight_layout
 
 ### Raise all float errors
 numpy.seterr(all='warn')
 
 ## I use some latex info to derive optimial default sizes
-latex_width_pt = 460
-latex_height_pt = latex_width_pt * (numpy.sqrt(5) - 1.0) / 2.0  # Golden mean. idea by:http://www.scipy.org/Cookbook/Matplotlib/LaTeX_Examples
-latex_dpi = 72.27
-latex_width_inch = latex_width_pt / latex_dpi
-latex_height_inch = latex_height_pt / latex_dpi
-
+#latex_width_pt = 460
+#latex_height_pt = latex_width_pt * (numpy.sqrt(5) - 1.0) / 2.0  # Golden mean. idea by:http://www.scipy.org/Cookbook/Matplotlib/LaTeX_Examples
+#latex_dpi = 72.27
+#latex_width_inch = latex_width_pt / latex_dpi
+#latex_height_inch = latex_height_pt / latex_dpi
+latex_width_inch = 3.4 ## (aps single column)
+latex_height_inch = latex_width_inch * (numpy.sqrt(5)-1.0)/2.0 # golden ratio
 
 #rc('text', usetex=True)
-rc('font', size=10)
+#rc('font', size=10)
 rc('figure', figsize=[latex_width_inch, latex_height_inch])
-rc('legend', fontsize=10)
+rc('legend', fontsize='smaller')
+rc('xtick', labelsize='smaller')
+rc('ytick', labelsize='smaller')
+
 
 
 def set_all(ax, title=None, xlabel=None, ylabel=None, legend_loc=False):
@@ -122,13 +126,15 @@ def save_fig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor
     """
 
     fig.set_size_inches((size[0] * size_factor[0], size[1] * size_factor[1]))
+    tight_layout(fig)
     canvas_pdf = FigureCanvasPdf(fig)
-    #canvas_ps = FigureCanvasPS(fig)
+    canvas_ps = FigureCanvasPS(fig)
     pdfname = os.path.join("figures", fname + ".pdf")
-    #epsname = os.path.join("figures", fname + ".eps")
+    epsname = os.path.join("figures", fname + ".eps")
     canvas_pdf.print_figure(pdfname)
-    #canvas_ps.print_figure(epsname)
+    canvas_ps.print_figure(epsname)
     print("Created:\n\t {0} ".format(pdfname))
+    print("Created:\n\t {0} ".format(epsname))
 
 
 def animate(plot_function, filename, variable_range, **kwargs):
