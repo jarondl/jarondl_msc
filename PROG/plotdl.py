@@ -121,12 +121,12 @@ def save_fig_to_png(fig, fname):
     canvas.print_figure(fname + ".png")
     print("Created:\n\t {0} ".format(fname + ".png"))
 
-def save_fig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor=(1, 1)):
+def save_fig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor=(1, 1),pad=1.2, h_pad=None, w_pad=None):
     """ Save figure to pdf and eps
     """
 
     fig.set_size_inches((size[0] * size_factor[0], size[1] * size_factor[1]))
-    tight_layout(fig)
+    tight_layout(fig, pad=pad, h_pad=h_pad, w_pad=w_pad)
     canvas_pdf = FigureCanvasPdf(fig)
     canvas_ps = FigureCanvasPS(fig)
     pdfname = os.path.join("figures", fname + ".pdf")

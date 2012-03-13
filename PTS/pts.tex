@@ -103,6 +103,7 @@
 
 % extra math commands by jarondl
 \newcommand{\inner}[2]{\left \langle #1 \middle| #2\right\rangle} % Inner product
+\newcommand{\avgangle}[1]{\left\langle #1 \right\rangle} % Average <x>
 
 %fminipage using fancybox package
 \newenvironment{fminipage}%
@@ -426,7 +427,7 @@ S(t) \ \ &\propto& \ \ t^{2s/(1+s)}   \\
 These results are summed up in the following figure:
 \begin{figure}[H]
   \includegraphics{alexander}
-  \caption{Theoretical results for a chain model. The blue line is the power of the spreading. It shows a sub-diffusive regime where $0<s<1$, and a diffusive regime for $s>1$. The red line is of the diffusion constant $D$, which can only be defined for the diffusive regime $s>1$. It is dimensionless as we set $r_0=1$.}
+  \caption{Theoretical results for a chain model. The blue line is the power of the spreading. It shows a sub-diffusive regime where $0<s<1$, and a diffusive regime for $s>1$. The red line is of the diffusion coefficient $D$, which is zero for the sub-diffusive regime $s<1$. It is dimensionless as we set $r_0=1$.}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Linear response theory (LRT) estimate}
@@ -461,7 +462,7 @@ through the requirement
 %
 \beq
 \iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon \ \ = \ \ p_c, 
-\ \ \ \ \ \ \ \ \ \mbox{with $p_c\sim 5$}
+\ \ \ \ \ \ \ \ \ \mbox{with $p_c$ of order unity}
 \eeq
 %
 Then we calculate $D$ as follows:
@@ -632,7 +633,7 @@ reflecting localized modes.
 
 %%%%%%%%%%%%%%%%%%5
 \begin{figure}[H]
-\includegraphics[clip,width=0.9\hsize]{exp_2d_D_vs_subD}
+\includegraphics[clip]{two_panels}
 \caption{ Cummulative eigenvalue distribution, 
 for several values of $s$.
  The dots represent numerical diagonalization. The dashed lines are the expected diffusion results according to \eqref{eq:expected_D_2d}, with $D$ as a fit parameter. The solid lines are according to Ariel's result, as presented in \eqref{eq:amir_expected} . } \label{fig:exp_2d_D_vs_subD}
@@ -640,14 +641,12 @@ for several values of $s$.
 
 %%%%%%%%%%%%%%%%
 \begin{figure}[H]
-\includegraphics[clip,width=0.9\hsize]{ERH}
-\caption{Diffusion coefficient, numerical fit results vs ERH. The dots are numerical fit results, extracted from plots such as \ref{fig:exp_2d_D_vs_subD}. The dashed line is of the LRT result, and the solid lines are for ERH with several selections of $p_c$. It can be seen that $p_c = 5$ is a plausible option.}
+\includegraphics[clip]{ERH}
+\caption{Diffusion coefficient, numerical fit results vs ERH. The $Y$ axis is $D$ in logarithmic scale, while the $X$ axis is $X=-1/s$. The dots are numerical fit results, extracted from plots such as \ref{fig:exp_2d_D_vs_subD}. The dashed line is of the LRT result, and the solid line is the ERH result with $p_c = 5$.}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 \section{Perspective on Amir's work}
-
-**prelimanery**
 
 In Amir's article, they approximate the low density solution by assuming dimerical behaviour. While this approximation holds for most of the eigenvalue distribution space, it is inaccurate on the lowest eigenvalues. However, the lowest eigenvalues are the most promiment in the survival expression \eqref{eq:survival}. We present a graph of the lowest eigenvalues in figure \ref{fig:exp_2d_D_vs_subD}, including a line for equation (3) in \cite{amir}, 
 \beq\label{eq:amir_expected}
@@ -655,7 +654,6 @@ In Amir's article, they approximate the low density solution by assuming dimeric
 \eeq
 
 
-\clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The semi-linear response perspective}
 
@@ -1368,6 +1366,19 @@ I have fitted all the eigenvalue distribution to a linear line. The following pl
 %
 \section{Current Agenda}
 Finding the effective grid. We have some random network and we wish to create an effective grid representing the same hopping coeffecients. We can use a Mott-like approach, where we replace the the $r_0$ with a varational variable. It should represent the hopping coefficient together with the probability to "find" the site. Thus it should somehow maximize the probability times the hopping. 
+
+
+\section{Stotland}
+We define $s$ by:
+\[ s = \frac{\avgangle{x}^2}{\avgangle{x^2}} \]
+The log-box distribution is :
+\[ \rho(x)dx = \frac{1}{\ln(x_1/x_0)} \frac{dx}{x}\]
+We can easily calculate:
+\[ \avgangle{x} = \frac{x_1-x_0}{\ln(x_1/x_0)}\]
+and:
+\[ \avgangle{x^2} = \frac{x_1^2-x_0^2}{2\ln(x_1/x_0)}\]
+Finally:
+\[ s= \frac{\avgangle{x}^2}{\avgangle{x^2}} = \tanh\left(\frac{\ln(x_1/x_0)}{2}\right)\frac{2}{\ln(x_1/x_0)}\]
 
 %%% 1d :bloch_1d_2nn_rand_log_eig
 

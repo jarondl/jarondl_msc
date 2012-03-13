@@ -13,6 +13,7 @@ from scipy.special import gamma
 from matplotlib.ticker import FuncFormatter
 
 import numpy as np
+import scipy as sp
 
 import sparsedl
 import plotdl
@@ -252,7 +253,7 @@ class ExpModel_1d(ExpModel):
         if epsilon > 1:
             f = lambda x: sqrt( (x) * exp(-convention/epsilon) *epsilon / (epsilon - 1)) / pi
         else:
-            f = lambda x: exp(-convention)*sinc(epsilon/(epsilon+1))*(x)**(epsilon/(epsilon+1))
+            f = lambda x: exp(-convention)*sinc(epsilon/(epsilon+1))*(x/2)**(epsilon/(epsilon+1))
         plot_func(ax, f, self.xlim, **kwargs)
         
     def diff_coef(self):
@@ -294,6 +295,16 @@ class ExpModel_Bloch_1d(ExpModel_1d):
         qx = 2*pi/N*np.arange(N)
         z = sort(2*(cos(qx)+1 ).flatten())[1:]  # the 1: is to remove the 0 mode
         cummulative_plot(ax, z, label="$2+2\cos(q_x)$" ,color="red", marker="x")
+
+class ExpModel_Banded_Logbox(ExpModel_1d):
+    def rate_matrix(self, convention=1):
+        n = self.sample.number_of_points()
+        x = np.triu(periodic_banded_ones(n, self.bandwidth1d), 1)
+        m = np.zeros_like(x)
+        m[x==1] = np.random.permutation(np.logspace(-2*self.epsilon,0, m[x==1].size))
+        m += m.T
+        sparsedl.zero_sum(m)
+        return m
 
 
 class ExpModel_2d(ExpModel):
@@ -655,7 +666,7 @@ def plot_1d_alexander_theory(ax):
     ax.plot(s_0_1, np.zeros_like(s_0_1), color="red", linestyle="-")
     ax.axvline(1, color="black", linestyle="--")
     ax.set_ylim(-0.1,1.1)
-    plotdl.set_all(ax, xlabel=r"$s$",legend_loc="best")
+    plotdl.set_all(ax, xlabel=r"$s$", ylabel=r"$D$, $\alpha$",legend_loc="best")
 
 def plot_D_fit_vs_LRT(ax):
     epsilons = np.logspace(-1.5,1,40)
@@ -686,17 +697,17 @@ def plot_D_fittings2(ax, inv_s = np.linspace(0.01, 20, 80 )):
     models = (ExpModel_2d(sample2d, epsilon = s ) for s in inv_s**(-1))
     D_fits = np.fromiter((model.fit_diff_coef() for model in models), dtype = np.float64, count=len(inv_s))
     D_C0 = D_fits*exp(-inv_s)  ### I'm changing convention back to 0.
-    ax.plot(inv_s, D_C0, "r.", label=r"Numerical $D$")
+    ax.plot(-inv_s, D_C0, "r.", label=r"$D$")
     x = np.linspace(max(inv_s), min(inv_s), 150)
-    ax.plot(x, D_ERH_0(x**(-1), 0), "b--", label=r"$p_c =0$")
+    ax.plot(-x, D_ERH_0(x**(-1), 0), "b--", label=r"$p_c =0$")
 #    ax.plot(x, D_ERH_0(x**(-1), sqrt(1/pi)), "g-", label=r"$p_c =1$")
-    ax.plot(x, D_ERH_0(x**(-1),  sqrt(5/pi)),"m-", label=r"$p_c =5$")
+    ax.plot(-x, D_ERH_0(x**(-1),  sqrt(5/pi)),"g-", label=r"$p_c =5$")
 #    ax.plot(x, D_ERH_0(x**(-1), sqrt(8/pi)), "y-", label=r"$p_c =8$")
-    ax.set_xlim(max(inv_s),min(inv_s))
-    inv_formatter = lambda x, pos : "{0:.3f}".format(x**(-1))
-    ax.xaxis.set_major_formatter(FuncFormatter(inv_formatter))
+    #ax.set_xlim(max(inv_s),min(inv_s))
+    #inv_formatter = lambda x, pos : "{0:.3f}".format(x**(-1))
+    #ax.xaxis.set_major_formatter(FuncFormatter(inv_formatter))
     ax.set_yscale('log')
-    plotdl.set_all(ax, xlabel=r"$s$", legend_loc="best", ylabel=r"$D$")
+    plotdl.set_all(ax, xlabel=r"$X = -\frac{1}{s}$", legend_loc="best", ylabel=r"$D$")
  
 
 def plot_me_vs_amir(ax, eps_range = (0.05, 0.1, 0.15)):
@@ -719,7 +730,10 @@ def plot_me_vs_amir(ax, eps_range = (0.05, 0.1, 0.15)):
     plotdl.set_all(ax, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="best")
 
 
-def plot_1d_cummulative(ax, eps_range = (2, 1, 0.6, 0.4, 0.2)):
+
+
+
+def plot_1d_cummulative(ax, eps_range = (2, 0.4, 0.2)):
     """ Plotting the eigenvalue dist 1d"""
     colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     sample1d = Sample((1),900)
@@ -738,6 +752,33 @@ def plot_1d_cummulative(ax, eps_range = (2, 1, 0.6, 0.4, 0.2)):
     ax.set_xscale('log')
     ax.set_ylim(1/900,1)
     plotdl.set_all(ax, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="best")
+
+def plot_1d_2d_panels(eps_range2d = (0.05,0.1,0.15), eps_range1d=(0.2,0.4,2)):
+    f = plotdl.Figure()
+    ax1 = f.add_subplot(121)
+    ax2 = f.add_subplot(122)
+    plot_1d_cummulative(ax1, eps_range1d)
+    plot_me_vs_amir(ax2, eps_range2d)
+    ax2.set_yticks([0])
+    ax2.set_yticklabels("none", visible=False)
+    ax2.set_ylabel("")
+    f.subplots_adjust(hspace=0, wspace=0)
+    plotdl.save_fig(f, "two_panels", size_factor=(2,1), pad=0, h_pad=0, w_pad=0)
+
+
+
+def plot_banded(ax):
+    bloch_sample = create_bloch_sample_1d(1000)
+    # To find evenly distributed s, we use fsolve
+    s_range = np.linspace(0.01,1,50)
+    sigma_range = sp.optimize.fsolve( lambda x: np.tanh(x)/x - s_range, x0= np.ones_like(s_range))
+    bandwidth_range = np.arange(1,50)
+    xx, yy = np.meshgrid(bandwidth_range, sigma_range)
+    DERH = np.vectorize(lambda bandwidth, sigma : [ExpModel_Banded_Logbox(bloch_sample, sigma, bandwidth1d = bandwidth).fit_diff_coef()])
+    ax.matshow(DERH(xx,yy))
+
+
+
 
 def plot_x_exp_x(ax,epsilon=1):
     plot_func(ax, lambda x: x*exp(-x/epsilon), [0,epsilon*5])
