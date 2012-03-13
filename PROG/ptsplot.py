@@ -279,6 +279,9 @@ class ExpModel_1d(ExpModel):
         z = sort(2*(cos(qx)+1 ).flatten())[1:]  # the 1: is to remove the 0 mode
         cummulative_plot(ax, z, label="$2+2\cos(q_x)$" ,color="red", marker="x")
 
+    def inverse_resnet(self):
+        return sparsedl.resnet(self.ex, self.bandwidth1d, self.periodic) 
+
 
 class ExpModel_Bloch_1d(ExpModel_1d):
     def diff_coef(self):
@@ -768,14 +771,17 @@ def plot_1d_2d_panels(eps_range2d = (0.05,0.1,0.15), eps_range1d=(0.2,0.4,2)):
 
 
 def plot_banded(ax):
-    bloch_sample = create_bloch_sample_1d(1000)
+    bloch_sample = create_bloch_sample_1d(500)
     # To find evenly distributed s, we use fsolve
-    s_range = np.linspace(0.01,1,50)
+    s_range = np.linspace(0.1,1,30)
     sigma_range = sp.optimize.fsolve( lambda x: np.tanh(x)/x - s_range, x0= np.ones_like(s_range))
-    bandwidth_range = np.arange(1,50)
+    bandwidth_range = np.arange(1,35)
     xx, yy = np.meshgrid(bandwidth_range, sigma_range)
-    DERH = np.vectorize(lambda bandwidth, sigma : [ExpModel_Banded_Logbox(bloch_sample, sigma, bandwidth1d = bandwidth).fit_diff_coef()])
-    ax.matshow(DERH(xx,yy))
+    DERH = np.vectorize(lambda bandwidth, sigma : ExpModel_Banded_Logbox(bloch_sample, sigma, bandwidth1d = bandwidth).fit_diff_coef()[0])
+    DERH_mat  = DERH(xx,yy)
+    mshow = ax.matshow(DERH_mat)
+    ax.figure.colorbar(mshow)
+    return DERH_mat
 
 
 
