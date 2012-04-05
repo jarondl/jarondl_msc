@@ -336,7 +336,7 @@ We consider a system that is described by a rate equations
 \eeq
 %
 We assume $w_{nm}=w_{mn}$, hence there is a formal analogy 
-we a resistor network calculation. Our purpose is to calculate 
+with a resistor network calculation. Our purpose is to calculate 
 the diffusion coefficient~$D=D[\bm{w}]$, which is analogous to the 
 calculation of {\em conductivity}.
 
@@ -427,7 +427,8 @@ S(t) \ \ &\propto& \ \ t^{2s/(1+s)}   \\
 These results are summed up in the following figure:
 \begin{figure}[H]
   \includegraphics{alexander}
-  \caption{Theoretical results for a chain model. The blue line is the power of the spreading. It shows a sub-diffusive regime where $0<s<1$, and a diffusive regime for $s>1$. The red line is of the diffusion coefficient $D$, which is zero for the sub-diffusive regime $s<1$. It is dimensionless as we set $r_0=1$.}
+  \includegraphics{ERH}
+  \caption{Theoretical results for a $1d$ chain model, contrasting the $2d$ results. In the $1d$ plot, on the left, the blue line is the power of the spreading. It shows a sub-diffusive regime where $0<s<1$, and a diffusive regime for $s>1$. The red line is of the diffusion coefficient $D$, which is zero for the sub-diffusive regime $s<1$. It is dimensionless as we set $r_0=1$. In the $2d$ plot, on the right, we see the diffusion coefficient, numerical fit results vs ERH, as explained in sections \ref{sec:diff2d} and \ref{sec:num_d_2d}. The $Y$ axis is $D$ in logarithmic scale, while the $X$ axis is $X=-1/s$. The dots are numerical fit results, extracted from plots such as \ref{fig:exp_2d_D_vs_subD}. The dashed line is of the LRT result, and the solid line is the ERH result with $p_c = 5$.}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Linear response theory (LRT) estimate}
@@ -538,7 +539,7 @@ Therefore, in the Mott problem, both estimates give essentially the same result.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Results for 2D}
+\section{Results for 2D}\label{sec:diff2d}
 
 Let us do the ERH calculation for our specific case 
 where $w =w_0 e^{-\frac{r}{s}}$, and $\rho(r) = 2\pi r$,  
@@ -570,7 +571,7 @@ D_{\tbox{LRT}}[\bm{w}] = 3\pi w_0 s^4
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Numerical extraction of $D$}
+\section{Numerical extraction of $D$}\label{sec:num_d_2d}
 
 In a diffusive system the coarse grained spreading 
 is described by the standard diffusion equation,
@@ -634,16 +635,11 @@ reflecting localized modes.
 %%%%%%%%%%%%%%%%%%5
 \begin{figure}[H]
 \includegraphics[clip]{two_panels}
-\caption{ Cummulative eigenvalue distribution, 
+\caption{ $1D$ and $2D$ cummulative eigenvalue distribution, 
 for several values of $s$.
- The dots represent numerical diagonalization. The dashed lines are the expected diffusion results according to \eqref{eq:expected_D_2d}, with $D$ as a fit parameter. The solid lines are according to Ariel's result, as presented in \eqref{eq:amir_expected} . } \label{fig:exp_2d_D_vs_subD}
+ The dots represent numerical diagonalization. The dashed lines are the expected diffusion results according to \eqref{eq:expected_D_2d}, with $D$ as a fit parameter. The solid lines are according to Ariel's result, as presented in \eqref{eq:amir_expected} . There is a striking difference between the $1d$ and $2d$ cases. For $1d$, the slope for sparse models ($s<1$) is less than $\frac{1}{2}$, meaning we have sub-diffusion. In the $2d$ case, the low-$\lambda$ slope is always $1$, which correspondes to normal diffusion.} \label{fig:exp_2d_D_vs_subD}
 \end{figure}
 
-%%%%%%%%%%%%%%%%
-\begin{figure}[H]
-\includegraphics[clip]{ERH}
-\caption{Diffusion coefficient, numerical fit results vs ERH. The $Y$ axis is $D$ in logarithmic scale, while the $X$ axis is $X=-1/s$. The dots are numerical fit results, extracted from plots such as \ref{fig:exp_2d_D_vs_subD}. The dashed line is of the LRT result, and the solid line is the ERH result with $p_c = 5$.}
-\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 \section{Perspective on Amir's work}

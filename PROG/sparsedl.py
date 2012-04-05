@@ -107,6 +107,11 @@ def new_zero_sum(mat):
     row_avg = row_sum.sum() / N
     mat -= (numpy.diagflat(row_sum) - numpy.eye(N)*row_avg)
     return row_avg
+
+def create_shift_matrix(N):
+    """ Creates a N//2 shift matrix. The same as D^{N//2}
+    """
+    return np.eye(N,k=N//2) + np.eye(N,k=N//2-N)
 #########  Create random arrays
 
 def lognormal_construction(N, mu=0, sigma=1, **kwargs):

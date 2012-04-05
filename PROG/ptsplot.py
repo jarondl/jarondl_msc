@@ -270,9 +270,9 @@ class ExpModel_1d(ExpModel):
             #print "len(logbrates)", len(logbrates)
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
             plot_func_logplot(ax, lambda w: exp(-2*(convention-self.epsilon*log(w))),
-                self.logxlim, r"$e^{{-2\cdot({}-\epsilon\ln(w))}}$".format(convention))
+                self.logxlim, r"$e^{{-2\cdot({0}-\epsilon\ln(w))}}$".format(convention))
             plot_func_logplot(ax, lambda w: exp(-(convention-self.epsilon*log(w*0.5))),
-                self.logxlim, r"$e^{{-\cdot({}-\epsilon\ln(\frac{{w}}{{2}}))}}$".format(convention))
+                self.logxlim, r"$e^{{-\cdot({0}-\epsilon\ln(\frac{{w}}{{2}}))}}$".format(convention))
     def plot_theoretical_eigvals(self, ax):
         N = self.sample.number_of_points()
         qx = 2*pi/N*np.arange(N)
@@ -280,7 +280,15 @@ class ExpModel_1d(ExpModel):
         cummulative_plot(ax, z, label="$2+2\cos(q_x)$" ,color="red", marker="x")
 
     def inverse_resnet(self):
-        return sparsedl.resnet(self.ex, self.bandwidth1d, self.periodic) 
+        if self.bandwidth1d is None:
+            return sparsedl.resnet(self.ex, 1, self.periodic) /2
+        else:
+            return sparsedl.resnet(self.ex, self.bandwidth1d, self.periodic) /2
+    def new_resnet(self):
+        N = self.sample.number_of_points()
+        shift = sparsedl.create_shift_matrix(N)
+        invex = np.linalg.pinv(self.ex)
+        return (N//2)*(N//2)*(np.dot( (shift - np.eye(N)), invex)).trace()**(-1)/2
 
 
 class ExpModel_Bloch_1d(ExpModel_1d):
@@ -301,10 +309,12 @@ class ExpModel_Bloch_1d(ExpModel_1d):
 
 class ExpModel_Banded_Logbox(ExpModel_1d):
     def rate_matrix(self, convention=1):
+        # we map epsilon to sigma, and the distribution goes from -2\sigma to 0.
         n = self.sample.number_of_points()
         x = np.triu(periodic_banded_ones(n, self.bandwidth1d), 1)
         m = np.zeros_like(x)
-        m[x==1] = np.random.permutation(np.logspace(-2*self.epsilon,0, m[x==1].size))
+        ##m[x==1] = np.random.permutation(np.logspace(-2*self.epsilon,0, m[x==1].size)) ###logspace was a bad idea
+        m[x==1] = np.random.permutation(exp(np.linspace(-2*self.epsilon,0, m[x==1].size)))
         m += m.T
         sparsedl.zero_sum(m)
         return m
@@ -328,9 +338,9 @@ class ExpModel_2d(ExpModel):
         if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
             plot_func_logplot(ax, lambda w: exp(-pi*(convention-self.epsilon*log(w))**2),
-                self.logxlim, r"$e^{{-\pi\cdot({}-\epsilon\ln(w))^2}}$".format(convention))
+                self.logxlim, r"$e^{{-\pi\cdot({0}-\epsilon\ln(w))^2}}$".format(convention))
             plot_func_logplot(ax, lambda w: exp(-0.5*pi*(convention-self.epsilon*log(0.5*w))**2),
-                self.logxlim, r"$e^{{-\frac{{\pi}}{{2}}\cdot({}-\epsilon\ln(\frac{{w}}{{2}}))^2}}$".format(convention))
+                self.logxlim, r"$e^{{-\frac{{\pi}}{{2}}\cdot({0}-\epsilon\ln(\frac{{w}}{{2}}))^2}}$".format(convention))
 
     def plot_theoretical_eigvals(self, ax):
         N = sqrt(self.sample.number_of_points())
@@ -711,7 +721,98 @@ def plot_D_fittings2(ax, inv_s = np.linspace(0.01, 20, 80 )):
     #ax.xaxis.set_major_formatter(FuncFormatter(inv_formatter))
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$X = -\frac{1}{s}$", legend_loc="best", ylabel=r"$D$")
- 
+
+
+def plot_D_fittings2_1d(ax, s_space = np.linspace(0.1, 20, 80 ), b=1):
+    sample1d = Sample(1,900)
+    models = (ExpModel_1d(sample1d, epsilon = s , bandwidth1d=b) for s in s_space)
+    three_type = [("fit",np.float64), ("resnet",np.float64),("new_resnet",np.float64)]
+    D_fits = np.fromiter(((model.fit_diff_coef(),model.inverse_resnet(),model.new_resnet()) for model in models), dtype = three_type, count=len(s_space))
+    #D_fit_0 = D_fits["fit"]*exp(-1/s_space)  ### I'm changing convention back to 0.
+    #ax.plot(s_space, D_C0, "r.", label=r"$D$")
+    ax.plot(s_space, D_fits["fit"]*exp(-1/s_space), ".", label=r"$D (fit), b = {0}$".format(b))
+    ax.plot(s_space, D_fits["resnet"]*exp(-1/s_space), ".", label=r"$D (res-net), b = {0}$".format(b))
+    ax.plot(s_space, D_fits["new_resnet"]*exp(-1/s_space), ".", label=r"$D (new res-net), b = {0}$".format(b))
+    x = np.linspace(min(s_space), max(s_space), 150)
+#    ax.plot(-x, D_ERH_0(x**(-1), 0), "b--", label=r"$p_c =0$")
+#    ax.plot(x, D_ERH_0(x**(-1), sqrt(1/pi)), "g-", label=r"$p_c =1$")
+#    ax.plot(-x, D_ERH_0(x**(-1),  sqrt(5/pi)),"g-", label=r"$p_c =5$")
+#    ax.plot(x, D_ERH_0(x**(-1), sqrt(8/pi)), "y-", label=r"$p_c =8$")
+    #ax.set_xlim(max(inv_s),min(inv_s))
+    #inv_formatter = lambda x, pos : "{0:.3f}".format(x**(-1))
+    #ax.xaxis.set_major_formatter(FuncFormatter(inv_formatter))
+    ax.set_yscale('log')
+    plotdl.set_all(ax, xlabel=r"$s$", legend_loc="best", ylabel=r"$D$")
+
+
+def plot_D_fittings2_logbox(ax, s_space = np.linspace(0.1, 20, 80 ), b=1):
+    bloch1d = create_bloch_sample_1d(900)
+    models = (ExpModel_Banded_Logbox(bloch1d, epsilon = s , bandwidth1d=b) for s in s_space)
+    two_type = [("fit",np.float64), ("new_resnet",np.float64)]
+    D_fits = np.fromiter(((model.fit_diff_coef(), model.new_resnet()) for model in models), dtype = two_type, count=len(s_space))
+    #D_fit_0 = D_fits["fit"]*exp(-1/s_space)  ### I'm changing convention back to 0. WTF!!!!!!!!!
+    #ax.plot(s_space, D_C0, "r.", label=r"$D$")
+    ax.plot(s_space, D_fits["fit"], ".", label=r"D (fit), b = {0}".format(b))
+    ax.plot(s_space, D_fits["new_resnet"], ".", label=r"D (resnet)")
+    x = np.linspace(min(s_space), max(s_space), 150)
+#    ax.plot(-x, D_ERH_0(x**(-1), 0), "b--", label=r"$p_c =0$")
+#    ax.plot(x, D_ERH_0(x**(-1), sqrt(1/pi)), "g-", label=r"$p_c =1$")
+#    ax.plot(-x, D_ERH_0(x**(-1),  sqrt(5/pi)),"g-", label=r"$p_c =5$")
+#    ax.plot(x, D_ERH_0(x**(-1), sqrt(8/pi)), "y-", label=r"$p_c =8$")
+    #ax.set_xlim(max(inv_s),min(inv_s))
+    #inv_formatter = lambda x, pos : "{0:.3f}".format(x**(-1))
+    #ax.xaxis.set_major_formatter(FuncFormatter(inv_formatter))
+    ax.set_yscale('log')
+    plotdl.set_all(ax, xlabel=r"s", legend_loc="best", ylabel=r"D")
+
+
+def plot_banded_logbox_s_b(ax, s, b, color):
+    """ plots cum_eigvals for  s  and b . also plots resnet values
+    """
+    bloch1d = create_bloch_sample_1d(1000)
+    model = ExpModel_Banded_Logbox(bloch1d, s, bandwidth1d=b)
+    cummulative_plot(ax, -model.eigvals[1:], color=color)
+    x_space = np.linspace(-model.eigvals[1], -model.eigvals[100], 10)
+    exp_dist = model.diff_density() # Expected diffusion density
+    ax.plot( x_space, exp_dist(x_space, model.new_resnet()), linestyle="-.", color=color, label="improved resnet b = {0}, s = {1}".format(b,s))
+    ax.plot( x_space, exp_dist(x_space, model.fit_diff_coef()), linestyle=":", color=color, label="fitting")
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+
+
+def plotf_banded_examples():
+    ax = plotdl.new_ax_for_file()
+    for (b,color) in zip((1,10,20,30),("red", "blue", "green", "purple")):
+        plot_banded_logbox_s_b(ax, 2, b, color)
+    plotdl.set_all(ax, legend_loc="best")
+    plotdl.save_ax(ax, "banded_s_2")
+    plotdl.save_ax(ax, "banded_s_2_big", size_factor=(3,3))
+    ax.cla()
+
+    for (s,color) in zip((1,10,20,30),("red", "blue", "green", "purple")):
+        plot_banded_logbox_s_b(ax, s, 20, color)
+    plotdl.set_all(ax, legend_loc="best")
+    plotdl.save_ax(ax, "banded_b_20")
+    plotdl.save_ax(ax, "banded_b_20_big", size_factor=(3,3))
+    ax.cla()
+
+    for (s,color) in zip((1,10,20,30),("red", "blue", "green", "purple")):
+        plot_banded_logbox_s_b(ax, s, 1, color)
+    plotdl.set_all(ax, legend_loc="best")
+    plotdl.save_ax(ax, "banded_b_1")
+    plotdl.save_ax(ax, "banded_b_1_big", size_factor=(3,3))
+    ax.cla()
+		
+
+    plot_D_fittings2_logbox(ax, np.linspace(1,10,40), b=20)
+    plotdl.save_ax(ax, "banded_D_of_s_b20", size_factor=(3,3))
+    ax.cla()
+
+    plot_D_fittings2_logbox(ax, np.linspace(1,10,40), b=40)
+    plotdl.save_ax(ax, "banded_D_of_s_b40", size_factor=(3,3))
+    ax.cla()
+
+
 
 def plot_me_vs_amir(ax, eps_range = (0.05, 0.1, 0.15)):
     """ Plotting the eigenvalue dist with D vs amir's result"""
@@ -721,7 +822,7 @@ def plot_me_vs_amir(ax, eps_range = (0.05, 0.1, 0.15)):
         color=colors.next()
         m = ExpModel_2d(sample2d,eps)
         ev = - m.eigvals[1:]*exp(-1/eps)
-        cummulative_plot(ax, ev, label=r"$s = {}$".format(eps), color=color)
+        cummulative_plot(ax, ev, label=r"$s = {0}$".format(eps), color=color)
         D = m.fit_diff_coef()*exp(-1/eps)
         plot_func(ax, lambda x: m.diff_density()(x,D), xlim=m.xlim*exp(-1/eps), color=color)
         x = np.logspace(log10(ev[1]), log10(ev[-1]))
@@ -730,7 +831,7 @@ def plot_me_vs_amir(ax, eps_range = (0.05, 0.1, 0.15)):
     ax.set_yscale('log')
     ax.set_xscale('log')
     ax.set_ylim(1/900,1)
-    plotdl.set_all(ax, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="best")
+    plotdl.set_all(ax, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="upper left")
 
 
 
@@ -744,7 +845,7 @@ def plot_1d_cummulative(ax, eps_range = (2, 0.4, 0.2)):
         color=colors.next()
         m = ExpModel_1d(sample1d,eps)
         ev = - m.eigvals[1:]*exp(-1/eps)
-        cummulative_plot(ax, ev, label=r"$s = {}$".format(eps), color=color)
+        cummulative_plot(ax, ev, label=r"$s = {0}$".format(eps), color=color)
         D = m.fit_diff_coef()*exp(-1/eps)
         #plot_func(ax, lambda x: m.diff_density()(x,D), xlim=m.xlim*exp(-1/eps), color=color)
         m.plot_alexander(ax, convention=0, color=color)
@@ -754,20 +855,44 @@ def plot_1d_cummulative(ax, eps_range = (2, 0.4, 0.2)):
     ax.set_yscale('log')
     ax.set_xscale('log')
     ax.set_ylim(1/900,1)
-    plotdl.set_all(ax, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="best")
+    plotdl.set_all(ax, xlabel=r"$\lambda$", ylabel = r"$N(\lambda)$", legend_loc="upper left") #mathcal had some issues..
 
-def plot_1d_2d_panels(eps_range2d = (0.05,0.1,0.15), eps_range1d=(0.2,0.4,2)):
+def plot_1d_2d_panels(eps_range2d = (0.05,0.1,0.15), eps_range1d=(0.2,0.4,2,5)):
     f = plotdl.Figure()
     ax1 = f.add_subplot(121)
     ax2 = f.add_subplot(122)
     plot_1d_cummulative(ax1, eps_range1d)
+
     plot_me_vs_amir(ax2, eps_range2d)
     ax2.set_yticks([0])
     ax2.set_yticklabels("none", visible=False)
     ax2.set_ylabel("")
+    ax1.text(1, 5E-3, "$1D$")
+    ax2.text(1E-2, 5E-3, "$2D$")
+    ## thin-out the ticks:
+    ax1.set_xticks(ax1.get_xticks()[::2])
+    ax2.set_xticks(ax2.get_xticks()[1::2])
     f.subplots_adjust(hspace=0, wspace=0)
     plotdl.save_fig(f, "two_panels", size_factor=(2,1), pad=0, h_pad=0, w_pad=0)
 
+
+def plotf_1d_2d_Diffusion(inv_s = np.linspace(0.01, 20, 80 )):
+    f = plotdl.Figure()
+    ax1 = f.add_subplot(121)
+    ax2 = f.add_subplot(122)
+    plot_1d_alexander_theory(ax1)
+    plot_D_fittings2(ax2, inv_s = inv_s)
+
+#    ax2.set_yticks([0])
+#    ax2.set_yticklabels("none", visible=False)
+#    ax2.set_ylabel("")
+#    ax1.text(1, 5E-3, "$1D$")
+#    ax2.text(1E-2, 5E-3, "$2D$")
+    ## thin-out the ticks:
+#    ax1.set_xticks(ax1.get_xticks()[::2])
+#    ax2.set_xticks(ax2.get_xticks()[1::2])
+    f.subplots_adjust(hspace=0, wspace=0)
+    plotdl.save_fig(f, "two_Ds", size_factor=(2,1), pad=0, h_pad=0, w_pad=0)
 
 
 def plot_banded(ax):
