@@ -26,7 +26,9 @@ np.seterr(all='warn')
 EXP_MAX_NEG = np.log(np.finfo( np.float).tiny)
 
 #set up logging:
+logging.basicConfig(format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
+
 info = logger.info
 warning = logger.warning
 debug = logger.debug
@@ -38,6 +40,8 @@ debug = logger.debug
 D_LRT = lambda eps : 6*pi*exp(1/eps)*eps**4 ###  WRONG!
 DELTA_D = lambda eps, rstar : (pi/4)*exp((1-rstar)/eps)*(24*(expm1(rstar/eps))*eps**4-24*eps**3*rstar - 12*eps**2*rstar**2-4*eps*rstar**3-rstar**4)
 D_ERH_0 = lambda s,rstar: exp(-rstar/s)*pi*0.5*(0.25*rstar**4 + rstar**3*s + 3*rstar**2*s**2 + 6*rstar*s**3 + 6*s**4)
+
+BANDED_D0_s_b = lambda s,b : (b*(b+1)*(2*b+1)/6.0)*expm1(-2*s)/(-2*s)  #expm1(x) = exp(x)-1 #with higher precision.
 
 def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
     """ Plots 1d diffusion, treating the x value as log10.
@@ -752,8 +756,10 @@ def plot_D_fittings2_logbox(ax, s_space = np.linspace(0.1, 20, 80 ), b=1):
     D_fits = np.fromiter(((model.fit_diff_coef(), model.new_resnet()) for model in models), dtype = two_type, count=len(s_space))
     #D_fit_0 = D_fits["fit"]*exp(-1/s_space)  ### I'm changing convention back to 0. WTF!!!!!!!!!
     #ax.plot(s_space, D_C0, "r.", label=r"$D$")
-    ax.plot(s_space, D_fits["fit"], ".", label=r"D (fit), b = {0}".format(b))
-    ax.plot(s_space, D_fits["new_resnet"], ".", label=r"D (resnet)")
+    D0 = BANDED_D0_s_b(s_space,b)
+    debug("last items in fit, resnet, and D0 : {0} {1} {2}".format(D_fits["fit"][-1], D_fits["new_resnet"][-1], D0[-1]))
+    ax.plot(s_space, D_fits["fit"]/D0 , ".", label=r"D (fit), b = {0}".format(b))
+    ax.plot(s_space, D_fits["new_resnet"]/ D0 , ".", label=r"D (resnet)")
     x = np.linspace(min(s_space), max(s_space), 150)
 #    ax.plot(-x, D_ERH_0(x**(-1), 0), "b--", label=r"$p_c =0$")
 #    ax.plot(x, D_ERH_0(x**(-1), sqrt(1/pi)), "g-", label=r"$p_c =1$")
