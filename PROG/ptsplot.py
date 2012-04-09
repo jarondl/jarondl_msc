@@ -220,6 +220,7 @@ class ExpModel(object):
         f = lambda x: prefactor*x**d2
         plot_func_logplot(ax, f, self.logxlim, "D = {D:.3G}".format(D=D))
 
+    @lazyprop
     def fit_diff_coef(self):
         fitN = self.sample.number_of_points() - 1
         y = np.linspace(1.0/(fitN),1,fitN)
@@ -288,6 +289,7 @@ class ExpModel_1d(ExpModel):
             return sparsedl.resnet(self.ex, 1, self.periodic) /2
         else:
             return sparsedl.resnet(self.ex, self.bandwidth1d, self.periodic) /2
+    @lazyprop
     def new_resnet(self):
         N = self.sample.number_of_points()
         shift = sparsedl.create_shift_matrix(N)
@@ -597,7 +599,7 @@ def nn_mesh(normalized_distance_matrix):
 
 def plot_linear_fits(ax, models, **kwargs):
     
-    Ds, epss = zip(*[(mod.fit_diff_coef(), mod.epsilon) for mod in models])
+    Ds, epss = zip(*[(mod.fit_diff_coef, mod.epsilon) for mod in models])
     ax.plot(epss, Ds, ".", **kwargs)
 
 def plot_eig_scatter_and_bloch_2d(ax, epsilon_range=(5,2,1,0.5,0.2,0.1), root_number_of_sites = 30, convention=1):
@@ -712,7 +714,7 @@ def plot_D_fit_vs_LRT(ax):
 def plot_D_fittings2(ax, inv_s = np.linspace(0.01, 20, 80 )):
     sample2d = Sample((1,1),900)
     models = (ExpModel_2d(sample2d, epsilon = s ) for s in inv_s**(-1))
-    D_fits = np.fromiter((model.fit_diff_coef() for model in models), dtype = np.float64, count=len(inv_s))
+    D_fits = np.fromiter((model.fit_diff_coef for model in models), dtype = np.float64, count=len(inv_s))
     D_C0 = D_fits*exp(-inv_s)  ### I'm changing convention back to 0.
     ax.plot(-inv_s, D_C0, "r.", label=r"$D$")
     x = np.linspace(max(inv_s), min(inv_s), 150)
@@ -731,7 +733,7 @@ def plot_D_fittings2_1d(ax, s_space = np.linspace(0.1, 20, 80 ), b=1):
     sample1d = Sample(1,900)
     models = (ExpModel_1d(sample1d, epsilon = s , bandwidth1d=b) for s in s_space)
     three_type = [("fit",np.float64), ("resnet",np.float64),("new_resnet",np.float64)]
-    D_fits = np.fromiter(((model.fit_diff_coef(),model.inverse_resnet(),model.new_resnet()) for model in models), dtype = three_type, count=len(s_space))
+    D_fits = np.fromiter(((model.fit_diff_coef,model.inverse_resnet(),model.new_resnet) for model in models), dtype = three_type, count=len(s_space))
     #D_fit_0 = D_fits["fit"]*exp(-1/s_space)  ### I'm changing convention back to 0.
     #ax.plot(s_space, D_C0, "r.", label=r"$D$")
     ax.plot(s_space, D_fits["fit"]*exp(-1/s_space), ".", label=r"$D (fit), b = {0}$".format(b))
@@ -753,7 +755,7 @@ def plot_D_fittings2_logbox(ax, s_space = np.linspace(0.1, 20, 80 ), b=1):
     bloch1d = create_bloch_sample_1d(900)
     models = (ExpModel_Banded_Logbox(bloch1d, epsilon = s , bandwidth1d=b) for s in s_space)
     two_type = [("fit",np.float64), ("new_resnet",np.float64)]
-    D_fits = np.fromiter(((model.fit_diff_coef(), model.new_resnet()) for model in models), dtype = two_type, count=len(s_space))
+    D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet) for model in models), dtype = two_type, count=len(s_space))
     #D_fit_0 = D_fits["fit"]*exp(-1/s_space)  ### I'm changing convention back to 0. WTF!!!!!!!!!
     #ax.plot(s_space, D_C0, "r.", label=r"$D$")
     D0 = BANDED_D0_s_b(s_space,b)
@@ -780,8 +782,8 @@ def plot_banded_logbox_s_b(ax, s, b, color):
     cummulative_plot(ax, -model.eigvals[1:], color=color)
     x_space = np.linspace(-model.eigvals[1], -model.eigvals[100], 10)
     exp_dist = model.diff_density() # Expected diffusion density
-    ax.plot( x_space, exp_dist(x_space, model.new_resnet()), linestyle="-.", color=color, label="improved resnet b = {0}, s = {1}".format(b,s))
-    ax.plot( x_space, exp_dist(x_space, model.fit_diff_coef()), linestyle=":", color=color, label="fitting")
+    ax.plot( x_space, exp_dist(x_space, model.new_resnet), linestyle="-.", color=color, label="improved resnet b = {0}, s = {1}".format(b,s))
+    ax.plot( x_space, exp_dist(x_space, model.fit_diff_coef), linestyle=":", color=color, label="fitting")
     ax.set_xscale('log')
     ax.set_yscale('log')
 
@@ -829,7 +831,7 @@ def plot_me_vs_amir(ax, eps_range = (0.05, 0.1, 0.15)):
         m = ExpModel_2d(sample2d,eps)
         ev = - m.eigvals[1:]*exp(-1/eps)
         cummulative_plot(ax, ev, label=r"$s = {0}$".format(eps), color=color)
-        D = m.fit_diff_coef()*exp(-1/eps)
+        D = m.fit_diff_coef*exp(-1/eps)
         plot_func(ax, lambda x: m.diff_density()(x,D), xlim=m.xlim*exp(-1/eps), color=color)
         x = np.logspace(log10(ev[1]), log10(ev[-1]))
         ax.plot(x,exp(-0.5*pi*eps**2*log(0.5*x)**2), color=color)
@@ -852,7 +854,7 @@ def plot_1d_cummulative(ax, eps_range = (2, 0.4, 0.2)):
         m = ExpModel_1d(sample1d,eps)
         ev = - m.eigvals[1:]*exp(-1/eps)
         cummulative_plot(ax, ev, label=r"$s = {0}$".format(eps), color=color)
-        D = m.fit_diff_coef()*exp(-1/eps)
+        D = m.fit_diff_coef*exp(-1/eps)
         #plot_func(ax, lambda x: m.diff_density()(x,D), xlim=m.xlim*exp(-1/eps), color=color)
         m.plot_alexander(ax, convention=0, color=color)
         #x = np.logspace(log10(ev[1]), log10(ev[-1]))
@@ -908,7 +910,7 @@ def plot_banded(ax):
     sigma_range = sp.optimize.fsolve( lambda x: np.tanh(x)/x - s_range, x0= np.ones_like(s_range))
     bandwidth_range = np.arange(1,35)
     xx, yy = np.meshgrid(bandwidth_range, sigma_range)
-    DERH = np.vectorize(lambda bandwidth, sigma : ExpModel_Banded_Logbox(bloch_sample, sigma, bandwidth1d = bandwidth).fit_diff_coef()[0])
+    DERH = np.vectorize(lambda bandwidth, sigma : ExpModel_Banded_Logbox(bloch_sample, sigma, bandwidth1d = bandwidth).fit_diff_coef[0])
     DERH_mat  = DERH(xx,yy)
     mshow = ax.matshow(DERH_mat)
     ax.figure.colorbar(mshow)
