@@ -25,6 +25,7 @@ import tempfile
 import os
 import shutil
 import subprocess
+import logging
 
 from matplotlib import use
 if 'DISPLAY' in os.environ.keys() :
@@ -50,10 +51,18 @@ else:
     def draw_if_interactive():
         pass
 from matplotlib.widgets import Slider
+from matplotlib import ticker
 
 import numpy
 
 from handle_tight import tight_layout
+
+# set up logging
+logger = logging.getLogger(__name__)
+
+info = logger.info
+warning = logger.warning
+debug = logger.debug
 
 ### Raise all float errors
 numpy.seterr(all='warn')
@@ -121,12 +130,13 @@ def save_fig_to_png(fig, fname):
     canvas.print_figure(fname + ".png")
     print("Created:\n\t {0} ".format(fname + ".png"))
 
-def save_fig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor=(1, 1),pad=1.2, h_pad=None, w_pad=None):
+def save_fig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor=(1, 1),pad=1.2, h_pad=None, w_pad=None, tight=True):
     """ Save figure to pdf and eps
     """
 
     fig.set_size_inches((size[0] * size_factor[0], size[1] * size_factor[1]))
-    tight_layout(fig, pad=pad, h_pad=h_pad, w_pad=w_pad)
+    if tight:
+        tight_layout(fig, pad=pad, h_pad=h_pad, w_pad=w_pad)
     canvas_pdf = FigureCanvasPdf(fig)
     canvas_ps = FigureCanvasPS(fig)
     pdfname = os.path.join("figures", fname + ".pdf")
@@ -192,3 +202,18 @@ def autoscale_based_on(ax, lines):
         ax.dataLim.update_from_data_xy(xy, ignore=False)
     print ("limits changed to ", ax.dataLim)
     ax.autoscale_view()
+
+class DictScalarFormatter(ticker.ScalarFormatter):
+    """ Same as scalarFormatter, but uses a dictionary for values
+    https://github.com/matplotlib/matplotlib/blob/master/lib/matplotlib/ticker.py
+    """
+    def __init__(self, vals_dict, **kwargs):
+        ticker.ScalarFormatter.__init__(self,**kwargs)
+	self.vals_dict = vals_dict
+    def __call__(self, x, pos=None):
+        val = self.vals_dict.get(x,0)
+	s = self.pprint_val(val)
+	debug((val,s))
+	print((val,s))
+	return self.fix_minus(s)
+        return ticker.ScalarFormatter.__call__(self, self.vals_dict.get(x, 0), pos)

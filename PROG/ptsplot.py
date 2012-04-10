@@ -42,6 +42,8 @@ DELTA_D = lambda eps, rstar : (pi/4)*exp((1-rstar)/eps)*(24*(expm1(rstar/eps))*e
 D_ERH_0 = lambda s,rstar: exp(-rstar/s)*pi*0.5*(0.25*rstar**4 + rstar**3*s + 3*rstar**2*s**2 + 6*rstar*s**3 + 6*s**4)
 
 BANDED_D0_s_b = lambda s,b : (b*(b+1)*(2*b+1)/6.0)*expm1(-2*s)/(-2*s)  #expm1(x) = exp(x)-1 #with higher precision.
+BANDED_D_ERH_s_b = lambda p: lambda s,b : (b*(b+1)*(2*b+1)/6.0)*(exp(-2*s*p/b)*(1+2*s*p/b)-exp(-2*s))/(2*s)  #expm1(x) = exp(x)-1 #with higher precision.
+
 
 def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
     """ Plots 1d diffusion, treating the x value as log10.
@@ -938,6 +940,30 @@ def plot_banded(ax):
     mshow = ax.matshow(DERH_mat)
     ax.figure.colorbar(mshow)
     return DERH_mat
+
+def plot_D_matrix(figure, matrix, x, y):
+    #ax = figure.add_subplot(121)
+    ax = figure.add_subplot(111)
+    #ax = figure.add_axes([0.1,0.1,0.7,0.9])
+    #cbar_ax = figure.add_subplot(122)
+    mshow = ax.matshow(matrix)
+    xdict = dict(enumerate(x))
+    ydict = dict(enumerate(y))
+    xfmtr = FuncFormatter(lambda x,pos : "{0:.2g}".format(xdict.get(x,0)))
+    yfmtr = FuncFormatter(lambda x,pos : "{0:.2g}".format(ydict.get(x,0)))
+    ax.xaxis.set_major_formatter(xfmtr)
+    ax.yaxis.set_major_formatter(yfmtr)
+    figure.colorbar(mshow, ax=ax)
+    return ax
+
+def plot_three_D(D, s, b):
+    s_grid, b_grid = np.meshgrid(s,b)
+    for D_type in ("new_resnet", "resnet3", "fit"):
+        f = plotdl.Figure()
+        D0 = BANDED_D0_s_b(s_grid, b_grid)
+        plot_D_matrix(f, D[D_type]/D0, s, b)
+        plotdl.save_fig(f, D_type, tight=False, size_factor=(2,1.5))
+        f.clf()
 
 
 
