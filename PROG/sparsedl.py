@@ -290,9 +290,11 @@ def banded_ones(N, bandwidth):
     """
     return numpy.tri(N, k=bandwidth)*numpy.tri(N,k=bandwidth).T
 
-def periodic_banded_ones(N, bandwidth):
+def periodic_banded_ones(N, bandwidth, periodic=True):
     """ returns a NxN banded matrix of ones
     """
+    if not periodic:
+        return banded_ones(N, bandwidth)
     assert N > bandwidth*2
     return (numpy.tri(N, k=bandwidth)*numpy.tri(N,k=bandwidth).T +
            numpy.tri(N, k=(bandwidth-N)) + numpy.tri(N,k=(bandwidth-N)).T)

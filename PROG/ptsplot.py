@@ -296,6 +296,18 @@ class ExpModel_1d(ExpModel):
         invex = np.linalg.pinv(self.ex)
         return (N//2)*(N//2)*(np.dot( (shift - np.eye(N)), invex)).trace()**(-1)/2
 
+    @lazyprop 
+    def resnet3(self):
+        """ Works only for periodic models at the moment! """ 
+        N = self.sample.number_of_points()
+        b = self.bandwidth1d
+        invex = np.linalg.pinv(self.ex)
+        I = np.zeros(N)
+        I[[0 + b, N//2 - b]] = [-1,1]
+        V = invex.dot(I)
+        debug("s = {0}, b={1} ".format(self.epsilon, b))
+        return (N//2 -2*b)*(V[0+b] - V[N//2-b])**(-1)/2.0
+
 
 class ExpModel_Bloch_1d(ExpModel_1d):
     def diff_coef(self):
@@ -317,7 +329,7 @@ class ExpModel_Banded_Logbox(ExpModel_1d):
     def rate_matrix(self, convention=1):
         # we map epsilon to sigma, and the distribution goes from -2\sigma to 0.
         n = self.sample.number_of_points()
-        x = np.triu(periodic_banded_ones(n, self.bandwidth1d), 1)
+        x = np.triu(periodic_banded_ones(n, self.bandwidth1d, self.periodic), 1)
         m = np.zeros_like(x)
         ##m[x==1] = np.random.permutation(np.logspace(-2*self.epsilon,0, m[x==1].size)) ###logspace was a bad idea
         m[x==1] = np.random.permutation(exp(np.linspace(-2*self.epsilon,0, m[x==1].size)))
@@ -751,17 +763,28 @@ def plot_D_fittings2_1d(ax, s_space = np.linspace(0.1, 20, 80 ), b=1):
     plotdl.set_all(ax, xlabel=r"$s$", legend_loc="best", ylabel=r"$D$")
 
 
+def get_D_fittings_logbox(s_space, b_space):
+    """ some refractoring.. this gets all the D fittings for the banded logbox model"""
+    s_grid, b_grid = np.meshgrid(np.asarray(s_space), np.asarray(b_space))
+    bloch1d = create_bloch_sample_1d(1000)
+    outprod = zip(s_grid.flat, b_grid.flat)
+    models = (ExpModel_Banded_Logbox(bloch1d, epsilon = s , bandwidth1d=b) for (s,b) in outprod)
+    two_type = [("fit",np.float64), ("new_resnet",np.float64), ("resnet3", np.float64)]
+    D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet, model.resnet3) for model in models), dtype = two_type, count=s_grid.size)
+    return D_fits.reshape(s_grid.shape)
+
 def plot_D_fittings2_logbox(ax, s_space = np.linspace(0.1, 20, 80 ), b=1):
     bloch1d = create_bloch_sample_1d(900)
     models = (ExpModel_Banded_Logbox(bloch1d, epsilon = s , bandwidth1d=b) for s in s_space)
-    two_type = [("fit",np.float64), ("new_resnet",np.float64)]
-    D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet) for model in models), dtype = two_type, count=len(s_space))
+    two_type = [("fit",np.float64), ("new_resnet",np.float64), ("resnet3", np.float64)]
+    D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet, model.resnet3) for model in models), dtype = two_type, count=len(s_space))
     #D_fit_0 = D_fits["fit"]*exp(-1/s_space)  ### I'm changing convention back to 0. WTF!!!!!!!!!
     #ax.plot(s_space, D_C0, "r.", label=r"$D$")
     D0 = BANDED_D0_s_b(s_space,b)
     debug("last items in fit, resnet, and D0 : {0} {1} {2}".format(D_fits["fit"][-1], D_fits["new_resnet"][-1], D0[-1]))
     ax.plot(s_space, D_fits["fit"]/D0 , ".", label=r"D (fit), b = {0}".format(b))
     ax.plot(s_space, D_fits["new_resnet"]/ D0 , ".", label=r"D (resnet)")
+    ax.plot(s_space, D_fits["resnet3"]/ D0 , ".", label=r"D (resnet 3 )")
     x = np.linspace(min(s_space), max(s_space), 150)
 #    ax.plot(-x, D_ERH_0(x**(-1), 0), "b--", label=r"$p_c =0$")
 #    ax.plot(x, D_ERH_0(x**(-1), sqrt(1/pi)), "g-", label=r"$p_c =1$")
