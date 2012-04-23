@@ -189,29 +189,28 @@ From linear response to effective range hopping.
 We consider 1D or 2D network systems whose dynamics is described
 by a rate equation, with transitions rates $w_{nm}$ that form a symmetric matrix.
 In particular (but no exclusively) we are interested
-in a model where the rates depend exponentially on the distance
-between randomly distributed sites, namely $w_{nm}\propto \exp(|x_n-x_m|/\xi)$.
-It is natural to characterize such a system by a sparsity parameter~$s$
-that reflects the connectivity of the network. In the above example
-the natural definition is $s=\xi/r_0$ where $r_0$ is the average distance
-between neighboring sites.
+in a model where 
+\beq
+  w_{nm}\propto \exp(|x_n-x_m|/\xi)
+\eeq
+We characterize such a system by a sparsity parameter~$s$
+that reflects the connectivity of the network. For the above case, $s=\xi/r_0$.
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \headerbox{Diffusion coefficient}{name=diffusion,column=0, below=model}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {}
 
-Our interest is focused in the diffusion coefficient $D$ that characterizes the
-long time dynamics of a spreading distribution. In 1D it is well known that $D$ can display an abrupt
-percolation-like transition from diffusive (${D>0}$) to sub-diffusive (${D=0}$)
-behavior as the sparsity parameter drops below the critical value ${s_c=1}$.  
+The diffusion coefficient $D$ characterizes the
+long time dynamics of a spreading distribution.
+In 1D $D$ can display an abrupt percolation-like
+transition from diffusive (${D>0}$) to sub-diffusive (${D=0}$)
+behavior at ${s < s_c}$ (in our case ${s=1}$).  
 The question arises whether such a transition happens also in
 higher dimensions.
 
-There are two major routes in developing 
-a theory for~$D$. It may be deduced  from spectral properties ,
-but one may also try to find ways to evaluate it directly
-via a resistor network calculation.
+$D$ may be deduced  from spectral properties,
+or via a resistor network calculation.
 The extension of the resistor network method to wide distributions, leads to a generalized Variable Range Hopping (VRH) strategy.
 In what follows we pursue the same direction and obtain an
 improved Effective Range Hopping (ERH) estimate for~$D$.
