@@ -271,4 +271,22 @@ But I could not yet find a perfect fit for $P_c$. As an example I plot here $D/D
 \includegraphics{b21}
 \caption{This is a plot of $D/D_0$, using the fitting method, together with $D_\textrm{ERH}$ for several options of $P_c$.}
 \end{figure}
+
+\section{corrected resnet calculation}
+We have revised the resistor network method by skipping the peaks, meaning we input the same $I$, but measure the voltage $b$ sites inwards. Now we can see the ERH results more clearly:
+\begin{figure}[H]
+\includegraphics{Banded_b10}
+\caption{$D/D_0$ as a function of $s$. Both spectral analysis and resistor network methods are shown. }
+\end{figure}
+\begin{figure}[H]
+\includegraphics{resnet3_new}
+\caption{$D/D_0$ for the new resistor network method.}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics{resnet3_fit}
+\caption{$D_{resnet}/D_{spectral}$  for $s$ and $b$. This shows where the two methods coincide (light green) and where they do not agree.}
+\end{figure}
+
+
 \end{document}

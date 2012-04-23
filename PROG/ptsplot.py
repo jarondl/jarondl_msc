@@ -305,7 +305,8 @@ class ExpModel_1d(ExpModel):
         b = self.bandwidth1d
         invex = np.linalg.pinv(self.ex)
         I = np.zeros(N)
-        I[[0 + b, N//2 - b]] = [-1,1]
+        #I[[0 + b, N//2 - b]] = [-1,1]  # We should apply the current as usual....
+        I[[0, N//2]] = [-1,1]
         V = invex.dot(I)
         debug("s = {0}, b={1} ".format(self.epsilon, b))
         return (N//2 -2*b)*(V[0+b] - V[N//2-b])**(-1)/2.0
