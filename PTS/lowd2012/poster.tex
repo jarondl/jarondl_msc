@@ -1,4 +1,4 @@
-\documentclass[portrait,final,a0paper]{baposter}
+\documentclass[portrait,draft,a0paper]{baposter}
 %\documentclass[a4shrink,portrait,final]{baposter}
 % Usa a4shrink for an a4 sized paper.
 
@@ -101,6 +101,9 @@
   {\begin{Sbox}\begin{minipage}}%
   {\end{minipage}\end{Sbox}\fbox{\TheSbox}}
 
+
+    
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Begin of Document
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -133,6 +136,8 @@
 %}
 \typeout{Poster Starts}
 
+
+
 \begin{poster}%
   % Poster Options
   {
@@ -155,15 +160,19 @@
   {\includegraphics[width=10em]{D1077}} % No eye catcher for this poster. (eyecatcher=no above). If an eye catcher is present, the title is centered between eye-catcher and logo.
   % Title
   {\sf 
-Transport in 1D and 2D:\\ 
+Transport in "sparse" networks:\\ 
 From linear response to effective range hopping.
   }
   % Authors
   {\sf
-  \vspace{2em}  Yaron de Leeuw,  BGU
+  \vspace{2em}  {Yaron de Leeuw, Doron Cohen\\Ben-Gurion University of the Negev}%\\ 
+%                Physics Department \\
+%                 Ben-Gurion University of the Negev, \\
+%                Beer-Sheva, Israel\\
+%                \texttt{jarondl@bgu.ac.il}}
   }
   % University logo
-  {\hspace{10em}\includegraphics[width=20em]{BGU}\
+  {\hspace{1em}\includegraphics[height=10em]{BGU}\
   }
 
   \tikzstyle{light shaded}=[top color=baposterBGtwo!30!white,bottom color=baposterBGone!30!white,shading=axis,shading angle=30]
@@ -186,41 +195,39 @@ From linear response to effective range hopping.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {}
 
-We consider 1D or 2D network systems whose dynamics is described
-by a rate equation, with transitions rates $w_{nm}$ that form a symmetric matrix.
-In particular (but no exclusively) we are interested
-in a model where 
+We consider 1D, quasi-1D or 2D network with:
 \beq
-  w_{nm}\propto \exp(|x_n-x_m|/\xi)
+\frac{dp_n(t)}{dt} = \sum_m w_{nm} p_m(t)
 \eeq
-We characterize such a system by a sparsity parameter~$s$
-that reflects the connectivity of the network. For the above case, $s=\xi/r_0$.
+With $w_{nm}$ for the random site model:
+\beq
+w_{nm} =   \eexp{-|x_n-x_m|/\xi}  
+\eeq
+%
+In the 1D case we consider also the following banded lattice model
+%
+\beq
+w_{nm}  =   w_0  \eexp{-\epsilon_{nm}}  B(n-m)
+\eeq
+
+
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \headerbox{Diffusion coefficient}{name=diffusion,column=0, below=model}{
+  \headerbox{Diffusion}{name=diffusion,column=0, below=model}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {}
 
-The diffusion coefficient $D$ characterizes the
-long time dynamics of a spreading distribution.
-In 1D $D$ can display an abrupt percolation-like
-transition from diffusive (${D>0}$) to sub-diffusive (${D=0}$)
-behavior at ${s < s_c}$ (in our case ${s=1}$).  
-The question arises whether such a transition happens also in
-higher dimensions.
+The long time dynamics are charectrized by the spreading $S(t)$, the survival probability $\mathcal{P}(t)$ and the spectral counting of states $\mathcal{N}(t)$. In the case of diffusion these are:
+\begin{align}
+S(t) &= \left\langle r^2(t) \right\rangle  =  (2d)Dt\ \\
+\mathcal{P}(t) \quad &= \quad  \frac{1}{\left({4\pi D t}\right)^{d/2}} \\
+\mathcal{N}(\lambda)  &\propto\left[\frac{\lambda}{D}\right]^{d/2} 
+\end{align}
 
-$D$ may be deduced  from spectral properties,
-or via a resistor network calculation.
-The extension of the resistor network method to wide distributions, leads to a generalized Variable Range Hopping (VRH) strategy.
-In what follows we pursue the same direction and obtain an
-improved Effective Range Hopping (ERH) estimate for~$D$.
-Using this approach we show that in the 2D case, as $s$ becomes small,
-the functional $D[\bm{w}]$ exhibits a smooth crossover from LRT behavior 
-to semi-linear VRH-like dependence.  
  }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \headerbox{The $1d$ chain model}{name=lrt,column=0,below=diffusion}{
+  \headerbox{The $1d$ chain model}{name=chain,column=0,below=diffusion}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {} In the $1d$ chain model, the location of each site has a uniform random distribution on a $1d$ line.
 
@@ -235,10 +242,28 @@ for $s>1$, with $s=\xi/r_0$. For $0<s<1$, there is a sub diffusive regime, where
 S(t) \ \ &\propto& \ \ t^{2s/(1+s)}   \\ 
 \mathcal{P}(t) \ \ &\propto& \ \ t^{-s/(1+s)}
 \eeq
- These are exact analytic results, based on work by Shlomo Alexander\cite{alexander}, and they are summed up in panel (a) of figure \ref{fig:alexander}.
+ These are exact analytic results, based on work by Shlomo Alexander, and they are summed up in panel (a) of figure \ref{fig:alexander}.
   \vspace{0.3em}
   }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \headerbox{Effective Range Hopping}{name=alexander,column=0,below=chain, above=bottom}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{}
+The linear response theorem will not hold for very "sparse" systems, because only percolating 
+connections contribute to the transport. We define a percolation limit by requiring :
+\beq
+\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon  =  p_c
+\eeq
+with $p_c$ of order unity.
+
+Then we calculate $D$ as follows:
+
+\beq
+D_{\tbox{ERH}}[\bm{w}]  = \frac{1}{4}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rho(r,\epsilon) d\epsilon dr
+\eeq
+%
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \headerbox{Diffusion as a function of sparsity}{name=alexander,column=1,span=2,row=0}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -247,7 +272,7 @@ S(t) \ \ &\propto& \ \ t^{2s/(1+s)}   \\
 \begin{figure}[H]
   \includegraphics[width=0.45\textwidth]{alexander}
   \includegraphics[width=0.45\textwidth]{ERH}
-\caption{Theoretical results for a $1d$ chain model, contrasting the $2d$ results. In the $1d$ plot, on the left, the blue line is the power of the spreading. It shows a sub-diffusive regime where $0<s<1$, and a diffusive regime for $s>1$. The red line is of the diffusion coefficient $D$, which is zero for the sub-diffusive regime $s<1$. It is dimensionless as we set $r_0=1$. In the $2d$ plot, on the right, we see the diffusion coefficient, numerical fit results vs ERH, as explained in sections \ref{sec:diff2d} and \ref{sec:num_d_2d}. The $Y$ axis is $D$ in logarithmic scale, while the $X$ axis is $X=-1/s$. The dots are numerical fit results, extracted from plots such as \ref{fig:exp_2d_D_vs_subD}. The dashed line is of the LRT result, and the solid line is the ERH result with $p_c = 5$.}
+\caption{On the left: theoretical $1d$ chain model. On the right: the $2d$ results. In the $2d$ plot, on the right, we see the diffusion coefficient, numerical spectral analysis results vs ERH. The $Y$ axis is $D$ in logarithmic scale, while the $X$ axis is $X=-1/s$. }
 \label{fig:alexander}
 \end{figure}
 
@@ -256,115 +281,67 @@ S(t) \ \ &\propto& \ \ t^{2s/(1+s)}   \\
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \headerbox{Linear response}{name=lrt,column=1,below=alexander}{
+  \headerbox{Banded Networks}{name=banded,column=1,span=2,above=bottom}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-If we had an ordered lattice, then the exact result for $D$ would be 
+%If we had an ordered lattice, then the exact result for $D$ would be 
 %
-\beq
-D  =  D_{\tbox{LRT}}[\bm{w}]   =  \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
-\eeq
+%\beq
+%D  =  D_{\tbox{LRT}}[\bm{w}]   =  \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
+%\eeq
 %
-This expression is strictly {\em linear}.
-For the infinite temperature variation of 2D random site model we get  
+%This expression is strictly {\em linear}.
+%For the infinite temperature variation of 2D random site model we get  
 %
-\beq
-D \ \ = \ \ 3\pi \, s^4 \, w_0
-\eeq
+%\beq
+%D \ \ = \ \ 3\pi \, s^4 \, w_0
+%\eeq
 %
-This expression will not work for ${s<1}$ because sparse contribution 
-of strongly coupled sites do not contribute to the transport. 
-Only percolating trajectories do have a contribution. We are therefore urged 
-to introduce approximation schemes that takes this connectivity 
-issue into account.  
+Now we consider quasi-1d networks, in which there is a band profile, meaning each site is connected to $b$ neighbor sites. The rates depend exponentialy on a random variable with a uniform distribution $[-\sigma,0]$.
+\begin{figure}[H]
+\includegraphics[height=10em]{resnet_new}
+\includegraphics[height=10em]{banded_b10}
+\caption{$D$ as calculated using the resistor network method. On the left, for many values of $b$ and $\sigma$, and on the right for $b=10$.}
+\end{figure}
+
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ % \headerbox{ERH}{name=erh,column=2,below=alexander}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%The linear response theorem will not work for ${s<1}$ because sparse contribution 
+%of strongly coupled sites do not contribute to the transport. 
+%Only percolating trajectories do have a contribution. The Effective-Range-Method is
+%an approximation that takes connectivity into account. We define the effective rate 
+%through the requirement 
+%
+%\beq
+%\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon  =  p_c, 
+%\ \mbox{with $p_c$ of order unity}
+%\eeq
+%
+%Then we calculate $D$ as follows:
+%
+%\beq
+%D \ \ = \ \ D_{\tbox{ERH}}[\bm{w}]  \ \ = \ \ \frac{1}{4}\iint \min\{w(r,\epsilon),w^*\} \ r^2  \ \rho(r,\epsilon) \ d%\epsilon dr
+%\eeq
+%
+%This is similar to the LRT estimate, with network that has $w_{nm}$ 
+%that are equal or smaller to the original values. The "suppressed" 
+%connectors are those that are too sparse to form percolating trajectories. 
+%Note that this expression, is {\em semi-linear} 
+%rather than linear.
  
-}
+%}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \headerbox{Spectral Analysis}{name=spect,column=2,below=alexander}{
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-In a diffusive system the coarse grained spreading 
-is described by the standard diffusion equation,
-with an evolving Gaussian distribution  
-%  
-\beq
-\rho(x;t) \ \ = \ \ \prod_{i=1}^d \frac{1}{\sqrt{2\pi}\sigma(t)} 
-\exp\left[-\frac{1}{2}\left(\frac{x_i}{\sigma(t)}\right)^2 \right]
-\eeq
-%
-where $\sigma^2=2Dt$. It follows from this expression that 
-% 
-\beq
-S(t) \ \ = \ \ \left\langle r^2(t) \right\rangle  \ \ = \ \ (2d)Dt
-\eeq
-%
-and 
-%
-\beq
-\mathcal{P}(t) \quad \approx \quad  \frac{1}{\left({4\pi D t}\right)^{d/2}} 
-\qquad\qquad[r_0^d=1]
-\eeq
-%
-The eignevalues of the diffusion equation are $\lambda=Dq^2$ 
-where the possible values of the momentum are determined  
-by the periodic boundary conditions as $q=(2\pi/L)\vec{n}$. 
-It follows that the cumulative number of eigenstates is  
-%
-\beq \label{eq:expected_D_2d}
-\mathcal{N}(\lambda) \ \ = \ \ 
-\int_0^\lambda g(\lambda')d\lambda' \quad 
-= \quad \left(\frac{L}{2\pi}\right)^d
-\frac{\Omega_d}{d}
-\left[\frac{\lambda}{D}\right]^{d/2}
-\eeq
-
-
-
-It is well known that the survival probability 
-is related to the eigenvalues of $\bm{w}$ through the relation
-%
-\beq \label{eq:survival}
-\mathcal{P}(t) \ \ = \ \ \frac{1}{N}\sum_\lambda \eexp{\lambda t} \ \ \equiv \ \ \int_0^{\infty} g(\lambda)d\lambda \ \eexp{\lambda t}
-\eeq
-%
-For a diffusive system one can verify that the 
-indeed the expressions above 
-for $g(\lambda)$ and $\mathcal{P}(t)$ 
-are related by a Laplace transform.  
-%
-More generally, it follows that $D$ can be deduced from 
-the asymptotic behavior of $g(\lambda)$
-in the ${\lambda\rightarrow 0}$ limit  
-where the diffusive description is valid.
-%
-In contrast to that for large $\lambda$ we expect $g(\lambda)$ to coincide 
-with the distribution of the decay rates $\gamma_n=\sum_{m}w_{mn}$, 
-reflecting localized modes.
-
-}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \headerbox{Eigenvalue distributions}{name=eigvals,column=1,span=2,above=bottom}{
+  \headerbox{Eigenvalue distributions}{name=eigvals,column=1,span=2,above=banded, below=alexander}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%5
 \begin{figure}[H]
-\includegraphics[clip, width=0.95\textwidth]{two_panels}
-\caption{ $1D$ and $2D$ cummulative eigenvalue distribution, 
-for several values of $s$.
- The dots represent numerical diagonalization. The dashed lines are the expected diffusion results according to \eqref{eq:expected_D_2d}, with $D$ as a fit parameter. The solid lines are according to Ariel's result, as presented in \eqref{eq:amir_expected} . There is a striking difference between the $1d$ and $2d$ cases. For $1d$, the slope for sparse models ($s<1$) is less than $\frac{1}{2}$, meaning we have sub-diffusion. In the $2d$ case, the low-$\lambda$ slope is always $1$, which correspondes to normal diffusion.} \label{fig:exp_2d_D_vs_subD}
+\includegraphics[clip, width=0.95\textwidth]{four_panels}
+\caption{ Spectral properties for $1D$ and $2D$. The upper panels show the cummulative density of the eigenmodes, while the lower panels present the participation number of each mode. Modes with high participation numbers are extended and are more important for the long term behaviour. There is a striking difference between the $1d$ and $2d$ cases. For $1d$, the slope for sparse models ($s<1$) is less than $\frac{1}{2}$, meaning we have sub-diffusion. In the $2d$ case, the low-$\lambda$ slope is always $1$, which correspondes to normal diffusion.} \label{fig:exp_2d_D_vs_subD}
 \end{figure}
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \headerbox{References}{name=references,column=2,above=bottom}{
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-  \begin{thebibliography}{99}
-  \bibitem{alexander}
-    S. Alexander, J. Bernasconi, W. R. Schneider, R. Orbach, 
-    Rev. Mod. Phys. 53, 175 (1981).
-
-
-  \end{thebibliography}
-  }
 
 
 \end{poster}

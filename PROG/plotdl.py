@@ -138,13 +138,13 @@ def save_fig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor
     if tight:
         tight_layout(fig, pad=pad, h_pad=h_pad, w_pad=w_pad)
     canvas_pdf = FigureCanvasPdf(fig)
-    canvas_ps = FigureCanvasPS(fig)
+    #canvas_ps = FigureCanvasPS(fig)
     pdfname = os.path.join("figures", fname + ".pdf")
-    epsname = os.path.join("figures", fname + ".eps")
+    #epsname = os.path.join("figures", fname + ".eps")
     canvas_pdf.print_figure(pdfname)
-    canvas_ps.print_figure(epsname)
+    #canvas_ps.print_figure(epsname)
     print("Created:\n\t {0} ".format(pdfname))
-    print("Created:\n\t {0} ".format(epsname))
+    #print("Created:\n\t {0} ".format(epsname))
 
 
 def animate(plot_function, filename, variable_range, **kwargs):

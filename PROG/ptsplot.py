@@ -43,6 +43,7 @@ D_ERH_0 = lambda s,rstar: exp(-rstar/s)*pi*0.5*(0.25*rstar**4 + rstar**3*s + 3*r
 
 BANDED_D0_s_b = lambda s,b : (b*(b+1)*(2*b+1)/6.0)*expm1(-2*s)/(-2*s)  #expm1(x) = exp(x)-1 #with higher precision.
 BANDED_D_ERH_s_b = lambda p: lambda s,b : (b*(b+1)*(2*b+1)/6.0)*(exp(-2*s*p/b)*(1+2*s*p/b)-exp(-2*s))/(2*s)  #expm1(x) = exp(x)-1 #with higher precision.
+BANDED_D_s_b_ERH =  lambda s,b: lambda p : (b*(b+1)*(2*b+1)/6.0)*(exp(-2*s*p/b)*(1+2*s*p/b)-exp(-2*s))/(2*s)
 
 
 def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
@@ -222,6 +223,13 @@ class ExpModel(object):
         f = lambda x: prefactor*x**d2
         plot_func_logplot(ax, f, self.logxlim, "D = {D:.3G}".format(D=D))
 
+
+    def plot_PN(self, ax, convention=1, **kwargs) :
+        """ plots Participation number"""
+        PN = ((self.eig_matrix**(4)).sum(axis=0)**(-1))[1:]
+        ev = -self.eigvals[1:]*exp(-convention/self.epsilon)
+        return ax.plot(ev, PN,".", **kwargs)
+
     @lazyprop
     def fit_diff_coef(self):
         fitN = self.sample.number_of_points() - 1
@@ -262,6 +270,14 @@ class ExpModel_1d(ExpModel):
         else:
             f = lambda x: exp(-convention)*sinc(epsilon/(epsilon+1))*(x/2)**(epsilon/(epsilon+1))
         plot_func(ax, f, self.xlim, **kwargs)
+
+    def plot_eigmatrix(self, ax, **kwargs):
+        em = self.eig_matrix[:,1:]
+        em /= em.max(axis=0)
+        mshow = ax.matshow(em, vmin=-1,vmax=1)
+        ax.figure.colorbar(mshow)
+        
+
         
     def diff_coef(self):
         D = ((self.epsilon-1)/(self.epsilon))
@@ -776,6 +792,7 @@ def get_D_fittings_logbox(s_space, b_space):
     D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet, model.resnet3) for model in models), dtype = two_type, count=s_grid.size)
     return D_fits.reshape(s_grid.shape)
 
+
 def plot_D_fittings2_logbox(ax, s_space = np.linspace(0.1, 20, 80 ), b=1):
     bloch1d = create_bloch_sample_1d(900)
     models = (ExpModel_Banded_Logbox(bloch1d, epsilon = s , bandwidth1d=b) for s in s_space)
@@ -848,7 +865,7 @@ def plotf_banded_examples():
 
 
 
-def plot_me_vs_amir(ax, eps_range = (0.05, 0.1, 0.15)):
+def plot_me_vs_amir(ax1, ax2, eps_range = (0.05, 0.1, 0.15)):
     """ Plotting the eigenvalue dist with D vs amir's result"""
     colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     sample2d = Sample((1,1),900)
@@ -856,58 +873,79 @@ def plot_me_vs_amir(ax, eps_range = (0.05, 0.1, 0.15)):
         color=colors.next()
         m = ExpModel_2d(sample2d,eps)
         ev = - m.eigvals[1:]*exp(-1/eps)
-        cummulative_plot(ax, ev, label=r"$s = {0}$".format(eps), color=color)
+        cummulative_plot(ax1, ev, label=r"$s = {0}$".format(eps), color=color)
         D = m.fit_diff_coef*exp(-1/eps)
-        plot_func(ax, lambda x: m.diff_density()(x,D), xlim=m.xlim*exp(-1/eps), color=color)
+        plot_func(ax1, lambda x: m.diff_density()(x,D), xlim=m.xlim*exp(-1/eps), color=color)
         x = np.logspace(log10(ev[1]), log10(ev[-1]))
-        ax.plot(x,exp(-0.5*pi*eps**2*log(0.5*x)**2), color=color)
-    ax.set_xlim(2*exp(-sqrt(2*log(900)/(pi*min(eps_range)**2))), 2 )
-    ax.set_yscale('log')
-    ax.set_xscale('log')
-    ax.set_ylim(1/900,1)
-    plotdl.set_all(ax, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="upper left")
+        ax1.plot(x,exp(-0.5*pi*eps**2*log(0.5*x)**2), color=color)
+        m.plot_PN(ax2, convention=1, color=color)
+    ax1.set_xlim(2*exp(-sqrt(2*log(900)/(pi*min(eps_range)**2))), 2 )
+    ax1.set_yscale('log')
+    ax1.set_xscale('log')
+    ax1.set_ylim(1/900,1)
+    plotdl.set_all(ax1, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="upper left")
 
 
 
 
 
-def plot_1d_cummulative(ax, eps_range = (2, 0.4, 0.2)):
+def plot_1d_cummulative_PN(ax1, ax2, eps_range = (2, 0.4, 0.2)):
     """ Plotting the eigenvalue dist 1d"""
     colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     sample1d = Sample((1),900)
+    maxev, minev = 0,1
     for eps in eps_range:
         color=colors.next()
         m = ExpModel_1d(sample1d,eps)
         ev = - m.eigvals[1:]*exp(-1/eps)
-        cummulative_plot(ax, ev, label=r"$s = {0}$".format(eps), color=color)
+        maxev, minev = (max(maxev,nanmax(ev)), min(minev,nanmin(ev)))
+        cummulative_plot(ax1, ev, label=r"$s = {0}$".format(eps), color=color)
         D = m.fit_diff_coef*exp(-1/eps)
         #plot_func(ax, lambda x: m.diff_density()(x,D), xlim=m.xlim*exp(-1/eps), color=color)
-        m.plot_alexander(ax, convention=0, color=color)
+        m.plot_alexander(ax1, convention=0, color=color)
+        m.plot_PN(ax2, convention=1, color=color)
         #x = np.logspace(log10(ev[1]), log10(ev[-1]))
         #ax.plot(x,exp(-0.5*pi*eps**2*log(0.5*x)**2), color=color)
     #ax.set_xlim(2*exp(-sqrt(2*log(900)/(pi*min(eps_range)**2))), 2 )
-    ax.set_yscale('log')
-    ax.set_xscale('log')
-    ax.set_ylim(1/900,1)
-    plotdl.set_all(ax, xlabel=r"$\lambda$", ylabel = r"$N(\lambda)$", legend_loc="upper left") #mathcal had some issues..
+    ax1.set_yscale('log')
+    ax1.set_xscale('log')
+    ax1.set_ylim(1/900,1)
+    ax1.set_xlim(minev,maxev)
+    ax2.set_xlim(minev,maxev)
+
+    plotdl.set_all(ax1, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="upper left") #mathcal had some issues..
 
 def plot_1d_2d_panels(eps_range2d = (0.05,0.1,0.15), eps_range1d=(0.2,0.4,2,5)):
     f = plotdl.Figure()
-    ax1 = f.add_subplot(121)
-    ax2 = f.add_subplot(122)
-    plot_1d_cummulative(ax1, eps_range1d)
+    ax1 = f.add_subplot(221)
+    ax2 = f.add_subplot(222)
+    ax3 = f.add_subplot(223, sharex = ax1)
+    ax4 = f.add_subplot(224, sharex = ax2)
+    ax3.axhline(2, ls="--", color="grey")
+    #ax3.axhline(900, ls="--", color="grey")
+    ax4.axhline(2, ls="--", color="grey")
+    #ax4.axhline(900, ls="--", color="grey")
+    plot_1d_cummulative_PN(ax1, ax3, eps_range1d)
 
-    plot_me_vs_amir(ax2, eps_range2d)
+    plot_me_vs_amir(ax2, ax4, eps_range2d)
     ax2.set_yticks([0])
     ax2.set_yticklabels("none", visible=False)
     ax2.set_ylabel("")
-    ax1.text(1, 5E-3, "$1D$")
+    ax1.text(1E-1, 5E-3, "$1D$")
     ax2.text(1E-2, 5E-3, "$2D$")
     ## thin-out the ticks:
-    ax1.set_xticks(ax1.get_xticks()[::2])
-    ax2.set_xticks(ax2.get_xticks()[1::2])
+    #ax1.set_xticks([0])
+    #ax1.set_xticks(ax1.get_xticks()[::3])
+    #ax2.set_xticks(ax2.get_xticks()[1::3])
+    ax3.set_xscale('log')
+    ax4.set_xscale('log')
+    ax3.set_yscale('log')
+    ax4.set_yscale('log')
+    ax4.set_ylabel("")
+    ax3.set_ylabel("$PN$")
+    ax4.set_yticklabels("none",visible=False)
     f.subplots_adjust(hspace=0, wspace=0)
-    plotdl.save_fig(f, "two_panels", size_factor=(2,1), pad=0, h_pad=0, w_pad=0)
+    plotdl.save_fig(f, "four_panels", size_factor=(2,2), pad=0, h_pad=0, w_pad=0, tight=False)
 
 
 def plotf_1d_2d_Diffusion(inv_s = np.linspace(0.01, 20, 80 )):
@@ -941,6 +979,17 @@ def plot_banded(ax):
     mshow = ax.matshow(DERH_mat)
     ax.figure.colorbar(mshow)
     return DERH_mat
+
+def plot_BANDED_D_of_S(ax,s,b,D):
+    DERH = BANDED_D_s_b_ERH(s,b)
+    ax.plot(2*s, D["resnet3"][0]/DERH(0), "r.", label="Resistor Network")
+    ax.plot(2*s, D["fit"][0]/DERH(0), "b.", label="Spectral Analysis")
+    ax.plot(2*s, DERH(1.1)/DERH(0), "y-", label="$D_{ERH} \qquad [P_c=1.1]$")
+    ax.axhline(1,ls="-", color="green")
+    ax.set_xlabel("$\sigma$")
+    ax.set_ylabel("$D/D_{LRT}$")
+    ax.set_yscale("log")
+    ax.legend(loc="lower left")
 
 def plot_D_matrix(figure, matrix, x, y):
     #ax = figure.add_subplot(121)
