@@ -165,7 +165,7 @@ From linear response to effective range hopping.
   }
   % Authors
   {\sf
-  \vspace{2em}  {Yaron de Leeuw, Doron Cohen\\Ben-Gurion University of the Negev}%\\ 
+  \vspace{2em}  {\hspace{2em}Yaron de Leeuw, Doron Cohen\\Ben-Gurion University of the Negev}%\\ 
 %                Physics Department \\
 %                 Ben-Gurion University of the Negev, \\
 %                Beer-Sheva, Israel\\
@@ -197,18 +197,22 @@ From linear response to effective range hopping.
 
 We consider 1D, quasi-1D or 2D network with:
 \begin{align*}
-\frac{dp_n(t)}{dt} = \sum_m w_{nm} p_m(t)
+\frac{dp_n}{dt} = \sum_m w_{nm} p_m
 \end{align*}
-With $w_{nm}$ for the random site model:
-\beq
-w_{nm} =   \eexp{-|x_n-x_m|/\xi}  
-\eeq
+The $1D$ / $2D$ random site model:
+\begin{align*}
+w_{nm} &=  w_0\eexp{-|x_n-x_m|/\xi}  \\
+x_n &= \mbox{random locations with avg. distance $r_0$}\\
+s &\equiv \xi/r_0
+\end{align*}
 %
-In the 1D case we consider also the following banded lattice model
+The quasi-$1D$ banded lattice model:
 %
-\beq
-w_{nm}  =   w_0  \eexp{-\epsilon_{nm}}  B(n-m)
-\eeq
+\begin{align*}
+w_{nm}  &=   w_0  \eexp{-\epsilon_{nm}}  B(n-m) \\
+\epsilon_{nm} &= \mbox{random activation potential} \in [0,\sigma] \\
+b &= \mbox{"bandwidth"} = \mbox{width of} B(n-m)
+\end{align*}
 
 
 }
@@ -217,51 +221,50 @@ w_{nm}  =   w_0  \eexp{-\epsilon_{nm}}  B(n-m)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {}
 
-The long time dynamics are charectrized by the spreading $S(t)$, the survival probability $\mathcal{P}(t)$ and the spectral counting of states $\mathcal{N}(t)$. In the case of diffusion these are:
-\begin{align}
+The long time dynamics are characterized by the spreading $S(t)$, the survival probability $\mathcal{P}(t)$ and the spectral counting function $\mathcal{N}(\lambda)$. In the case of diffusion these are:
+\begin{align*}
 S(t) &= \left\langle r^2(t) \right\rangle  =  (2d)Dt\ \\
 \mathcal{P}(t) \quad &= \quad  \frac{1}{\left({4\pi D t}\right)^{d/2}} \\
 \mathcal{N}(\lambda)  &\propto\left[\frac{\lambda}{D}\right]^{d/2} 
-\end{align}
+\end{align*}
 
  }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \headerbox{The $1d$ chain model}{name=chain,column=0,below=diffusion}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-{} In the $1d$ chain model, the location of each site has a uniform random distribution on a $1d$ line.
-
-The rates are calculated according to $w_{nm} = w_0 \exp(-|r_m-r_n|/\xi)$, with only nearest neighbor transitions
-($b=1$). We can convert the spacing distribution to rate distribution, and, making the analogy with adding connectors in series, we obtain:
-\beq
+{} With only nearest neighbour transitions, we get for $s>1$:
+\begin{align*}
 D = D[w_n] = \left( \frac{1}{N} \sum_n \frac{1}{w_n} \right)^{-1} 
  =  \frac{s-1}{s} \, w_0
-\eeq
-for $s>1$, with $s=\xi/r_0$. For $0<s<1$, there is a sub diffusive regime, where the survival probability and spreading are:
-\beq
+\end{align*}
+For $0<s<1$, we have subdiffusion ($D=0$) with:
+\begin{align*}
 S(t) \ \ &\propto& \ \ t^{2s/(1+s)}   \\ 
 \mathcal{P}(t) \ \ &\propto& \ \ t^{-s/(1+s)}
-\eeq
+\end{align*}
  These are exact analytic results, based on work by Shlomo Alexander, and they are summed up in panel (a) of figure \ref{fig:alexander}.
   \vspace{0.3em}
   }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \headerbox{Effective Range Hopping}{name=alexander,column=0,below=chain, above=bottom}{
+  \headerbox{Effective Range Hopping}{name=ERH,column=0,below=chain, above=bottom}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {}
-The linear response theorem will not hold for very "sparse" systems, because only percolating 
-connections contribute to the transport. We define a percolation limit by requiring :
-\beq
+According to linear response:
+\[ D[\bm{w}] =  \frac{1}{2d}\iint w(r,\epsilon)  r^2   \rho(r,\epsilon) d\epsilon dr\]
+However, this will not work for "sparse" systems, because only percolating 
+paths contribute to the transport. We define a percolation threshold by :
+\[
 \iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon  =  p_c
-\eeq
+\]
 with $p_c$ of order unity.
 
 Then we calculate $D$ as follows:
 
-\beq
-D_{\tbox{ERH}}[\bm{w}]  = \frac{1}{4}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rho(r,\epsilon) d\epsilon dr
-\eeq
+\[
+D_{\tbox{ERH}}[\bm{w}]  = \frac{1}{2d}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rho(r,\epsilon) d\epsilon dr
+\]
 %
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -281,7 +284,7 @@ D_{\tbox{ERH}}[\bm{w}]  = \frac{1}{4}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rho
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \headerbox{Banded Networks}{name=banded,column=1,span=2,above=bottom}{
+  \headerbox{Banded Lattice Model}{name=banded,column=1,span=2,above=bottom}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %If we had an ordered lattice, then the exact result for $D$ would be 
 %
@@ -296,7 +299,7 @@ D_{\tbox{ERH}}[\bm{w}]  = \frac{1}{4}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rho
 %D \ \ = \ \ 3\pi \, s^4 \, w_0
 %\eeq
 %
-Now we consider quasi-1d networks, in which there is a band profile, meaning each site is connected to $b$ neighbor sites. The rates depend exponentialy on a random variable with a uniform distribution $[-\sigma,0]$.
+Now we consider quasi-1d networks, in which there is a band profile, meaning each site is connected to $b$ neighbour sites. The rates depend exponentially on a random variable with a uniform distribution $[-\sigma,0]$.
 \begin{figure}[H]
 \includegraphics[height=10em]{resnet_new}
 \includegraphics[height=10em]{banded_b10}
@@ -338,7 +341,7 @@ Now we consider quasi-1d networks, in which there is a band profile, meaning eac
 %%%%%%%%%%%%%%%%%%5
 \begin{figure}[H]
 \includegraphics[clip, width=0.95\textwidth]{four_panels}
-\caption{ Spectral properties for $1D$ and $2D$. The upper panels show the cummulative density of the eigenmodes, while the lower panels present the participation number of each mode. Modes with high participation numbers are extended and are more important for the long term behaviour. There is a striking difference between the $1d$ and $2d$ cases. For $1d$, the slope for sparse models ($s<1$) is less than $\frac{1}{2}$, meaning we have sub-diffusion. In the $2d$ case, the low-$\lambda$ slope is always $1$, which correspondes to normal diffusion.} \label{fig:exp_2d_D_vs_subD}
+\caption{ Spectral properties for $1D$ and $2D$. The upper panels show the cumulative density of the eigenmodes, while the lower panels present the participation number of each mode. Modes with high participation numbers are extended and are more important for the long term behaviour. There is a striking difference between the $1d$ and $2d$ cases. For $1d$, the slope for sparse models ($s<1$) is less than $\frac{1}{2}$, meaning we have sub-diffusion. In the $2d$ case, the low-$\lambda$ slope is always $1$, which corresponds to normal diffusion.} \label{fig:exp_2d_D_vs_subD}
 \end{figure}
 }
 
