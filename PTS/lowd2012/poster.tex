@@ -209,7 +209,7 @@ Phys. Rev. B 77, 165207 (2008).
 
 \bibitem{kbd} 
 A. Stotland, T. Kottos, D. Cohen, 
-Phys. Rev. B {\bf 81}, 115464 (2010).
+Phys. Rev. B  81, 115464 (2010).
 
 %\bibitem{miller}
 %A. Miller and E. Abrahams, Phys. Rev. {\bf 120}, 745 (1960).
@@ -226,7 +226,7 @@ Phys. Rev. B {\bf 81}, 115464 (2010).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {}
 
-Motivated by \cite{alexander,amir,kbd}, we consider 1D, quasi-1D or 2D networks with:
+Motivated by \cite{alexander,amir,kbd}, we consider 1D, quasi-1D and 2D networks with:
 \begin{align*}
 \frac{dp_n}{dt} \quad=\quad \sum_m w_{nm} p_m
 \end{align*}
@@ -242,7 +242,7 @@ The banded lattice model (quasi-$1D$ ) : %\cite{kbd}:
 %
 \begin{align*}
 w_{nm}  \quad&=\quad   w_0  \eexp{-\epsilon_{nm}}  B(n-m) \\
-b \quad&=\quad \mbox{"bandwidth"} = \mbox{width of }\  B(r)
+b \quad&=\quad \mbox{"bandwidth"}\quad = \quad\mbox{width of }\  B(r)
 \end{align*}
 
 
@@ -254,9 +254,9 @@ b \quad&=\quad \mbox{"bandwidth"} = \mbox{width of }\  B(r)
 
 The long time dynamics are characterized by the spreading $S(t)$, the survival probability $\mathcal{P}(t)$ and the spectral counting function $\mathcal{N}(\lambda)$. In the case of diffusion these are:
 \begin{align*}
-S(t) \quad&=\quad  (2d)Dt\ \\
-\mathcal{P}(t) \quad &= \quad  \frac{1}{\left({4\pi D t}\right)^{d/2}} \\
-\mathcal{N}(\lambda)  \quad&\propto\quad \left[\frac{\lambda}{D}\right]^{d/2} 
+S(t) \quad&=\quad \left\langle r^2(t)\right\rangle \quad\sim\quad  (2d)Dt\ \\
+\mathcal{P}(t) \quad &\sim \quad  \frac{1}{\left({D t}\right)^{d/2}} \\
+\mathcal{N}(\lambda)  \quad&\sim\quad \left[\frac{\lambda}{D}\right]^{d/2} 
 \end{align*}
 
  }
@@ -264,17 +264,18 @@ S(t) \quad&=\quad  (2d)Dt\ \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \headerbox{The $1D$ chain model}{name=chain,column=0,below=diffusion}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-{} With only nearest neighbour transitions, we get for $s>1$:
+For $s>1$ we get:
 \begin{align*}
-D = D[w_n] = \left( \frac{1}{N} \sum_n \frac{1}{w_n} \right)^{-1} 
- =  \frac{s-1}{s} \, w_0
+D \quad = \quad \left( \frac{1}{N} \sum_n \frac{1}{w_n} \right)^{-1} 
+\quad =\quad  \frac{s-1}{s} \, w_0
 \end{align*}
-For $0<s<1$, we have subdiffusion ($D=0$) with:
+For $0{<}s{<}1$, we get subdiffusion ($D{=}0$) with:
 \begin{align*}
-S(t) \ \ &\propto \ \ t^{2s/(1+s)}   \\ 
-\mathcal{P}(t) \ \ &\propto \ \ t^{-s/(1+s)}
+S(t) \quad&\sim \quad t^{2s/(1+s)}   \\ 
+\mathcal{P}(t) \quad &\sim \quad t^{-s/(1+s)} \\
+\mathcal{N}(\lambda) \quad &\sim \quad \lambda^{s/(1+s)}
 \end{align*}
- These are exact analytic results, based on work by Shlomo Alexander\cite{alexander}, and they are summed up in panel (a) of figure \ref{fig:alexander}.
+ These are analytic results (see \cite{alexander}), and they are reflected in the spectral analysis, figure \ref{fig:spectral}.
   \vspace{0.3em}
   }
 
@@ -283,17 +284,17 @@ S(t) \ \ &\propto \ \ t^{2s/(1+s)}   \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {}
 According to linear response:
-\[ D[\bm{w}] =  \frac{1}{2d}\iint w(r,\epsilon)  r^2   \rho(r,\epsilon) d\epsilon dr\]
+\[ D_{\tbox{LRT}}\quad =\quad  \frac{1}{2d}\iint w(r,\epsilon)  r^2   \rho(r,\epsilon) d\epsilon dr\]
 However, this will not work for "sparse" systems, because only percolating 
 paths contribute to the transport. We define a percolation threshold by :
 \[
-\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon  =  p_c
+\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon  \quad=\quad  p_c
 \]
 with $p_c$ of order unity.
 
 Then we calculate $D$ as follows:
 \[
-D_{\tbox{ERH}}[\bm{w}]  = \frac{1}{2d}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rho(r,\epsilon) d\epsilon dr
+D_{\tbox{ERH}} \quad=\quad \frac{1}{2d}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rho(r,\epsilon) d\epsilon dr
 \]
 %
 }
@@ -320,7 +321,7 @@ as predicted by the theory for a $1D$ network. (right) Numerical resuls for $D$ 
 %%%%%%%%%%%%%%%%%%5
 \begin{figure}[H]
 \includegraphics[clip, width=0.95\textwidth]{four_panels}
-\caption{ Spectral properties for $1D$ and $2D$. The upper panels show the cumulative density of the eigenmodes, while the lower panels present the participation number of each mode. Modes with high participation numbers are extended and are more important for the long term behaviour. In $1D$ there is a sub diffusive regime with a slope of less than $1/2$, while in $2D$ the low-$\lambda$ slope is always $1$.} \label{fig:spectral}
+\caption{ Spectral properties for $1D$ and $2D$. The upper panels show the cumulative count of the eigenvalues, while the lower panels present the participation number of the corresponding eigenmodes. In the $2D$ case the RG analysis of the localized modes \cite{amir} predicts the solid lines. The numerics show clearly a departure towards a diffusive behavior, as implied by ERH.} \label{fig:spectral}
 \end{figure}
 }
 
@@ -331,7 +332,7 @@ as predicted by the theory for a $1D$ network. (right) Numerical resuls for $D$ 
 \begin{figure}[H]
 \includegraphics[height=10em]{resnet_new}
 \includegraphics[height=10em]{banded_b10}
-\caption{(left) The numerical result for $D/D_{LRT}$ imaged as a function of $\sigma$ and $b$. (right) Plot of the results for a $b=10$ matrix. The blue points are based on spectral analysis (involving an undeterminded pre-factor). The curve is our ERH prediction.}
+\caption{(left) The numerical result for $D/D_{\tbox{LRT}}$ imaged as a function of $\sigma$ and $b$. (right) Plot of the results for a $b=10$ matrix. The blue points are based on spectral analysis (involving an undeterminded pre-factor). The curve is our ERH prediction.}
 \end{figure}
 
 }
