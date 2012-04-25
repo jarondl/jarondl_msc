@@ -1,4 +1,4 @@
-\documentclass[portrait,draft,a0paper]{baposter}
+\documentclass[portrait,final,a0paper]{baposter}
 %\documentclass[a4shrink,portrait,final]{baposter}
 % Usa a4shrink for an a4 sized paper.
 
@@ -101,7 +101,8 @@
   {\begin{Sbox}\begin{minipage}}%
   {\end{minipage}\end{Sbox}\fbox{\TheSbox}}
 
-
+%%%%% REMOVING the bibliography title
+\renewcommand{\refname}{}
     
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -159,13 +160,13 @@
   % Eye Catcher
   {\includegraphics[width=10em]{D1077}} % No eye catcher for this poster. (eyecatcher=no above). If an eye catcher is present, the title is centered between eye-catcher and logo.
   % Title
-  {\sf 
+  {\bf \vspace{1em}\center{
 Transport in "sparse" networks:\\ 
-From linear response to effective range hopping.
-  }
+\hspace{1em}From linear response to effective range hopping.}}
   % Authors
   {\sf
-  \vspace{2em}  {\hspace{2em}Yaron de Leeuw, Doron Cohen\\Ben-Gurion University of the Negev}%\\ 
+  \vspace{-1.2em}  {\center{Yaron de Leeuw, Doron Cohen\\
+Ben-Gurion University of the Negev\\}}
 %                Physics Department \\
 %                 Ben-Gurion University of the Negev, \\
 %                Beer-Sheva, Israel\\
@@ -188,6 +189,33 @@ From linear response to effective range hopping.
 %%% have to specify the top and bottom boxes before you specify the middle 
 %%% box.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \headerbox{References}{name=refs,column=1,span=2,above=bottom}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-1em}
+\begin{thebibliography}{99}
+\bibitem{alexander}
+S. Alexander, J. Bernasconi, W.R. Schneider, R. Orbach, 
+Rev. Mod. Phys. 53, 175 (1981).
+
+\bibitem{amir} 
+A. Amir, Y. Oreg, Y. Imry,
+Phys. Rev. Lett. 105, 070601 (2010); 
+%
+Phys. Rev. B 77, 165207 (2008).
+
+\bibitem{kbd} 
+A. Stotland, T. Kottos, D. Cohen, 
+Phys. Rev. B {\bf 81}, 115464 (2010).
+
+%\bibitem{miller}
+%A. Miller and E. Abrahams, Phys. Rev. {\bf 120}, 745 (1960).
+
+\end{thebibliography}
+
+
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,23 +223,23 @@ From linear response to effective range hopping.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {}
 
-We consider 1D, quasi-1D or 2D network with:
+We consider 1D, quasi-1D or 2D networks with:
 \begin{align*}
 \frac{dp_n}{dt} = \sum_m w_{nm} p_m
 \end{align*}
-The $1D$ / $2D$ random site model:
+The $1D$ / $2D$ random site model\cite{amir}:
 \begin{align*}
 w_{nm} &=  w_0\eexp{-|x_n-x_m|/\xi}  \\
 x_n &= \mbox{random locations with avg. distance $r_0$}\\
 s &\equiv \xi/r_0
 \end{align*}
 %
-The quasi-$1D$ banded lattice model:
+The quasi-$1D$ banded lattice model \cite{kbd}:
 %
 \begin{align*}
 w_{nm}  &=   w_0  \eexp{-\epsilon_{nm}}  B(n-m) \\
 \epsilon_{nm} &= \mbox{random activation potential} \in [0,\sigma] \\
-b &= \mbox{"bandwidth"} = \mbox{width of} B(n-m)
+b &= \mbox{"bandwidth"} = \mbox{width of }\  B(r)
 \end{align*}
 
 
@@ -243,7 +271,7 @@ For $0<s<1$, we have subdiffusion ($D=0$) with:
 S(t) \ \ &\propto& \ \ t^{2s/(1+s)}   \\ 
 \mathcal{P}(t) \ \ &\propto& \ \ t^{-s/(1+s)}
 \end{align*}
- These are exact analytic results, based on work by Shlomo Alexander, and they are summed up in panel (a) of figure \ref{fig:alexander}.
+ These are exact analytic results, based on work by Shlomo Alexander\cite{alexander}, and they are summed up in panel (a) of figure \ref{fig:alexander}.
   \vspace{0.3em}
   }
 
@@ -270,79 +298,40 @@ D_{\tbox{ERH}}[\bm{w}]  = \frac{1}{2d}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rh
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \headerbox{Diffusion as a function of sparsity}{name=alexander,column=1,span=2,row=0}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-{}  
-
 \begin{figure}[H]
   \includegraphics[width=0.45\textwidth]{alexander}
   \includegraphics[width=0.45\textwidth]{ERH}
-\caption{On the left: theoretical $1d$ chain model. On the right: the $2d$ results. In the $2d$ plot, on the right, we see the diffusion coefficient, numerical spectral analysis results vs ERH. The $Y$ axis is $D$ in logarithmic scale, while the $X$ axis is $X=-1/s$. }
+\caption{On the left: theoretical $1d$ chain model. On the right: numerical spectral analysis results vs ERH for $2d$.}
 \label{fig:alexander}
 \end{figure}
 
-  \vspace{0.3em}
   }
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \headerbox{Banded Lattice Model}{name=banded,column=1,span=2,above=bottom}{
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%If we had an ordered lattice, then the exact result for $D$ would be 
-%
-%\beq
-%D  =  D_{\tbox{LRT}}[\bm{w}]   =  \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
-%\eeq
-%
-%This expression is strictly {\em linear}.
-%For the infinite temperature variation of 2D random site model we get  
-%
-%\beq
-%D \ \ = \ \ 3\pi \, s^4 \, w_0
-%\eeq
-%
-Now we consider quasi-1d networks, in which there is a band profile, meaning each site is connected to $b$ neighbour sites. The rates depend exponentially on a random variable with a uniform distribution $[-\sigma,0]$.
-\begin{figure}[H]
-\includegraphics[height=10em]{resnet_new}
-\includegraphics[height=10em]{banded_b10}
-\caption{$D$ as calculated using the resistor network method. On the left, for many values of $b$ and $\sigma$, and on the right for $b=10$.}
-\end{figure}
 
-}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- % \headerbox{ERH}{name=erh,column=2,below=alexander}{
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%The linear response theorem will not work for ${s<1}$ because sparse contribution 
-%of strongly coupled sites do not contribute to the transport. 
-%Only percolating trajectories do have a contribution. The Effective-Range-Method is
-%an approximation that takes connectivity into account. We define the effective rate 
-%through the requirement 
-%
-%\beq
-%\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon  =  p_c, 
-%\ \mbox{with $p_c$ of order unity}
-%\eeq
-%
-%Then we calculate $D$ as follows:
-%
-%\beq
-%D \ \ = \ \ D_{\tbox{ERH}}[\bm{w}]  \ \ = \ \ \frac{1}{4}\iint \min\{w(r,\epsilon),w^*\} \ r^2  \ \rho(r,\epsilon) \ d%\epsilon dr
-%\eeq
-%
-%This is similar to the LRT estimate, with network that has $w_{nm}$ 
-%that are equal or smaller to the original values. The "suppressed" 
-%connectors are those that are too sparse to form percolating trajectories. 
-%Note that this expression, is {\em semi-linear} 
-%rather than linear.
- 
-%}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \headerbox{Eigenvalue distributions}{name=eigvals,column=1,span=2,above=banded, below=alexander}{
+  \headerbox{Eigenvalue distributions}{name=eigvals,column=1,span=2, below=alexander}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%5
 \begin{figure}[H]
 \includegraphics[clip, width=0.95\textwidth]{four_panels}
-\caption{ Spectral properties for $1D$ and $2D$. The upper panels show the cumulative density of the eigenmodes, while the lower panels present the participation number of each mode. Modes with high participation numbers are extended and are more important for the long term behaviour. There is a striking difference between the $1d$ and $2d$ cases. For $1d$, the slope for sparse models ($s<1$) is less than $\frac{1}{2}$, meaning we have sub-diffusion. In the $2d$ case, the low-$\lambda$ slope is always $1$, which corresponds to normal diffusion.} \label{fig:exp_2d_D_vs_subD}
+\caption{ Spectral properties for $1D$ and $2D$. The upper panels show the cumulative density of the eigenmodes, while the lower panels present the participation number of each mode. Modes with high participation numbers are extended and are more important for the long term behaviour. In $1d$ there is a sub diffusive regime with a slope of less than $1/2$, while in $2d$ the low-$\lambda$ slope is always $1$.} \label{fig:exp_2d_D_vs_subD}
 \end{figure}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \headerbox{Banded Lattice Model}{name=banded,column=1,span=2, below=eigvals,above=refs}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[H]
+\includegraphics[height=10em]{resnet_new}
+\includegraphics[height=10em]{banded_b10}
+\caption{$D/D_{LRT}$. On the left: the resistor network method result, for many values of $b$ and $\sigma$.
+On the right: the resistor network method and the spectral analysis results, for $b=10$, together with the ERH approximation.}
+\end{figure}
+
 }
 
 
