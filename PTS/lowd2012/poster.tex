@@ -1,4 +1,4 @@
-\documentclass[portrait,final,a0paper]{baposter}
+\documentclass[fleqn,portrait,final,a0paper]{baposter}
 %\documentclass[a4shrink,portrait,final]{baposter}
 % Usa a4shrink for an a4 sized paper.
 
@@ -103,7 +103,9 @@
 
 %%%%% REMOVING the bibliography title
 \renewcommand{\refname}{}
-    
+
+
+\mathindent=0.0pt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Begin of Document
@@ -193,6 +195,7 @@ Ben-Gurion University of the Negev\\}}
   \headerbox{References}{name=refs,column=1,span=2,above=bottom}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \vspace{-1em}
+{\small
 \begin{thebibliography}{99}
 \bibitem{alexander}
 S. Alexander, J. Bernasconi, W.R. Schneider, R. Orbach, 
@@ -213,7 +216,7 @@ Phys. Rev. B {\bf 81}, 115464 (2010).
 
 \end{thebibliography}
 
-
+}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -223,23 +226,23 @@ Phys. Rev. B {\bf 81}, 115464 (2010).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {}
 
-We consider 1D, quasi-1D or 2D networks with:
+Motivated by \cite{alexander,amir,kbd}, we consider 1D, quasi-1D or 2D networks with:
 \begin{align*}
-\frac{dp_n}{dt} = \sum_m w_{nm} p_m
+\frac{dp_n}{dt} \quad=\quad \sum_m w_{nm} p_m
 \end{align*}
-The $1D$ / $2D$ random site model\cite{amir}:
+The random site model ($1D$ / $2D$ ) : %\cite{amir}:
 \begin{align*}
-w_{nm} &=  w_0\eexp{-|x_n-x_m|/\xi}  \\
-x_n &= \mbox{random locations with avg. distance $r_0$}\\
-s &\equiv \xi/r_0
+w_{nm} \quad&=\quad  w_0\eexp{-\epsilon_{nm}}\eexp{-|x_n-x_m|/\xi}  \\
+x_n \quad&=\quad \mbox{random with avg. distance $r_0$}\\
+s \quad&\equiv\quad \xi/r_0\\
+\epsilon_{nm} \quad&=\quad \mbox{random activation potential} \in [0,\sigma] 
 \end{align*}
 %
-The quasi-$1D$ banded lattice model \cite{kbd}:
+The banded lattice model (quasi-$1D$ ) : %\cite{kbd}:
 %
 \begin{align*}
-w_{nm}  &=   w_0  \eexp{-\epsilon_{nm}}  B(n-m) \\
-\epsilon_{nm} &= \mbox{random activation potential} \in [0,\sigma] \\
-b &= \mbox{"bandwidth"} = \mbox{width of }\  B(r)
+w_{nm}  \quad&=\quad   w_0  \eexp{-\epsilon_{nm}}  B(n-m) \\
+b \quad&=\quad \mbox{"bandwidth"} = \mbox{width of }\  B(r)
 \end{align*}
 
 
@@ -251,15 +254,15 @@ b &= \mbox{"bandwidth"} = \mbox{width of }\  B(r)
 
 The long time dynamics are characterized by the spreading $S(t)$, the survival probability $\mathcal{P}(t)$ and the spectral counting function $\mathcal{N}(\lambda)$. In the case of diffusion these are:
 \begin{align*}
-S(t) &= \left\langle r^2(t) \right\rangle  =  (2d)Dt\ \\
+S(t) \quad&=\quad  (2d)Dt\ \\
 \mathcal{P}(t) \quad &= \quad  \frac{1}{\left({4\pi D t}\right)^{d/2}} \\
-\mathcal{N}(\lambda)  &\propto\left[\frac{\lambda}{D}\right]^{d/2} 
+\mathcal{N}(\lambda)  \quad&\propto\quad \left[\frac{\lambda}{D}\right]^{d/2} 
 \end{align*}
 
  }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \headerbox{The $1d$ chain model}{name=chain,column=0,below=diffusion}{
+  \headerbox{The $1D$ chain model}{name=chain,column=0,below=diffusion}{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {} With only nearest neighbour transitions, we get for $s>1$:
 \begin{align*}
@@ -268,8 +271,8 @@ D = D[w_n] = \left( \frac{1}{N} \sum_n \frac{1}{w_n} \right)^{-1}
 \end{align*}
 For $0<s<1$, we have subdiffusion ($D=0$) with:
 \begin{align*}
-S(t) \ \ &\propto& \ \ t^{2s/(1+s)}   \\ 
-\mathcal{P}(t) \ \ &\propto& \ \ t^{-s/(1+s)}
+S(t) \ \ &\propto \ \ t^{2s/(1+s)}   \\ 
+\mathcal{P}(t) \ \ &\propto \ \ t^{-s/(1+s)}
 \end{align*}
  These are exact analytic results, based on work by Shlomo Alexander\cite{alexander}, and they are summed up in panel (a) of figure \ref{fig:alexander}.
   \vspace{0.3em}
@@ -289,7 +292,6 @@ paths contribute to the transport. We define a percolation threshold by :
 with $p_c$ of order unity.
 
 Then we calculate $D$ as follows:
-
 \[
 D_{\tbox{ERH}}[\bm{w}]  = \frac{1}{2d}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rho(r,\epsilon) d\epsilon dr
 \]
@@ -301,7 +303,8 @@ D_{\tbox{ERH}}[\bm{w}]  = \frac{1}{2d}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rh
 \begin{figure}[H]
   \includegraphics[width=0.45\textwidth]{alexander}
   \includegraphics[width=0.45\textwidth]{ERH}
-\caption{On the left: theoretical $1d$ chain model. On the right: numerical spectral analysis results vs ERH for $2d$.}
+\caption{The zero activation energy model: (left) The dependence of $D$ and $\alpha$ on $s$ 
+as predicted by the theory for a $1D$ network. (right) Numerical resuls for $D$ in the case of a $2D$ network, based on spectral analysis of Fig\ref{fig:spectral}  compared with our ERH prediction. The dashed line is LRT.}
 \label{fig:alexander}
 \end{figure}
 
@@ -317,7 +320,7 @@ D_{\tbox{ERH}}[\bm{w}]  = \frac{1}{2d}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rh
 %%%%%%%%%%%%%%%%%%5
 \begin{figure}[H]
 \includegraphics[clip, width=0.95\textwidth]{four_panels}
-\caption{ Spectral properties for $1D$ and $2D$. The upper panels show the cumulative density of the eigenmodes, while the lower panels present the participation number of each mode. Modes with high participation numbers are extended and are more important for the long term behaviour. In $1d$ there is a sub diffusive regime with a slope of less than $1/2$, while in $2d$ the low-$\lambda$ slope is always $1$.} \label{fig:exp_2d_D_vs_subD}
+\caption{ Spectral properties for $1D$ and $2D$. The upper panels show the cumulative density of the eigenmodes, while the lower panels present the participation number of each mode. Modes with high participation numbers are extended and are more important for the long term behaviour. In $1D$ there is a sub diffusive regime with a slope of less than $1/2$, while in $2D$ the low-$\lambda$ slope is always $1$.} \label{fig:spectral}
 \end{figure}
 }
 
@@ -328,8 +331,7 @@ D_{\tbox{ERH}}[\bm{w}]  = \frac{1}{2d}\iint \min\{w(r,\epsilon),w^*\}  r^2   \rh
 \begin{figure}[H]
 \includegraphics[height=10em]{resnet_new}
 \includegraphics[height=10em]{banded_b10}
-\caption{$D/D_{LRT}$. On the left: the resistor network method result, for many values of $b$ and $\sigma$.
-On the right: the resistor network method and the spectral analysis results, for $b=10$, together with the ERH approximation.}
+\caption{(left) The numerical result for $D/D_{LRT}$ imaged as a function of $\sigma$ and $b$. (right) Plot of the results for a $b=10$ matrix. The blue points are based on spectral analysis (involving an undeterminded pre-factor). The curve is our ERH prediction.}
 \end{figure}
 
 }
