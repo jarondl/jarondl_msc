@@ -41,9 +41,15 @@ D_LRT = lambda eps : 6*pi*exp(1/eps)*eps**4 ###  WRONG!
 DELTA_D = lambda eps, rstar : (pi/4)*exp((1-rstar)/eps)*(24*(expm1(rstar/eps))*eps**4-24*eps**3*rstar - 12*eps**2*rstar**2-4*eps*rstar**3-rstar**4)
 D_ERH_0 = lambda s,rstar: exp(-rstar/s)*pi*0.5*(0.25*rstar**4 + rstar**3*s + 3*rstar**2*s**2 + 6*rstar*s**3 + 6*s**4)
 
+D_ERH_2d_LATTICE = lambda s: (exp(-s/2)-0.5*exp(-s))/s
+
 BANDED_D0_s_b = lambda s,b : (b*(b+1)*(2*b+1)/6.0)*expm1(-2*s)/(-2*s)  #expm1(x) = exp(x)-1 #with higher precision.
 BANDED_D_ERH_s_b = lambda p: lambda s,b : (b*(b+1)*(2*b+1)/6.0)*(exp(-2*s*p/b)*(1+2*s*p/b)-exp(-2*s))/(2*s)  #expm1(x) = exp(x)-1 #with higher precision.
 BANDED_D_s_b_ERH =  lambda s,b: lambda p : (b*(b+1)*(2*b+1)/6.0)*(exp(-2*s*p/b)*(1+2*s*p/b)-exp(-2*s))/(2*s)
+BANDED_OOS_D0_s_b_ERH = lambda p: lambda s,b : 0.5*b*(exp(-2*s*p/b)*(1+2*s*p/b)-exp(-2*s))/(2*s)
+BANDED_OOS_D0_s_b = lambda s,b : 0.5*b*expm1(-2*s)/(-2*s)
+
+BANDED_D_s_b_ERH_NEW =  lambda s,b: lambda p : (b*(b+1)*(2*b+1)/6.0)  *  (exp(-s*p/(2*b))*(1+s*p/(2*b))-exp(-s))/(s)
 
 
 def power_law_logplot(ax, power, coeff, logxlim,label, **kwargs):
@@ -356,6 +362,33 @@ class ExpModel_Banded_Logbox(ExpModel_1d):
         sparsedl.zero_sum(m)
         return m
 
+class ExpModel_Band_profile_Logbox(ExpModel_1d):
+    def __init__(self, *args, **kwargs):
+        no_band = lambda m: np.ones(m.sample.number_of_points())
+        self.band_profile_function = kwargs.pop("band_profile_function", no_band)
+        return ExpModel_1d.__init__(self, *args, **kwargs)
+
+
+    def rate_matrix(self, convention=1):
+        n = self.sample.number_of_points()
+        x = np.tri(n, k=-1)
+        m = np.zeros_like(x)
+        m[x==1] = np.random.permutation(exp(np.linspace(-2*self.epsilon, 0 , m[x==1].size)))
+        sm = (m + m.T)
+        sm *= self.band_profile_function(self)
+        sparsedl.zero_sum(sm)
+        return sm
+
+class ExpModel_1d_zerodiag(ExpModel_1d):
+    """ Subclassing exp model for 1d """
+    def rate_matrix(self, convention):
+        ex1 = (self.sample.exponent_minus_r(self.periodic, convention))**(1/self.epsilon)
+        if self.bandwidth1d is None:
+            ex1 = ex1*periodic_banded_ones(ex1.shape[0], 1)
+        elif self.bandwidth1d != 0: #### Zero means ignore bandwidth
+            ex1 = ex1*periodic_banded_ones(ex1.shape[0], self.bandwidth1d)
+        ##sparsedl.zero_sum(ex1)  <-- that's the difference
+        return ex1 
 
 class ExpModel_2d(ExpModel):
     """ Subclassing exp model for 2d """
@@ -385,6 +418,28 @@ class ExpModel_2d(ExpModel):
         z = sort(2*(cos(qx) + cos(qy) +2 ).flatten())[1:]  # the 1: is to remove 0
         cummulative_plot(ax, z, label="$4+2\cos(q_x)+2\cos(q_y) $" ,color="red", marker="x")
 
+
+    @lazyprop 
+    def resnet3(self):
+        """ Work in progress """ 
+	N = self.sample.number_of_points()
+	r = self.sample.normalized_distance_matrix(self.periodic)  #r/r_0
+	n1,n2 = np.unravel_index(r.argmax(), r.shape)
+	r12 = r[n1,n2]
+	#b = self.bandwidth1d
+	invex = np.linalg.pinv(self.ex)
+	I = np.zeros(N)
+	#I[[0 + b, N//2 - b]] = [-1,1]  # We should apply the current as usual....
+	I[[n1, n2]] = [-1,1]
+	V = invex.dot(I)
+        sV = sorted(V)
+        
+        # I'm trying to make the same twist as in the banded model.  please
+        #  note that it does only work for large matrices!
+	debug("s = {0} ; r = {1}; n1,n2 = {2}".format(self.epsilon, r12, (n1,n2)))
+	#return (N//2 -2*b)*(V[0+b] - V[N//2-b])**(-1)/2.0
+	debug(" oldstyle : {0}".format( (V[n1]-V[n2])**(-1)*np.log(r12)/pi))
+        return (sV[-1]-sV[1])**(-1)*np.log(r12)/pi
 
 class ExpModel_Bloch_2d(ExpModel_2d):
     def old_diff_coef(self):
@@ -419,14 +474,53 @@ class ExpModel_Bloch_2d_only4nn_randomized(ExpModel_2d):
         lnn = np.tri(r.shape[0])*(r>0.99)*(r<1.001)
         #W = exp(1-np.sqrt(-log(np.linspace(0,1, 2*r.shape[0]+1)[1:])/pi))**(1/self.epsilon)
         ex = np.zeros(r.shape)
-        W = exp(convention - np.sqrt( -log(np.linspace(0, 1, ex[lnn==1].shape[0] + 1)[1:])/pi))**(1/self.epsilon)
-
-        debug("ex[lnn=1].shape = %d", ex[lnn==1].shape)
+        #W = exp(convention - np.sqrt( -log(np.linspace(0, 1, ex[lnn==1].shape[0] + 1)[1:])/pi))**(1/self.epsilon)
+        W = exp( - np.linspace(0, self.epsilon, ex[lnn==1].shape[0] + 1)[1:])
+        debug("ex[lnn=1].shape = {0}".format(ex[lnn==1].shape))
         #print W.shape
         ex[lnn==1] = np.random.permutation(W)
         sym_ex = ex + ex.T
         zero_sum(sym_ex)
         return sym_ex
+
+class ExpModel_Bloch_2d_only4nn_randomized_hs(ExpModel_2d):
+    # To confer with percolation
+    def rate_matrix(self, convention):
+        """ 4 nn (u,d,l,r)"""
+        r = self.sample.normalized_distance_matrix(self.periodic)
+        lnn = np.tri(r.shape[0])*(r>0.99)*(r<1.001)
+        ex = np.zeros(r.shape)
+        W = exp( - np.linspace(0, self.epsilon, ex[lnn==1].shape[0] + 1)[1:])
+        ### Here comes the change:
+        W_c = np.median(W)
+        W[W<W_c] = W_c
+        # That was it
+        debug("ex[lnn=1].shape = {0}".format(ex[lnn==1].shape))
+        ex[lnn==1] = np.random.permutation(W)
+        sym_ex = ex + ex.T
+        zero_sum(sym_ex)
+        return sym_ex
+
+######## WOW there is a lot to be done here...
+
+class ExpModel_Bloch_2d_only4nn_randomized_sym(ExpModel_2d):
+    # To confer with percolation
+    def rate_matrix(self, convention):
+        """ 4 nn (u,d,l,r)"""
+        r = self.sample.normalized_distance_matrix(self.periodic)
+        lnn = np.tri(r.shape[0])*(r>0.99)*(r<1.001)
+        ex = np.zeros(r.shape)
+        W = exp( np.linspace(-self.epsilon, self.epsilon, ex[lnn==1].shape[0] , endpoint=True))
+        ### Here comes the change:
+#        W_c = np.median(W)
+#        W[W<W_c] = W_c
+        # That was it
+        debug("ex[lnn=1].shape = {0}".format(ex[lnn==1].shape))
+        ex[lnn==1] = np.random.permutation(W)
+        sym_ex = ex + ex.T
+        zero_sum(sym_ex)
+        return sym_ex
+
 
 class ExpModel_Bloch_1d_only2nn_randomized(ExpModel_1d):
     def rate_matrix(self,convention):
@@ -459,6 +553,22 @@ class ExpModel_alter_1d(ExpModel_1d):
         ex[[offd-1, offd]] = 0
         return ex
 
+class ExpModel_2d_zerodiag(ExpModel):
+    """ Subclassing exp model for 2d """
+    def rate_matrix(self, convention):
+        ex1 = (self.sample.exponent_minus_r(self.periodic, convention))**(1/self.epsilon)
+        ## sparsedl.zero_sum(ex1)  <-- that is commented.
+        return ex1 
+
+class ExpModel_2d_zerodiag_randint(ExpModel):
+    """ Subclassing exp model for 2d """
+    def rate_matrix(self, convention):
+        ex1 = (self.sample.exponent_minus_r(self.periodic, convention))**(1/self.epsilon)
+        rand_minus = (np.random.randint(2, size=ex1.size)*2 -1).reshape(ex1.shape)
+        sym_rand = np.tril(rand_minus, k = -1)  +  np.tril(rand_minus, k = -1).T
+        
+        ## sparsedl.zero_sum(ex1)  <-- that is commented.
+        return ex1 * sym_rand
 
 
 def plot_pn(ax, model, **kwargs):
@@ -710,11 +820,11 @@ def plot_1d_alexander_theory(ax):
     #### changed to plotting the exponent of S(t) instead of P(t), as is the custom
     s_0_1 = np.linspace(0,1,40)
     s_1_5 = np.linspace(1,5,80)
-    ax.plot(s_0_1, 2*s_0_1/(s_0_1+1), color="blue", linestyle="-", label=r"$\alpha$  [$S(t)\propto t^\alpha$]")
-    ax.plot(s_1_5, np.ones_like(s_1_5), color="blue", linestyle="-")
+    ax.plot(s_0_1, 2*s_0_1/(s_0_1+1), color="blue", linestyle="--", label=r"$\alpha$  [$S(t)\propto t^\alpha$]")
+    ax.plot(s_1_5, np.ones_like(s_1_5), color="blue", linestyle="--")
     ax.plot(s_1_5, (s_1_5-1)/s_1_5, color="red", linestyle="-", label=r"$D$")
     ax.plot(s_0_1, np.zeros_like(s_0_1), color="red", linestyle="-")
-    ax.axvline(1, color="black", linestyle="--")
+    ax.axvline(1, color="black", linestyle=":")
     ax.set_ylim(-0.1,1.1)
     plotdl.set_all(ax, xlabel=r"$s$", ylabel=r"$D$, $\alpha$",legend_loc="best")
 
@@ -743,21 +853,65 @@ def plot_D_fit_vs_LRT(ax):
     #ax.cla()
 
 def plot_D_fittings2(ax, inv_s = np.linspace(0.01, 20, 80 )):
-    sample2d = Sample((1,1),900)
-    models = (ExpModel_2d(sample2d, epsilon = s ) for s in inv_s**(-1))
-    D_fits = np.fromiter((model.fit_diff_coef for model in models), dtype = np.float64, count=len(inv_s))
-    D_C0 = D_fits*exp(-inv_s)  ### I'm changing convention back to 0.
-    ax.plot(-inv_s, D_C0, "r.", label=r"$D$")
+    sample2d = Sample((1,1),2000)  ## enlarged to 2000 because the diffence is visible
+    #models = (ExpModel_2d(sample2d, epsilon = s ) for s in inv_s**(-1))
+    #  why not randomize the models?
+    models = (ExpModel_2d(Sample((1,1),2000), epsilon = s ) for s in inv_s**(-1))
+    two_type = [("fit",np.float64), ("resnet3",np.float64)]
+    D_fits = np.fromiter(((model.fit_diff_coef, model.resnet3) for model in models), dtype = two_type, count=len(inv_s)) # switched to resnet
+    D_res = D_fits["resnet3"]*exp(-inv_s)  ### I'm changing convention back to 0.
+    D_fit = D_fits["fit"]*exp(-inv_s)
+    ax.plot(-inv_s, D_res, "r.", label=r"ResNet")
+    ax.plot(-inv_s, D_fit, "y*", label=r"Spectral")
     x = np.linspace(max(inv_s), min(inv_s), 150)
-    ax.plot(-x, D_ERH_0(x**(-1), 0), "b--", label=r"$p_c =0$")
+    ax.plot(-x, D_ERH_0(x**(-1), 0), "b--", label=r"linear")
 #    ax.plot(x, D_ERH_0(x**(-1), sqrt(1/pi)), "g-", label=r"$p_c =1$")
-    ax.plot(-x, D_ERH_0(x**(-1),  sqrt(5/pi)),"g-", label=r"$p_c =5$")
+    ax.plot(-x, D_ERH_0(x**(-1),  sqrt(5/pi)),"g-", label=r"$n_c =5$")
 #    ax.plot(x, D_ERH_0(x**(-1), sqrt(8/pi)), "y-", label=r"$p_c =8$")
     #ax.set_xlim(max(inv_s),min(inv_s))
     #inv_formatter = lambda x, pos : "{0:.3f}".format(x**(-1))
     #ax.xaxis.set_major_formatter(FuncFormatter(inv_formatter))
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$X = -\frac{1}{s}$", legend_loc="best", ylabel=r"$D$")
+    #ax.locator_params(axis='y', nbins=6)
+    # fix the over-density of the yaxis
+    ax.yaxis.set_minor_locator(plotdl.ticker.NullLocator())
+    mi, ma = ax.get_ylim()
+    stride = np.ceil((log10(ma)-log10(mi))/5)
+    ax.yaxis.set_major_locator(plotdl.ticker.LogLocator(base=10**stride))
+
+############# this needs urgent re-ordering!!!
+
+def plot_D_fittings2_lattice(ax, inv_s = np.linspace(0.01, 20, 80 )):
+    bloch2d = create_bloch_sample_2d(40)  ## enlarged to 2000 because the diffence is visible
+    models = (ExpModel_Bloch_2d_only4nn_randomized(bloch2d, epsilon = s ) for s in inv_s**(-1))
+    #models = (ExpModel_2d(Sample((1,1),2000), epsilon = s ) for s in inv_s**(-1))
+    models_hs = (ExpModel_Bloch_2d_only4nn_randomized_hs(bloch2d, epsilon = s ) for s in inv_s**(-1))
+
+#temp : replaced back to fit
+    D_fits = np.fromiter((model.resnet3 for model in models), dtype = np.float64, count=len(inv_s)) # switched to resnet
+    D_fits_hs = np.fromiter((model.resnet3 for model in models_hs), dtype = np.float64, count=len(inv_s)) # switched to resnet
+
+    D_C0 = D_fits*exp(-inv_s)  ### I'm changing convention back to 0.
+    D_C0_hs = D_fits_hs*exp(-inv_s)  ### I'm changing convention back to 0.
+    ax.plot(-inv_s, D_C0, "r.", label=r"$D$")
+    ax.plot(-inv_s, D_C0_hs, "b.", label=r"$D$")
+    x = np.linspace(max(inv_s), min(inv_s), 150)
+    ax.plot(-x,4*np.ones_like(x), "b--", label=r"linear")
+#    ax.plot(x, D_ERH_0(x**(-1), sqrt(1/pi)), "g-", label=r"$p_c =1$")
+    ax.plot(-x, D_ERH_2d_LATTICE(x**(-1)),"g-", label=r"2d erh.. $n_c =5$")
+#    ax.plot(x, D_ERH_0(x**(-1), sqrt(8/pi)), "y-", label=r"$p_c =8$")
+    #ax.set_xlim(max(inv_s),min(inv_s))
+    #inv_formatter = lambda x, pos : "{0:.3f}".format(x**(-1))
+    #ax.xaxis.set_major_formatter(FuncFormatter(inv_formatter))
+    ax.set_yscale('log')
+    plotdl.set_all(ax, xlabel=r"$X = -\frac{1}{s}$", legend_loc="best", ylabel=r"$D$")
+    #ax.locator_params(axis='y', nbins=6)
+    # fix the over-density of the yaxis
+    ax.yaxis.set_minor_locator(plotdl.ticker.NullLocator())
+    mi, ma = ax.get_ylim()
+    stride = np.ceil((log10(ma)-log10(mi))/5)
+    ax.yaxis.set_major_locator(plotdl.ticker.LogLocator(base=10**stride))
 
 
 def plot_D_fittings2_1d(ax, s_space = np.linspace(0.1, 20, 80 ), b=1):
@@ -792,6 +946,48 @@ def get_D_fittings_logbox(s_space, b_space):
     D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet, model.resnet3) for model in models), dtype = two_type, count=s_grid.size)
     return D_fits.reshape(s_grid.shape)
 
+
+def get_D_fittings_2d(s_space):
+    """ this gets all the D fittings for the 2d randomized lattice model"""
+    bloch2d = create_bloch_sample_2d(40)  #(40**2=1600)
+    models = (ExpModel_Bloch_2d_only4nn_randomized(bloch2d, epsilon = s) for s in s_space)
+    two_type = [("fit",np.float64), ("resnet3", np.float64)]
+    #D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet, model.resnet3) for model in models), dtype = two_type, count=s_grid.size)
+    D_fits = np.fromiter(((model.fit_diff_coef, model.resnet3) for model in models), dtype=two_type, count=s_space.size)
+    return D_fits
+
+def get_D_fittings_2d_hs(s_space):
+    """ this gets all the D fittings for the 2d randomized lattice model"""
+    bloch2d = create_bloch_sample_2d(40)  #(40**2=1600)
+    models = (ExpModel_Bloch_2d_only4nn_randomized_hs(bloch2d, epsilon = s) for s in s_space)
+    two_type = [("fit",np.float64), ("resnet3", np.float64)]
+    #D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet, model.resnet3) for model in models), dtype = two_type, count=s_grid.size)
+    D_fits = np.fromiter(((model.fit_diff_coef, model.resnet3) for model in models), dtype=two_type, count=s_space.size)
+    return D_fits
+
+def get_D_fittings_2d_sym(s_space):
+    """ this gets all the D fittings for the 2d randomized lattice model"""
+    bloch2d = create_bloch_sample_2d(40)  #(40**2=1600)
+    models = (ExpModel_Bloch_2d_only4nn_randomized_sym(bloch2d, epsilon = s) for s in s_space)
+    two_type = [("fit",np.float64), ("resnet3", np.float64)]
+    #D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet, model.resnet3) for model in models), dtype = two_type, count=s_grid.size)
+    D_fits = np.fromiter(((model.fit_diff_coef, model.resnet3) for model in models), dtype=two_type, count=s_space.size)
+    return D_fits
+
+def get_D_fittings_logbox_profile(s_space, b_space):
+    """ same as above, only with one_over_square """
+    def cut_one_over_square(model):
+        r = model.sample.normalized_distance_matrix()
+        r += np.eye(1000)
+        cutoff = periodic_banded_ones(1000, model.bandwidth1d)
+        return cutoff*(r**(-2))
+    s_grid, b_grid = np.meshgrid(np.asarray(s_space), np.asarray(b_space))
+    bloch1d = create_bloch_sample_1d(1000)
+    outprod = zip(s_grid.flat, b_grid.flat)
+    models = (ExpModel_Band_profile_Logbox(bloch1d, epsilon = s , bandwidth1d=b, band_profile_function=cut_one_over_square) for (s,b) in outprod)
+    two_type = [("fit",np.float64), ("new_resnet",np.float64), ("resnet3", np.float64)]
+    D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet, model.resnet3) for model in models), dtype = two_type, count=s_grid.size)
+    return D_fits.reshape(s_grid.shape)
 
 def plot_D_fittings2_logbox(ax, s_space = np.linspace(0.1, 20, 80 ), b=1):
     bloch1d = create_bloch_sample_1d(900)
@@ -981,15 +1177,33 @@ def plot_banded(ax):
     return DERH_mat
 
 def plot_BANDED_D_of_S(ax,s,b,D):
-    DERH = BANDED_D_s_b_ERH(s,b)
+    ####### PLEASE NOTE THAT OLD DATA HAS s in [0,2\sigma]
+    DERH = BANDED_D_s_b_ERH_NEW(2*s,b)
     ax.plot(2*s, D["resnet3"][0]/DERH(0), "r.", label="Resistor Network")
-    ax.plot(2*s, D["fit"][0]/DERH(0), "b.", label="Spectral Analysis")
-    ax.plot(2*s, DERH(1.1)/DERH(0), "y-", label="$D_{ERH} \qquad [P_c=1.1]$")
+    #ax.plot(2*s, D["fit"][0]/DERH(0), "b.", label="Spectral Analysis")
+    #ax.plot(2*s, DERH(1)/DERH(0), "y-", label="$D_{ERH} \qquad [n_c=1]$")
+    #ax.plot(2*s, DERH(1.1)/DERH(0), "-", label="$D_{ERH} \qquad [n_c=1.1]$")
+    ax.plot(2*s, DERH(2)/DERH(0), "-", label="$D_{ERH} \qquad [n_c=2]$")
     ax.axhline(1,ls="-", color="green")
     ax.set_xlabel("$\sigma$")
-    ax.set_ylabel("$D/D_{LRT}$")
+    ax.set_ylabel("$g_s$")
     ax.set_yscale("log")
     ax.legend(loc="lower left")
+
+def plot_BANDED_scatter_spectral_vs_resnet(ax, s, b, D):
+    DERH = BANDED_D_s_b_ERH_NEW(2*s,b)
+
+    xmin = min(((D["resnet3"][0]/DERH(0)).min()  ,  (D["fit"][0]/DERH(0)).min()))
+    xmax = max(((D["resnet3"][0]/DERH(0)).max()  ,  (D["fit"][0]/DERH(0)).max()))
+    ax.plot([xmin,xmax],[xmin,xmax], '-r', zorder=0.1)
+    ax.scatter(D["resnet3"][0]/DERH(0)  ,  D["fit"][0]/DERH(0)  , color='blue', edgecolors='none', zorder=0.2)
+
+    ax.set_xlabel("Resistor network")
+    ax.set_ylabel("Spectral analysis")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlim(xmin,xmax)
+    ax.set_ylim(xmin,xmax)
 
 def plot_D_matrix(figure, matrix, x, y):
     #ax = figure.add_subplot(121)

@@ -1,0 +1,379 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  dts notes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[onecolumn,fleqn]{revtex4}
+
+% special 
+\usepackage{ifthen}
+\usepackage{ifpdf}
+\usepackage{float}
+\usepackage{color}
+
+% fonts
+\usepackage{latexsym}
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{bm}
+\usepackage{wasysym}
+
+\ifpdf
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\else
+\usepackage{graphicx}
+\usepackage{epsfig}
+\fi
+
+% extra by jarondl
+\usepackage[pdftitle={DTS},bookmarks]{hyperref}
+\usepackage{array}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% NEW 
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\varphiJ}{\bm{\varphi}}
+\newcommand{\thetaJ}{\bm{\theta}}
+%\renewcommand{\includegraphics}[2][0]{FIGURE}
+\newcommand{\rmrk}[1]{\textcolor{red}{#1}}
+\newcommand{\Eq}[1]{\textcolor{blue}{Eq.\!\!~(\ref{#1})}} 
+\newcommand{\Fig}[1]{\textcolor{blue}{Fig.}\!\!~\ref{#1}}
+
+% math symbols I
+\newcommand{\sinc}{\mbox{sinc}}
+\newcommand{\const}{\mbox{const}}
+\newcommand{\trc}{\mbox{trace}}
+\newcommand{\intt}{\int\!\!\!\!\int }
+\newcommand{\ointt}{\int\!\!\!\!\int\!\!\!\!\!\circ\ }
+\newcommand{\ar}{\mathsf r}
+\newcommand{\im}{\mbox{Im}}
+\newcommand{\re}{\mbox{Re}}
+
+% math symbols II
+\newcommand{\eexp}{\mbox{e}^}
+\newcommand{\bra}{\left\langle}
+\newcommand{\ket}{\right\rangle}
+
+% Mass symbol
+\newcommand{\mass}{\mathsf{m}} 
+\newcommand{\rdisc}{\epsilon} 
+
+% more math commands
+\newcommand{\tbox}[1]{\mbox{\tiny #1}}
+\newcommand{\bmsf}[1]{\bm{\mathsf{#1}}} 
+\newcommand{\amatrix}[1]{\begin{matrix} #1 \end{matrix}} 
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+
+% equations
+\newcommand{\mylabel}[1]{\label{#1}} 
+\newcommand{\beq}{\begin{eqnarray}}
+\newcommand{\eeq}{\end{eqnarray}} 
+\newcommand{\be}[1]{\begin{eqnarray}\ifthenelse{#1=-1}{\nonumber}{\ifthenelse{#1=0}{}{\mylabel{e#1}}}}
+\newcommand{\ee}{\end{eqnarray}} 
+
+% arrangement
+\newcommand{\hide}[1]{}
+\newcommand{\drawline}{\begin{picture}(500,1)\line(1,0){500}\end{picture}}
+\newcommand{\bitem}{$\bullet$ \ \ \ }
+\newcommand{\Cn}[1]{\begin{center} #1 \end{center}}
+\newcommand{\mpg}[2][1.0\hsize]{\begin{minipage}[b]{#1}{#2}\end{minipage}}
+\newcommand{\mpgt}[2][1.0\hsize]{\begin{minipage}[t]{#1}{#2}\end{minipage}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Page setup
+\setlength{\parindent}{0cm} 
+\setlength{\parskip}{0.3cm} 
+
+%counters
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\arabic{subsection}}
+\setcounter{section}{0}
+\setcounter{subsection}{0}
+
+% Sections
+\newcommand{\sect}[1]
+{
+\addtocounter{section}{1} 
+\setcounter{subsection}{0}
+\ \\ 
+\pdfbookmark[2]{\thesection. \ #1}{sect.\thesection}
+{\Large\bf $=\!=\!=\!=\!=\!=\;$ [\thesection] \ #1}  
+\nopagebreak
+}
+
+% subections
+\newcommand{\subsect}[1]
+{
+\addtocounter{subsection}{1} 
+\ \\ 
+\pdfbookmark[2]{\ \ \ \ \thesection.\thesubsection. \ #1}{subsect.\thesection.\thesubsection}
+{\bf $=\!=\!=\!=\!=\!=\;$ [\thesection.\thesubsection] \ #1}  
+\nopagebreak
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\renewcommand{\includegraphics}[2][]{\ \\ \ {\color{blue} FIGURE:} \ \\ \ }
+\graphicspath{{new/}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Resistor network modeling of diffusion in sparse networks}
+
+\author{DC, notes for BGU-WES project}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{The model}
+
+We intend to study an extremely simple model 
+that is described by the Hamiltonian matrix
+%
+\beq
+\mathcal{H} \ \ = \ \ \text{diag}\{E_n\} + \epsilon \{B_{nm}\}
+\eeq
+%
+where $B_{nm}$ are the elements of a real symmetric matrix  
+%
+\beq
+B_{nm} \ \ = \ \ \text{random}[\pm] \ \eexp{-\text{random}[x]}, 
+\ \ \ \ \ \ \ \ \ 0 < |n-m| \le b    
+\eeq
+%
+We assume that the entries $x$ are random numbers 
+with box (uniform) distribution within an interval $[0,\sigma]$. 
+Based on the definition of KBD Eq(33) one obtains Eq(D5) there 
+that can be written as 
+%
+\beq
+s \ \ = \ \ \frac{2}{\sigma} \tanh\left(\frac{\sigma}{2}\right)
+\eeq
+ 
+The above Hamiltonian can describe the motion of a particle 
+in a disordered potential. We assume that $E_n=0$, which is like 
+having no electric field. 
+What we call "sparsity" in our language 
+means "off diagonal disorder" with log-wide distribution. 
+The limit $\sigma\rightarrow0$ means no sparsity 
+(Bloch lattice with sign randomization). 
+
+Since we do not have "electric field" we can set the units 
+of time such that ${\epsilon=1}$.
+Thus the model is defined by just two dimensionless parameters:
+%
+\beq
+b \ \  &=& \ \ \text{bandwidth} \\
+\sigma  \ \  &=& \ \ \text{sparsity} 
+\eeq
+%
+It make sense to conjecture that there is only 
+one time scale in the dynamics: 
+%
+\beq
+t_{b,\sigma}  \ \ = \ \  \frac{\tau(b,\sigma)}{\epsilon}  
+\eeq
+%
+Such that the transient diffusion coefficient is 
+%
+\beq
+D_n  \ \ = \ \  \frac{b^2 \ \epsilon}{\tau}  
+\eeq
+%
+This conjecture has been established in our past work for regular disorder.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{Past work}
+
+Let us recall the reasoning of our past work [PRL 2000]. 
+From perturbation theory it follows that for very short time  
+the probability for a transition is 
+%
+\beq
+p(n_0\leadsto n) \ \  =  \ \ |\epsilon B_{n,n_0} \ t|^2
+\eeq
+%
+Hence the total probability for a transition 
+from an initial state is 
+%
+\beq
+p(t) \ \  \sim \ \  b \times \epsilon^2  \ t^2  \qquad \qquad\qquad\qquad \mbox{\rmrk{[This had a typo, with $p(t) \sim b^2\times\epsilon^2t^2$ ]}}
+\eeq
+%
+
+
+The time scale $t_{b}$ is determined by the 
+condition ${p(t)\sim 1}$ leading to 
+%
+\beq
+t_b \ \ \sim \ \  \frac{1}{b^{1/2} \ \epsilon}  
+\eeq
+%
+and consequently 
+%
+\beq
+D_n \ \ \sim \ \  b^{5/2} \ \epsilon   
+\eeq
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sect{Conjectures}
+
+Once we have a distribution 
+one should replace $\epsilon$ by some effective value. 
+The natural tendency is to use 
+%
+\beq
+\epsilon \ \ \mapsto \ \ \text{RMS}[B_{nm}] \ \epsilon
+\eeq 
+%
+Which means that our way to calculate $D$ in the past was 
+%
+\beq
+D_n  \ \ = \ \ \Big[b \ \text{Var}[B_{nm}] \Big]^{1/2}   \ b^2 \ \epsilon 
+\eeq 
+%
+But for log-wide distribution this RMS value is expected 
+to be suppressed. We expect the suppression factor to be 
+determined by a resistor network calculations.
+We shall write the expression for the diffusion coefficient as 
+%
+\beq
+D_n  \ \ = \ \ \frac{1}{\tau(b,\sigma)}  \ b^2 \ \epsilon 
+\eeq 
+%
+where $\tau$ is the dimensionless time scale 
+that characterizes the dynamics. 
+Again we emphasize: we conjecture that there is only 
+one time scale is this problem.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sect{Challenges}
+
+The challenge is to establish that 
+for large $\sigma$ the dimensionless break time 
+becomes longer than $\tau=b^{-1/2}$, 
+and to figure out how it depends on $\sigma$. 
+On the analytical side we hope to 
+establish a relation between $1/\tau$ 
+and the resisitivity of the network $G_{nm}=|B_{nm}|^2$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sect{Numerics}
+
+Say $b=20$. We make simulations for various values 
+of $\sigma$. First we confirm, for debugging purpose, 
+the "old recipe" that should hold for small $\sigma$, 
+then we go to large $\sigma$. The outputs are as usual: 
+%
+\beq
+P(t) \ \ &=&  \ \ \text{The survival probability} \\
+S_{N}(t) \ \ &=& \ \ \text{The participation number} \\
+S_{50\%}(t) \ \ &=& \ \ \text{The 50\% width of the distribution} \\
+S(t) \ \ &=& \ \ \text{The second-moment based spreading} 
+\eeq
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sect{Extensions}
+
+Natural extension is to add the ``electric field" and to discuss ``regimes". 
+However, the main motivation is to use later these results 
+for the analysis of "quantum stochastic diffusion". 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sect{Results}
+
+The RMS value of the elements of B is calculated as follows:
+%
+\begin{align}
+\textrm{VAR}(B)\quad &=\quad \left\langle  B_{nm}^2 \right\rangle  \quad =
+ \quad  \int_0^\sigma \quad \left( \pm\eexp{-x}\right)^2 \frac{dx}{\sigma} 
+= \quad  \frac{1-\eexp{-2\sigma}}{2\sigma} &\\
+\textrm{RMS}(\sigma) \quad &= \quad \sqrt{\textrm{VAR}(B)}  \quad  =  \quad  \sqrt{ \frac{1-\eexp{-2\sigma}}{2\sigma}  }
+\end{align}
+%
+
+The linear approximation is:
+%
+\beq
+D_\textrm{linear} \quad=\quad b^{2.5} \quad \textrm{RMS}(\sigma)\quad\epsilon
+\eeq
+%
+In \ref{fig:D}, \ref{fig:v_square} we plot:
+%
+\begin{align}
+\textrm{scaled} \left[ D\right] \quad &=  \quad \frac{D}{D_\textrm{linear}} \quad=
+\quad  \frac{D}{b^{2.5} \quad \textrm{RMS} \quad \epsilon } \\[\bigskipamount]
+\textrm{scaled} \left[ v^2\right] \quad &= \quad \frac{v^2}{b^3 \quad \textrm{RMS}^2 \quad \epsilon^2 } \\[\bigskipamount]%\textrm{scaled} \quad t_\textrm{bal} \quad &= \quad t_\textrm{bal} \quad b^\frac{1}{2} \quad \textrm{RMS} \epsilon
+\end{align}
+%
+
+In \ref{fig:D2_vs_gs} we plot the scaled $D_2$ vs $g_s(\sigma, b)$, where the suppression factor 
+$g_s(\sigma,b)$ is:
+% 
+\beq
+g_s(\sigma,b) = \frac{\left(1+\frac{n_c}{2b}\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}}{1-\eexp{-2\sigma}}
+\eeq
+%
+With $n_c \approx 2$.
+
+
+
+We find that that 
+\begin{align}
+\textrm{scaled}\left[D\right] \approx \frac{1}{2}g_s(\sigma,b)
+\end{align}
+ up to some factors, meaning 
+there is suppression due to sparsity effects.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{Plots}
+
+$D$ was calculated by two methods:
+
+$D_1$ is the "diffusion
+coefficient measured by a power law fitting with 
+tolerance $D\times t^{\alpha}\quad ;\quad \alpha>0.9$ " 
+
+$D_2$ the variance is devided by time, evaluated at the plato point.
+
+\begin{figure}[H]
+\includegraphics[height=0.4\textheight]{D1} \\
+\includegraphics[height=0.4\textheight]{D2} 
+\caption{ These are the scaled $D_1$ and $D_2$, as a function of $\sigma$. 
+    Both present proper dependance on the sparsity, but $D_2$ seems more consistent.}\label{fig:D}
+\end{figure}
+
+
+\begin{figure}[H]
+\includegraphics[height=0.4\textheight]{D2_vs_gs} 
+\caption{ This is $D_2$ vs $g_s(\sigma)$. The black segmented line has a slope of $1$ while the gray dotted line has a slope of $0.5$}\label{fig:D2_vs_gs}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[height=0.4\textheight]{v_square} 
+\caption{ The scaled $v^2$, as a function of $\sigma$.}\label{fig:v_square}
+\end{figure}
+
+\end{document}

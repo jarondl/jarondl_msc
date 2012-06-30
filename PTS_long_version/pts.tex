@@ -2,9 +2,7 @@
 %%%  notes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\documentclass[onecolumn,fleqn,notitlepage,secnumarabic]{revtex4}
-\documentclass[onecolumn,fleqn]{revtex4}
-
+\documentclass[onecolumn,fleqn,notitlepage,secnumarabic]{revtex4}
 
 % special 
 \usepackage{ifthen}
@@ -28,20 +26,17 @@
 \usepackage{epsfig}
 \fi
 
-
-\usepackage[colorlinks,linkcolor=blue,bookmarks=true]{hyperref}
-
-
 % packages added by jarondl
 %
 %\usepackage{subfig}  %% causes odd captions
-%\usepackage{verbatim} % for multiline comments
-%\usepackage{natbib} % change the bibliography style 
-%\usepackage{fancybox} % allows putting boxes with borders
-%\usepackage{cmap}  % for making pdf mathmode searchable
+\usepackage{verbatim} % for multiline comments
+\usepackage{natbib} % change the bibliography style 
+\usepackage{fancybox} % allows putting boxes with borders
+\usepackage{cmap}  % for making pdf mathmode searchable
 %\usepackage{sectsty}
-%\usepackage[pdftitle={Notes by Jarondl}]{hyperref}  % for hyperlinks in biblio. should be called last?
-%\graphicspath{{figures/},{../PROG/figures/}}
+\usepackage[pdftitle={Notes by Jarondl}]{hyperref}  % for hyperlinks in biblio. should be called last?
+
+\graphicspath{{figures/},{../PROG/figures/}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -122,36 +117,62 @@
 \setlength{\parindent}{0cm} 
 \setlength{\parskip}{0.3cm} 
 
-%counters
-\renewcommand{\thesection}{\arabic{section}}
-\renewcommand{\thesubsection}{\arabic{subsection}}
-\setcounter{section}{0}
-\setcounter{subsection}{0}
+%%% Sections. The original revtex goes like this:
+%\def\section{%
+%  \@startsection
+%    {section}%
+%    {1}%
+%    {\z@}%
+%    {0.8cm \@plus1ex \@minus .2ex}%
+%    {0.5cm}%
+%    {\normalfont\small\bfseries}%
+%}%
+%\def\subsection{%
+%  \@startsection
+%    {subsection}%
+%    {2}%
+%    {\z@}%
+%    {.8cm \@plus1ex \@minus .2ex}%
+%    {.5cm}%
+%    {\normalfont\small\bfseries}%
+%}%
+%%%%%%% And our version goes like this:
+\makeatletter
+\def\section{%
+  \@startsection
+    {section}%
+    {1}%
+    {\z@}%
+    {0.8cm \@plus1ex \@minus .2ex}%
+    {0.5cm}%
+    {\Large\bf $=\!=\!=\!=\!=\!=\;$}%
+}%
+\def\subsection{%
+  \@startsection
+    {subsection}%
+    {2}%
+    {\z@}%
+    {.8cm \@plus1ex \@minus .2ex}%
+    {.5cm}%
+    {\normalfont\small\bfseries$=\!=\!=\!=\;$}%
+}%
+%%%%%%%%%%  Here we deal with capitalization. The original revtex first, and then our version.
+%\def\@hangfrom@section#1#2#3{\@hangfrom{#1#2}\MakeTextUppercase{#3}}%
+%\def\@hangfroms@section#1#2{#1\MakeTextUppercase{#2}}%
+\def\@hangfrom@section#1#2#3{\@hangfrom{#1#2}{#3}}%
+\def\@hangfroms@section#1#2{#1{#2}}%
 
-% Sections
-\newcommand{\sect}[1]
-{
-\addtocounter{section}{1} 
-\setcounter{subsection}{0}
-\ \\ 
-\pdfbookmark[1]{\thesection. \ #1}{sect.\thesection}
-{\Large\bf $=\!=\!=\!=\!=\!=\;$ [\thesection] \ #1}  
-\nopagebreak
-}
+%%%%%%change numbering:
+\def\thesection  {\arabic{section}}
+\def\thesubsection  {\thesection.\arabic{subsection}}
 
-% subections
-\newcommand{\subsect}[1]
-{
-\addtocounter{subsection}{1} 
-\ \\ 
-\pdfbookmark[2]{\ \ \ \ \thesection.\thesubsection. \ #1}{subsect.\thesection.\thesubsection}
-{\bf $=\!=\!=\!=\!=\!=\;$ [\thesection.\thesubsection] \ #1}  
-\nopagebreak
-}
+\makeatother
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\renewcommand{\includegraphics}[2][]{\ \\ \ {\color{blue} FIGURE:} \ \\ \ }
+
+
+%\newcommand{\dontincludegraphics}[2][]{\ \\ \ FIGURE: \ \\ \ }
+\newcommand{\dontincludegraphics}[2][]{\includegraphics[#1]{#2}}
 
 
 
@@ -226,7 +247,6 @@ the functional $D[\bm{w}]$ exhibits a smooth crossover from LRT behavior
 to semi-linear VRH-like dependence.  
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{thebibliography}{99}
 
 
@@ -301,16 +321,14 @@ Phys. Rev. E {\bf 83}, 066216 (2011).
 S. Alexander, J. Bernasconi, W. R. Schneider, R. Orbach, 
 Rev. Mod. Phys. 53, 175 (1981).
 
-\bibitem{halvin}
-Halvin refs
-
 
 \end{thebibliography}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{The model system}
+\section{The model system}
+
 
 We consider a system that is described by a rate equations 
 %
@@ -327,33 +345,24 @@ calculation of {\em conductivity}.
 Our interest are in networks that consists of sites 
 that are distributed in space, locations $x_n$.
 With each bond we associate an activation energy $\epsilon_{nm}>0$. 
-By construction the rates rates $w_{nm}$ are determined 
-by a function $w(r,\epsilon)$, where $r$ is the distance 
-between the sites. Specifically   
+By construction the rates rates are given by the following expression:
 %
 \beq
-w_{nm} \ \ = \ \  w_0 \ \eexp{-\epsilon_{nm}} \ \eexp{-|x_n-x_m|/\xi} 
-\ \ \ \ \ \ \ \mbox{[random site hopping model]}
+w_{nm} \ \ = \ \  w(|x_n-x_m|,\epsilon_{nm})  \ \ = \ \  w_0 \ \eexp{-\epsilon_{nm}} \ \eexp{-|x_n-x_m|/\xi} 
+\ \ \ \ \ \ \ \mbox{[random site model]}
 \eeq
 %
-On equal footing we also consider the quasi 1D banded lattice model
+In the 1D case we consider also the following banded lattice model
 %
 \beq
-w_{nm} \ \ = \ \ w_0 \ \eexp{-\epsilon_{nm}} \ B\left(E_n-E_m\right)
+w_{nm} \ \ = \ \  w(|n-m|,\epsilon_{nm})  \ \ = \ \  w_0 \ \eexp{-\epsilon_{nm}} \ B(n-m)
 \ \ \ \ \ \ \ \mbox{[banded lattice model]}
 \eeq
 % 
-Here $r=|E_n-E_m|$ is the distance between energy levels, 
-which is formally analogous to $r=|x_n-x_m|$ in the random site model.
-In the physical context the band profile $B(r)$ is determined 
-by the semiclassical limit, while the distribution of the $\epsilon$ 
-values is implied by the quantization.   
+Below we define $r=|x_n-x_m|$ or $r=|n-m|$ depending on the context.
 For flat band $B(r)=1$ for ${r \leq b}$, and zero otherwise,  
-where $1{+}2b$ is the bandwidth. For a model with near-neighbor transitions ${b=1}$.
-
-
-The density of sites relative to some initial site 
-is characterized  by a joint distribution function 
+where $1{+}2b$ is the bandwidth. For a model with near-neighbor transitions only $b=1$.
+The density of sites relative to some site is characterized  by a joint distribution function 
 %
 \beq\label{eq:density_distribution}
 \rho(r,\epsilon)drd\epsilon \ \ = \ \ \frac{\Omega_d \, r^{d-1}dr}{r_0^{d}} \ f(\epsilon)d\epsilon,     
@@ -362,34 +371,23 @@ is characterized  by a joint distribution function
 %
 The constant $r_0^d$ is the "unit volume", and it is defined by $Nr_0^d = L^d$, 
 where $N$ is the number of sites, and $L^d$ is the volume of the system.
-We set the units of distance such that ${r_0=1}$.
-
-
-In the banded lattice model $f(\epsilon)$ is the size distribution 
-of the in-band matrix elements of the perturbation matrix.
-It has unit normalization, corresponding to a single site per unit volume. 
-Accordingly 
-%
-\beq
-w(r,\epsilon)=w_0\eexp{-\epsilon}B(r), \ \ \ \ \rho(r,\epsilon)=2f(\epsilon) 
-\ \ \ \ \ \ \ \mbox{[banded lattice model]}
-\eeq 
-%
-In the random site hopping model we assume a uniform distribution 
-of sites in energy space, hence ${f(\epsilon)=\const}$ in some wide range.
-Specifically, in the finite temperature Mott problem $\epsilon_{nm}=|\varepsilon_n-\varepsilon_m|/T$ 
-where $T$ is the temperature and accordingly ${f(\epsilon)= T/\Delta_0}$,  
+It is ${r_0=1}$ in the banded lattice model, 
+while in the random site model it sets the units of length.
+%  
+For a uniform distribution of sites in energy space one may set ${f(\epsilon)=\const}$.
+In particular in the finite temperature Mott problem ${f(\epsilon)= T/\Delta_0}$,  
 where $\Delta_0$ is the local mean level spacing per unit volume.
 In such case in each location there are infinitely many sites, 
 but effectively only finite number of sites ($\sim T/\Delta_0$) 
-is accessible per unit volume per attempted transition.
-
-
-What we call below "random site model" (as opposed to "random site hopping model") 
-refers to the special choice $f(\epsilon)=\delta(\epsilon)$, 
+is accessible per unit volume per attempted transition.  
+Optionally one may assume an $f(\epsilon)$ that has a unit normalization, 
 corresponding to a single site per unit volume. 
-%
-The 1D random site model is qualitatively similar 
+What we call below "infinite temperature case" refers to 
+the special choice $f(\epsilon)=\delta(\epsilon)$. 
+In the banded lattice model $f(\epsilon)$ reflects the size distribution 
+of the in-band matrix elements of the perturbation matrix. 
+
+In one dimension the random site model is qualitatively similar 
 to a banded lattice model with near neighbor transitions (${b=1}$),
 with the identification $\epsilon=r/\xi$,   
 and $f(\epsilon) = s\exp(-s\epsilon)$, where $s \equiv \xi/r_0$. 
@@ -398,7 +396,6 @@ This implies that the the distribution of the rates is
 \beq
 \tilde{f}(w) dw  \ \  =  \ \    \ [w < w_0] \, \frac{s \, w^{s-1} dw}{w_0^s}, 
 \ \ \ \ \ \ \ \ s \equiv \xi/r_0
-\ \ \ \ \ \ \ \mbox{[1D random chain model]}
 \eeq
 
 
@@ -408,22 +405,21 @@ This implies that the the distribution of the rates is
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Normal diffusion}
+\section{Normal diffusion}
+The long time dynamics are characterized by the spreading $S(t)$, the survival probability $\mathcal{P}(t)$ and the spectral counting function $\mathcal{N}(\lambda)$. 
 
-The long time dynamics are characterized by the spreading $S(t)$, 
-the survival probability $\mathcal{P}(t)$, 
-and the spectral counting function $\mathcal{N}(\lambda)$. 
-If the system is diffusive, these functions are (see \ref{diff}):
-%
-\beq
-S(t) &=& \left\langle r^2(t)\right\rangle \quad\sim\quad  (2d)Dt\ \\
-\mathcal{P}(t) &\sim&  \frac{1}{\left({D t}\right)^{d/2}} \\
-\mathcal{N}(\lambda)  &=& \int^\lambda g(\lambda)d\lambda  \quad\sim\quad \left[\frac{\lambda}{D}\right]^{d/2} 
-\eeq
+When the system is diffusive, these functions are (see \ref{diff}):
+
+\begin{align*}
+S(t) \quad&=\quad \left\langle r^2(t)\right\rangle \quad\sim\quad  (2d)Dt\ \\
+\mathcal{P}(t) \quad &\sim \quad  \frac{1}{\left({D t}\right)^{d/2}} \\
+\mathcal{N}(\lambda)  \quad&=\quad \int^\lambda g(\lambda)d\lambda  \quad\sim\quad \left[\frac{\lambda}{D}\right]^{d/2} 
+\end{align*}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Exact results for the 1D chain model}
+\section{Exact results for the Chain model}
 
 In the case of the chain model
 using the notation $w_n=w_{n,n{-}1}$ 
@@ -432,8 +428,7 @@ the expression for $D$ is
 %
 \beq
 D \ \ = \ \ D[w_n] \ \ = \ \ \left( \frac{1}{N} \sum_n \frac{1}{w_n} \right)^{-1} 
-\ \ = \ \ \frac{s-1}{s} \, w_0, 
-\hspace{2cm} s \equiv \xi/r_0
+\ \ = \ \ \frac{s-1}{s} \, w_0
 \eeq
 %
 where the last equality is for the distribution of Eq(5).
@@ -443,94 +438,176 @@ for the survival probability and the spreading are
 \beq
 S(t) \ \ &\sim& \ \ t^{2s/(1+s)}   \\ 
 \mathcal{P}(t) \ \ &\sim& \ \ t^{-s/(1+s)}\\
-\mathcal{N}(\lambda) \ \ &\sim&  \ \ \lambda^{s/(1+s)}
+\mathcal{N}(\lambda) \quad &\sim \quad \lambda^{s/(1+s)}
+\eeq
+
+These results are summed up in the following figure:
+\begin{figure}[H]
+  \includegraphics{alexander}
+  \includegraphics{ERH}
+  \caption{Theoretical results for a $1d$ chain model, contrasting the $2d$ results. In the $1d$ plot, on the left, the blue line is the power of the spreading. It shows a sub-diffusive regime where $0<s<1$, and a diffusive regime for $s>1$. The red line is of the diffusion coefficient $D$, which is zero for the sub-diffusive regime $s<1$. It is dimensionless as we set $r_0=1$. In the $2d$ plot, on the right, we see the diffusion coefficient, numerical fit results vs ERH, as explained in sections \ref{sec:diff2d} and \ref{sec:num_d_2d}. The $Y$ axis is $D$ in logarithmic scale, while the $X$ axis is $X=-1/s$. The dots are numerical fit results, extracted from plots such as \ref{fig:exp_2d_D_vs_subD}. The dashed line is of the LRT result, and the solid line is the ERH result with $p_c = 5$.}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Linear response theory (LRT) estimate}
+
+If we had an ordered lattice, then the exact result for $D$ would be 
+%
+\beq
+D \ \ = \ \ D_{\tbox{LRT}}[\bm{w}]  \ \ = \ \ \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
 \eeq
 %
-These results are summed up in \Fig{f1}. We clearly see that for $s<1$ 
-the asymptotic slope is sub-diffusive, while for ${s>1}$ it 
-corresponds to diffusion. Note that only for ${s>2}$ the result 
-for $D$ is self-averaging (adding resistors in series, finite second moment, 
-hence central limit theory applies). \\
+This expression is strictly {\em linear}.
+For the infinite temperature variation of 2D random site model we get  
+%
+\beq
+D \ \ = \ \ 3\pi \, s^4 \, w_0
+\eeq
+%
+This expression will not work for ${s<1}$ because sparse contribution 
+of strongly coupled sites do not contribute to the transport. 
+Only percolating trajectories do have a contribution. We are therefore urged 
+to introduce approximation schemes that takes this connectivity 
+issue into account.  
+ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Effective Range Hopping (ERH) estimate}
+
+What we call Effective Range Hopping (ERH) estimate is based 
+on the idea of finding a lower bound for $D$, taking the 
+percolation threshold into account. We define the effective rate 
+through the requirement 
+%
+\beq
+\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon \ \ = \ \ p_c, 
+\ \ \ \ \ \ \ \ \ \mbox{with $p_c$ of order unity}
+\eeq
+%
+Then we calculate $D$ as follows:
+%
+\beq
+D \ \ = \ \ D_{\tbox{ERH}}[\bm{w}]  \ \ = \ \ \frac{1}{4}\iint \min\{w(r,\epsilon),w^*\} \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr
+\eeq
+%
+This is similar to the LRT estimate, with network that has $w_{nm}$ 
+that are equal or smaller to the original values. The "suppressed" 
+connector are those that are too sparse to form percolating trajectories. 
+Note that this expression, as required, is {\em semi-linear} 
+rather than linear [see explanation below].
+For the infinite temperature variation of 2D random site model we get  
+%
+\beq
+D \ \ \sim \ \ 3\pi \, s^4 \, \eexp{-\const/s} \, w_0, 
+\ \ \ \ \ \ \ \ \ \ \ \const\sim 1 \mbox{(fitting)} 
+\eeq
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Numerical results for the 2D random site model}
+\section{Variable Range Hopping (VRH) estimate}
 
-These results are summed up in \Fig{f2}.
-Amir et all \cite{amir} have carried out an RG analysis 
-that has been based on the assumption of having 
-localized modes via dimerization. Accordingly, 
-up to a factor of~2 in the exponent, $\mathcal{N}(\lambda)$ 
-is the same as the distribution of distances between the sites:  
+The ERH is similar to the generalized VRH procedure 
+that we have introduced in previous publications.
+We define below what we mean by generalized VRH. 
+It would be clear that ERH gives in-fact a better (higher) 
+lower bound compared with VRH. Namely, 
 %
-\beq\label{eq:amir_expected}
-\mathcal{N}(\lambda) \ \ = \ \ \exp\left[ -\frac{\Omega_d}{2d} \Big(-s \ln(\lambda/2)\Big)^d \right], 
-\hspace{2cm} s \equiv \xi/r_0
+\beq
+D_{\tbox{VRH}}[\bm{w}]  
+\ \ < \ \ D_{\tbox{ERH}}[\bm{w}]
+\ \ < \ \ D[\bm{w}]
+\ \ < \ \ D_{\tbox{LRT}}[\bm{w}]
 \eeq
 %
-This expectation is represented in \Fig{f2} by lines.  
-We see that it fails to capture the small $\lambda$ regime, 
-where the distribution corresponds to diffusive behavior. 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-\clearpage
+The VRH is based on the idea to associate
+with the range of the jump $r$ its typical 
+energy cost $\epsilon(r)$. In the Mott problem 
+the relation is $\epsilon(r) = (r_0/r)^d \Delta_0$, 
+corresponding to the effective DOS in range~$r$. 
+More generally the relation between $\epsilon$ and $r$ 
+is determined through the equation 
+%
+\beq
+\int_0^{\epsilon} \int_0^{r} \rho(r',\epsilon')  dr'd\epsilon' \  = \  p_c 
+\ \ \ \ \ \ \ \ \leadsto \ \ \ \ \ \ \ \ 
+\left(\frac{r}{r_0}\right)^d \ F(\epsilon) \ = \ p_c
+\eeq
+%
+where $F(\epsilon)$ is the cumulative distribution function.
+In words this equation asks what is the $\epsilon$~window that 
+is required in order to guarantee that the particle will be able 
+to find with probability of order unity an accessible site within 
+a range~$r$. Larger jumps allow smaller cost. 
+Then we calculate $D$ as follows: 
+%
+\beq
+D \ \ = \ \ D_{\tbox{VRH}}[\bm{w}]  \ \ = \ \ 
+\frac{1}{4}\iint \Theta\left\{ (r/r_0)^d F(\epsilon) - p_c \right\} \ w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr
+\eeq
+%
+This integral excludes all those transitions that are not likely to connect. 
+It is in the same spirit as the ERH estimate, but gives a lower result 
+for two reasons: (i) compared with the ERH integral a larger portion of 
+the $drd\epsilon$ plane is modified. (ii) The modification in this portion 
+is exclusion instead of flattening to a lower value.
+However, it should be realized that in the Mott problem the VRH 
+integral is dominated by the vicinity of the optimal point ${(r^*,\epsilon^*)}$, 
+where $\epsilon^*=\epsilon(r^*)$ is the same as in the ERH. 
+Therefore, in the Mott problem, both estimates give essentially the same result.
 
 \begin{figure}[H]
-\includegraphics{ptsD_1D}
-\includegraphics{ptsD_2D}
-
-\caption{Spreading in the 1D and in the 2D random site models. 
-The average distance between the sites is $r_0=1$.
-In the 1D case only near-neighbor transitions are allowed.
-In the $1D$ plot, on the left, the blue line is the power of the spreading. 
-It shows a sub-diffusive regime where $0<s<1$, and a diffusive regime for $s>1$. 
-The red line is of the diffusion coefficient $D$, which is zero for the sub-diffusive regime $s<1$. 
-In the $2D$ plot, on the right, the numerical results for the diffusion coefficient agree 
-with the ERH estimate. The $Y$ axis is $D$ in logarithmic scale, while the $X$ axis is $X=-1/s$. 
-The numerical dots are extracted from the spectral analysis, as in \Fig{f2}. 
-The dashed line is the LRT result (${n_c = 0}$), 
-while the solid line is the ERH estimate with ${n_c = 5}$.}
-\label{f1}
+\includegraphics{wdiagrm}
+\caption{ Comparing VRH with ERH: }
 \end{figure}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results for 2D}\label{sec:diff2d}
 
-%%%%%%%%%%%%%%%%%%5
-\begin{figure}[H]
-\includegraphics[clip]{pts_Sepctral_PN}
+Let us do the ERH calculation for our specific case 
+where $w =w_0 e^{-\frac{r}{s}}$, and $\rho(r) = 2\pi r$,  
+as defined in \Eq{eq:density_distribution}.
+%
+\begin{align}
+\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon \quad &= \quad p_c, \\
+\int_0^{r^*} 2\pi r dr \quad &=\quad p_c \\
+r^*  &= \sqrt\frac{p_c}{\pi}
+\end{align}
+%
+The specific calculation is carried on in section \ref{sec:ERH_2d}. The end result is:
+\begin{align}
+D_{\tbox{ERH}} = e^{-\frac{r^*}{s}}\frac{\pi}{2} w_0\left[\frac{1}{4}{r^*}^4 +  {r^*}^3 s + 3{r^*}^2 s^2 + 6r^*s^3 +6 s^4  \right]
+\end{align}
 
-\caption{ 
-The $1D$ and the $2D$ cumulative eigenvalue distribution, for several values of $s$.
-The dots represent numerical diagonalization. 
-The dashed lines are the expected diffusion results according to \Eq{eq:expected_D_2d}, 
-with $D$ as a fitting parameter. The solid lines are according to the RG analysis of \cite{amir}, 
-namely \Eq{eq:amir_expected} . There is a striking difference between the $1D$ and the $2D$ cases. 
-For $1D$, the slope for sparse models ($s<1$) is less than $\frac{1}{2}$, 
-meaning that we have sub-diffusion. In the $2D$ case the low-$\lambda$ slope is always~$1$, 
-which corresponds to normal diffusion.} 
-\label{f2}
-\end{figure}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-\clearpage
-
+%
+If $r^* \rightarrow 0$, the solution approaches the LRT estimate: 
+%
+\beq
+D_{\tbox{LRT}}[\bm{w}] = 3\pi w_0 s^4 
+\eeq
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Digression - numerical extraction of $D$}
-\label{sec:num_d_2d}
-\label{diff}
+\section{Results for the banded $1D$ model}
 
-The diffusion coefficient $D$ is formally like calculation 
-of the conductivity of the network. Therefore it can be determined 
-via a numerical solution of a circuit equation $\bm{G}\bm{V} = \bm{I}$, 
-as in mechanical engineering.  The result should be correlated 
-with the small $\lambda$ distribution of the eigenvalues.
-This point is explained below.
+%%%%%%%%%%%%%
+\subsection{With profile $B(n,m) = \Theta (b-|n-m|)$}
+This is calculated in section \ref{sec:banded}.
+\begin{figure}[H]
+\includegraphics{resnet_new}
+\includegraphics{banded_b10}
+\caption{(left) The numerical result for $D/D_{\tbox{LRT}}$ imaged as a function of $\sigma$ and $b$. (right) Plot of the results for a $b=10$ matrix. The blue points are based on spectral analysis (involving an undeterminded pre-factor). The curve is our ERH prediction.}
+\end{figure}
+
+%%%%%%%%%%%%%
+\subsection{With profile $B(n,m) = \Theta(b-|n-m|)\cdot \frac{1}{(n-m)^2}$}
+This is calculated in section \ref{sec:OOS}.
+\begin{figure}[H]
+\includegraphics{D_OOS}
+\includegraphics{OOS_b10}
+\caption{(left) The numerical result for $D/D_{\tbox{LRT}}$ imaged as a function of $\sigma$ and $b$.(right) Plot of the results for a $b=10$ matrix. The blue points are based on spectral analysis (involving an undeterminded pre-factor). The curve is our ERH prediction.}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Numerical extraction of $D$}\label{sec:num_d_2d}\label{diff}
 
 In a diffusive system the coarse grained spreading 
 is described by the standard diffusion equation,
@@ -550,7 +627,7 @@ S(t) \ \ = \ \ \left\langle r^2(t) \right\rangle  \ \ = \ \ (2d)Dt
 and 
 %
 \beq
-\mathcal{P}(t) \ \ \sim \ \ \frac{1}{\left({4\pi D t}\right)^{d/2}} 
+\mathcal{P}(t) \quad \approx \quad  \frac{1}{\left({4\pi D t}\right)^{d/2}} 
 \qquad\qquad[r_0^d=1]
 \eeq
 %
@@ -591,256 +668,26 @@ with the distribution of the decay rates $\gamma_n=\sum_{m}w_{mn}$,
 reflecting localized modes.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-\clearpage
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Linear response theory (LRT) estimate}
-
-If we had an ordered lattice, then the exact result for $D$ would be 
-%
-\beq
-D \ \ = \ \ D_{\tbox{LRT}}[\bm{w}]  \ \ = \ \ \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
-\eeq
-%
-This expression is strictly {\em linear}.
-For the infinite temperature variation of 2D random site model we get  
-%
-\be{20}
-D \ \ = \ \ 3\pi \, s^4 \, w_0
-\eeq
-%
-This expression will not work for ${s<1}$ because sparse contribution 
-of strongly coupled sites do not contribute to the transport. 
-Only percolating trajectories do have a contribution. We are therefore urged 
-to introduce approximation schemes that takes this connectivity 
-issue into account.  
- 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Effective Range Hopping (ERH) estimate}
-
-What we call effective range hopping (ERH) estimate is based 
-on the idea of finding a lower bound for $D$, taking the 
-percolation threshold into account. We define an ERH threshold $w_c$ 
-through the requirement 
-%
-\beq
-\iint_{w(r,\epsilon)>w_c} \rho(r,\epsilon)drd\epsilon \ \ = \ \ n_c, 
-\ \ \ \ \ \ \ \ \ \mbox{with $n_c$ of order unity \rmrk{(in the figures is called $p_c$)}}
-\eeq
-%
-Then we calculate $D$ as follows:
-%
-\beq
-D \ \ = \ \ D_{\tbox{ERH}}[\bm{w}]  \ \ = \ \ \frac{1}{4}\iint \min\{w(r,\epsilon),w_c\} \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr
-\eeq
-%
-This is similar to the LRT estimate, with network that has $w_{nm}$ 
-that are equal or smaller to the original values. The "suppressed" 
-connector are those that are too sparse to form percolating trajectories. 
-Note that this expression, as required, is {\em semi-linear} 
-rather than linear [see explanation below].
-For the infinite temperature variation of 2D random site model we get  
-%
-\beq
-D \ \ \sim \ \ 3\pi \, s^4 \, \eexp{-\const/s} \, w_0, 
-\ \ \ \ \ \ \ \ \ \ \ \const\sim 1 \mbox{(fitting)} 
-\eeq
-
-
-{\bf Details of calculation: }
-\rmrk{[we should refer to the general case of Mott hopping. 
-For laziness we refer to the infinite temperature random site model.]}
-We consider $w(r) =w_0 e^{-\frac{r}{s}}$, and $\rho(r) = 2\pi r$,  
-as defined in \Eq{eq:density_distribution}. 
-We look for the ERH threshold value $w_c=w(r_c)$ that is 
-defined through the equation  
-%
-\beq
-\int_0^{r_c} 2\pi r dr = n_c, 
-\hspace{2cm} \leadsto \hspace{2cm} 
-r_c  = \sqrt\frac{n_c}{\pi}
-\eeq
-%
-The calculation of the ERH integral leads to the result 
-%
-\beq
-D_{\tbox{ERH}} \ \ =  \ \ 
-\frac{\pi}{2} w_0
-\left[\frac{1}{4}{r_c}^4 +  {r_c}^3 s + 3{r_c}^2 s^2 + 6r_cs^3 +6 s^4  \right]
-\ \eexp{-\frac{r_c}{s}}
-\eeq
-%
-Formally for zero percolation threshold (${n_c=0}$) 
-we get the LRT estimate \Eq{e20}. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\clearpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Variable Range Hopping (VRH) estimate}
-
-The ERH is similar to the generalized VRH procedure 
-that we have introduced in previous publications.
-We define below what we mean by generalized VRH. 
-It would be clear that ERH gives a better 
-lower bound compared with VRH, namely, 
-%
-\beq
-D_{\tbox{VRH}}[\bm{w}]  
-\ \ < \ \ D_{\tbox{ERH}}[\bm{w}]
-\ \ < \ \ D[\bm{w}]
-\ \ < \ \ D_{\tbox{LRT}}[\bm{w}]
-\eeq
-%
-The VRH is based on the idea to associate
-with the range of the jump $r$ its typical 
-energy cost $\epsilon(r)$. In the Mott problem 
-the relation is $\epsilon(r) = (r_0/r)^d \Delta_0$, 
-corresponding to the effective DOS in range~$r$. 
-More generally the relation between $\epsilon$ and $r$ 
-is determined through the equation 
-%
-\beq
-\int_0^{\epsilon} \int_0^{r} \rho(r',\epsilon')  dr'd\epsilon' \  = \  n_c 
-\ \ \ \ \ \ \ \ \leadsto \ \ \ \ \ \ \ \ 
-\left(\frac{r}{r_0}\right)^d \ F(\epsilon) \ = \ n_c
-\eeq
-%
-where $F(\epsilon)$ is the cumulative distribution function.
-In words this equation asks what is the $\epsilon$~window that 
-is required in order to guarantee that the particle will be able 
-to find with probability of order unity an accessible site within 
-a range~$r$. Larger jumps allow smaller cost. 
-Then we estimate $D$ as follows: 
-%
-\beq
-D \ \ = \ \ D_{\tbox{VRH}}[\bm{w}]  \ \ \sim \ \ 
-w(r^*,\epsilon^*) \times  \Big(r^*\Big)^2
-\eeq
-%
-It is like an asymptotic evaluation of the ERH integral 
-that holds for sparse models. It should be realized that 
-in the Mott problem the hopping is dominated by the vicinity 
-of the optimal point ${(r^*,\epsilon^*)}$, 
-where $\epsilon^*=\epsilon(r^*)$. 
-Therefore, in the Mott problem VRH can replace the ERH, 
-but it does not interpolate well with the LRT regime.
-What we called in the past generalized VRH is a slightly 
-improved version of VRH. 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%5
 \begin{figure}[H]
-\includegraphics[width=0.5\hsize]{wdiagrm}
-\caption{ Comparing VRH with ERH: }
+\includegraphics[clip]{two_panels}
+\caption{ $1D$ and $2D$ cummulative eigenvalue distribution, 
+for several values of $s$.
+ The dots represent numerical diagonalization. The dashed lines are the expected diffusion results according to \eqref{eq:expected_D_2d}, with $D$ as a fit parameter. The solid lines are according to Ariel's result, as presented in \eqref{eq:amir_expected} . There is a striking difference between the $1d$ and $2d$ cases. For $1d$, the slope for sparse models ($s<1$) is less than $\frac{1}{2}$, meaning we have sub-diffusion. In the $2d$ case, the low-$\lambda$ slope is always $1$, which correspondes to normal diffusion.} \label{fig:exp_2d_D_vs_subD}
 \end{figure}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+\section{Perspective on Amir's work}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\clearpage 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Results for the banded $1D$ model}
-
-Consider a quasi 1D network that is represnted by 
-a banded matrix of width~$b$.  Namely we assume 
-that ${B(r)=1}$ within the band and zero for ${|r|>b}$. 
-The non zerohe elements have a log-box distribution, 
-namely, $\epsilon$ is distributed uniformly over a range $[0,\sigma]$. 
-The results for $D/D_{LRT}$ are presented in \Fig{f3}.
-They agree with the ERH estimate:
-%
-\beq
-D_{\text{ERH}} \ \ = \ \ 
-\frac{b(b+1)(2b+1)}{6} w_0 \left[ \eexp{-2\sigma\frac{n_c}{b}}\left(2\sigma\frac{n_c}{b} + 1\right) - e^{-2\sigma}\right]
-\eeq 
-% 
-The results are presented in \Fig{f3}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}[H]
-
-\includegraphics[width=0.5\hsize]{ptsD_Banded_Image}
-\includegraphics[width=0.5\hsize]{ptsD_Banded}
-
-\caption{(left) The numerical result for $D/D_{\tbox{LRT}}$ imaged as a function of $\sigma$ and $b$. 
-(right) Plot of the results for a $b=10$ matrix. 
-The blue points are based on spectral analysis (involving an undeterminded pre-factor). 
-The curve is our ERH prediction.}
-\label{f3}
-\end{figure}
-
-
-\ \\
-
-
-Motivated by the FGR picture we consider a quasi 1D network 
-that is represnted by a matrix with band profile $B(r)=1/r^2$, 
-with zero elemnts for ${|r|>b}$. 
-The $\epsilon$ is distributed uniformly over a range $[0,\sigma]$. 
-The results for $D/D_{LRT}$ are presented in \Fig{f4}.
-They agree with the ERH estimate:
-%
-\beq
-D_{\text{ERH}} \ \ = \ \ 
-2b w_0 \left[ \eexp{-2\sigma\frac{n_c}{b}}\left(2\sigma\frac{n_c}{b} + 1\right) - e^{-2\sigma}\right]
+In Amir's article, they approximate the low density solution by assuming dimerical behaviour. While this approximation holds for most of the eigenvalue distribution space, it is inaccurate on the lowest eigenvalues. However, the lowest eigenvalues are the most promiment in the survival expression \eqref{eq:survival}. We present a graph of the lowest eigenvalues in figure \ref{fig:exp_2d_D_vs_subD}, including a line for equation (3) in \cite{amir}, 
+\beq\label{eq:amir_expected}
+  C(\lambda) \quad = \quad \exp\left( -\frac{\Omega_d}{2d} \left(-s\cdot \log(\lambda/2)\right)^d \right)
 \eeq
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}[H]
-
-\includegraphics[width=0.5\hsize]{ptsD_Banded_Image_X}
-\includegraphics[width=0.5\hsize]{ptsD_Banded_X}
-
-\caption{(left) The numerical result for $D/D_{\tbox{LRT}}$ imaged as a function of $\sigma$ and $b$.
-(right) Plot of the results for a $b=10$ matrix. The blue points are based on spectral analysis (involving an undeterminded pre-factor). 
-The curve is our ERH prediction.}
-\label{f4}
-\end{figure}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\clearpage 
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Open issue for discussion}
-
-One issue - already pointed out - is it possible to extract $D$ from spectral analysis.
-In the quasi 1D analysis the value that is extracted from spectral analysis
-is much smaller than the value that is obtained from the resistor network calculation.
-
-In the standard Anderson model the eigenvalues form a band ${\lambda \in [-\lambda_c,\lambda_c]}$.
-The states at the edge of the band are always localized.
-The states in the middle  of the band might be de-localized if ${d>2}$.  
-
-In the problem we discuss here all the off diagonal elements are {\em positive},  
-and the diagonal elements compensate them. Consequently the spectrum is ${\lambda \in [0,\lambda_c]}$.
-The ground state is always the ${\lambda=0}$ uniform state. 
-Do we have diverging "localization length" in the limit ${\lambda \rightarrow 0}$.
-
-Since all the  off diagonal elements are {\em positive} 
-it is clear that we cannot have "destructive interference", 
-and therefore we do not have genuine Anderson localization. 
-Therefore in general we might have diffusion, even in 1D. 
-In 2D we have a percolation threshold, which is again 
-not like Anderson localization.  
-
-\ \\ 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{The semi-linear response perspective}
+\section{The semi-linear response perspective}
 
 Assume that the rates $w_{nm}$ are induced 
 by a driving source that has spectral content $\tilde{S}(\omega)$. 
@@ -868,26 +715,6 @@ A typical situation is that the driving is "on top" of a bath. Namely
 %
 In such case we can linearize~$D=D[\tilde{S}(\omega)]$, and then we get 
 linear-response. Otherwise the response is typically semi-linear rather than linear. 
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1569,9 +1396,9 @@ where $w =w_0 e^{-\frac{r}{s}}$, and $\rho(r) = 2\pi r$,
 as defined in \Eq{eq:density_distribution}.
 %
 \begin{align}
-\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon \quad &= \quad n_c, \\
-\int_0^{r^*} 2\pi r dr \quad &=\quad n_c \\
-r^*  &= \sqrt\frac{n_c}{\pi}
+\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon \quad &= \quad p_c, \\
+\int_0^{r^*} 2\pi r dr \quad &=\quad p_c \\
+r^*  &= \sqrt\frac{p_c}{\pi}
 \end{align}
 %
 Then we calculate $D$ as follows:
@@ -1617,22 +1444,22 @@ We average over $\epsilon$ to arrive at:
 \subsection{ERH}
 To apply the ERH method, we first have to find the cut-off $w*$, or, as is easier, find $\epsilon*$.
 \begin{align}
-\iint_{w>w*} \rho(r,\epsilon) dr d\epsilon = n_c \\
-\iint_{\epsilon<\epsilon*} b\cdot f(\epsilon) d\epsilon = b\cdot\frac{\epsilon*}{2\sigma} = n_c\\
-\epsilon* = \frac{2\sigma n_c}{b}
+\iint_{w>w*} \rho(r,\epsilon) dr d\epsilon = P_c \\
+\iint_{\epsilon<\epsilon*} b\cdot f(\epsilon) d\epsilon = b\cdot\frac{\epsilon*}{2\sigma} = P_c\\
+\epsilon* = \frac{2\sigma P_c}{b}
 \end{align}
 
 Now, we integrate over $min(w(r,\epsilon*),w(r,epsilon))r^2$ to obtain:
 \begin{align}
    D_\textrm{ERH} &= \frac{b(b+1)(2b+1)}{6}(\int_0^{\epsilon*}w_0e^{-\epsilon*}\frac{d\epsilon}{2\sigma} +  \int_{\epsilon*}^{2\sigma} w_0e^{-\epsilon})\frac{d\epsilon}{2\sigma} \\
    &= \frac{b(b+1)(2b+1)}{6} w_0\left(e^{-\epsilon*}\epsilon*+e^{-\epsilon*}-e^{-2\sigma}\right)\frac{1}{2\sigma}\\
-   &=\frac{b(b+1)(2b+1)}{6} w_0 \left( e^{-2\sigma\frac{n_c}{b}}\left(2\sigma\frac{n_c}{b} + 1\right) - e^{-2\sigma}\right)
+   &=\frac{b(b+1)(2b+1)}{6} w_0 \left( e^{-2\sigma\frac{P_c}{b}}\left(2\sigma\frac{P_c}{b} + 1\right) - e^{-2\sigma}\right)
 \end{align}
 
 The correction is indeed in the correct area, as can be seen here:
 \begin{figure}[H]
 \includegraphics{BANDED_ERH}
-\caption{This is a plot of $D_\textrm{ERH}/D_0$, with $n_c=1$}
+\caption{This is a plot of $D_\textrm{ERH}/D_0$, with $P_c=1$}
 \end{figure}
 
 
@@ -1686,16 +1513,16 @@ We average over $\epsilon$ to arrive at:
 \subsection{ERH}
 To apply the ERH method, we first have to find the cut-off $w*$, or, as is easier, find $\epsilon*$.
 \begin{align}
-\iint_{w>w*} \rho(r,\epsilon) dr d\epsilon = n_c \\
-\iint_{\epsilon<\epsilon*} b\cdot f(\epsilon) d\epsilon = b\cdot\frac{\epsilon*}{2\sigma} = n_c\\
-\epsilon* = \frac{2\sigma n_c}{b}
+\iint_{w>w*} \rho(r,\epsilon) dr d\epsilon = P_c \\
+\iint_{\epsilon<\epsilon*} b\cdot f(\epsilon) d\epsilon = b\cdot\frac{\epsilon*}{2\sigma} = P_c\\
+\epsilon* = \frac{2\sigma P_c}{b}
 \end{align}
 
 Now, we integrate over $min(w(r,\epsilon*),w(r,epsilon))r^2$ to obtain:
 \begin{align}
    D_\textrm{ERH} &= 2b\int_0^{\epsilon*}w_0e^{-\epsilon*}\frac{d\epsilon}{2\sigma} +  \int_{\epsilon*}^{2\sigma} w_0e^{-\epsilon})\frac{d\epsilon}{2\sigma} \\
    &= 2b w_0\left(e^{-\epsilon*}\epsilon*+e^{-\epsilon*}-e^{-2\sigma}\right)\frac{1}{2\sigma}\\
-   &= 2b w_0 \left( e^{-2\sigma\frac{n_c}{b}}\left(2\sigma\frac{n_c}{b} + 1\right) - e^{-2\sigma}\right)
+   &= 2b w_0 \left( e^{-2\sigma\frac{P_c}{b}}\left(2\sigma\frac{P_c}{b} + 1\right) - e^{-2\sigma}\right)
 \end{align}
 
 
