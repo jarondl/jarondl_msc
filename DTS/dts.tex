@@ -26,8 +26,11 @@
 \fi
 
 % extra by jarondl
-\usepackage[pdftitle={DTS},bookmarks]{hyperref}
 \usepackage{array}
+%\usepackage{multicol}
+\usepackage{subfig}
+\usepackage[pdftitle={DTS},bookmarks]{hyperref}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -124,7 +127,7 @@
 
 \title{Resistor network modeling of diffusion in sparse networks}
 
-\author{DC, notes for BGU-WES project}
+\author{YdL, EH, DC, TK, notes for BGU-WES project}
 
 \maketitle
 
@@ -207,7 +210,7 @@ Hence the total probability for a transition
 from an initial state is 
 %
 \beq
-p(t) \ \  \sim \ \  b \times \epsilon^2  \ t^2  \qquad \qquad\qquad\qquad \mbox{\rmrk{[This had a typo, with $p(t) \sim b^2\times\epsilon^2t^2$ ]}}
+p(t) \ \  \sim \ \  b \times \epsilon^2  \ t^2  
 \eeq
 %
 
@@ -315,35 +318,57 @@ The RMS value of the elements of B is calculated as follows:
 The linear approximation is:
 %
 \beq
-D_\textrm{linear} \quad=\quad b^{2.5} \quad \textrm{RMS}(\sigma)\quad\epsilon
+D_\textrm{linear} \quad=\quad C\quad b^{2.5} \quad \textrm{RMS}(\sigma)\quad\epsilon \qquad \qquad\textrm{(Where $C$ is a constant)}
 \eeq
 %
-In \ref{fig:D}, \ref{fig:v_square} we plot:
+In \ref{fig:D1},\ref{fig:D2} and \ref{fig:v_square} we plot:
 %
 \begin{align}
-\textrm{scaled} \left[ D\right] \quad &=  \quad \frac{D}{D_\textrm{linear}} \quad=
+\textrm{scaled} \left[ D\right] \quad &=
 \quad  \frac{D}{b^{2.5} \quad \textrm{RMS} \quad \epsilon } \\[\bigskipamount]
-\textrm{scaled} \left[ v^2\right] \quad &= \quad \frac{v^2}{b^3 \quad \textrm{RMS}^2 \quad \epsilon^2 } \\[\bigskipamount]%\textrm{scaled} \quad t_\textrm{bal} \quad &= \quad t_\textrm{bal} \quad b^\frac{1}{2} \quad \textrm{RMS} \epsilon
+\textrm{scaled} \left[ v^2\right] \quad &= \quad \frac{v^2}{b^3 \quad \textrm{RMS}^2 \quad \epsilon^2 } %\\[\bigskipamount]%\textrm{scaled} \quad t_\textrm{bal} \quad &= \quad t_\textrm{bal} \quad b^\frac{1}{2} \quad \textrm{RMS} \epsilon
 \end{align}
 %
-
-In \ref{fig:D2_vs_gs} we plot the scaled $D_2$ vs $g_s(\sigma, b)$, where the suppression factor 
-$g_s(\sigma,b)$ is:
+From our previous work we have a suppression factor for sparse networks: \rmrk{Note: this has been fixed since the last version}
 % 
 \beq
-g_s(\sigma,b) = \frac{\left(1+\frac{n_c}{2b}\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}}{1-\eexp{-2\sigma}}
+g_s(\sigma,b) \ \ =\ \  \frac{\left(1+\frac{n_c}{b}\sigma\right)\eexp{-\frac{n_c}{b}\sigma} - \eexp{-4\sigma}}{1-\eexp{-4\sigma}}
 \eeq
 %
 With $n_c \approx 2$.
 
+In \ref{fig:expected_gs} we plot $g_s(\sigma,b)$ as a function of $\sigma$. 
+Naturally we expect no suppression for $\sigma=0$ or for $b\gg 1$. 
+
+\rmrk{We now plot in $D_2$ vs $g_s(\sigma)$ loglog scale, the next few lines are new}
 
 
-We find that that 
-\begin{align}
-\textrm{scaled}\left[D\right] \approx \frac{1}{2}g_s(\sigma,b)
-\end{align}
- up to some factors, meaning 
-there is suppression due to sparsity effects.
+In \ref{fig:D2_vs_gs_loglog} we plot $\log D_2$ vs $\log g_s(\sigma, b)$.
+
+
+We speculate the following relation:
+%
+\beq
+\textrm{scaled}\left[D\right] \quad \approx \quad C \quad { g_s(\sigma,b)}^{\gamma}
+\eeq
+%
+From the fitting it follows that 
+%
+\beq
+C \quad \approx\quad  \frac{3}{4}
+\eeq
+%
+For the blue $b=10$ line, the exponent $\gamma$ is:
+%
+\beq
+\gamma \approx \quad 0.5
+\eeq
+%
+For the red $b=20$ and green $b=40$ lines $\gamma$ seems larger, but it is hard to 
+extract its value from the data. Higher values of $\sigma$ (meaning lower $g_s(\sigma)$) might 
+allow further analysis.
+
+
 
 
 
@@ -357,23 +382,24 @@ coefficient measured by a power law fitting with
 tolerance $D\times t^{\alpha}\quad ;\quad \alpha>0.9$ " 
 
 $D_2$ the variance is devided by time, evaluated at the plato point.
-
+%\begin{multicols}[3]
 \begin{figure}[H]
-\includegraphics[height=0.4\textheight]{D1} \\
-\includegraphics[height=0.4\textheight]{D2} 
-\caption{ These are the scaled $D_1$ and $D_2$, as a function of $\sigma$. 
-    Both present proper dependance on the sparsity, but $D_2$ seems more consistent.}\label{fig:D}
+\subfloat[Scaled $D_1$ as a function of $\sigma$]{
+    \includegraphics{D1} 
+    \label{fig:D1} }
+\subfloat[Scaled $D_2$ as a function of $\sigma$]{\includegraphics{D2}\label{fig:D2}} \\
+\subfloat[Scaled $v^2$, as a function of $\sigma$]{\includegraphics{v_square} \label{fig:v_square}}
+\caption{Numerical data, rescaled}\label{fig:D}
 \end{figure}
 
 
 \begin{figure}[H]
-\includegraphics[height=0.4\textheight]{D2_vs_gs} 
-\caption{ This is $D_2$ vs $g_s(\sigma)$. The black segmented line has a slope of $1$ while the gray dotted line has a slope of $0.5$}\label{fig:D2_vs_gs}
+\subfloat[ $g_s(\sigma,b)$]{\includegraphics{expected_gs}\label{fig:expected_gs}}
+\subfloat[ $D_2$ vs $g_s(\sigma)$, in log log scale] {\includegraphics{D2_vs_gs_loglog} \label{fig:D2_vs_gs_loglog}}
+\caption{Analysis}
 \end{figure}
 
-\begin{figure}[H]
-\includegraphics[height=0.4\textheight]{v_square} 
-\caption{ The scaled $v^2$, as a function of $\sigma$.}\label{fig:v_square}
-\end{figure}
+
+%\end{multicols}
 
 \end{document}
