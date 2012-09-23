@@ -98,12 +98,13 @@
 \appendix
 \section{The ERH calculation for the degenerate hopping model}
 
-We wish to apply the ERH expression of \Eq{31} to the rates of the degenerate model.
+We wish to apply the ERH expression of \Eq{31} 
+to the rates of the degenerate model.
 
 The rates are:
 %
 \beq
-w_{nm} \ \ = \ \  w_0 \ \eexp{-\epsilon_{nm}} \ \eexp{-r/\xi} 
+w_{nm} \ \ = \ \  w_0 \ \eexp{-\epsilon} \ \eexp{-r/\xi} 
 \eeq
 %
 And the local density of sites is:
@@ -112,21 +113,35 @@ And the local density of sites is:
 \rho(r,\epsilon) \ \ =\ \ \frac{\Omega_d r^{d-1}}{r_0^d} \ \delta (\epsilon)
 \eeq
 %
-The ERH integral in \Eq{31} has two regimes, one in which $w>w_c \ \& \ r<r_c$, and the other in which $w>w_c\ \& \ r>r_c$.
-The first integral is a trivial power-law integral, and the other is by defintion the upper incomplete gamma function\cite{dlmf_gamma}.
+The ERH integral in \Eq{31} has two regimes, 
+one in which $w>w_c \ \& \ r<r_c$, and the other in which $w>w_c\ \& \ r>r_c$.
+The first integral is a trivial power-law integral, 
+and the other is by defintion the upper incomplete gamma function\cite{dlmf_gamma}.
 %
 \beq
-D_{\tbox{ERH}} = \frac{w_0\Omega_d}{2d}\int_0^{r_c} \eexp{-r_c / \xi} \frac{r^{d+1}}{r_0^d} dr 
+D_{\tbox{ERH}} = \frac{w_0\Omega_d}{2d}\int_0^{r_c} \eexp{-r_c / \xi} \frac{r^{d+1}}{r_0^d} dr \\
                + \frac{w_0\Omega_d}{2d}\int_{r_c}^\infty \eexp{-r / \xi} \frac{r^{d+1}}{r_0^d} dr \\
-\ \ \ = \frac{w_0\Omega_d}{2d} \eexp{-r_c / \xi} \frac{r_c^{d+2}}{d+2} \frac{1}{r_0^d} 
+\ \ \ = \frac{w_0\Omega_d}{2d} \eexp{-r_c / \xi} \frac{r_c^{d+2}}{d+2} \frac{1}{r_0^d} \\
 \ \ \  +\frac{w_0\Omega_d}{2d} \frac{\xi^{d+2}}{r_0^d} \Gamma\left(d+2,\frac{r_c}{\xi}\right)\\
 \ \ \ = \frac{w_0\Omega_d \xi^{d+2}}{2d(d+2)r_0^d}\Gamma\left(d+3,\frac{r_c}{\xi}\right)
 \eeq
 %
 Some notational changes for convenience lead us directly to \Eq{40} 
 
-%note!
-%below eq (40) there is a reference to  $R_l$
+
+%%%%%%%%%%%%%%%%%%%%
+\section{The ERH calculation for the Mott hopping model}
+
+This two dimensional integral (over $r$ and $\epsilon$) 
+is split into two regimes by the diagonal line $\epsilon+\frac{r}{\xi} = -\log\left(\frac{w_c}{w_0}\right)$.
+
+
+% note!
+% below eq (40) there is a reference to  $R_l$
+
+% between eq 44 and 45 associated
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
