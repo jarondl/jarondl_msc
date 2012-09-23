@@ -133,13 +133,36 @@ Some notational changes for convenience lead us directly to \Eq{40}
 \section{The ERH calculation for the Mott hopping model}
 
 This two dimensional integral (over $r$ and $\epsilon$) 
-is split into two regimes by the diagonal line $\epsilon+\frac{r}{\xi} = -\log\left(\frac{w_c}{w_0}\right)$.
+is split into two regimes by the diagonal line $\epsilon+\frac{r}{\xi} = \epsilon_c$.
+
+The simplest solution is to change variables:
+%
+\beq
+x\ \  =\ \  \frac{-\epsilon+r/\xi}{2} \\
+y\ \ =\ \ \epsilon+r/\xi
+\eeq
+%
+\rmrk{one $\xi$ comes from the Jacobian. Should be explained?}
+ %
+\beq
+D_{\tbox{ERH}} = \frac{w_0\Omega_d}{2dr_0^d}\xi\int_0^{\epsilon_c}dy\int_{-y/2}^{y/2}dx \eexp{-\epsilon_c} \left(\xi\ x+\xi \frac{y}{2}\right)^{d+1} \\
++ \frac{w_0\Omega_d}{2dr_0^d}\xi\int_{\epsilon_c}^\infty dy\int_{-y/2}^{y/2}dx \eexp{-y} \left(\xi\ x+\xi \frac{y}{2}\right)^{d+1} \\
+\ \ \ = \frac{w_0\Omega_d}{2dr_0^d}\xi^{d+2} \eexp{-\epsilon_c} \frac{\epsilon_c^{d+3}}{(d+2)(d+3)}  \\
+\ \ \  +\frac{w_0\Omega_d}{2dr_0^d(d+2)}\xi^{d+2} \Gamma\left(d+3,\epsilon_c\right)\\
+\ \ \ = \frac{w_0\Omega_d \xi^{d+2}}{2d(d+2)r_0^d}\Gamma\left(d+4,\epsilon_c\right)
+\eeq
+%
 
 
-% note!
-% below eq (40) there is a reference to  $R_l$
+\rmrk{Several typos}
+below eq (40) there is a reference to  $R_l$ which does not exist any more.
 
-% between eq 44 and 45 associated
+
+between eq 44 and 45 associate\rmrk{d}
+
+
+On ref 17 every name has an extra letter.
+
 
 
 
