@@ -103,26 +103,41 @@ We wish to apply the ERH expression of \Eq{31} to the rates of the degenerate mo
 The rates are:
 %
 \beq
-w_{nm} \ \ = \ \  w_0 \ \eexp{-\epsilon_{nm}} \ \eexp{-|x_n-x_m|/\xi} 
+w_{nm} \ \ = \ \  w_0 \ \eexp{-\epsilon_{nm}} \ \eexp{-r/\xi} 
 \eeq
 %
 And the local density of sites is:
 %
 \beq
-\rho(r,\epsilon) \ \ =\ \ \frac{\Omega_d r^{d-1}}{r_0^2} \ \delta (\epsilon)
+\rho(r,\epsilon) \ \ =\ \ \frac{\Omega_d r^{d-1}}{r_0^d} \ \delta (\epsilon)
 \eeq
 %
-Putting this into the ERH integral:
+The ERH integral in \Eq{31} has two regimes, one in which $w>w_c \ \& \ r<r_c$, and the other in which $w>w_c\ \& \ r>r_c$.
+The first integral is a trivial power-law integral, and the other is by defintion the upper incomplete gamma function\cite{dlmf_gamma}.
 %
 \beq
-D_{\tbox{ERH}} = \frac{1}{2d}\iint \min\{w(r,\epsilon),w_c\} \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr
+D_{\tbox{ERH}} = \frac{w_0\Omega_d}{2d}\int_0^{r_c} \eexp{-r_c / \xi} \frac{r^{d+1}}{r_0^d} dr 
+               + \frac{w_0\Omega_d}{2d}\int_{r_c}^\infty \eexp{-r / \xi} \frac{r^{d+1}}{r_0^d} dr \\
+\ \ \ = \frac{w_0\Omega_d}{2d} \eexp{-r_c / \xi} \frac{r_c^{d+2}}{d+2} \frac{1}{r_0^d} 
+\ \ \  +\frac{w_0\Omega_d}{2d} \frac{\xi^{d+2}}{r_0^d} \Gamma\left(d+2,\frac{r_c}{\xi}\right)\\
+\ \ \ = \frac{w_0\Omega_d \xi^{d+2}}{2d(d+2)r_0^d}\Gamma\left(d+3,\frac{r_c}{\xi}\right)
 \eeq
 %
-We obtain:
+Some notational changes for convenience lead us directly to \Eq{40} 
 
+%note!
+%below eq (40) there is a reference to  $R_l$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{thebibliography}{99}
+\bibitem{dlmf_gamma}
+Digital Library of Mathematical Functions. 2012-03-23. National Institute of Standards and Technology  http://dlmf.nist.gov/8
+
+
+
+\end{thebibliography}
+
 \end{document}
 
 
