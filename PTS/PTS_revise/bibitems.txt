@@ -1,0 +1,73 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibitem{dorogovtsev}
+%
+S.N. Dorogovtsev, A.V. Goltsev, J.F.F. Mendes, and A.N. Samukhin,
+% Spectra of complex networks
+Phys. Rev. E 68, 046109 (2003).
+%  http://link.aps.org/doi/10.1103/PhysRevE.68.046109
+% They deal with the spectra of complex networks (sometimes sparse),
+% finding that the high eigenvalues have tails
+% and do not obey Wigner's law..
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibitem{bradde}
+%
+S. Bradde, F. Caccioli, L. Dall’Asta, and G. Bianconi, 
+%  Critical Fluctuations in Spatial Complex Networks
+Phys. Rev. Lett. 104, 218701 (2010).
+%  http://link.aps.org/doi/10.1103/PhysRevLett.104.218701
+%They consider $d$ dimensional spatial embedded networks, and even have
+%a very similar matrix (13). 
+
+%% I suggest to add both dorogovtsev and bradde to the introduction,
+%% with something like:
+%  Our model is a sparse spatialy embedded network.
+%  The high eigenvalues of sparse or spatialy embedded networks
+%  have some .. features..   I don't know... but both Dorogovtsev and Bianconi 
+% were mentioned by ref C.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibitem{camboni}
+%
+F. Camboni and I.M. Sokolov, 
+%  Normal and anomalous diffusion in random potential landscapes
+Phys. Rev. E 85, 050104 (2012).
+%  http://link.aps.org/doi/10.1103/PhysRevE.85.050104
+% It describes a definition for an effective diffusion constant,
+% and if I understand correctly it says that we should always have
+% diffusion in our system.
+%  This could be added as another ref to the line
+% "Our approach is inspired by the resistor network picture"
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibitem{klemm}
+%
+A. Klemm, R. Metzler, and R. Kimmich, 
+%  Diffusion on random-site percolation clusters:
+%    Theory and NMR microscopy experiments with model objects
+Phys. Rev. E 65, 021112 (2002).
+% http://link.aps.org/doi/10.1103/PhysRevE.65.021112
+%   This could also be added to the fractal refs.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibitem{bouch}
+%
+J.-P. Bouchaud and A. Georges, 
+%  Anomalous diffusion in disordered media:
+%    Statistical mechanisms, models and physical applications
+Physics Reports 195, 127 (1990).
+% http://www.sciencedirect.com/science/article/pii/037015739090099N
+
+% this could be added as another ref in the introduction part 
+% that starts with "in the $d=1$ case..",
+% both with [16] and with [17,18]
+
+
+
+

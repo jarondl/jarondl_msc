@@ -1,0 +1,2 @@
+# To develop without root power use:
+python setup.py develop --user

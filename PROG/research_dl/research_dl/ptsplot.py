@@ -193,7 +193,7 @@ class ExpModel(object):
     
     @lazyprop
     def eigvals(self):
-	    return sparsedl.sorted_eigvalsh(self.ex)
+        return sparsedl.sorted_eigvalsh(self.ex)
 
     @lazyprop
     def eig_matrix(self):
@@ -422,23 +422,23 @@ class ExpModel_2d(ExpModel):
     @lazyprop 
     def resnet3(self):
         """ Work in progress """ 
-	N = self.sample.number_of_points()
-	r = self.sample.normalized_distance_matrix(self.periodic)  #r/r_0
-	n1,n2 = np.unravel_index(r.argmax(), r.shape)
-	r12 = r[n1,n2]
-	#b = self.bandwidth1d
-	invex = np.linalg.pinv(self.ex)
-	I = np.zeros(N)
-	#I[[0 + b, N//2 - b]] = [-1,1]  # We should apply the current as usual....
-	I[[n1, n2]] = [-1,1]
-	V = invex.dot(I)
+        N = self.sample.number_of_points()
+        r = self.sample.normalized_distance_matrix(self.periodic)  #r/r_0
+        n1,n2 = np.unravel_index(r.argmax(), r.shape)
+        r12 = r[n1,n2]
+        #b = self.bandwidth1d
+        invex = np.linalg.pinv(self.ex)
+        I = np.zeros(N)
+        #I[[0 + b, N//2 - b]] = [-1,1]  # We should apply the current as usual....
+        I[[n1, n2]] = [-1,1]
+        V = invex.dot(I)
         sV = sorted(V)
         
         # I'm trying to make the same twist as in the banded model.  please
         #  note that it does only work for large matrices!
-	debug("s = {0} ; r = {1}; n1,n2 = {2}".format(self.epsilon, r12, (n1,n2)))
-	#return (N//2 -2*b)*(V[0+b] - V[N//2-b])**(-1)/2.0
-	debug(" oldstyle : {0}".format( (V[n1]-V[n2])**(-1)*np.log(r12)/pi))
+        debug("s = {0} ; r = {1}; n1,n2 = {2}".format(self.epsilon, r12, (n1,n2)))
+        #return (N//2 -2*b)*(V[0+b] - V[N//2-b])**(-1)/2.0
+        debug(" oldstyle : {0}".format( (V[n1]-V[n2])**(-1)*np.log(r12)/pi))
         return (sV[-1]-sV[1])**(-1)*np.log(r12)/pi
 
 class ExpModel_Bloch_2d(ExpModel_2d):
@@ -1050,7 +1050,7 @@ def plotf_banded_examples():
     plotdl.save_ax(ax, "banded_b_1")
     plotdl.save_ax(ax, "banded_b_1_big", size_factor=(3,3))
     ax.cla()
-		
+        
 
     plot_D_fittings2_logbox(ax, np.linspace(1,10,40), b=20)
     plotdl.save_ax(ax, "banded_D_of_s_b20", size_factor=(3,3))
