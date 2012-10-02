@@ -10,7 +10,34 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The ERH procedure}
 
-
+The diffusion coefficient is defined by the dependence
+of the variance in time:
+%
+\begin{align}
+\textrm{Var}(n) \quad =\quad 2d\ D\ t
+\end{align}
+%
+Within the transient diffusion stage,
+assuming we start at a specific node $n$, the variance after time
+$t$ will be
+%
+\begin{align}
+\textrm{Var}(n) = \sum_m w_{nm} t (x_m-x_n)^2
+\end{align}
+Therefore, the diffusion coefficient for evolution 
+starting at node $n$ is
+%
+\begin{align}
+D_n \quad=\quad \frac{1}{2d}\sum_m (x_m-x_n)^2 w_{nm}
+\end{align}
+%
+Averaging over the starting node, and converting the sum to an integral,
+we have
+%
+\begin{align}
+D_{\tbox{linear}}  \ \ = \ \ \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
+\end{align}
+%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The $d=1$ lattice model}
