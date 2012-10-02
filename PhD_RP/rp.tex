@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  pts
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\documentclass[onecolumn,fleqn,12pt,openany,draft]{book}
+\documentclass[onecolumn,fleqn,12pt,openany]{book}
 
 \renewcommand{\baselinestretch}{1.5} 
 \topmargin -1.5cm      
@@ -31,7 +31,13 @@
 \usepackage{bm}
 \usepackage{wasysym}
 
-%\usepackage{hyperref}
+%by jarondl
+\usepackage[numbers,sort&compress,elide]{natbib}
+% merge - {feynmann,*salam,*epr} are under one number
+% elide - same as megre, but common parts appear once.
+%
+
+\usepackage[colorlinks=true,pagebackref=true,pdftitle="Research Proposal"]{hyperref}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -128,6 +134,8 @@
 \appendix
 %\include{paper}
 %\include{biblio}
+\bibliographystyle{apsrev}
+\bibliography{jarondl} 
 \include{appendix}
 
 
