@@ -41,19 +41,32 @@ D_{\tbox{linear}}  \ \ = \ \ \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\ep
 
 This expression describes the spreading in absence of disorder correctly
 for arbitrary long time. However, in a sparse disordered system such as ours,
-the possibilty of transport is a bit less trivial. Therefore, we suggest
+the possibility of transport is a bit less trivial. Therefore, we suggest
 a method to approximate the diffusion, which takes percolation into account.
 
+
+The basic idea behind \emph{ERH} is that in the linear
+expression, nearby sites 
+with $r\ll 1$ (and therefore $w \gg 1$ ) are over represented in
+the diffusion coefficient calculation. While the transition to
+these sites is indeed high, the distance covered is not enough
+to form a percolating cluster. Therefore, we use a threshold based
+on percolation theory and flat-down the rates higher then this threshold.
+
+The rate threshold $w_c$ is determined using the following expression
+%
+\begin{align}
+\iint_{w(r,\epsilon)>w_c} \rho(r,\epsilon)drd\epsilon \ \ = \ \ n_c
+\end{align}
+%
+Where $n_c$ is the number of connected sites necessary to form a percolation
+cluster (see \rmrk{TO DO :ref to section explaining this better}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The $d=1$ lattice model}
 
 %%%%%%%%%%%%%%%%%%%
 \subsection{Exact and Numerical results}
-
-%%%%%%%%%%%%%%%%%%%
-\subsection{ERH calculation}
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
