@@ -209,11 +209,11 @@ class DictScalarFormatter(ticker.ScalarFormatter):
     """
     def __init__(self, vals_dict, **kwargs):
         ticker.ScalarFormatter.__init__(self,**kwargs)
-    self.vals_dict = vals_dict
+        self.vals_dict = vals_dict
     def __call__(self, x, pos=None):
         val = self.vals_dict.get(x,0)
-    s = self.pprint_val(val)
-    debug((val,s))
-    print((val,s))
-    return self.fix_minus(s)
+        s = self.pprint_val(val)
+        debug((val,s))
+        print((val,s))
+        self.fix_minus(s)
         return ticker.ScalarFormatter.__call__(self, self.vals_dict.get(x, 0), pos)
