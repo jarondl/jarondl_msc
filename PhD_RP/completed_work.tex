@@ -12,8 +12,8 @@
 In $d=1$, a network with randomly distributed sites is equivalent to
 an ordered lattice with random transition rates. To make this mapping
 we have to know the spacing distribution for this system. We find the
-spacing distribution in \ref{sec:spacing}. A $1d$ lattice with
-a known transition rates distribution is exactly solvable \cite{alexander}.
+spacing distribution in \autoref{sec:spacing}. A $1d$ lattice with
+a known transition rates distribution is exactly solvable \cite{alexander_excitation_1981}.
 Basically, it is analogous to adding connectors in series, and 
 the diffusion coefficient is the inverse of the combined resistivity
 %
@@ -31,13 +31,14 @@ D \ =\ \left(\frac{1}{N} \int_0^{w_0} \frac{s w^{s-1}dw}{w_0^s}\right)^{-1} \
 % TODO : something is wrong with the N in this expression
 This result is valid only for $s>1$. For $s<1$, $D=0$ and we have
 subdiffusion, for which the survival probability and spreading 
-are also exactly solvable \cite{alexander}, leading to:
+are also exactly solvable \cite{alexander_excitation_1981}, leading to:
 %
 \begin{align}
 S(t)           \ &\sim \ t^{2s/(1+s)} \\
 \mathcal{P}(t) \ &\sim \ t^{-s/(1+s)}
 \end{align}
 %
+The exact results are depicted in \autoref{fig:spread_1d}. 
 As explained in \ref{sec:spectrum}, the cumulative spectral distribution
 can be deduced from $\mathcal{P}(t)$:
 %
@@ -46,9 +47,35 @@ can be deduced from $\mathcal{P}(t)$:
 \end{align}
 %
 Our numerics agree with these results, as seen in the left upper
-panel of \ref{fig:spectral}.
+panel of \autoref{fig:spectral}.
 
+%%%%%%%%%%%
+\begin{figure}
+\includegraphics{pts_Sepctral_PN.pdf}
 
+\caption{ 
+The cumulative eigenvalue distributions $\mathcal{N}(\lambda)$ 
+for the $d{=}1$ (1D) and for the $d{=}2$ (2D) degenerate models, 
+and the respective PN of the eigenstates (lower panels).
+Several representative values of $s$ are considered.
+% 
+The dots are determined via numerical diagonalization. 
+The dashed lines in the upper plots correspond to diffusive behavior.  
+The solid lines are according to the RG analysis of 
+\cite{amir_localization_2010,*amir_mean-field_2008}, namely 
+\autoref{eq:amir_prediction} . 
+%
+There is a striking difference between the $d{=}1$ and the $d{=}2$ cases. 
+For $d{=}1$, the log-log slope for sparse models ($s<1$) is less than~$d/2$, 
+meaning that we have sub-diffusion. In the $d{=}2$ case the small-$\lambda$ log-log slope 
+is always~$d/2$, which corresponds to normal diffusion.
+%
+The horizontal dashed line in the lower panels indicates 
+the special value PN$=2$ that corresponds to dimer formation.
+} 
+\label{fig:spectral}
+\end{figure}
+%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The ERH procedure}
@@ -166,7 +193,7 @@ w_c &= w_0\exp\left(-\frac{r_c}{\xi}\right)
 %
 
 Now we shall put all of the above into the ERH expression \ref{eq:erh_D}.
-The solution involves the incomplete gamma function \cite{gamma},
+The solution involves the incomplete gamma function \cite{_nist_????},
 %
 \begin{align}
 \Gamma(\ell{+}1,x) = \int_0^x r^{\ell} \eexp{-r} dr = 
@@ -175,7 +202,7 @@ The solution involves the incomplete gamma function \cite{gamma},
 %
 And the polynomial
 %
-\begin{align}
+\begin{align}\label{eq:EXP}
 \mathrm{EXP}_{\ell}(x) \ \ = \ \ \sum_{k=0}^{\ell} \frac{1}{k!} \, x^k
 \end{align}
 % 
@@ -197,23 +224,163 @@ D_{\tbox{ERH}} &=
 &= \mathrm{EXP}_{d{+}2}\left(\frac{1}{s_c}\right)  \  \eexp{-1/s_c}  \ D_{\tbox{linear}}
 \end{align}
 %
-Where $D_{\tbox{linear}}$ is formally $D_{\tbox{ERH}}$ with $r_c=0$, i.e.:
+Where $s_c=\xi/r_c$, and $D_{\tbox{linear}}$ is formally obtained by setting
+$r_c=0$ in $D_{\tbox{ERH}}$  i.e.:
 %
-\begin{align}
+\begin{align}\label{eq:D_linear}
 D_{\tbox{linear}} \ \ = \ \  
 \frac{(d{+}1)!\,\Omega_d}{2d} \, s^{d{+}2} \, w_0 r_0^2
 \end{align}
+
+The ERH result depends on $n_c$, the number of bonds 
+required for percolation.
+For $d=2$, we have used the $n_c=4.5$ result from \cite{dalton_dependence_1964,*pike_percolation_1974}, 
+and compared it with our numerics in figure \ref{fig:spread_2d}.
+
+\begin{figure}
+\begin{subfigure}{0.51\textwidth}
+\includegraphics{ptsD_1D_long}
+\caption{Spreading in $d{=}1$}
+\label{fig:spread_1d}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics{ptsD_2D_long}
+\caption{Spreading in $d{=}2$}
+\label{fig:spread_2d}
+\end{subfigure}
+\caption[short]{long}
+\end{figure}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The Mott hopping model}
 
+For the Mott hopping model, with rates according to \autoref{eq:mott_rates},
+and rate distribution according to \autoref{eq:mott_dist}, the ERH 
+threshold is determined using \autoref{eq:threshold}:
+%
+\begin{align}
+\epsilon_c &\equiv \left( \frac{d}{\Omega_d} \frac{n_c}{s^d} \right)^{1/(d+1)} \\
+w_c &= w_0\exp(-\epsilon_c) 
+\end{align}
+%
+This integral has two dimensions, $dr$ and $d\epsilon$,
+split into two domains 
+${w>w_c}$ and ${0<w<w_c}$. The two domains are 
+separated by the line ${\epsilon+(r/\xi)=\epsilon_c}$ which is illustrated in \autoref{fig:wdiagram}.
+
+\begin{figure}
+\includegraphics[scale=0.6]{wdiagram}
+\caption[VRH vs ERH]{Comparing VRH with ERH. The thin black lines 
+correspond to equal rates. The solid blue line corresponds to the
+ERH threshold $w_c$, while the red dashed line corresponds to the
+VRH trade-off. The red dot is the VRH optimum point, used for the
+VRH calculation.}
+\label{fig:wdiagram}
+\end{figure}
+
+
+It is therefore natural to change variables:
+%
+\begin{align}
+x\ \ &= \ \ \epsilon+(r/\xi) \\
+y\ \ &= \ \ \frac{1}{2}\left(-\epsilon+(r/\xi)\right) 
+\end{align}
+%
+hence 
+%
+\begin{align}
+D_{\tbox{ERH}} &= 
+\frac{w_0\Omega_d}{2dr_0^d}\int_0^{\epsilon_c}\! \xi dx \int_{-x/2}^{x/2} \! dy \, \eexp{-\epsilon_c} \left(\xi y + \xi \frac{x}{2}\right)^{d+1} 
+\nonumber \\
+& + \frac{w_0\Omega_d}{2dr_0^d}\int_{\epsilon_c}^{\infty} \! \xi dx \int_{-x/2}^{x/2} \! dy \, \eexp{-x} \left(\xi y+\xi \frac{x}{2}\right)^{d+1} 
+\nonumber \\
+&= \frac{w_0\Omega_d}{2dr_0^d}\xi^{d+2} \eexp{-\epsilon_c} \frac{\epsilon_c^{d+3}}{(d+2)(d+3)}  
+\nonumber \\
+& +\frac{w_0\Omega_d}{2dr_0^d(d+2)}\xi^{d+2} \Gamma\left(d+3,\epsilon_c\right)
+\nonumber \\
+&= \frac{w_0\Omega_d \xi^{d+2}}{2d(d+2)(d+3)r_0^d}\Gamma\left(d+4,\epsilon_c\right) \nonumber\\
+&=\mathrm{EXP}_{d{+}3}\left(\epsilon_c\right)  \  \eexp{-\epsilon_c}  \ D_{\tbox{linear}}
+\end{align}
+%
+With $\mathrm{EXP}_\ell$ and $D_{\tbox{linear}}$ the same as in 
+\autoref{eq:EXP} and \autoref{eq:D_linear}.
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The Quasi one dimensional model}
 
+This model is a Banded one dimensional lattice model. Each site 
+is connected to $b$ other sites, the disorder arising from
+variations in $\epsilon$. $\rho(r,\epsilon)$ is given in \autoref{eq:banded_dist}.
+We find the ERH threshold from \autoref{eq:threshold}:
+%
+\begin{align}\label{eq:thres_banded}
+\int_0^{\infty}  
+\frac{\Omega_d \, r^{d-1}dr}{r_0^{d}} 
+\ F\left(\log\left(\frac{w_0}{w_c}B(r)\right)\right) 
+\ \ = \ \ n_c
+\end{align}
+%
+Where $F(\epsilon)$ is the cumulative distribution function, or the integral of $f(\epsilon)$.
 
 
+For now, we shall assume a flat profile,
+%
+\begin{align}
+B(r) = \begin{cases}
+1 & \text{if } r <= b \\
+0 & \text{if } r>b
+\end{cases}
+\end{align}
+%
+Together with a uniform distribution of $\epsilon$ over $[0,\sigma]$, which means that the rates are log-uniform distributed. Large $\sigma$ corresponds 
+to a very wide distribution of rates, meaning a "sparse" system (see 
+\autoref{sec:sparsity}).
+
+Note that even with large $\sigma$, the distribution has a lower non zero bound, meaning that the system is still diffusive.
 
 
+We continue our threshold seeking from \autoref{eq:thres_banded}, using this 
+flat profile, and find $\epsilon_c$ to be:
+%
+\begin{align}
+2b\ F(\epsilon_c) \ =\ n_c \\
+\epsilon_c\ = \ \frac{n_c}{2b}\sigma
+\end{align}
+%
+The ERH integral (\autoref{eq:ERH_D} )is replaced by a sum, leading to
+\begin{align}
+D_{\text{ERH}} \ \ = \ \ 
+\ \frac{1}{\sigma}\left[ 
+\left(1+\frac{n_c}{2b}\sigma\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}
+\right] \ \tilde{b} w_0
+\end{align}
+Where we have defined
+%
+\begin{align}
+\tilde{b} \ \ \equiv \ \ \sum_{r=1}^b r^2 \ \ = \ \ = \frac{1}{6}b(b+1)(2b+1)
+\end{align}
+%
+As before, the linear result is formally obtained by setting $n_c=0$.
 
+This result is compared to numerical computation in \autoref{fig:banded}.
+
+%%%%%%%%%%%%%%
+\begin{figure}
+\begin{subfigure}{0.49\textwidth}
+\includegraphics[width=\hsize]{ptsD_Banded_Image}
+\subcaption{Several values of $b$ and $\sigma$}\label{fig:band_image}
+\end{subfigure}
+\begin{subfigure}{0.49\textwidth}
+\includegraphics[width=\hsize]{ptsD_Banded}
+\subcaption{For $b=10$ only.}\label{fig:band_b10}
+\end{subfigure}
+\caption[Banded network]{Numerics Vs ERH estimation for the quasi one dimensional network. $g_s = D/D_{\tbox{linear}}$ is plotted on both graphs.
+On \subref{fig:band_b10}, the blue line is the ERH estimation. If the
+linear result was correct, $g_s$ would have been $1$ for all values of $\sigma$.}
+\label{fig:banded}
+\end{figure}
