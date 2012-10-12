@@ -5,6 +5,81 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Spacing Statistics in $d$-dimensions}
 
+Some clarifing points regarding the statistics of uniformly distributed sites 
+will be made in this section.
+
+
+There are $N$ sites distributed randomly within a $d$-dimensional
+hypercube of volume $L^d$. We define a typical length $r_0$ by:
+%
+\begin{align}
+\frac{L^d}{r_0^d} \ =\ N
+\end{align}
+%
+From now on we shall ignore boundary conditions, assuming $N$ is large enough.
+In the numerics we have used periodic boundary conditions.
+
+
+If we choose some arbitrary point as the origin, the distribution of sites
+around this point will be:
+%
+\begin{align}\label{eq:rho}
+\rho(r)dr = \frac{\Omega_d r^{d-1}}{r_0^d}dr
+\end{align}
+% 
+Where $\Omega_d$ is the $d$ dimensional solid angle:
+%
+\begin{align}
+\Omega_d \ =\ 2,\ 2\pi,\ 4\pi, \ldots
+\end{align}
+%
+
+The distribution of the nearest neighbor distance can be 
+derived \cite{hertz_uber_1909,*Chandrasekhar_stochastic_1943,*Torquato_nearest-neighbor_1990},
+using a differential equation. 
+\rmrk{(Apparently my previous extension of the $1d$ solution to $d$ dimensions
+was just a good guess, the proof is less trivial then I've thought)}. %TODO remove this remark
+
+Let us denote by $P(r)$ the probability that the first near neighbor will be
+between $r$ and $r+dr$. The probability of having no neighbors up to distance $r$ is
+%
+\begin{align}
+P_0(r) \ =\  1 - \int_0^r P(r)dr
+\end{align}
+$P(r)$ must equal the probability of having no neighbors up to distance $r$ times
+the probabilty of finding a neighbor between $r$ and $r+dr$. So $P(r)$ must satisfy:
+%
+\begin{align}
+P(r) \ &=\ P_0(r) \times \rho(r) \ =\ \left[ 1-\int_0^r P(r)dr \right] \rho(r) \\
+\frac{P(r)}{\rho(r)}\ &=\  1-\int_0^r P(r)dr \\
+\frac{d}{dr}\left(\frac{P(r)}{\rho(r)}\right) \ &=\ -\rho(r)\frac{ P(r)}{\rho(r)}
+\end{align}
+%
+Which has the solution:
+%
+\begin{align}
+P(r) \ &=\ \rho(r) \eexp{-\int_0^r \rho(r) dr} \\
+       &=\ \frac{\Omega_d r^{d-1}}{r_0^d} \eexp{-\frac{\Omega_d}{d} \left(\frac{r}{r_0}\right)^d}
+\end{align}
+%
+Where in the last step we have plugged in $\rho(r)$ from \autoref{eq:rho}
+%
+
+
+%The probability to have an empty surface of radius $r$ and thickness $\Delta r$
+%surrounding the origin is 
+%
+%\begin{align}
+%P_0(r<x<r+\Delta r) = (1-\rho(r)\Delta r)
+%\end{align}
+%
+%To have an empty hypersphere, we need to have all of the surfaces empty. 
+%So we can formally write $r=N\Delta r$, and multiply the probabilities:
+%
+%\begin{align}
+%P_0(r) = \lim_{N\to \infty} \left( 1- \rho(N\Delta r)\right)^N
+%\end{align}
+%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
