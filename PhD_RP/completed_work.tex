@@ -3,8 +3,51 @@
 % Use drawings and slides from the theory lunch (actual and prelim talk)
 
 % Also anything I have in the notes which is worthy.
-% For example distance statisics. If I did not conrtibute, should be in the Appendix.
+% For example distance statistics. If I did not contribute, should be in the Appendix.
 % Half cooked ideas..
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The $d=1$ random site model with nearest neighbor hopping}
+
+In $d=1$, a network with randomly distributed sites is equivalent to
+an ordered lattice with random transition rates. To make this mapping
+we have to know the spacing distribution for this system. We find the
+spacing distribution in \ref{sec:spacing}. A $1d$ lattice with
+a known transition rates distribution is exactly solvable \cite{alexander}.
+Basically, it is analogous to adding connectors in series, and 
+the diffusion coefficient is the inverse of the combined resistivity
+%
+\begin{align}
+D \ =\ \left(\frac{1}{N} \sum_n \frac{1}{w_{n,n-1}}\right)^{-1}
+\end{align}
+%
+Plugging in the transition rate distribution from \ref{eq:rate_dist1d},
+(with the same notation of $s \equiv \xi/r_0$ and converting the sum to an integral, we obtain
+%
+\begin{align}
+D \ =\ \left(\frac{1}{N} \int_0^{w_0} \frac{s w^{s-1}dw}{w_0^s}\right)^{-1} \
+\ =\ [s>1]\quad \frac{s-1}{s}w_0
+\end{align}
+% TODO : something is wrong with the N in this expression
+This result is valid only for $s>1$. For $s<1$, $D=0$ and we have
+subdiffusion, for which the survival probability and spreading 
+are also exactly solvable \cite{alexander}, leading to:
+%
+\begin{align}
+S(t)           \ &\sim \ t^{2s/(1+s)} \\
+\mathcal{P}(t) \ &\sim \ t^{-s/(1+s)}
+\end{align}
+%
+As explained in \ref{sec:spectrum}, the cumulative spectral distribution
+can be deduced from $\mathcal{P}(t)$:
+%
+\begin{align}
+\mathcal{N}(\lambda) \ \sim\ \lambda^{s/(1+s)}
+\end{align}
+%
+Our numerics agree with these results, as seen in the left upper
+panel of \ref{fig:spectral}.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34,7 +77,7 @@ D_n \quad=\quad \frac{1}{2d}\sum_m (x_m-x_n)^2 w_{nm}
 Averaging over the starting node, and converting the sum to an integral,
 we have
 %
-\begin{align}
+\begin{align}\label{eq:linear_D}
 D_{\tbox{linear}}  \ \ = \ \ \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
 \end{align}
 %
@@ -55,28 +98,122 @@ on percolation theory and flat-down the rates higher then this threshold.
 
 The rate threshold $w_c$ is determined using the following expression
 %
-\begin{align}
+\begin{align}\label{eq:threshold}
 \iint_{w(r,\epsilon)>w_c} \rho(r,\epsilon)drd\epsilon \ \ = \ \ n_c
 \end{align}
 %
 Where $n_c$ is the number of connected sites necessary to form a percolation
-cluster (see \rmrk{TO DO :ref to section explaining this better}).
+cluster (see \rmrk{TODO :ref to section explaining this better}).
+
+
+Next, we suppress the rates higher than $w_c$ to have the value $w_c$,
+and use the linear expression \ref{eq:linear_D}, to obtain:
+%
+\begin{align}\label{eq:ERH_D}
+D_{\tbox{ERH}} = \frac{1}{2d}\iint \min\{w(r,\epsilon),w_c\} \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr
+\end{align}
+%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The $d=1$ lattice model}
+\section{The ERH calculation for several types of network}
+%%% This section is actually a collection of subsections.
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The $d=2$ ordered lattice model, with n.n. hopping}
 
-%%%%%%%%%%%%%%%%%%%
-\subsection{Exact and Numerical results}
+The model is a  two dimensional grid, with only nearest neighbor hopping possible. 
+Each site has $4$ neighbors of equal distance, meaning that
+the distribution of sites surrounding each site is simply
+%
+\begin{align}
+\rho(r,\epsilon) \ = \ 4\ f(\epsilon)\delta(r-r_0) 
+\end{align}
+%
+It is well known from percolation theory \cite{someonethatsaysthis} that in this model the number of necessary connections per site is $n_c=2$. We can
+find $w_c$ from \ref{eq:threshold},an put this into the ERH 
+expression \ref{eq:ERH_D} to have:
+%
+\begin{align}
+D_{\tbox{ERH}} =  \left[\frac{1}{2}w_c + \frac{1}{2}\int_0^{w_c} w\tilde{f}(w) dw\right]r_0^2
+\end{align}
+%
+Where we converted the $f(\epsilon)d\epsilon$ integral to a $\tilde{f}(w)dw$
+integral. In absence of the disorder (i.e.\ all the rates are equal),
+the known result $D = w_0r_0^2$ is restored.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The $d=2$ lattice model}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The degenerate hopping model}
 
-%%%%%%%%%%%%%%%%%%%
-\subsection{Numerical results}
+In this model the sites are randomly distributed in a $d$ dimensional 
+space, all with $\epsilon=0$. Every site is connected to all of the other
+sites, with the transition rates according to \ref{eq:random_hopping_rates}.
 
-%%%%%%%%%%%%%%%%%%%
-\subsection{ERH calculation}
+Since $w$ depends only on $r$, we may define the ERH threshold by
+$r_c$ instead of $w_c$. Rephrasing equation \ref{eq:threshold}, and 
+using $\rho(r,\epsilon)$ from \ref{eq:hopping_dist}, $r_c$ is determined according to
+%
+\begin{align}
+\int_0^{r_c} \frac{\Omega_d r^{d-1} dr}{r_0^2} \ = \  n_c 
+\end{align}
+%
+With the simple solution:
+%
+\begin{align}
+r_c  &\equiv \left(\frac{d}{\Omega_c}n_c\right)^{1/d}  r_0 \\
+w_c &= w_0\exp\left(-\frac{r_c}{\xi}\right) 
+\end{align}
+%
+
+Now we shall put all of the above into the ERH expression \ref{eq:erh_D}.
+The solution involves the incomplete gamma function \cite{gamma},
+%
+\begin{align}
+\Gamma(\ell{+}1,x) = \int_0^x r^{\ell} \eexp{-r} dr = 
+\ell! \ \mbox{EXP}_{\ell}(x)  \ \eexp{-x}
+\end{align}
+%
+And the polynomial
+%
+\begin{align}
+\mathrm{EXP}_{\ell}(x) \ \ = \ \ \sum_{k=0}^{\ell} \frac{1}{k!} \, x^k
+\end{align}
+% 
+The integral is only over $dr$, and it is split  
+into the domains ${0<r<r_c}$ and ${r>r_c}$. 
+Namely, 
+%
+\begin{align}
+D_{\tbox{ERH}} &= 
+\frac{w_0\Omega_d}{2d}\int_0^{r_c} \eexp{-r_c / \xi} \frac{r^{d+1}}{r_0^d} dr 
+\nonumber 
+\quad+\quad \frac{w_0\Omega_d}{2d}\int_{r_c}^\infty \eexp{-r / \xi} \frac{r^{d+1}}{r_0^d} dr 
+\nonumber \\
+&= \frac{w_0\Omega_d}{2d} \eexp{-r_c / \xi} \frac{r_c^{d+2}}{d+2} \frac{1}{r_0^d}
+\nonumber 
+\quad+\quad \frac{w_0\Omega_d}{2d} \frac{\xi^{d+2}}{r_0^d} \Gamma\left(d+2,\frac{r_c}{\xi}\right)
+\nonumber \\
+&= \frac{w_0\Omega_d \xi^{d+2}}{2d(d+2)r_0^d}\Gamma\left(d+3,\frac{r_c}{\xi}\right)\\
+&= \mathrm{EXP}_{d{+}2}\left(\frac{1}{s_c}\right)  \  \eexp{-1/s_c}  \ D_{\tbox{linear}}
+\end{align}
+%
+Where $D_{\tbox{linear}}$ is formally $D_{\tbox{ERH}}$ with $r_c=0$, i.e.:
+%
+\begin{align}
+D_{\tbox{linear}} \ \ = \ \  
+\frac{(d{+}1)!\,\Omega_d}{2d} \, s^{d{+}2} \, w_0 r_0^2
+\end{align}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Mott hopping model}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Quasi one dimensional model}
+
+
+
 
 
 
