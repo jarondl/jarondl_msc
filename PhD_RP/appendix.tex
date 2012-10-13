@@ -84,8 +84,45 @@ Where in the last step we have plugged in $\rho(r)$ from \autoref{eq:rho}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Resistor Network Calculation}
+\chapter{Resistor Network Computation}
 
+
+
+\section{Point terminal resistivity in $d{=}2$}
+
+When discussing resistivity in a square $2d$ sample, it is common
+to treat two opposite edeges of the sample as terminals.
+In this setting, the \emph{resistance} between the terminals equals the
+\emph{resistivity} of the material. However, for our calculation,
+it is easier to use point contacts as terminals. Therefore we present the
+derivation of the relation between resistance and resistivity in this case.
+We will assume the system is homgenous in space and as large as required.
+
+
+We put a point contact source of radius $r_0$ at the origin, so 
+that the current spreads to infinity with radial symmetry. The current 
+density will therefore be
+%
+\begin{align}
+J\ =\ \frac{I}{2\pi r}
+\end{align}
+%
+The electric field and voltage are then
+%
+\begin{align}
+E \ &=\ \rho J\ =\ \rho \frac{I}{2\pi r } \\
+V \ &=\ \int_{r_0}^r E dr' \ =\ \rho\frac{I}{2\pi}\ln \frac{r}{r_0}
+\end{align}
+%
+Here $\rho$ stands for the resistivity. We now use superposition to add a sink of radius $r_0$ at distance $r$ 
+from the origin. Due to the symmetry of the problem, the voltage just doubles. The resistance is now:
+%
+\begin{align}
+R \ &=\ \frac{V}{I}\ =\ \frac{\rho}{\pi} \ln\frac{r}{r_0} \\
+\rho \ &= \ \frac{\pi}{\ln\frac{r}{r_0}} \ R
+\end{align}
+%
+In order to find $\rho$ we compute $R$ numerically.
 
 
 
