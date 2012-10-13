@@ -1,9 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  pts
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\documentclass[onecolumn,fleqn,12pt,openany,a4paper]{book}
+\documentclass{book}
 
-
+%%%%%%%%%%
+%% This is for usage with XELATEX instead of latex
 
 \renewcommand{\baselinestretch}{1.5} 
 \topmargin -1.5cm      
@@ -11,7 +12,7 @@
 \evensidemargin -0.04cm  
 \textwidth 16.59cm
 \textheight 24cm 
-\pagestyle{plain}
+\pagestyle{empty}  % no page numbers
 
 % special 
 \usepackage{ifthen}
@@ -40,18 +41,23 @@
 % merge - {feynmann,*salam,*epr} are under one number
 % elide - same as megre, but common parts appear once.
 %
-\usepackage{pdfpages}
+\usepackage[draft]{pdfpages}
 % draft or final
 \usepackage[nottoc]{tocbibind}
 % addes the biblio to toc
 
 %%%%%%%%%%%%%
 %%% Hebrew support for hebrew abstract:
-%\usepackage{ucs}
-%\usepackage[utf8x]{inputenc}
+%\usepackage[utf8]{inputenc}
 %\usepackage[hebrew,english]{babel}
+%\usepackage{bidi}
+\usepackage{polyglossia}
+\setdefaultlanguage{hebrew}
+\setotherlanguage{english}
+%\setmainfont{David CLM}
+\newfontfamily\hebrewfont[Script=Hebrew]{David CLM}
 
-\usepackage[pdfencoding=auto,colorlinks=true,pagebackref=true,pdftitle={Research Proposal}]{hyperref}
+%\usepackage[colorlinks=true,pagebackref=true,pdftitle={Research Proposal}]{hyperref}
 \graphicspath{{figures/}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -122,39 +128,53 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-\frontmatter
+{\setlength{\parindent}{0cm}
+\begin{center}
 
-\includepdf[pages=-]{hebstract}
-\include{abstract}
+{\Huge\bfseries
+אוניברסיטת בן גוריון בנגב
+
+
+הצעת תוכנית מחקר ללימודי דוקטורט
+\vspace{6em}
+
+
+
+שרידות וניידות במערכות דלילות מזוגגות
+
+
+
+
+\begin{english}
+
+Survival and Transport in Glassy Sparse Systems
+
+\vspace{2em}
+
+Yaron de Leeuw
+\end{english}
+
+ירון דה ליאו
+
+
+21.10.2012
+
+}% ending the "large"
+\end{center}
+\vspace{10em}
+
+חתימת מנחה: 
+\underline{\hspace{20ex}}
+
+
+חתימת יו"ר ועדת מוסמכים מחלקתי:
+\underline{\hspace{20ex}}
+}%ending the no indet 
 \newpage
+\section*{תקציר}
+תקציר בעברית.
 
-{\footnotesize \tableofcontents}
-\newpage
-
-\mainmatter
-
-\part{Research Proposal}
-
-\include{introduction}
-\include{objectives}
-\include{background}
-
-\part{Completed Work and Preliminary Analysis}
-\include{completed_work}
-
-%\part{Preliminary Analysis}
-\include{preliminary}
-
-
-\part{Appendix}
-\appendix
-%\include{paper}
-%\include{biblio}
-
-\include{appendix}
-\backmatter
-\bibliographystyle{apsrev}
-\bibliography{jarondl} 
+צריך להיות תקציר בעברית וגם באנגלית.
 
 \end{document} 
 
