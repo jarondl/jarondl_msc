@@ -42,8 +42,15 @@
 %
 \usepackage[draft]{pdfpages}
 % draft or final
+\usepackage[nottoc]{tocbibind}
+% addes the biblio to toc
 
-\usepackage[colorlinks=true,pagebackref=true,pdftitle="Research Proposal"]{hyperref}
+%%%%%%%%%%%%%
+%%% Hebrew support for hebrew abstract:
+%\usepackage[utf8]{inputenc}
+%\usepackage[hebrew,english]{babel}
+
+\usepackage[colorlinks=true,pagebackref=true,pdftitle={Research Proposal}]{hyperref}
 \graphicspath{{figures/}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -129,10 +136,10 @@
 \include{objectives}
 \include{background}
 
-\part{Completed Work}
+\part{Completed Work and Preliminary Analysis}
 \include{completed_work}
 
-\part{Preliminary Analysis}
+%\part{Preliminary Analysis}
 \include{preliminary}
 
 
@@ -140,10 +147,10 @@
 \appendix
 %\include{paper}
 %\include{biblio}
+
+\include{appendix}
 \bibliographystyle{apsrev}
 \bibliography{jarondl} 
-\include{appendix}
-
 
 \end{document} 
 
