@@ -57,6 +57,9 @@ gs_ERH2 = gs_ERH(2)
 
 def read_data():
     return np.genfromtxt("data.dat")
+def read_more_points():
+    return np.genfromtxt("wbrm_scaledD.txt")
+
 
 def time_rescaler(sig_in):
     sig = np.asarray(sig_in, dtype=np.float64)
@@ -68,16 +71,21 @@ def time_rescaler(sig_in):
 
 def plot_D():
     f = read_data()
+    f_more = read_more_points()
     #f = f
 
     sig = f[:,1]
+    sig_more = f_more[:,1]
     D1_scaled = f[:,2] / ( RMS( f[:,1] ) * f[:,0]**2.5 )
-    for (n, (marker, mec)) in zip((0,5,10) , (('o','b'), ('s','r'), ('D', 'g'))) :
-
-        pylab.plot(sig[n:n+5] ,  D1_scaled[n:n+5], ' ', mfc='none', marker=marker, mec=mec, label=" b = {0}".format(f[n,0]))
+    D1_more_scaled = f_more[:,2] / ( RMS( f_more[:,1] ) * f_more[:,0]**2.5 )
+    for (n, (marker, mec)) in zip((0,1,2) , (('o','b'), ('s','r'), ('D', 'g'))) :
+        # old set was devided into 3 groups of 5. 
+        # new set is three groups of 9
+        pylab.plot(sig[n*5:(n+1)*5] ,  D1_scaled[n*5:(n+1)*5], ' ', mfc='none', marker=marker, mec=mec,alpha=0.4)#, label=" b = {0}*".format(f[n*5,0]), alpha=0.5)
+        pylab.plot(sig_more[n*9:(n+1)*9] ,  D1_more_scaled[n*9:(n+1)*9], ' ', mfc='none', marker=marker, mec=mec, label=" b = {0}".format(f_more[n*9,0]))
         #pylab.plot(sig[n:n+5] ,  gs_ERH(2)(sig[n:n+5], f[n,0]), '--', color= mec)
         #pylab.plot((nf[n:n+5, 1]),  nf[n:n+5,6]/ nf[n:n+5,0]**2.5, ls =ls)
-    pylab.xlim(0,6)
+    pylab.xlim(0,10)
     pylab.xlabel(r"$\sigma$")
     pylab.ylabel("$D_1/D_0$")
     pylab.legend(loc="best")
@@ -163,6 +171,46 @@ def plot_D2_vs_gs_loglog():
     pylab.legend(loc="best")
 
 
+def plot_D1_vs_gs_loglog_more():
+    ##  Future me: I'm sorry, this is copy-paste with minor changes..
+    ## I'm in a hurry
+    f = read_data()
+    f_more = read_more_points()
+    #f = f
+    sig = f[:,1]
+    sig_more = f_more[:,1]
+    D1_scaled = f[:,2] / ( RMS( f[:,1] ) * f[:,0]**2.5 )
+    D1_more_scaled = f_more[:,2] / ( RMS( f_more[:,1] ) * f_more[:,0]**2.5 )
+    D1_log = np.log(D1_scaled)
+    D1_more_log = np.log(D1_more_scaled)
+    gs_log = np.log(gs_ERH(2)(sig, f[:,0]))
+    gs_log_more = np.log(gs_ERH(2)(sig_more, f_more[:,0]))
+
+    for (n, (marker, mec)) in zip((0,1,2) , (('o','b'), ('s','r'), ('D', 'g'))) :
+        pylab.plot(gs_log[n*5:(n+1)*5] ,  D1_log[n*5:(n+1)*5], ' ', mfc='none',
+                marker=marker, mec=mec, alpha=0.4)#, label=" b = {0}".format(f[n,0]))
+        pylab.plot(gs_log_more[n*9:(n+1)*9] ,  D1_more_log[n*9:(n+1)*9], ' ', mfc='none',
+                marker=marker, mec=mec, label=" b = {0}".format(f[n,0]))
+        # I'm fitting only the larger dataset
+        xspace1 = np.linspace(gs_log_more[n*9:(n+1)*9].min(), gs_log_more[n*9:(n+1)*9].max())
+        p = np.polyfit(gs_log_more[n*9:(n+1)*9], D1_more_log[n*9:(n+1)*9], 1)
+        p1 = np.poly1d(p)
+        pylab.plot(xspace1, p1(xspace1), color=mec, label="$y={p[1]:.2}+ {p[0]:.02}x$".format(p=p))
+
+
+        #pylab.plot(sig[n:n+5] ,  gs_ERH(2)(sig[n:n+5], f[n,0]), '--', color= mec)
+        #pylab.plot((nf[n:n+5, 1]),  nf[n:n+5,6]/ nf[n:n+5,0]**2.5, ls =ls)
+    #pylab.xlim(0,6)
+
+    # dilute the ticks
+    pylab.xticks(pylab.xticks()[0][::2])
+    
+    pylab.xlabel(r"$\log\  g_s(\sigma)$")
+    pylab.ylabel("$\log \ D_1/D_0$")
+    pylab.legend(loc="best")
+
+
+
 def plot_v2():
     f = read_data()
     sig = f[:,1]
@@ -218,6 +266,11 @@ def plots_for_dtstex():
     plot_D2_vs_gs_loglog()
     pylab.savefig("new/D2_vs_gs_loglog.pdf")
     pylab.clf()
+
+    plot_D1_vs_gs_loglog_more()
+    pylab.savefig("new/D1_vs_gs_loglog.pdf")
+    pylab.clf()
+
 
     plot_expected_gs()
     pylab.savefig("new/expected_gs.pdf")
