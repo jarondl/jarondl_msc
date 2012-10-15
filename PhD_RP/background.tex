@@ -15,25 +15,33 @@ and our particle (or particles, see \ref{sec:discreteness}) may
 occupy them. The edges of the network represent transition rates 
 between the nodes. The dynamics of the model are described by 
 a rate equation:
-\[
+%
+\begin{align}
 \frac{dp_n}{dt} \quad = \quad \sum_m w_{nm}p_m
-\]
+\end{align}
+%
 Where the transition matrix 
-\[
+%
+\begin{align}
 \mathbf{W} \quad =  \quad \left[ w_{nm}\right]_{N\times N}
-\]
+\end{align}
+%
 Is the crux of this work.
 
 Because of conservation of probability, we set the diagonal
 elements to
-\[ w_{nn}\quad = \quad -\sum_{m(\ne n)} w_{mn}\]
+%
+\begin{align}
+w_{nn}\quad = \quad -\sum_{m(\ne n)} w_{mn}
+\end{align}
+%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Definition of the model}
 
 
-The proposal regards a spatial network where each node
+The proposal regards a spatial network in which each node
 has a defined location $x_n$. The transition rates $w_{nm}$
 are constructed by the expression
 %
@@ -42,35 +50,21 @@ w_{nm} \quad = \quad w_0 \eexp{-\epsilon_{nm}}B(x_n-x_m)
 \eeq
 %
 where $B(r)$ describes the dependence of the coupling on the
-distance between sites, and $\epsilon$ represent activation
+distance between sites, and $\epsilon$ represents activation
 energies required for a transition.
 
 
-The $B(r)$ matrix is a function a euclidean distance matrix,
+The $B(r)$ matrix is a function of a euclidean distance matrix,
 a class a matrices that is widely researched 
 \cite{skipetrov_eigenvalue_2011, goetschy_non-hermitian_2011,mezard_spectra_1999, bogomolny_spectral_2003}
 both in physics and in mathematics.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Applications of the model}
 
+\rmrk{TODO: rewrite this}
 
-
-%%%%%%%%%%
-\subsection{The random site hopping model} \label{sec:random_hopping}
-
-
-
-
-For presentation purpose we regard the nodes of the network as {\em sites}, 
-each having a location~$x_n$. In particular (but not exclusively) we are interested 
-in a model where the rates depend exponentially on the distance 
-between randomly distributed sites, namely $w_{nm}\propto \exp(|x_n-x_m|/\xi)$. 
-One can characterize such a system by a sparsity parameter~$s$ 
-that reflects the connectivity of the network. For a random site model
-the natural definition is $s=\xi/r_0$, where $r_0$ is the average distance 
-between neighboring sites. 
-
-%TODO : add epsilons and write w explicitly.
 
 The models that we address are related and motivated  
 by various physical problems, for example: 
@@ -83,113 +77,81 @@ and energy absorption by trapped atoms \cite{kbw}.
 Optionally these models can be fabricated by combining oscillators: 
 say mechanical springs or electrical RC elements. 
 
-%%%%%%%%%%%%%%%%%%
-\section{The study of networks}
-%%
-%   
-In all these examples the issue is to understand how 
-the {\em transport} is affected by the {\em sparsity} of a network.  
-If the rates are induced by a driving source, this issue can be phrased as  
-going {\em beyond} the familiar framework of Linear Response Theory (LRT), 
-as explained below.  
 
-%%%%%%%%%%%%%%%%%%%
-\section{Diffusion} 
-Our interest is focused on the diffusion coefficient $D$ that characterizes the 
-long time dynamics of a spreading distribution. It can be defined or deduced 
-either from the variance ${S(t) \sim Dt}$ or from the decay of the 
-survival probability ${\mathcal{P}(t) \sim (D t)^{-d/2}}$. Hence it is 
-related to the spectral properties of the transition rate matrix 
+%%%%%%%%%%
+\subsection{The degenerate random site hopping model} \label{sec:degenerate_random_hopping}
+
+In this specific model, we set all of the activation energies ($\epsilon_{nm}$)
+to be equal. We can choose $\epsilon=0$ without loss of generality. For $B(r)$, 
+we have selected a simple exponential dependence with a parameter $\xi$.
+Summing this up we write:
 %
-\beq
-\bm{w} \ \ = \ \ \{w_{nm}\}
-\eeq
+\begin{align}\label{eq:random_hopping_rates}
+w_{nm} \quad = \quad w_0 B(x_n-x_m) \ = \ w_0 \eexp{-(x_n-x_m)/\xi}
+\end{align}
 %
-Exploiting the formal analogy with a resistor network calculation \cite{miller},  
-namely $w_{nm}$ are like connectors and $D$ is like conductivity, 
-one realizes that $D$ is given by a semi-linear functional $D[\bm{w}]$ 
-that has the property ${D[\lambda \bm{w}] = \lambda D[\bm{w}]}$, 
-while in general ${D[\bm{w}^a+\bm{w}^b] > D[\bm{w}^a]+D[\bm{w}^b]}$ instead of equality.      
+Now we have defined the rates, but to characterize the system we also
+have to define the location of the sites. In this model, $N$ sites are distributed
+uniformly randomly on a periodic $d$-dimensional hypercube of volume $L^d$. The
+local distribution of sites around any arbitrary point in this space is:
+%
+\begin{align}\label{eq:site_distribution}
+\rho(r)dr \ =\ \frac{\Omega_d r^{d-1}}{r_0^d} dr
+\end{align}
+%
+$\Omega_d$ and $r_0$ are defined in \autoref{sec:spacing}
+
+%%%%%%%%%%%%
+\subsection{The Mott hopping model}\label{sec:mott_hopping}
+
+This model is an extension of the degenerate model to include
+random values for $\epsilon$. $B(r)$ stays the same as in the degenerate model.
+The rates are now:
+%
+\begin{align}\label{eq:mott_hopping_rates}
+w_{nm} \quad = \quad \ w_0 \eexp{-\epsilon_{nm}}\eexp{-(x_n-x_m)/\xi}
+\end{align}
+%
+And the combined distribution of $\epsilon$ and $r$ is now:
+%
+\begin{align}\label{eq:mott_distribution}
+\rho(r)f(\epsilon)drd\epsilon \ &=\ \frac{\Omega_d r^{d-1}}{r_0^d} f(\epsilon) dr d\epsilon \\
+f(\epsilon)\ &= 
+  \begin{cases} 
+    1 &\textrm{if   } \epsilon \in [0,\sigma] \\
+    0 &\textrm{otherwise}
+  \end{cases}
+\end{align}
+%
 
 
-%%%%%%%%%%%%%%%%%%%
-\section{Subdiffusion}
-In the 1D ($d{=}1$) case, it is well known \cite{alexander} that $D$ can display an abrupt 
-percolation-like transition from diffusive (${D>0}$) to sub-diffusive (${D=0}$) 
-behavior, as the sparsity parameter drops below the critical value ${s_c=1}$.
-Similar anomalies are found for fractal structures with ${d<2}$, see \cite{granek,havlin}. 
-A question arises whether such a transition might happen in higher dimensions.  
-In \cite{amir} the spectral properties in the 2D ($d{=}2$) case 
-have been investigated: on the basis of the renormalization group (RG) procedure 
-it has been deduced that $\mathcal{P}(t)$ decays in a logarithmic way, 
-indicating anomalous (sub) diffusion.  
+%%%%%%%%%%%%%
+\subsection{The banded $1d$ lattice model}
+
+In this model, we have a $1d$ lattice (i.e.\ equal spacing between the sites), 
+with the rates :
+%
+\begin{align}
+w_{nm} \quad = \quad \eexp{-\epsilon_{nm}}w_0 B(x_n-x_m)
+\end{align}
+%
+The profile $B(r)$ allows connections to finite number of neighbors,
+meaning that the resulting matrix is banded. This model might also
+be called quasi-$1d$ because transitions could occur over more
+than one path, removing the "bottle-neck" effect of $1d$ systems.
 
 
-%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%
+\section{Sparsity}
+
+
+\section{Transport and diffusion}
+
+
 \section{Variable range hopping}
-It should be clear that there are two major routes in developing  it
-
-a theory for~$D$. Instead of deducing it from spectral properties 
-as in \cite{amir}, one can try to find ways to evaluate it directly 
-via a resistor network calculation \cite{miller,AHL,Halp,pollak,VRHbook}, 
-leading in the standard Mott problem to the Variable Range Hopping (VRH)
-estimate for~$D$.   
-%
-In \cite{kbd,kbw,slk} this approach has been extended 
-to handle ``sparse" banded matrices whose elements have log-wide distribution, 
-leading to a generalized VRH estimate. 
-In what follows we pursue the same direction and obtain an 
-improved estimate for~$D$ that we call Effective Range Hopping (ERH).
-Using this approach we show that in the 2D case, as $s$ becomes small, 
-the functional $D[\bm{w}]$ exhibits a smooth crossover from ``linear" behavior  
-to ``semi-linear" VRH-type dependence.  
 
 
-%%%%%%%%%%%%%%%%%%%%%
-\section{Sparsity vs percolation}
-The problem that we consider is a variant of the percolation problem \cite{aa1,aa2}:
-Instead of considering a bi-modal distribution (``zeros" and ``ones")
-we consider a log-wide distribution of rates 
-\cite{halperin_remarks_1989}, 
-for which the median is much smaller than the mean value. 
-We call such network ``sparse" (with quotation marks) because 
-the large elements constitute a minority.
-
-%%%%%%%%%%%%%%%%%%%%%%
 \section{Anderson localization}
-Disregarding the ``sparsity" issue, the model that we are considering 
-is a close relative of the Anderson localization problem.
-In the problem that we discuss here all the off diagonal elements 
-are positive, while the negative diagonal elements compensate them.
-%
-Since all the  off diagonal elements are positive numbers, 
-it is clear that we cannot have ``destructive interference", 
-and therefore we do not have genuine Anderson localization. 
-Therefore in general we might have diffusion, even in 1D. 
-In 2D we have a percolation threshold, which is again 
-not like Anderson localization. For further discussion see 
-for example the discussion of fractons in \cite{havlin_diffusion_1987}.
-
-
-%%%%%%%%%%%%%%%%%%%%%
-\section{Debye law}
-In the standard Anderson model the eigenvalues form 
-a band ${\lambda \in [-\lambda_c,\lambda_c]}$.
-The states at the edge of the band are always localized.
-The states in the middle of the band might be de-localized if ${d>2}$.  
-%
-The localization in a disordered elastic medium had been 
-studied \cite{loc}. Disregarding the ``sparsity",  
-it is the same problem that we are considering here.
-It has been found that the spectrum is ${\lambda \in [0,\lambda_c]}$.
-The ground state is always the ${\lambda=0}$ uniform state.
-The localization length diverges in the limit ${\lambda \rightarrow 0}$.
-Consequently the Debye density of states is not violated:
-the spectrum is asymptotically the same as that of a 
-diffusive (non-disordered) lattice. It follows that the 
-survival probability should be like that of diffusive 
-system, and therefore we also expect diffusive behavior
-for the transport: spreading that obeys a diffusion equation.
 
 
 %%%%%%%%%
@@ -207,81 +169,10 @@ we can simply define as $1$) distributed in space,
 connected by springs. The locations of the masses will
 obey a second degree differential equation:
 
-\rmrk{correct this!}
-%
-%\beq
-%\frac{d^2x_n}{dt^2} \quad = \quad -\sum_m\frac{k_{nm}} (x_n)
-%\eeq
-%
-Where $k_{nm}$ is the spring 
-
-
-% based on the msc rp
-\section{msc}
-
-There are diverse examples for extended systems whose dynamics is described by a rate equation. This include in particular the analysis of "random walk" where the transitions are between sites of a network. Another example is the study of energy absorption due to Fermi-Golden-Rule transitions between energy levels. In both cases there are two common questions that arise: (1) What is the survival probability of a particle  that has been prepared in a given site; (2) Is there normal diffusion or maybe only sub-diffusion, and how it is related to the survival probability.
-
-In recent years there is a growing interest in systems where the transition rates have log-wide distribution. This means that the values of the rates
-are distributed over many decades as in the case of log-normal or log-box distributions. Such "glassy" or "sparse" systems can be regarded as a "resistor network", and the analysis might be inspired by percolation theory, variable range hopping phenomenology, and the renormalization-group methods.
-
-While the theory of 1D networks with near-neighbour transitions is quite complete, the more general case of quasi-1D / 2D and possibly higher dimensions lacks a unifying framework, and there are numerous open questions that we would like to study as outlined below.
-
-%%%%%%%%%%%%%%%%%%%%
-{ \bf Modeling .-- } $N$ interconnected sites constitue a network. A single particle is bound to the network. We denote by $p_n(t)$ the probability to find the particle on site $n$ at time $t$, so that $\sum_n p_n(t) \;=\;1$. The dynamics of the system are described by the rate equation:
-\begin{align}
-\frac{dp_n(t)}{dt} \;=\; \sum_m W_{nm}p_m(t)
-\end{align}
-Where $W_{nm}$ is the \emph{transition rate}, i.e.\ the rate at which probability moves from site $m$ to site $n$.
-Because of probability conservation, we want to have $\sum_m W_{nm} \;=\; 0 \ \ \forall n$ , which we can achieve by setting $W_{nn} \;=\; -\sum_{m\ne n} W_{nm} $, meaning that for each site the sum of incoming transition rates negates the outgoing transitions.
-The rate equation can also be written as a vectorial equation:$\boldsymbol{ \dot p } \;=\; \boldsymbol{W} \boldsymbol{p}$. In its basic form, the matrix $\boldsymbol{W}$ is symmetric (at the moment, see "Assymetric VRH" further down in this section), except for the main diagonal, which has values that ensure that each row's sum is zero.
-
-%%%%%%%%%%%
-The network (the values of $W_{nm}$) can be defined arbitrarily, but we wish to focus on networks that represent geometric systems, by defining the transition rates to depend on the distance betweeen randomly scattered points\cite{Mezard:1999:NPB}. One such network, with the rates defined as:
-\begin{align} \label{eq:exp_rates}
-  W_{nm}\;=\; w_0 e^{(r_0-r_{nm})/ \xi}
-\end{align}
-Where $r_{nm}$ is the distance between site $n$ and $m$, $r_0$ is the typical distance between points, $w_0$ is the transition rate between points at distance $r_0$, and $\xi$ is a scaling coefficient. In general, we are going to define $r_0 = n^{-1/d}$, where $n=\frac{N}{V}$ is the site denisty, and we are going to rescale time by setting $w_0=1$. This model was studied in \cite{Amir:2010:PRL}, and is of particular interest for us.
-
-%%%%%%%%%%%
-{ \bf Dimensions.-- } The system may be in $1d$, $2d$, $3d$ etc., or in quasi-$1d$. The $1d$ system has been studied, among others, in\cite{Parris:1986}\cite{Alexander:1981:RMP}\cite{AslangulChvosta:1995}.  Quasi-$1d$ relates either to $1d$ systems where there are bonds between sites beyond the nearest neighbors, or to $2d$ systems with finite width (strip). Both these systems have banded matrices, with bandwidth $b$.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%
-{ \bf Survival probability - $\mathcal{P}(t)$.--} 
-The survival probability is the probability to remain in the starting site. If the initial condition was $p_0(0)\;=\;1$, $p_i(0)\;=\;0 \textrm{  for  } i\neq 0$, then $\mathcal{P}(t)\;=\; p_0(t)$. The survival probability is directly related to the spectral properties of the transition matrices, and it can be shown that 
-\begin{align} \label{eq:p_t_spectrum}
-\mathcal{P}(t) \;=\; \frac{1}{N}\sum_\lambda e^{\lambda t} \;\rightarrow\;\frac{1}{N}\int e^{\lambda t}g(\lambda)d\lambda
-\end{align}
-where the $\lambda$s are the eigenvalues of the matrix, namely that the survival probability is the Laplace transform of the eigenvalue density.
-
-%%%%%%%%%%%
-{ \bf Transport and Spreading.--}  %add some S(t) or g, and add \sqrt{S(t)}\mathcal{P}(t)
-A particle can be transmitted through the system from one end to the other. This transport can be characterized in different ways. One way is to calculate the spreading $S(t)$, which is the variance (second moment) of the particle location, i.e:
-\begin{align}
-  S(t) \;=\; \sum_n \left(r_n(t)\right)^2 p_n  %-\overline{r}(t)
-\end{align}
-Where $r_n$ is the location of the $n$th site. The survival probability is related to the diffusion because of scaling considerations by:
-% In \cite{Alexander:1981:RMP} it is shown that in $1d$ the spreading is related to the survival probability by
-\begin{align}
-\mathcal{P}(t) &\;=\; \left(2\pi \frac{S(t)}{r_0^2}\right)^{-d/2}
-\end{align}
-By definition, diffusive systems obey: 
-\begin{align}
-S(t) &\;=\; 2Dt  \\
-\mathcal{P}(t) &\;=\; \left(2\pi \frac{S(t)}{r_0^2}\right)^{-d/2} \;=\; \left(4\pi \frac{Dt}{r_0^2} \right)^{-d/2}
-\end{align}
-We can combine this result with \ref{eq:p_t_spectrum} to obtain a relation between $g(\lambda)$ and D:
-\begin{align}
-    g(\lambda) &\;=\; \mathcal{L}^{-1}[\mathcal{P}(t)] \;=\; \mathcal{L}^{-1}\left[ \left(4\pi \frac{Dt}{r_0^2} \right)^{-d/2}\right] \;=\; \frac{\lambda^{\frac{d}{2}-1}}{\Gamma\left(\frac{d}{2}\right)\left(4\pi \frac{D}{r_0^2}\right)^{d/2}}  \\
-    C(\lambda) &\;=\; \int_{\infty}^{\lambda} g(\lambda')d\lambda' \;=\; \frac{\lambda^{\frac{d}{2}}}{\frac{d}{2}\Gamma\left(\frac{d}{2}\right)\left(4\pi \frac{D}{r_0^2}\right)^{d/2}}
-\label{eq:C_D}
-\end{align}
-
 
 %%%%%%%%%
 \section{Spreading of wavepackets in the quantum case}
 
-%%%%%%%%%
-\section{Localization}
 
 
 
