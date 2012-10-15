@@ -28,7 +28,7 @@ rc('figure', figsize=[latex_width_inch, latex_height_inch])
 rc('legend', fontsize=7)
 rc('xtick', labelsize='smaller')
 rc('ytick', labelsize='smaller')
-rc('text', usetex='true')
+#rc('text', usetex='true')
 
 
 ### Raise all float errors
