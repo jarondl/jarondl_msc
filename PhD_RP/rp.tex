@@ -52,6 +52,8 @@
 %\usepackage[hebrew,english]{babel}
 
 \usepackage[pdfencoding=auto,colorlinks=true,pagebackref=true,pdftitle={Research Proposal}]{hyperref}
+% doi mus be loaded after hyperref
+\usepackage{doi}
 \graphicspath{{figures/}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -153,7 +155,7 @@
 
 \include{appendix}
 \backmatter
-\bibliographystyle{apsrev}
+\bibliographystyle{apsrev_doi}
 \bibliography{jarondl} 
 
 \end{document} 
