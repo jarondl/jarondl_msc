@@ -125,4 +125,42 @@ R \ &=\ \frac{V}{I}\ =\ \frac{\rho}{\pi} \ln\frac{r}{r_0} \\
 In order to find $\rho$ we compute $R$ numerically.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Numerical Routines}
+
+For the numerical calculations, we have used python 2.6 \cite{python}, together
+with the numpy \cite{numpy} package for numerics and the matplotlib \cite{hunter_matplotlib_2007} package
+for graphics. The source files are available online at : 
+\url{http://physweb.bgu.ac.il/~jarondl/LINKS/MSc_FILES/}.
+
+
+The source files are packaged into a standard python package,
+and can be installed as any other package. If a package manager is installed (e.g.\ pip),
+one should use it, as in :
+\begin{verbatim}
+pip install --user http://physweb.bgu.ac.il/~jarondl/LINKS/MSc_FILES/jarondl_msc.tar.gz
+\end{verbatim}
+If not, the package should be extracted, and the "setup.py" script can be used:
+\begin{verbatim}
+python setup.py install --user
+\end{verbatim}
+After this installation, the jarondl_msc package will be available,
+including the following modules:
+\begin{verbatim}
+ptsplot geometry  plotdl  sparsedl
+\end{verbatim}
+
+The \emph{ptsplot} module is the main file of the package. The three other files contain
+sub-routines and class defentions used in \emph{ptsplot}.
+
+
+To reproduce all of the plots used in this proposal, one can simply run:
+\begin{verbatim}
+python -m research_dl.ptsplot
+\end{verbatim}
+If the data for the banded matrices does not exist (as is excpected in the first run),
+the data will be populated, and only then will the graphs be made. Following runs should be
+quicker, as they use the previous data.
+
+
 

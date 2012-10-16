@@ -6,6 +6,7 @@ from __future__ import division
 
 import itertools
 import logging
+import os
 
 #from scipy.sparse import linalg as splinalg
 from numpy import random, pi, log10, sqrt,  exp, expm1, sort, eye, nanmin, nanmax, log, cos, sinc
@@ -227,7 +228,7 @@ class ExpModel(object):
         prefactor = 1/((d2)*gamma(d2)*((4*pi*D)**(d2)))
         #power_law_logplot(ax, d2, prefactor, self.logxlim, label=label.format(D=D, **self.vals_dict), **kwargs)
         f = lambda x: prefactor*x**d2
-        plot_func_logplot(ax, f, self.logxlim, "D = {D:.3G}".format(D=D))
+        plot_func_logplot(ax, f, self.logxlim, label ="D = {D:.3G}".format(D=D))
 
 
     def plot_PN(self, ax, convention=1, **kwargs) :
@@ -299,9 +300,9 @@ class ExpModel_1d(ExpModel):
             #print "len(logbrates)", len(logbrates)
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
             plot_func_logplot(ax, lambda w: exp(-2*(convention-self.epsilon*log(w))),
-                self.logxlim, r"$e^{{-2\cdot({0}-\epsilon\ln(w))}}$".format(convention))
+                self.logxlim, label= r"$e^{{-2\cdot({0}-\epsilon\ln(w))}}$".format(convention))
             plot_func_logplot(ax, lambda w: exp(-(convention-self.epsilon*log(w*0.5))),
-                self.logxlim, r"$e^{{-\cdot({0}-\epsilon\ln(\frac{{w}}{{2}}))}}$".format(convention))
+                self.logxlim, label=r"$e^{{-\cdot({0}-\epsilon\ln(\frac{{w}}{{2}}))}}$".format(convention))
     def plot_theoretical_eigvals(self, ax):
         N = self.sample.number_of_points()
         qx = 2*pi/N*np.arange(N)
@@ -408,9 +409,9 @@ class ExpModel_2d(ExpModel):
         if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
             cummulative_plot(ax, sort(logbrates), label=label, color='purple')
             plot_func_logplot(ax, lambda w: exp(-pi*(convention-self.epsilon*log(w))**2),
-                self.logxlim, r"$e^{{-\pi\cdot({0}-\epsilon\ln(w))^2}}$".format(convention))
+                self.logxlim, label = r"$e^{{-\pi\cdot({0}-\epsilon\ln(w))^2}}$".format(convention))
             plot_func_logplot(ax, lambda w: exp(-0.5*pi*(convention-self.epsilon*log(0.5*w))**2),
-                self.logxlim, r"$e^{{-\frac{{\pi}}{{2}}\cdot({0}-\epsilon\ln(\frac{{w}}{{2}}))^2}}$".format(convention))
+                self.logxlim, label = r"$e^{{-\frac{{\pi}}{{2}}\cdot({0}-\epsilon\ln(\frac{{w}}{{2}}))^2}}$".format(convention))
 
     def plot_theoretical_eigvals(self, ax):
         N = sqrt(self.sample.number_of_points())
@@ -1142,7 +1143,7 @@ def plot_1d_2d_panels(eps_range2d = (0.05,0.1,0.15), eps_range1d=(0.2,0.4,2,5)):
     ax3.set_ylabel("$PN$")
     ax4.set_yticklabels("none",visible=False)
     f.subplots_adjust(hspace=0, wspace=0)
-    plotdl.save_fig(f, "four_panels", size_factor=(2,2), pad=0, h_pad=0, w_pad=0, tight=False)
+    plotdl.save_fig(f, "pts_Spectral_PN", size_factor=(2,2), pad=0, h_pad=0, w_pad=0, tight=False)
 
 
 def plotf_1d_2d_Diffusion(inv_s = np.linspace(0.01, 20, 80 )):
@@ -1235,12 +1236,17 @@ def plot_three_D(D, s, b):
 
 def plot_x_exp_x(ax,epsilon=1):
     plot_func(ax, lambda x: x*exp(-x/epsilon), [0,epsilon*5])
-        
+    
 
 ######## One function to plot them all
 def all_plots(seed= 1, **kwargs):
     """  Create all of the figures. Please note that it might take some time.
     """
+    ### create a figures dir if not already there:
+    try:
+        os.mkdir("figures")
+    except OSError:
+        pass  ## meaning it exists
     ax = plotdl.new_ax_for_file()
     #plotf_distance_statistics()
     
@@ -1431,7 +1437,57 @@ def all_plots(seed= 1, **kwargs):
     #exp_models_D(Sample((1,1),300))
     #exp_models_D(Sample((1,1,1),300))
 
+#### all of the plots in the article and in the Phd research proposal
+  
+def article_plots(seed = 1 ):
+    """ Creates all of the plots used in the first pts manuscript
+        and in the research proposal. I reseed the random generator
+        with seed=1 for every run to stay consistent.
+    """
+    ### create a figures dir if not already there:
+    try:
+        os.mkdir("figures")
+    except OSError:
+        pass  ## meaning it exists
+
+    ax = plotdl.new_ax_for_file()
+    plot_1d_alexander_theory(ax)
+    plotdl.save_ax(ax, "ptsD_1D_long", size_factor=(1,2))
+    ax.cla()
+
+
+
+    random.seed(seed)
+    #banded matrices.
+    # if the data exists, use it:
+    try:
+        f = np.load("D_banded.npz")
+        b_space = f["b_space"]
+        s_space = f["s_space"]
+        D = f["D"]
+
+    except (OSError, IOError):
+
+        # otherwise, get the data:
+        b_space = np.arange(1,50)
+        s_space = np.linspace(1E-4,10,100)
+        D = get_D_fittings_logbox(s_space,b_space)
+        np.savez("D_banded.npz", b_space=b_space , s_space=s_space, D =D)
+    
+    plot_BANDED_D_of_S(ax,s_space,b_space,D)
+    plotdl.save_ax(ax, "D_banded")
+    ax.cla()
+
+    random.seed(seed)
+    plot_D_fittings2(ax)
+    plotdl.save_ax(ax, "ptsD_2D_long", size_factor=(1,2))
+    ax.cla()
+ 
+    random.seed(seed)
+    plot_1d_2d_panels()
+    
+    
 
 
 if __name__ ==  "__main__":
-    all_plots()
+    article_plots()
