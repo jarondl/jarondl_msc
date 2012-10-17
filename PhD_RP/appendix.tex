@@ -128,8 +128,8 @@ In order to find $\rho$ we compute $R$ numerically.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Numerical Routines}
 
-For the numerical calculations, we have used python 2.6 \cite{python}, together
-with the numpy \cite{numpy} package for numerics and the matplotlib \cite{hunter_matplotlib_2007} package
+For the numerical calculations, we have used python 2.6 \cite{guido_van_rossum_python_????}, together
+with the scipy \cite{jones_scipy:_2001} package for numerics and the matplotlib \cite{hunter_matplotlib:_2007} package
 for graphics. The source files are available online at : 
 \url{http://physweb.bgu.ac.il/~jarondl/LINKS/MSc_FILES/}.
 
@@ -147,21 +147,20 @@ python setup.py install --user
 After this installation, the jarondl\_msc package will be available,
 including the following modules:
 \begin{verbatim}
-ptsplot geometry  plotdl  sparsedl
+ptsplot  geometry  plotdl  sparsedl
 \end{verbatim}
 
-The \emph{ptsplot} module is the main file of the package. The three other files contain
-sub-routines and class defentions used in \emph{ptsplot}.
+The \texttt{ptsplot} module is the main file of the package. The three other files contain
+sub-routines and class defentions used in \texttt{ptsplot}.
 
 
 To reproduce all of the plots used in this proposal, one can simply run:
 \begin{verbatim}
 python -m jarondl_msc.ptsplot
 \end{verbatim}
-If the data  does not exist (as is excpected in the first run),
-the data will be populated, and only then will the graphs be made. Following runs should be
-quicker, as they use the previous data. The exact data used can be downloaded from
- \url{http://physweb.bgu.ac.il/~jarondl/LINKS/MSc_FILES/} in the form of numpy \emph{npz} files.
+If the files \texttt{D\_banded.npz} and \texttt{D\_2d.npz} (available online)
+exist in the same directory as where the script is run,
+this data will be used. Otherwise, the numerics will run first, and then the plots will be made.
 
 
 

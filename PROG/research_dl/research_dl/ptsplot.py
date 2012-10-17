@@ -1485,12 +1485,13 @@ def article_plots(seed = 1 ):
 
         # otherwise, get the data:
         b_space = np.arange(1,50)
-        s_space = np.linspace(1E-4,10,100)
+        s_space = np.linspace(1E-4,10,98) # maybe the problem is just for one value?
         D = get_D_fittings_logbox(s_space,b_space)
         np.savez("D_banded.npz", b_space=b_space , s_space=s_space, D = D)
 
     ## now plot the plots
-    plot_BANDED_D_of_S(ax,s_space,b_space,D)
+    ##  D[9,:] correspondes to b=10
+    plot_BANDED_D_of_S(ax,s_space,b = 10, D[9,:])  
     plotdl.save_ax(ax, "D_banded")
     ax.cla()
     fig = plotdl.Figure()

@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  pts
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\documentclass[onecolumn,fleqn,12pt,openany,a4paper]{book}
+\documentclass[onecolumn,fleqn,12pt,openany,a4paper,longbibliography]{book}
 
 
 
@@ -51,9 +51,10 @@
 %\usepackage[utf8x]{inputenc}
 %\usepackage[hebrew,english]{babel}
 
-\usepackage[pdfencoding=auto,colorlinks=true,pagebackref=true,pdftitle={Research Proposal}]{hyperref}
+%\usepackage[pdfencoding=auto,colorlinks=true,pagebackref=true,pdftitle={Research Proposal}]{hyperref}
+\usepackage[pdfencoding=auto,colorlinks=true,pdftitle={Research Proposal}]{hyperref}
 % doi mus be loaded after hyperref
-\usepackage{doi}
+%\usepackage{doi}
 \graphicspath{{figures/}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -155,8 +156,12 @@
 
 \include{appendix}
 \backmatter
-\bibliographystyle{apsrev_doi}
-\bibliography{jarondl} 
+%\bibliographystyle{apsrev_doi}
+\bibliographystyle{apsrev4-1}
+%\nocite{revtex41Control}
+\nocite{apsrev41Control}
+\bibliography{jarondl,custom-longbib}
+%\bibliography{jarondl}  
 
 \end{document} 
 
