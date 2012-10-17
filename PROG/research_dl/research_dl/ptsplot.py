@@ -1498,7 +1498,7 @@ def article_plots(seed = 1 ):
     plot_banded_resnet3(fig,D,s_space,b_space)
     plotdl.save_fig(fig, "D_banded_Image", tight=False)
     fig.clf()
-    plot_BANDED_scatter_spectral_vs_resnet(ax,s_space,b_space,D)
+    plot_BANDED_scatter_spectral_vs_resnet(ax,s_space,10,D[9,:])
     plotdl.save_ax(ax, "D_banded_scatter")
     ax.cla()
 
