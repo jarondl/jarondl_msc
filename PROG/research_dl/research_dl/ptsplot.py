@@ -1232,7 +1232,7 @@ def plot_D_matrix(figure, matrix, x, y):
     #cbar = figure.colorbar(mshow, ax=ax,use_gridspec=True, ticks=[0,0.5,1])
     #(child_ax,kw) = plotdl.mpl.colorbar.make_axes_gridspec(ax)
     (child_ax,kw) = plotdl.mpl.colorbar.make_axes(ax)
-    cbar = figure.colorbar(mshow, cax=child_ax,use_gridspec=True, ticks=[0,0.5,1])
+    cbar = figure.colorbar(mshow, cax=child_ax, ticks=[0,0.5,1])#,use_gridspec=True)
     #child_ax.colorbar(ticks=[0,0.5,1])
 #    cbar
     return ax
