@@ -1230,7 +1230,8 @@ def plot_D_matrix(figure, matrix, x, y):
     ax.xaxis.set_major_formatter(xfmtr)
     ax.yaxis.set_major_formatter(yfmtr)
     #cbar = figure.colorbar(mshow, ax=ax,use_gridspec=True, ticks=[0,0.5,1])
-    (child_ax,kw) = plotdl.mpl.colorbar.make_axes_gridspec(ax)
+    #(child_ax,kw) = plotdl.mpl.colorbar.make_axes_gridspec(ax)
+    (child_ax,kw) = plotdl.mpl.colorbar.make_axes(ax)
     cbar = figure.colorbar(mshow, cax=child_ax,use_gridspec=True, ticks=[0,0.5,1])
     #child_ax.colorbar(ticks=[0,0.5,1])
 #    cbar
