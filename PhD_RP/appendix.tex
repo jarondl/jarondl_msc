@@ -144,7 +144,7 @@ If not, the package should be extracted, and the "setup.py" script can be used:
 \begin{verbatim}
 python setup.py install --user
 \end{verbatim}
-After this installation, the jarondl_msc package will be available,
+After this installation, the jarondl\_msc package will be available,
 including the following modules:
 \begin{verbatim}
 ptsplot geometry  plotdl  sparsedl
@@ -156,11 +156,12 @@ sub-routines and class defentions used in \emph{ptsplot}.
 
 To reproduce all of the plots used in this proposal, one can simply run:
 \begin{verbatim}
-python -m research_dl.ptsplot
+python -m jarondl_msc.ptsplot
 \end{verbatim}
-If the data for the banded matrices does not exist (as is excpected in the first run),
+If the data  does not exist (as is excpected in the first run),
 the data will be populated, and only then will the graphs be made. Following runs should be
-quicker, as they use the previous data.
+quicker, as they use the previous data. The exact data used can be downloaded from
+ \url{http://physweb.bgu.ac.il/~jarondl/LINKS/MSc_FILES/} in the form of numpy \emph{npz} files.
 
 
 

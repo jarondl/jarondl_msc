@@ -319,7 +319,8 @@ class ExpModel_1d(ExpModel):
         N = self.sample.number_of_points()
         shift = sparsedl.create_shift_matrix(N)
         invex = np.linalg.pinv(self.ex)
-        return (N//2)*(N//2)*(np.dot( (shift - np.eye(N)), invex)).trace()**(-1)/2
+        retval =  (N//2)*(N//2)*(np.dot( (shift - np.eye(N)), invex)).trace()**(-1)/2
+        return retval
 
     @lazyprop 
     def resnet3(self):
@@ -332,7 +333,8 @@ class ExpModel_1d(ExpModel):
         I[[0, N//2]] = [-1,1]
         V = invex.dot(I)
         debug("s = {0}, b={1} ".format(self.epsilon, b))
-        return (N//2 -2*b)*(V[0+b] - V[N//2-b])**(-1)/2.0
+        retval = (N//2 -2*b)*(V[0+b] - V[N//2-b])**(-1)/2.0
+        return retval
 
 
 class ExpModel_Bloch_1d(ExpModel_1d):
@@ -870,34 +872,25 @@ def get_D_fittings2d_invs(inv_s , sample_size = 2000):
     
     return D_fits
     
-def plot_D_fittings2(ax, inv_s = np.linspace(0.01, 20, 80 )):
-    sample2d = Sample((1,1),2000)  ## enlarged to 2000 because the diffence is visible
-    #models = (ExpModel_2d(sample2d, epsilon = s ) for s in inv_s**(-1))
-    #  why not randomize the models?
-    models = (ExpModel_2d(Sample((1,1),2000), epsilon = s ) for s in inv_s**(-1))
-    two_type = [("fit",np.float64), ("resnet3",np.float64)]
-    D_fits = np.fromiter(((model.fit_diff_coef, model.resnet3) for model in models), dtype = two_type, count=len(inv_s)) # switched to resnet
-    D_res = D_fits["resnet3"]*exp(-inv_s)  ### I'm changing convention back to 0.
-    D_fit = D_fits["fit"]*exp(-inv_s)
+
+def plot_D_fittings2d(ax, inv_s, D):
+    """ plot 2d ERH numerics
+    """
+    D_res = D["resnet3"]
+    D_fit = D["fit"]
     ax.plot(-inv_s, D_res, "r.", label=r"ResNet")
     ax.plot(-inv_s, D_fit, "y*", label=r"Spectral")
     x = np.linspace(max(inv_s), min(inv_s), 150)
     ax.plot(-x, D_ERH_0(x**(-1), 0), "b--", label=r"linear")
-#    ax.plot(x, D_ERH_0(x**(-1), sqrt(1/pi)), "g-", label=r"$p_c =1$")
-#    ax.plot(-x, D_ERH_0(x**(-1),  sqrt(5/pi)),"g-", label=r"$n_c =5$")
     ax.plot(-x, D_ERH_0(x**(-1),  sqrt(4.5/pi)),"g-", label=r"$n_c =4.5$")
-#    ax.plot(x, D_ERH_0(x**(-1), sqrt(8/pi)), "y-", label=r"$p_c =8$")
-    #ax.set_xlim(max(inv_s),min(inv_s))
-    #inv_formatter = lambda x, pos : "{0:.3f}".format(x**(-1))
-    #ax.xaxis.set_major_formatter(FuncFormatter(inv_formatter))
     ax.set_yscale('log')
     plotdl.set_all(ax, xlabel=r"$X = -\frac{1}{s}$", legend_loc="best", ylabel=r"$D$")
-    #ax.locator_params(axis='y', nbins=6)
     # fix the over-density of the yaxis
     ax.yaxis.set_minor_locator(plotdl.ticker.NullLocator())
     mi, ma = ax.get_ylim()
     stride = np.ceil((log10(ma)-log10(mi))/5)
     ax.yaxis.set_major_locator(plotdl.ticker.LogLocator(base=10**stride))
+
 
 ############# this needs urgent re-ordering!!!
 
@@ -966,7 +959,7 @@ def get_D_fittings_logbox(s_space, b_space):
     return D_fits.reshape(s_grid.shape)
 
 
-def get_D_fittings_2d(s_space):
+def get_D_fittings_2d_lattice(s_space):
     """ this gets all the D fittings for the 2d randomized lattice model"""
     bloch2d = create_bloch_sample_2d(40)  #(40**2=1600)
     models = (ExpModel_Bloch_2d_only4nn_randomized(bloch2d, epsilon = s) for s in s_space)
@@ -1168,7 +1161,8 @@ def plotf_1d_2d_Diffusion(inv_s = np.linspace(0.01, 20, 80 )):
     ax1 = f.add_subplot(121)
     ax2 = f.add_subplot(122)
     plot_1d_alexander_theory(ax1)
-    plot_D_fittings2(ax2, inv_s = inv_s)
+    D = get_D_fittings2d(inv_s = inv_s)
+    plot_D_fittings2(ax2, inv_s = inv_s, D=D)
 
 #    ax2.set_yticks([0])
 #    ax2.set_yticklabels("none", visible=False)
@@ -1248,6 +1242,10 @@ def plot_three_D(D, s, b):
         plotdl.save_fig(f, D_type, tight=False, size_factor=(2,1.5))
         f.clf()
 
+def plot_banded_resnet3(fig, D, s, b):
+    s_grid, b_grid = np.meshgrid(s,b)
+    D0 = BANDED_D0_s_b(s_grid, b_grid)
+    plot_D_matrix(fig, D["resnet3"]/D0, s, b)
 
 
 
@@ -1486,17 +1484,41 @@ def article_plots(seed = 1 ):
     except (OSError, IOError):
 
         # otherwise, get the data:
-        b_space = np.arange(1,2)
-        s_space = np.linspace(1E-4,10,2)
+        b_space = np.arange(1,50)
+        s_space = np.linspace(1E-4,10,100)
         D = get_D_fittings_logbox(s_space,b_space)
         np.savez("D_banded.npz", b_space=b_space , s_space=s_space, D = D)
-    
+
+    ## now plot the plots
     plot_BANDED_D_of_S(ax,s_space,b_space,D)
     plotdl.save_ax(ax, "D_banded")
     ax.cla()
+    fig = plotdl.Figure()
+    plot_banded_resnet3(fig,D,s_space,b_space)
+    plotdl.save_fig(fig, "D_banded_Image", tight=False)
+    fig.clf()
+    plot_BANDED_scatter_spectral_vs_resnet(ax,s_space,b_space,D)
+    plotdl.save_ax(ax, "D_banded_scatter")
+    ax.cla()
+
 
     random.seed(seed)
-    plot_D_fittings2(ax)
+    # 2d (for ERH)
+    # if the data exists, use it:
+    try:
+        f = np.load("D_2d.npz")
+        inv_s = f["inv_s"]
+        D = f["D"]
+
+    except (OSError, IOError):
+
+        # otherwise, get the data:
+        inv_s = np.linspace(0.01,20,100) # change to 100 later
+        D = get_D_fittings2d_invs(inv_s, 2000) #change to 2000 later
+        np.savez("D_2d.npz", inv_s = inv_s, D = D)
+    
+
+    plot_D_fittings2d(ax, inv_s, D)
     plotdl.save_ax(ax, "ptsD_2D_long", size_factor=(1,2))
     ax.cla()
  
