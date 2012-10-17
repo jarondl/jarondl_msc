@@ -11,7 +11,7 @@ import os
 #from scipy.sparse import linalg as splinalg
 from numpy import random, pi, log10, sqrt,  exp, expm1, sort, eye, nanmin, nanmax, log, cos, sinc
 from scipy.special import gamma
-from matplotlib.ticker import FuncFormatter
+from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
 import numpy as np
 import scipy as sp
@@ -1143,15 +1143,24 @@ def plot_1d_2d_panels(eps_range2d = (0.05,0.1,0.15), eps_range1d=(0.2,0.4,2,5)):
     ax2.text(1E-2, 5E-3, "$2D$")
     ## thin-out the ticks:
     #ax1.set_xticks([0])
-    #ax1.set_xticks(ax1.get_xticks()[::3])
-    #ax2.set_xticks(ax2.get_xticks()[1::3])
+    #ax3.set_xticks(ax3.get_xticks()[::2])
+    #ax4.set_xticks(ax4.get_xticks()[1::2])
+
+
     ax3.set_xscale('log')
     ax4.set_xscale('log')
     ax3.set_yscale('log')
     ax4.set_yscale('log')
+
+    ax3.get_xaxis().set_major_locator(LogLocator(base=10000))
+    ax4.get_xaxis().set_major_locator(LogLocator(base=10000))
     ax4.set_ylabel("")
     ax3.set_ylabel("$PN$")
+    ax3.set_xlabel("$\lambda$")
+    ax4.set_xlabel("$\lambda$")
+
     ax4.set_yticklabels("none",visible=False)
+    #ax2.set_xticklabels("none",visible=False)
     f.subplots_adjust(hspace=0, wspace=0)
     plotdl.save_fig(f, "pts_Spectral_PN", size_factor=(2,2), pad=0, h_pad=0, w_pad=0, tight=False)
 
