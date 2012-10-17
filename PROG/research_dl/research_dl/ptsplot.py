@@ -853,6 +853,23 @@ def plot_D_fit_vs_LRT(ax):
     #plotdl.save_ax(ax, "linear_fits")
     #ax.cla()
 
+def get_D_fittings2d_invs(inv_s , sample_size = 2000):
+    """ Get D fittings for two dimensional models.
+
+        I recommend using inv_s = np.linspace(0.01, 20, 80)
+    """
+    # The models are now randomized
+    models = (ExpModel_2d(Sample((1,1),sample_size), epsilon = s ) for s in inv_s**(-1))
+    debug("inv_s len is {0}".format(len(inv_s)))
+    two_type = [("fit",np.float64), ("resnet3",np.float64)]
+    D_fits = np.fromiter(((model.fit_diff_coef, model.resnet3) 
+            for model in models), dtype = two_type, count=len(inv_s))
+    ## I'm changing convention to zero:
+    D_fits["resnet3"] *= exp(-inv_s)
+    D_fits["fit"] *= exp(-inv_s)
+    
+    return D_fits
+    
 def plot_D_fittings2(ax, inv_s = np.linspace(0.01, 20, 80 )):
     sample2d = Sample((1,1),2000)  ## enlarged to 2000 because the diffence is visible
     #models = (ExpModel_2d(sample2d, epsilon = s ) for s in inv_s**(-1))
@@ -1469,10 +1486,10 @@ def article_plots(seed = 1 ):
     except (OSError, IOError):
 
         # otherwise, get the data:
-        b_space = np.arange(1,50)
-        s_space = np.linspace(1E-4,10,100)
+        b_space = np.arange(1,2)
+        s_space = np.linspace(1E-4,10,2)
         D = get_D_fittings_logbox(s_space,b_space)
-        np.savez("D_banded.npz", b_space=b_space , s_space=s_space, D =D)
+        np.savez("D_banded.npz", b_space=b_space , s_space=s_space, D = D)
     
     plot_BANDED_D_of_S(ax,s_space,b_space,D)
     plotdl.save_ax(ax, "D_banded")
