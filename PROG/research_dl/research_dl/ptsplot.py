@@ -1219,18 +1219,21 @@ def plot_BANDED_scatter_spectral_vs_resnet(ax, s, b, D):
     ax.set_ylim(xmin,xmax)
 
 def plot_D_matrix(figure, matrix, x, y):
-    #ax = figure.add_subplot(121)
+
     ax = figure.add_subplot(111)
-    #ax = figure.add_axes([0.1,0.1,0.7,0.9])
-    #cbar_ax = figure.add_subplot(122)
     mshow = ax.matshow(matrix)
+
     xdict = dict(enumerate(x))
     ydict = dict(enumerate(y))
-    xfmtr = FuncFormatter(lambda x,pos : "{0:.2g}".format(xdict.get(x,0)))
-    yfmtr = FuncFormatter(lambda x,pos : "{0:.2g}".format(ydict.get(x,0)))
+    xfmtr = FuncFormatter(lambda x,pos : "{0:0.0f}".format(xdict.get(x,0)))
+    yfmtr = FuncFormatter(lambda x,pos : "{0:0.0f}".format(ydict.get(x-1,0)))
     ax.xaxis.set_major_formatter(xfmtr)
     ax.yaxis.set_major_formatter(yfmtr)
-    figure.colorbar(mshow, ax=ax)
+    #cbar = figure.colorbar(mshow, ax=ax,use_gridspec=True, ticks=[0,0.5,1])
+    (child_ax,kw) = plotdl.mpl.colorbar.make_axes_gridspec(ax)
+    cbar = figure.colorbar(mshow, cax=child_ax,use_gridspec=True, ticks=[0,0.5,1])
+    #child_ax.colorbar(ticks=[0,0.5,1])
+#    cbar
     return ax
 
 def plot_three_D(D, s, b):
@@ -1245,7 +1248,9 @@ def plot_three_D(D, s, b):
 def plot_banded_resnet3(fig, D, s, b):
     s_grid, b_grid = np.meshgrid(s,b)
     D0 = BANDED_D0_s_b(s_grid, b_grid)
-    plot_D_matrix(fig, D["resnet3"]/D0, s, b)
+    ax = plot_D_matrix(fig, D["resnet3"]/D0, s*2, b)  #s*2 is the convention
+    ax.set_xlabel("$\sigma$")
+    ax.set_ylabel("$b$")
 
 
 
@@ -1473,7 +1478,7 @@ def article_plots(seed = 1 ):
 
 
     random.seed(seed)
-    #banded matrices.
+    #banded matrices for the image
     # if the data exists, use it:
     try:
         f = np.load("D_banded.npz")
@@ -1490,17 +1495,38 @@ def article_plots(seed = 1 ):
         np.savez("D_banded.npz", b_space=b_space , s_space=s_space, D = D)
 
     ## now plot the plots
-    ##  D[9,:] correspondes to b=10
-    plot_BANDED_D_of_S(ax,s_space,10, D[9,:])  
-    plotdl.save_ax(ax, "D_banded")
-    ax.cla()
+
     fig = plotdl.Figure()
     plot_banded_resnet3(fig,D,s_space,b_space)
-    plotdl.save_fig(fig, "D_banded_Image", tight=False)
+    plotdl.save_fig(fig, "ptsD_banded_Image", pad=0.4,size_factor = (1.2,1))
     fig.clf()
-    plot_BANDED_scatter_spectral_vs_resnet(ax,s_space,10,D[9,:])
-    plotdl.save_ax(ax, "D_banded_scatter")
+
+    ### banded matrices for the scatter plot
+    try:
+        f = np.load("D_banded_b10.npz")
+        b_space = f["b_space"]
+        s_space = f["s_space"]
+        D = f["D"]
+
+    except (OSError, IOError):
+
+        # otherwise, get the data:
+        b_space = np.array((10,))
+        s_space = np.linspace(1E-4,80,100) # maybe the problem is just for one value?
+        # change to 400 afterwards??
+        D = get_D_fittings_logbox(s_space,b_space)
+        np.savez("D_banded_b10.npz", b_space=b_space , s_space=s_space, D = D)
+
+
+    plot_BANDED_D_of_S(ax,s_space,10, D)  
+    plotdl.save_ax(ax, "ptsD_banded")
     ax.cla()
+
+    plot_BANDED_scatter_spectral_vs_resnet(ax,s_space,10,D)
+    plotdl.save_ax(ax, "ptsD_banded_scatter")
+    ax.cla() 
+    
+
 
 
     random.seed(seed)
@@ -1520,9 +1546,14 @@ def article_plots(seed = 1 ):
     
 
     plot_D_fittings2d(ax, inv_s, D)
-    plotdl.save_ax(ax, "ptsD_2D_long", size_factor=(1,2))
+    plotdl.save_ax(ax, "ptsD_2D_long", size_factor=(1,1.7))
     ax.cla()
  
+    
+    #dev pause
+    return
+
+
     random.seed(seed)
     plot_1d_2d_panels()
     

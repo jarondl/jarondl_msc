@@ -34,6 +34,7 @@ if 'DISPLAY' in os.environ.keys() :
 else:
     X_AVAILABLE = False
     use('agg')
+import matplotlib as mpl
 from matplotlib.backends.backend_agg import FigureCanvasAgg  # For raster rendering, e.g. png
 #from matplotlib.backends.backend_cairo import FigureCanvasCairo # For vector rendering e.g. pdf, eps  ###Doesn't have tex
 #from matplotlib.backends.backend_pdf import FigureCanvasPdf
