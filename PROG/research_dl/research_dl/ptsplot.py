@@ -1513,7 +1513,7 @@ def article_plots(seed = 1 ):
 
         # otherwise, get the data:
         b_space = np.array((10,))
-        s_space = np.linspace(1E-4,80,100) # maybe the problem is just for one value?
+        s_space = np.linspace(1E-4,40,100) 
         # change to 400 afterwards??
         D = get_D_fittings_logbox(s_space,b_space)
         np.savez("D_banded_b10.npz", b_space=b_space , s_space=s_space, D = D)
