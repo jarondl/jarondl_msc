@@ -1491,7 +1491,7 @@ def article_plots(seed = 1 ):
 
     ## now plot the plots
     ##  D[9,:] correspondes to b=10
-    plot_BANDED_D_of_S(ax,s_space,b = 10, D[9,:])  
+    plot_BANDED_D_of_S(ax,s_space,b, D[9,:])  
     plotdl.save_ax(ax, "D_banded")
     ax.cla()
     fig = plotdl.Figure()
