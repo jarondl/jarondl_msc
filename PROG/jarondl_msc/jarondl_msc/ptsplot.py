@@ -1240,7 +1240,11 @@ def plot_D_matrix(figure, matrix, x, y):
     ax.yaxis.set_major_formatter(yfmtr)
     #cbar = figure.colorbar(mshow, ax=ax,use_gridspec=True, ticks=[0,0.5,1])
     #(child_ax,kw) = plotdl.mpl.colorbar.make_axes_gridspec(ax)
-    (child_ax,kw) = plotdl.mpl.colorbar.make_axes(ax)
+    try:
+        (child_ax,kw) = plotdl.mpl.colorbar.make_axes_gridspec(ax)
+    except AttributeError:
+        print ("Old version of matplotlib, colorbar might be mispositioned")
+        (child_ax,kw) = plotdl.mpl.colorbar.make_axes(ax)
     cbar = figure.colorbar(mshow, cax=child_ax, ticks=[0,0.5,1])#,use_gridspec=True)
     #child_ax.colorbar(ticks=[0,0.5,1])
 #    cbar
