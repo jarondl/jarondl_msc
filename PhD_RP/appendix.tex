@@ -37,7 +37,7 @@ Where $\Omega_d$ is the $d$ dimensional solid angle:
 The distribution of the nearest neighbor distance can be 
 derived \cite{hertz_uber_1909,*Chandrasekhar_stochastic_1943,*Torquato_nearest-neighbor_1990},
 using a differential equation. 
-\rmrk{(Apparently my previous extension of the $1d$ solution to $d$ dimensions
+\rmrk{NOTE to DC: (Apparently my previous extension of the $1d$ solution to $d$ dimensions
 was just a good guess, the proof is a bit less trivial then I've thought)}. %TODO remove this remark
 
 Let us denote by $P(r)$ the probability that the first near neighbor will be
@@ -59,7 +59,7 @@ Which has the solution:
 %
 \begin{align}
 P(r) \ &=\ \rho(r) \eexp{-\int_0^r \rho(r) dr} \\
-       &=\ \frac{\Omega_d r^{d-1}}{r_0^d} \eexp{-\frac{\Omega_d}{d} \left(\frac{r}{r_0}\right)^d}
+       &=\ \frac{\Omega_d r^{d-1}}{r_0^d} \eexp{-\frac{\Omega_d}{d} \left(\frac{r}{r_0}\right)^d}  \label{eq:spacing_dist}
 \end{align}
 %
 Where in the last step we have plugged in $\rho(r)$ from \autoref{eq:rho}
@@ -84,10 +84,41 @@ Where in the last step we have plugged in $\rho(r)$ from \autoref{eq:rho}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Resistor Network Computation}
+\chapter{Resistor Network Computation}\label{sec:resnet}
+
+%%%%%%%%%%%%%%%%%%%%%
+\section{Resistor network calculation of transport}
+
+The transmission rates of our model are analogous to
+conductors. The conductance of the entire system can be derived
+using Kirchoff's laws. 
+We define a vector $\bm{V} = \{v_n\}$, for the voltage 
+of each site (analogous to $p_n$), and a vector
+$\bm{I} = \{I_n\}$ for outside current going into the site.
+The Kirchoff equation takes the form
+%
+\begin{align}
+\bm{I}\ =\ \bm{G}\cdot \bm{V}
+\end{align}
+%
+Where $\bm{G} = \bm{W}$.
 
 
+We can then add a source $I_s=-1$ and a drain $I_d=1$, setting the rest
+of the currents to zero. By numerically solving the above linear equation for $\bm{V}$,
+we can extract the conductivity. For practical reasons we have chosen
+sites that are far away from each other but not on the edges,
+and we have also looked on the voltage drop along an inner segment, to
+avoid the transients at the contact points. 
 
+
+In the $d{=}1$ case, the conductance is simply the conductivity multiplied
+by the distance between the points.
+
+
+For the $d{=}2$ case read the following section.
+
+%%%%%%%%%%%%%%%%%%%%
 \section{Point terminal resistivity in $d{=}2$}
 
 When discussing resistivity in a square $2d$ sample, it is common

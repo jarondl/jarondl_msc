@@ -55,6 +55,10 @@ a class a matrices that is widely researched
 both in physics and in mathematics.
 
 
+The randomness in these models arises from two origins, 
+the random activation energy $\epsilon$, and the random distribution of the sites.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Applications of the model}
 
@@ -65,6 +69,7 @@ relate to is broad. As physical examples, we can consider
 phonon propagation in disordered solids 
 \cite{nagel_normal-mod_1981,schirmacher_analogies_1992,amir_localization_2010,amir_mean_2008}
 
+Impurity conductance \cite{miller_impurity_1960}
 
 The models that we address are related and motivated  
 by various physical problems, for example: 
@@ -124,7 +129,7 @@ f(\epsilon)\ &=
 \end{align}
 %
 
-
+Not so relevant. 2d lattice with random hopping, but only 2 options. It has a calculation of the Diffusion tensor.
 %%%%%%%%%%%%%
 \subsection{The banded $1d$ lattice model}
 
@@ -142,15 +147,97 @@ than one path, removing the "bottle-neck" effect of $1d$ systems.
 
 
 %%%%%%%%%%%%%%
-\section{Sparsity}
+\section{Sparsity}\label{sec:sparsity}
 
 In general, a sparse network has few edges per node. Sparse networks 
+are often constructed by forming a dilute network, where each site
+has a finite amount of connected edges 
+\cite{rodgers_density_1988,biroli_single_1999,fortin_asymptotic_2005,metz_localization_2010}.
+However, we consider as sparse even networks with many edges per site
+if a only \emph{small} portion of the edges dominate, and a \emph{large}
+portion is almost zero \cite{cohen_energy_2012,stotland_semilinear_2009}. In our system, the bonds span
+over several orders of magnitude, with the \emph{sparsity} 
+determined by the value of $\xi/r_0$ and by the width of the distribution
+of $\epsilon$.
 
-\cite{cohen_energy_2012}
+%%%%%%%%%%%%%%%%%%%
+%% Percolation?
+
+
 
 %%%%%%%%%%%%%%%%%
 \section{Transport and diffusion}
 
+One may characterize the transport properties of materials 
+by the spreading $S(t)$ , which is the second moment of 
+the particle location, and the survival probability $\mathcal{P}(t)$, i.e.:
+%
+\begin{align}
+S(t) &= \sum_n (r_n)^2 p_n(t) \\
+\mathcal{P}(t) &= p_0(t)
+\end{align}
+%
+Where $r_n$ is the distance of site $n$ from the origin,
+and $p_n(t)$ is the probability of occupancy in site $n$, and
+the initial distribution was $p_n(0) = \delta_{n,0}$.
+
+
+In a diffusive system, the coarse grained distribution is an evolving Gaussian
+%
+\begin{align}
+p_n(t) = \prod_{i=1}^d \frac{1}{\sqrt{2\pi\ 2Dt}} \exp\left[-\frac{1}{2}\frac{x_i^2}{2Dt}\right]
+\end{align}
+%
+Meaning that the spreading and survival probability are:
+%
+\begin{align}
+S(t) \ &=\ (2d)\ D\ t \\
+\mathcal{P}(t)\ &=\ \frac{1}{(4\pi D t)^{d/2}}
+\end{align}
+%
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section{Resistor network calculation}
+
+Apart from the spreading and survival, the transport may
+also be characterized by the conductivity of the network
+\cite{halperin_remarks_1989,miller_impurity_1960,ambegaokar_hopping_1971,pollak_percolation_1972,
+Aharony_effective_1991,stotland_random-matrix_2010,stotland_semilinear_2009}.
+The diffusion coefficient $D$ is formally equal (up to unit
+changes) to the conductivity of the network.
+
+
+The conductivity can be extracted from the 
+numerically solved conductance, as explained in \autoref{sec:resnet}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\section{Extracting the transport from spectral properties}\label{sec:spectrum}
+
+Let us define the spectral function $\mathcal{N}(\lambda)$ as
+the integral over the local density of states $g(\lambda)$:
+%
+\begin{align}
+\mathcal{N}(\lambda)\ =\ \int_0^\lambda g(\lambda')d\lambda'
+\end{align}
+%
+It is well known that the survival probability is related to the spectrum through the relation
+%
+\begin{align}
+\mathcal{P}(t)\ =\ \frac{1}{N}\sum_\lambda \eexp{\lambda t} \ \equiv \ \int_0^\infty g(\lambda)d\lambda  \eexp{\lambda t}
+\end{align}
+%
+Which gives more emphasis to the \emph{lower} end of the spectrum.
+In a diffusive system, the eigenvalues of the diffusion are $\lambda=Dq^2$, where the possible values of the momentum $q$ are determined by the periodic boundary conditions as $q=(2\pi/L)\vec{n}$. It follows that the spectral function is:
+ %
+\begin{align}
+\mathcal{N}(\lambda)\ =\ \left(\frac{L}{2\pi}\right)^d \frac{\Omega_d}{d} \left[\frac{\lambda}{D}\right]^{d/2}
+\end{align}
+%
+Therefore we can use matrix diagonalization to find the lowest
+eigenvalues, and derive the diffusion coefficient.
+
+%%%%%%%%%%%%%%%%%%%%%%%
 
 %\section{Variable range hopping}
 

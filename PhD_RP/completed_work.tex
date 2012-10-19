@@ -21,8 +21,13 @@ the diffusion coefficient is the inverse of the combined resistivity
 D \ =\ \left(\frac{1}{N} \sum_n \frac{1}{w_{n,n-1}}\right)^{-1}
 \end{align}
 %
-Plugging in the transition rate distribution from \ref{eq:rate_dist1d},
-(with the same notation of $s \equiv \xi/r_0$ and converting the sum to an integral, we obtain
+The rates are 
+%
+\begin{align}
+w_{n,n-1} \ =\ w_0 \eexp{-r_{n,n-1}/\xi}
+\end{align}
+Using the spacing distribution from \autoref{eq:spacing_dist}, we can change distribution variables
+from $r$ to $w$. Defining $s \equiv \xi/r_0$ and converting the sum to an integral, we obtain
 %
 \begin{align}
 D \ =\ \left(\frac{1}{N} \int_0^{w_0} \frac{s w^{s-1}dw}{w_0^s}\right)^{-1} \
@@ -61,9 +66,6 @@ Several representative values of $s$ are considered.
 % 
 The dots are determined via numerical diagonalization. 
 The dashed lines in the upper plots correspond to diffusive behavior.  
-The solid lines are according to the RG analysis of 
-\cite{amir_localization_2010,*amir_mean-field_2008}, namely 
-\autoref{eq:amir_prediction} . 
 %
 There is a striking difference between the $d{=}1$ and the $d{=}2$ cases. 
 For $d{=}1$, the log-log slope for sparse models ($s<1$) is less than~$d/2$, 
@@ -72,13 +74,13 @@ is always~$d/2$, which corresponds to normal diffusion.
 %
 The horizontal dashed line in the lower panels indicates 
 the special value PN$=2$ that corresponds to dimer formation.
-} 
+}
 \label{fig:spectral}
 \end{figure}
 %%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The ERH procedure}
+\section{The ERH - Effective Range Hopping -procedure}
 
 The diffusion coefficient is defined by the dependence
 of the variance in time:
@@ -130,7 +132,7 @@ The rate threshold $w_c$ is determined using the following expression
 \end{align}
 %
 Where $n_c$ is the number of connected sites necessary to form a percolation
-cluster (see \rmrk{TODO :ref to section explaining this better}).
+cluster.
 
 
 Next, we suppress the rates higher than $w_c$ to have the value $w_c$,
@@ -156,7 +158,8 @@ the distribution of sites surrounding each site is simply
 \rho(r,\epsilon) \ = \ 4\ f(\epsilon)\delta(r-r_0) 
 \end{align}
 %
-It is well known from percolation theory \cite{someonethatsaysthis} that in this model the number of necessary connections per site is $n_c=2$. We can
+It is well known from percolation theory \cite{stauffer_introduction_1994}
+that in this model the number of necessary connections per site is $n_c=2$. We can
 find $w_c$ from \ref{eq:threshold},an put this into the ERH 
 expression \ref{eq:ERH_D} to have:
 %
@@ -178,7 +181,7 @@ sites, with the transition rates according to \ref{eq:random_hopping_rates}.
 
 Since $w$ depends only on $r$, we may define the ERH threshold by
 $r_c$ instead of $w_c$. Rephrasing equation \ref{eq:threshold}, and 
-using $\rho(r,\epsilon)$ from \ref{eq:hopping_dist}, $r_c$ is determined according to
+using $\rho(r,\epsilon)$ from \ref{eq:site_distribution}, $r_c$ is determined according to
 %
 \begin{align}
 \int_0^{r_c} \frac{\Omega_d r^{d-1} dr}{r_0^2} \ = \  n_c 
@@ -192,7 +195,7 @@ w_c &= w_0\exp\left(-\frac{r_c}{\xi}\right)
 \end{align}
 %
 
-Now we shall put all of the above into the ERH expression \ref{eq:erh_D}.
+Now we shall put all of the above into the ERH expression \ref{eq:ERH_D}.
 The solution involves the incomplete gamma function \cite{_nist_????},
 %
 \begin{align}
@@ -238,8 +241,8 @@ For $d=2$, we have used the $n_c=4.5$ result from \cite{dalton_dependence_1964,*
 and compared it with our numerics in figure \ref{fig:spread_2d}.
 
 \begin{figure}
-\begin{subfigure}{0.51\textwidth}
-\includegraphics{ptsD_1D_long}
+\begin{subfigure}{0.4\textwidth}
+\includegraphics[scale=0.7]{ptsD_1D_long}
 \caption{Spreading in $d{=}1$}
 \label{fig:spread_1d}
 \end{subfigure}
@@ -248,7 +251,11 @@ and compared it with our numerics in figure \ref{fig:spread_2d}.
 \caption{Spreading in $d{=}2$}
 \label{fig:spread_2d}
 \end{subfigure}
-\caption[short]{long}
+\caption{In \subref{fig:spread_1d} the red line is the diffusion coefficient $D$. It is zero in the sub-diffusive regime $s<1$. 
+The blue dashed line is the power of the spreading, showing sub-diffusive behavior for $s<1$.
+In \subref{fig:spread_2d} the green line represents the ERH estimate with $n_c=4.5$, while the dashed blue line stands for
+the linear estimate. The red dots are based on numerical resistor network calculation, while the stars are extracted from the
+spectral analysis. }
 \end{figure}
 
 
@@ -256,8 +263,8 @@ and compared it with our numerics in figure \ref{fig:spread_2d}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The Mott hopping model}
 
-For the Mott hopping model, with rates according to \autoref{eq:mott_rates},
-and rate distribution according to \autoref{eq:mott_dist}, the ERH 
+For the Mott hopping model, with rates according to \autoref{eq:mott_hopping_rates},
+and rate distribution according to \autoref{eq:mott_distribution}, the ERH 
 threshold is determined using \autoref{eq:threshold}:
 %
 \begin{align}
@@ -315,12 +322,12 @@ With $\mathrm{EXP}_\ell$ and $D_{\tbox{linear}}$ the same as in
 
 This model is a Banded one dimensional lattice model. Each site 
 is connected to $b$ other sites, the disorder arising from
-variations in $\epsilon$. $\rho(r,\epsilon)$ is given in \autoref{eq:banded_dist}.
+variations in $\epsilon$. 
 We find the ERH threshold from \autoref{eq:threshold}:
 %
 \begin{align}\label{eq:thres_banded}
 \int_0^{\infty}  
-\frac{\Omega_d \, r^{d-1}dr}{r_0^{d}} 
+\frac{2 dr}{r_0} 
 \ F\left(\log\left(\frac{w_0}{w_c}B(r)\right)\right) 
 \ \ = \ \ n_c
 \end{align}
