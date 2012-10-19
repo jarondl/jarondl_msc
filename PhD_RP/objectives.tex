@@ -2,30 +2,30 @@
 
 \section{Assymetric VRH}
 
-If the sites have different potentials, then the site occupation probabilites change. This can be acommodated for by modifying the transition rates by Boltzmann's factor. This is called \emph{VRH- Variable Range Hopping}\cite{Ambegaokar:1971}, and has been widely studied. The common practice is to treat the system as a symmetric resistor network, but we want to ask if there are cases where this reduction to a symmetrical network is not valid.
+If the sites have different potentials, then the site occupation probabilites change. This can be acommodated for by modifying the transition rates by Boltzmann's factor. This is called \emph{VRH- Variable Range Hopping}\cite{ambegaokar_hopping_1971}, and has been widely studied. The common practice is to treat the system as a symmetric resistor network, but we want to ask if there are cases where this reduction to a symmetrical network is not valid.
 
 
 % Stotland Errata variable activation energy.. 
 %%%%%%%%%
-\section{Stotland's errata model}
+%\section{Stotland's errata model}
 
 
 
 %%%%%%%%%
 \section{Geometrical implications}
 
- The geometric properties of the system are reflected in the statistics of the distances, and by extension in the statistics of the transition rates. However, there is more information in the $W_{nm}$ matrix than just its statistics. The question arises: Are the statistics all that is needed to understand the physics of the system? See the preliminary results for farther discussion \ref{sec:prelim}.
+The geometric properties of the system are reflected in the statistics of the distances, and by extension in the statistics of the transition rates. However, there is more information in the $W_{nm}$ matrix than just its statistics. The question arises: Are the statistics all that is needed to understand the physics of the system? 
 
 %%%%%%%%%
 \section{Banded sparse matrices}
 
-The conductance of quasi-$1d$ banded sparse matrices was studied numerically in \cite{Stotland:2010:PRB}. There, they use \emph{Variable-Range-Hopping} in the sparse regime, where 
+The conductance of quasi-$1d$ banded sparse matrices was studied numerically in \cite{Stotland_random-matrix_2010,janssen_correlated_2000}. There, they use \emph{Variable-Range-Hopping} in the sparse regime, where 
 $(\text{sparsity}\cdot \text{bandwidth}) \ll 1$. However, in this work it is not clear what are the limits on either sparsity or bandwidth, and in particular where is the cross between the validity regime of VRH and that of SLRT. We will try to understand this issue analytically.
 
 %%%%%%%%%
 \section{Diffusion or Subdiffusion in $2d$}
 
-The question of diffusion in most $1d$ systems was analytically solved in \cite{Alexander:1981:RMP}. The $2d$ case is, as for as we know, not yet analytically solved, and is much less clear. In \cite{Amir:2010:PRL} it is claimed that in low density systems subdiffusion of order $\sim log^d$ should occur. We wish to use the block-renormalization-group method to find out if this is indeed the case. We also wish to see if there is a transition between low densities and high densities.
+The question of diffusion in most $1d$ systems was analytically solved in \cite{alexander_excitation_1981}. The $2d$ case is, as for as we know, not yet analytically solved, and is much less clear. In \cite{amir_localization_2010} it is claimed that in low density systems subdiffusion of order $\sim log^d$ should occur. We wish to use the block-renormalization-group method to find out if this is indeed the case. We also wish to see if there is a transition between low densities and high densities.
 
 
 % Could maybe add here an additional item from the notes if necessary.
@@ -33,16 +33,24 @@ The question of diffusion in most $1d$ systems was analytically solved in \cite{
 %%%%%%%%%
 \section{The spectral properties of Sinai diffusion in $1d$}
 
-In a symetric random rate system, there is regular diffusion if the harmonic average is bounded, i.e. if
-\[ \sum_n \frac{1}{w_n} < \infty \]
+In a symmetric random rate system, there is regular diffusion if the harmonic average is bounded, i.e. if
+%
+\begin{align}
+ \sum_n \frac{1}{w_n} < \infty 
+\end{align}
+%
 
 On the other hand, for an asymetric system, an activation energy builds up, and a Sinai diffusion behaviour is followed.
-The conductance is exponentially small in the length, and the spreading is anomalic. The differnce between those two models is clearly highly significant. We wish to investigate the difference between the models, and the relation of this difference to the spectral properties of the model.
+The conductance is exponentially small in the length, and the spreading is anomalic. The difference between those two models is clearly highly significant. We wish to investigate the difference between the models, and the relation of this difference to the spectral properties of the model.
 
 %%%%%%%%%
 \section{Sinai diffusion in $2d$}
 
-The spectral properties, and spreading behaviour of a $2d$ asymetric system.
+We shall inspect the spectral properties, and spreading behavior of a $2d$ asymmetric system. The
+$2d$ case is much different than the $1d$ case, because particles can circumvent barriers. However,
+a nearest neighbor lattice can be constructed to present the same long time spreading as the $1d$ lattice \cite{selinger_diffusion_1989}.
+The question is whether having nearest neighbor links only is a necessary condition for this behavior,
+and how does this relate to the spectral properties of the $2d$ system.
 
 
 %%%%%%%%%
@@ -50,11 +58,8 @@ The spectral properties, and spreading behaviour of a $2d$ asymetric system.
 
 Our work so far considered probability rate equations, which are valid for a single particle in the network.
 If we have multiple interacting particles in the network, additional factors may contribute. For example,
-a single occupancy rule (i.e. each site may have up to one particle) may cause Fermi blocking.
-
-%%%%%%%%%
-\section{Banded Random Matrices}
-
+a single occupancy rule (i.e. each site may have up to one particle) may cause Fermi blocking. Another
+issue is that the single particle behavior might be sub-diffusive while the bulk spreading is diffusive \cite{richards_theory_1977,hung_diffusion_2011}.
 
 
 
