@@ -1,7 +1,33 @@
 \chapter{Objectives}
 
+%%%%%%%%%
+\section{Diffusion or Subdiffusion in $2d$}
+
+The question of diffusion in most $1d$ systems was analytically solved in \cite{alexander_excitation_1981}. 
+The $2d$ case is, as far as we know, not yet analytically solved, and is much less clear. 
+In \cite{amir_localization_2010} it is claimed that in low density systems subdiffusion of
+order $\sim log^d$ should occur. We wish to examine these networks through their spectral
+properties to find out if this is indeed the case. Our focus will be on low densities,
+and on checking whether there exists a transition between low densities and high densities.
+
+
+%%%%%%%%%
+\section{Geometrical implications}
+
+The aforementioned density changes are equivalent to rescaling of the system size,
+while keeping the site locations in place, meaning that the geometry of the problem 
+does not change. But does the geometry matter at all? Of course, the geometric properties
+of the system are reflected in the statistics of the distances,
+and by extension in the statistics of the transition rates. 
+However, there is more information in the $W_{nm}$ matrix than just the statistics of its elements.
+The question arises: Are the statistics all that is needed to understand the physics of the system? 
+We shall check numerically if a randomized matrix with the same statistics behaves the same.
+
+
+%%%%%%%%%%%
 \section{Assymetric VRH}
 
+The networks we have so far discussed are symmetric by definition. 
 If the sites have different potentials, then the site occupation probabilites change. This can be acommodated for by modifying the transition rates by Boltzmann's factor. This is called \emph{VRH- Variable Range Hopping}\cite{ambegaokar_hopping_1971}, and has been widely studied. The common practice is to treat the system as a symmetric resistor network, but we want to ask if there are cases where this reduction to a symmetrical network is not valid.
 
 
@@ -11,21 +37,12 @@ If the sites have different potentials, then the site occupation probabilites ch
 
 
 
-%%%%%%%%%
-\section{Geometrical implications}
-
-The geometric properties of the system are reflected in the statistics of the distances, and by extension in the statistics of the transition rates. However, there is more information in the $W_{nm}$ matrix than just its statistics. The question arises: Are the statistics all that is needed to understand the physics of the system? 
 
 %%%%%%%%%
 \section{Banded sparse matrices}
 
 The conductance of quasi-$1d$ banded sparse matrices was studied numerically in \cite{stotland_random-matrix_2010}. There, they use \emph{Variable-Range-Hopping} in the sparse regime, where 
 $(\text{sparsity}\cdot \text{bandwidth}) \ll 1$. However, in this work it is not clear what are the limits on either sparsity or bandwidth, and in particular where is the cross between the validity regime of VRH and that of SLRT. We will try to understand this issue analytically. A specific version of these matrices were also studied in \cite{janssen_correlated_2000}.
-%%%%%%%%%
-\section{Diffusion or Subdiffusion in $2d$}
-
-The question of diffusion in most $1d$ systems was analytically solved in \cite{alexander_excitation_1981}. The $2d$ case is, as for as we know, not yet analytically solved, and is much less clear. In \cite{amir_localization_2010} it is claimed that in low density systems subdiffusion of order $\sim log^d$ should occur. We wish to use the block-renormalization-group method to find out if this is indeed the case. We also wish to see if there is a transition between low densities and high densities.
-
 
 % Could maybe add here an additional item from the notes if necessary.
 
