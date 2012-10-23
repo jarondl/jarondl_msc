@@ -24,11 +24,29 @@ The question arises: Are the statistics all that is needed to understand the phy
 We shall check numerically if a randomized matrix with the same statistics behaves the same.
 
 
+
+%%%%%%%%%
+\section{Banded sparse matrices}
+
+Between the $1d$ nearest neighbor network and the $2d$ network,
+lie the quasi $1d$ network, which allows transitions to further neighbors.
+The conductance of quasi-$1d$ banded sparse matrices was studied numerically in \cite{stotland_random-matrix_2010}. There, they use \emph{Variable-Range-Hopping} in the sparse regime, where 
+$(\text{sparsity}\cdot \text{bandwidth}) \ll 1$. 
+However, in this work it is not clear what are the limits on either sparsity or bandwidth, and in particular where is the cross between the validity regime of VRH and that of SLRT. We will try to understand this issue analytically.
+
+
+% TODO A specific version of these matrices were also studied in \cite{janssen_correlated_2000}.
+
 %%%%%%%%%%%
 \section{Assymetric VRH}
 
-The networks we have so far discussed are symmetric by definition. 
-If the sites have different potentials, then the site occupation probabilites change. This can be acommodated for by modifying the transition rates by Boltzmann's factor. This is called \emph{VRH- Variable Range Hopping}\cite{ambegaokar_hopping_1971}, and has been widely studied. The common practice is to treat the system as a symmetric resistor network, but we want to ask if there are cases where this reduction to a symmetrical network is not valid.
+In the networks we have discussed so far, each site had the same potential. Once
+we allow different potentials, the site occupation probabilities change.
+This can be accommodated for by modifying the transition rates by Boltzmann's factor. This is called \emph{VRH- Variable Range Hopping}\cite{ambegaokar_hopping_1971}, and has been widely studied. 
+Derived from Fermi statistics, it is shown that it is equally likely to go up in energy as it is to go down in energy.
+Therefore, the common practice is to treat the system as a symmetric resistor network,
+but we want to ask if there are cases where this reduction to a symmetrical network is not valid.
+If such cases exist we wish to develop a better estimation method for the transport. 
 
 
 % stotland Errata variable activation energy.. 
@@ -38,32 +56,27 @@ If the sites have different potentials, then the site occupation probabilites ch
 
 
 
-%%%%%%%%%
-\section{Banded sparse matrices}
-
-The conductance of quasi-$1d$ banded sparse matrices was studied numerically in \cite{stotland_random-matrix_2010}. There, they use \emph{Variable-Range-Hopping} in the sparse regime, where 
-$(\text{sparsity}\cdot \text{bandwidth}) \ll 1$. However, in this work it is not clear what are the limits on either sparsity or bandwidth, and in particular where is the cross between the validity regime of VRH and that of SLRT. We will try to understand this issue analytically. A specific version of these matrices were also studied in \cite{janssen_correlated_2000}.
-
 % Could maybe add here an additional item from the notes if necessary.
 
 %%%%%%%%%
 \section{The spectral properties of Sinai diffusion in $1d$}
 
-In a symmetric random rate system, there is regular diffusion if the harmonic average is bounded, i.e. if
+In a symmetric $1d$ random rate system, there is regular diffusion if the harmonic average is bounded, i.e.\ if
 %
 \begin{align}
  \sum_n \frac{1}{w_n} < \infty 
 \end{align}
 %
 
-On the other hand, for an asymetric system, an activation energy builds up, and a Sinai diffusion behaviour is followed.
-The conductance is exponentially small in the length, and the spreading is anomalic. The difference between those two models is clearly highly significant. We wish to investigate the difference between the models, and the relation of this difference to the spectral properties of the model.
+On the other hand, for an asymmetric system, an activation energy builds up, and a Sinai diffusion behavior is followed.
+The conductance is exponentially small in the length, and the spreading is anomalous. The difference between those two models is clearly highly significant. We wish to investigate the difference between the models,
+and the relation of this difference to the spectral properties of the model.
 
 %%%%%%%%%
 \section{Sinai diffusion in $2d$}
 
 We shall inspect the spectral properties, and spreading behavior of a $2d$ asymmetric system. The
-$2d$ case is much different than the $1d$ case, because particles can circumvent barriers. However,
+$2d$ case is much different than the $1d$ case, because particles can circumvent barriers. Interestingly,
 a nearest neighbor lattice can be constructed to present the same long time spreading as the $1d$ lattice \cite{blumberg_selinger_diffusion_1989}.
 The question is whether having nearest neighbor links only is a necessary condition for this behavior,
 and how does this relate to the spectral properties of the $2d$ system.
@@ -73,8 +86,9 @@ and how does this relate to the spectral properties of the $2d$ system.
 \section{The charge carrier discreteness}\label{sec:discreteness}
 
 Our work so far considered probability rate equations, which are valid for a single particle in the network.
-If we have multiple interacting particles in the network, additional factors may contribute. For example,
-a single occupancy rule (i.e. each site may have up to one particle) may cause Fermi blocking. Another
+Having many non interacting particles is equivalent to having many realizations of a single particle,
+leaving the picture intact. However, if we have multiple \emph{interacting} particles in the network, additional factors may contribute. For example,
+a single occupancy rule (i.e.\ each site may have up to one particle) may cause Fermi blocking. Another
 issue is that the single particle behavior might be sub-diffusive while the bulk spreading is diffusive \cite{richards_theory_1977,hung_diffusion_2012}.
 
 
