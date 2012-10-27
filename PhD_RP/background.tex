@@ -40,9 +40,9 @@ The proposal regards a spatial network in which each node
 has a defined location $x_n$. The transition rates $w_{nm}$
 are constructed by the expression
 %
-\beq
+\begin{align}
 w_{nm} \quad = \quad w_0 \eexp{-\epsilon_{nm}}B(x_n-x_m)
-\eeq
+\end{align}
 %
 where $B(r)$ describes the dependence of the coupling on the
 distance between sites, and $\epsilon$ represents activation
@@ -123,7 +123,7 @@ f(\epsilon)\ &=
 
 Not so relevant. 2d lattice with random hopping, but only 2 options. It has a calculation of the Diffusion tensor.
 %%%%%%%%%%%%%
-\subsection{The banded $1d$ lattice model}
+\subsection{The banded $1d$ lattice model}\label{sec:banded}
 
 In this model, we have a $1d$ lattice (i.e.\ equal spacing between the sites), 
 with the rates :
@@ -137,6 +137,13 @@ meaning that the resulting matrix is banded. This model might also
 be called quasi-$1d$ because transitions could occur over more
 than one path, removing the "bottle-neck" effect of $1d$ systems.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Spreading in a quantum network}
+
+Replacing the rate equation by a Hamiltonian, 
+we expect suppression of the diffusion due to Anderson localization. However, finite
+dephasing time in this system will lead to noticeable transient diffusion.
 
 %%%%%%%%%%%%%%
 \section{Sparsity}\label{sec:sparsity}

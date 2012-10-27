@@ -1,7 +1,47 @@
 \chapter{Introduction}
 
 
+This proposal is about simple dynamical networks, with dynamics
+that are described either by a stochastic rate equation
+%
+\begin{align}
+  \frac{dp_n}{dt} \quad = \quad \sum_m w_{nm}p_m
+\end{align}
+%
+or by the Schr\"{o}dinger equation:
+%
+\begin{align}
+  \frac{d\psi_n}{dt} \quad = \quad \sum_m \mathcal{H}_{nm}\psi_m
+\end{align}
+%
 
-The organization of this proposal is in parts. \autoref{part1} includes the objectives of the proposal
-and the necessary background. In \autoref{part2} we present the work accomplished so far. In \autoref{part3}
-lies the appendix, including some derivations, and an article currently under review at PRE, available in the arXiv \cite{de_leeuw_diffusion_2012}.
+Regardless of the governing equation, the focus is
+on disordered sparse networks, with wide distribution of energies. 
+Two related aspects of these networks will be studied: their energy spectrum,
+and their spreading properties. More specifically, we wish to determine
+whether the networks are diffusive ($S(t)\sim t$), or sub-diffusive, and
+if they are indeed diffusive, what is the diffusion coefficient. 
+
+
+
+
+To simplify the discussion, we concentrate on $d$-dimensional spatial networks,
+in which each node has a defined location $x_n$, and each edge has an associated 
+energy barrier $\epsilon_{nm}$. The transition rates are then defined to be:
+%
+\begin{align}
+w_{nm} \quad = \quad w_0 \eexp{-\epsilon_{nm}}B(x_n-x_m)
+\end{align}
+%
+Where $B(r)$ describes the dependence of the coupling on the
+distance between sites.
+
+
+\bigskip
+
+The organization of this proposal is in parts.
+\autoref{part1} includes this introduction,
+the objectives of the proposal and the background. 
+In \autoref{part2} we present the work accomplished so far.
+In \autoref{part3} lies the appendix, including some derivations,
+and an article currently under review at PRE, available in the arXiv \cite{de_leeuw_diffusion_2012}.

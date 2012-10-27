@@ -1,5 +1,9 @@
 \chapter{Objectives}
 
+
+Unless specified otherwise, the following objectives refer
+to the stochastic model defined by \autoref{eq:stochastic}. 
+
 %%%%%%%%%
 \section{Diffusion or Subdiffusion in $2d$}
 
@@ -97,6 +101,18 @@ issue is that the single particle behavior might be sub-diffusive while the bulk
 
 Up to now, we have concentrated on Markovian networks, dealing with the probabilities without phases.
 We will try to generalize the work to solve Hamiltonian matrices of the same genre.
+With a coherent Hamiltonian, 
+we expect suppression of the diffusion due to Anderson localization. However, finite
+dephasing time in this system will lead to noticeable transient diffusion.
+We intend to examine the applicability of the resistor network picture for 
+the calculation of the diffusion coefficient in these quantum networks, beginning with
+a simple model described by a real symmetric Hamiltonian:
+%
+\begin{align}
+  \mathcal{H}_{nm} = \textrm{random}[\pm] \eexp{-\textrm{random}[x]} \qquad 0<|n-m|\le b
+\end{align}
+%
+Where the parameter $x$ is distributed uniformly $x\in [0,\sigma]$. 
 
 % (1d and 2d) are different sections.
 

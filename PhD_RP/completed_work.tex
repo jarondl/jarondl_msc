@@ -318,7 +318,7 @@ With $\mathrm{EXP}_\ell$ and $D_{\tbox{linear}}$ the same as in
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{The Quasi one dimensional model}
+\subsection{The quasi one dimensional model}\label{sec:quasi_oned}
 
 This model is a Banded one dimensional lattice model. Each site 
 is connected to $b$ other sites, the disorder arising from
@@ -390,4 +390,31 @@ This result is compared to numerical computation in \autoref{fig:banded}.
 On \subref{fig:band_b10}, the blue line is the ERH estimation. If the
 linear result was correct, $g_s$ would have been $1$ for all values of $\sigma$.}
 \label{fig:banded}
+\end{figure}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Preliminary analysis}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The quasi one dimensional Hamiltonian}
+
+
+In this model , described in \autoref{sec:quasi_bg}, initial analysis of
+the numerical results reveals that the sparsity affects the diffusion coefficient.
+We see that as the system becomes more sparse, the diffusion coefficient is suppressed. 
+As might be expected, the lower bandwidth ensembles are more
+susceptible, as the system is more vulnerable to disconnections.
+
+
+
+\begin{figure}
+\includegraphics{dts_D2}
+\caption{The transient diffusion coefficient for quantum spreading in
+a banded sparse network. The ratio $D/D_0$ between the numerical diffusion 
+coefficient and the expected value decreases as $\sigma$ increases. The effect
+is stronger for low bandwidth.}
 \end{figure}
