@@ -1095,7 +1095,7 @@ def plot_me_vs_amir(ax1, ax2, eps_range = (0.05, 0.1, 0.15)):
 
 
 
-def plot_randomized_2d_ev(ax1, ax2, eps_range = (0.05, 0.1, 0.15)):
+def plot_randomized_2d_ev(ax1, eps_range = (0.05, 0.1, 0.15)):
     """ Plotting the eigenvalue dist, for randomized model"""
     colors = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     sample2d = Sample((1,1),900)
@@ -1116,13 +1116,13 @@ def plot_randomized_2d_ev(ax1, ax2, eps_range = (0.05, 0.1, 0.15)):
         #plot_func(ax1, lambda x: m.diff_density()(x,D), xlim=m.xlim*exp(-1/eps), color=color)
         #x = np.logspace(log10(ev[1]), log10(ev[-1]))
         #ax1.plot(x,exp(-0.5*pi*eps**2*log(0.5*x)**2), color=color)
-        m.plot_PN(ax2, convention=1, color=color)
-        m2.plot_PN(ax2, convention=1, color=color, marker="x")
+        #m.plot_PN(ax2, convention=1, color=color)
+        #m2.plot_PN(ax2, convention=1, color=color, marker="x")
     ax1.set_xlim(2*exp(-sqrt(2*log(900)/(pi*min(eps_range)**2))), 2 )
     ax1.set_yscale('log')
     ax1.set_xscale('log')
-    ax2.set_yscale('log')
-    ax2.set_xscale('log')
+    #ax2.set_yscale('log')
+    #ax2.set_xscale('log')
     ax1.set_ylim(1/900,1)
     plotdl.set_all(ax1, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="upper left")
 
@@ -1130,10 +1130,9 @@ def plot_randomized_2d_ev(ax1, ax2, eps_range = (0.05, 0.1, 0.15)):
 def plot_geom():
     
     fig = plotdl.Figure()
-    ax1 = fig.add_subplot(211)
-    ax2 = fig.add_subplot(212)
-    plot_randomized_2d_ev(ax1, ax2)
-    plotdl.save_fig(fig, "pts_geom", size_factor=(1,2), pad=0, h_pad=0, w_pad=0)
+    ax1 = fig.add_subplot(111)
+    plot_randomized_2d_ev(ax1)
+    plotdl.save_fig(fig, "pts_geom", size_factor=(1,1), pad=0, h_pad=0, w_pad=0)
 
 def plot_1d_cummulative_PN(ax1, ax2, eps_range = (2, 0.4, 0.2)):
     """ Plotting the eigenvalue dist 1d"""
