@@ -1119,15 +1119,15 @@ def plot_randomized_2d_ev(ax1, eps_range = (0.05, 0.1, 0.15)):
         #m.plot_PN(ax2, convention=1, color=color)
         #m2.plot_PN(ax2, convention=1, color=color, marker="x")
     ax1.set_xlim(2*exp(-sqrt(2*log(900)/(pi*min(eps_range)**2))), 2 )
-    ax1.set_yscale('log')
-    ax1.set_xscale('log')
+    #ax1.set_yscale('log')
+    #ax1.set_xscale('log')
     #ax2.set_yscale('log')
     #ax2.set_xscale('log')
     ax1.set_ylim(1/900,1)
     plotdl.set_all(ax1, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="upper left")
 
 
-def plot_geom():
+def plotf_geom():
     
     fig = plotdl.Figure()
     ax1 = fig.add_subplot(111)

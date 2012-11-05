@@ -4,7 +4,6 @@
 \documentclass[onecolumn,fleqn,12pt,openany,a4paper,longbibliography,oneside]{book}
 
 
-
 \renewcommand{\baselinestretch}{1.5} 
 \topmargin -1.5cm      
 \oddsidemargin -0.04cm   
@@ -22,7 +21,7 @@
 \usepackage{graphicx}
 \usepackage{epstopdf}
 \else
-\usepackage{graphicx}scrbook latex
+\usepackage{graphicx}
 \usepackage{epsfig}
 \fi
 
@@ -52,7 +51,7 @@
 %\usepackage[hebrew,english]{babel}
 
 %\usepackage[pdfencoding=auto,colorlinks=true,pagebackref=true,pdftitle={Research Proposal}]{hyperref}
-\usepackage[pdfencoding=auto,colorlinks=true,pdftitle={Research Proposal}]{hyperref}
+\usepackage[pdfencoding=auto,colorlinks=true,linkcolor=blue,pdftitle={Research Proposal}]{hyperref}
 % doi mus be loaded after hyperref
 %\usepackage{doi}
 \graphicspath{{figures/}}
@@ -139,7 +138,7 @@
 
 \include{introduction}
 \include{objectives}
-\include{background}
+%\include{background}
 
 \part{Completed Work and Preliminary Analysis}\label{part2}
 \include{completed_work}
