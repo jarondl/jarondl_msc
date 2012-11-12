@@ -55,11 +55,50 @@ parameter $\xi$.
 %           should be added to the background
 % wnm \ne wmn - assymetry - frustrated NESS
 
-\bigskip
+In general, the transition matrices have three symmetry categories:
+\begin{itemize}
+  \item 
+    $w_{nm} = w_{mn}$ \ -\ In the symmetric case the system could reach
+      equilibrium and ergodicity. The transient behavior might be diffusive. 
+      This kind of system has the analog of a Resistor Network, which is often
+      useful both analytically and numerically.
+  \item
+    $w_{nm} = \exp{-\frac{E_n-E_m}{T}} w_{mn}$\ -\ This is called detailed balance,
+      and allows the system to reach Boltzmann's equilibrium. One could make
+      the analogy of a "stochastic field", $\varepsilon(x) = \frac{E_n-E_m}{T}$.
+      Any closed loop integral over such a field must equal zero.
+  \item
+    $w_{nm} \ne w_{mn}$\ -\ In the assymetric case, a Non Equilibrium Steady
+      State (NESS) might be reached. 
+\end{itemize}
+
+
+\section{TODO VRH}
+
+\section{Motivations for the model}
+%% bullets - where does this model appear - balls and springs (leads to heat) - capacitors
+%%             - conductance hopping
+
+We have kept the model abstract and general on purpose, so that it
+might fit a large number of physical situations. Some physical applications include:
+%
+\begin{itemize}
+  \item
+    Balls and Springs\ - \ A simple mechanical system of balls connected to each
+      other by springs. The vibrational modes of the system are phonons, which conduct heat.
+  \item
+    Capacitors and Resistors\ -\ An electrical network of capacitors connected to each other
+      by resistors.
+  \item 
+    Mott impurity hopping\ - \ This kind of conductance arises from hopping 
+      between impurities.
+\end{itemize}
+
+\section{Organization}
 
 The organization of this proposal is in parts.
 \autoref{part1} includes this introduction,
 the objectives of the proposal and further background. 
 In \autoref{part2} we present the work accomplished so far.
 In \autoref{part3} lies the appendix, including some derivations,
-and an article currently under review at PRE, available in the arXiv \cite{de_leeuw_diffusion_2012}.
+and an article accepted for publication at PRE, available in the arXiv \cite{de_leeuw_diffusion_2012}.
