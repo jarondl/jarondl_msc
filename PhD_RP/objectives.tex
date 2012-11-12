@@ -2,54 +2,46 @@
 
 %TODO: orientation.
 
-The first X objectives have already been resolved and are covered in 
-\label{sec:papers}. The other objectives will be pursued during my PhD research.
+The first two objectives have been the target of my MSc, and are covered in 
+\autoref{sec:papers}. The other objectives will be pursued during my PhD research.
 
 
 %%%%%%%%%
 \section{Diffusion or Subdiffusion in $2d$}
 
-For the stochastic random network, the question of diffusion in most $1d$ systems was analytically solved in \cite{alexander_excitation_1981}. 
+For the stochastic random network, the question of diffusion in most $1d$
+systems was analytically solved in \cite{alexander_excitation_1981}. 
 The $2d$ case is, as far as we know, not yet analytically solved, and is much less clear. 
 In \cite{amir_localization_2010} it is claimed that in low density systems subdiffusion of
 order $\sim log^d$ should occur. We wish to examine these networks through their spectral
 properties to find out if this is indeed the case. Our focus will be on low densities,
 and on checking whether there exists a transition between low densities and high densities.
 
-
-%%%%%%%%%
-\section{Geometrical implications}%% to combine with 2.1, and make thiner
-% what has rescaling to do with it? discriminate geometry from statistics.
-% remove first four lines.
-
-The aforementioned density changes are equivalent to rescaling of the system size,
-while keeping the site locations in place, meaning that the geometry of the problem 
-does not change. But does the geometry matter at all? Of course, the geometric properties
-of the system are reflected in the statistics of the distances,
-and by extension in the statistics of the transition rates. 
-However, there is more information in the $W_{nm}$ matrix than just the statistics of its elements.
-The question arises: Are the statistics all that is needed to understand the physics of the system? 
-We shall check numerically if a randomized matrix with the same statistics behaves the same.
-
-
+Another aspect we wish to investigate is the influence of geometrical and 
+topological features on the physics of the system, beyond the direct 
+effect of changing the matrix elements statistics.
 
 %%%%%%%%%
 \section{Banded sparse matrices}
 
-%% make sure the reader knows who created VRH, no false attribution.
-% they generalized to treat this kind of matrices.
 
 Between the $1d$ nearest neighbor network and the $2d$ network,
 lie the quasi $1d$ network, which allows transitions to further neighbors.
-The conductance of quasi-$1d$ banded sparse matrices was studied numerically in \cite{stotland_random-matrix_2010}. There, they use \emph{Variable-Range-Hopping} in the sparse regime, where 
+The conductance of quasi-$1d$ banded sparse matrices was studied
+numerically in \cite{stotland_random-matrix_2010}.
+There, they generalized the \emph{Variable-Range-Hopping} scheme to treat 
+matrices in the sparse regime, where 
 $(\text{sparsity}\cdot \text{bandwidth}) \ll 1$. 
-However, in this work it is not clear what are the limits on either sparsity or bandwidth, and in particular where is the cross between the validity regime of VRH and that of SLRT. We will try to understand this issue analytically.
+However, in this work it is not clear what are the limits on either
+sparsity or bandwidth, and in particular where is the cross between the 
+validity regime of VRH and that of SLRT. We will try to understand this
+issue analytically.
 
 
 % TODO A specific version of these matrices were also studied in \cite{janssen_correlated_2000}.
 
 %%%%%%%%%%%
-\section{Assymetric VRH}
+\section{Models with relaxation}
 
 %% same potentials - is not relevant.
 %% do I mean Steady State?
@@ -71,14 +63,10 @@ However, in this work it is not clear what are the limits on either sparsity or 
 %           should be added to the background
 % wnm \ne wmn - assymetry - frustrated NESS
 
-
-In the networks we have discussed so far, each site had the same potential. Once
-we allow different potentials, the site occupation probabilities change.
-This can be accommodated for by modifying the transition rates by Boltzmann's factor. This is called \emph{VRH- Variable Range Hopping}\cite{ambegaokar_hopping_1971}, and has been widely studied. 
-Derived from Fermi statistics, it is shown that it is equally likely to go up in energy as it is to go down in energy.
-Therefore, the common practice is to treat the system as a symmetric resistor network,
-but we want to ask if there are cases where this reduction to a symmetrical network is not valid.
-If such cases exist we wish to develop a better estimation method for the transport. 
+Up to now we have dealt with symmetric matrices only, but as presented in 
+the introduction \autoref{sec:matrix_categories}, in general the transition 
+rates may be assymetric. We wish to extend the methods used so far to
+develop a better estimation method for the transport in these assymetrical matrices.
 
 
 % stotland Errata variable activation energy.. 
@@ -92,53 +80,59 @@ If such cases exist we wish to develop a better estimation method for the transp
 %% bullets - where does this model appear - balls and springs (leads to heat) - capacitors
 %%             - conductance hopping
 
+\section{Heat transport}
 
-% Could maybe add here an additional item from the notes if necessary.
+Heat conduction by phonons is also affected by the localization properties
+of the model. If disorder scatters normal modes and induces diffusive 
+energy transport, followed by normal heat conduction, then in accordance to Fourier's law, 
+the heat current $J$ depends inversely on the system size: $J\sim N^{-1}$. 
+However, in recent studies \ref{who} it was shown that $J\sim N^{-\alpha}$ 
+with $\alpha\ne 1$ is sometimes the case for disordered $1d$ harmonic chains.
+We wish to investigate the validity of Fourier's law for quasi-$1d$ and 
+higher dimensional disordered systems.
 
 %%%%%%%%%
 \section{The spectral properties of Sinai diffusion in $1d$}
 
-In a symmetric $1d$ random rate system, there is regular diffusion if the harmonic average is bounded, i.e.\ if
+In a symmetric $1d$ random rate system, there is regular diffusion 
+if the harmonic average is bounded, i.e.\ if
 %
 \begin{align}
  \sum_n \frac{1}{w_n} < \infty 
 \end{align}
 %
 
-On the other hand, for an asymmetric system, an activation energy builds up, and a Sinai diffusion behavior is followed.
-The conductance is exponentially small in the length, and the spreading is anomalous. The difference between those two models is clearly highly significant. We wish to investigate the difference between the models,
+On the other hand, for an asymmetric system, an activation energy 
+builds up, and a Sinai diffusion behavior is followed.
+The conductance is exponentially small in the length, and the spreading 
+is anomalous. The difference between those two models is clearly highly 
+significant. We wish to investigate the difference between the models,
 and the relation of this difference to the spectral properties of the model.
 
 %%%%%%%%%
 \section{Sinai diffusion in $2d$}
 
-We shall inspect the spectral properties, and spreading behavior of a $2d$ asymmetric system. The
-$2d$ case is much different than the $1d$ case, because particles can circumvent barriers. Interestingly,
-a nearest neighbor lattice can be constructed to present the same long time spreading as the $1d$ lattice \cite{blumberg_selinger_diffusion_1989}.
-The question is whether having nearest neighbor links only is a necessary condition for this behavior,
+We shall inspect the spectral properties, and spreading behavior of a
+$2d$ asymmetric system. The $2d$ case is much different than the $1d$ 
+case, because particles can circumvent barriers. Interestingly,
+a nearest neighbor lattice can be constructed to present the same 
+long time spreading as the $1d$ lattice \cite{blumberg_selinger_diffusion_1989}.
+The question is whether having nearest neighbor links only 
+is a necessary condition for this behavior,
 and how does this relate to the spectral properties of the $2d$ system.
 
 
-%%%%%%%%%% many body must appear after the quantum case
-
-%%%%%%%%%
-\section{The charge carrier discreteness}\label{sec:discreteness}
-
-Our work so far considered probability rate equations, which are valid for a single particle in the network.
-Having many non interacting particles is equivalent to having many realizations of a single particle,
-leaving the picture intact. However, if we have multiple \emph{interacting} particles in the network, additional factors may contribute. For example,
-a single occupancy rule (i.e.\ each site may have up to one particle) may cause Fermi blocking. Another
-issue is that the single particle behavior might be sub-diffusive while the bulk spreading is diffusive \cite{richards_theory_1977,hung_diffusion_2012}.
-
 
 %%%%%%%%%%
-\section{Generalization to a quantum state}
+\section{Quantum spreading}
 
 Up to now, we have concentrated on Markovian networks, dealing with the probabilities without phases.
 We will try to generalize the work to solve Hamiltonian matrices of the same genre.
 With a coherent Hamiltonian, 
-we expect suppression of the diffusion due to Anderson localization. However, finite
-dephasing time in this system will lead to noticeable transient diffusion.
+we expect suppression of the diffusion due to Anderson localization.
+However there may be transient diffusion, which would persist 
+for infinite time in the presence of dephasing.
+
 We intend to examine the applicability of the resistor network picture for 
 the calculation of the diffusion coefficient in these quantum networks, beginning with
 a simple model described by a real symmetric Hamiltonian:
@@ -149,29 +143,23 @@ a simple model described by a real symmetric Hamiltonian:
 %
 Where the parameter $x$ is distributed uniformly $x\in [0,\sigma]$. 
 
-% (1d and 2d) are different sections.
+%%%%%%%%%% many body must appear after the quantum case
 
-% 1d . Having a site, with random rates, we have diffusion - harmonic average (less or equal to inf).
-%      Now, if the rates are assymetric, we have sinai diffusion (Daniel).
-%      The conductance is exponentially small in the length, which is very different from before.
-%      The spreading is anomalic. 
-%      (Refs. in Daniel's paper. Assymetric random work.) Activation potential in stochastic field.
-%      It is a general claim that an activation potential will be created for any random selection.
-%      WHAT is the relation between Sinai's work and spectral properties? What about the temporal dependance.
-%% This is important. Derrida doesn't have a solution. Write a page about the amazing difference between those
-% two models, and relate to spectral properties.
-%  Google : Sinai diffusion 2D.
+%%%%%%%%%
+\section{The charge carrier discreteness}\label{sec:discreteness}
+
+Our work so far considered probability rate equations and single-particle Hamiltonians, which are valid 
+for a single particle in the network.
+Having many non interacting particles is equivalent to having many 
+realizations of a single particle, leaving the picture intact. 
+However, if we have multiple \emph{interacting} particles in the network, 
+additional factors may contribute. For example, a single occupancy rule 
+(i.e.\ each site may have up to one particle) may cause Fermi blocking. 
+Another issue is that the single particle behavior might differ from
+the bulk behavior, e.g.\ it could be sub-diffusive 
+while the bulk spreading is diffusive \cite{richards_theory_1977,hung_diffusion_2012}.
 
 
-% Read Halperin and Begouker. Mott -> resistor network. Fermi energy - statistics - The asymmetry disappears (It is equally 
-% likely to go "up" as it is to go "down" in energy.
-% Amir wrote about it. Also in textbooks.
-
-% The charge carrier discreteness.
-% The rate equation is for one body - probability.
-% If there are 100 particles with no interaction - that's the same.
-% What about blocking due to other particles (For example Fermi's exclusion). 
-% "Mean field" - using averages. Fermi Blocking. Eq 64 in stotland's X section.
 
 
 % Kottos. Quantum version. Localization etc. 

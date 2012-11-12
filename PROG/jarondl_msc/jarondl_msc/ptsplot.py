@@ -216,6 +216,10 @@ class ExpModel(object):
     @lazyprop
     def logxlim(self):
         return [nanmin(self.logvals), nanmax(self.logvals)]
+        
+    @lazyprop
+    def PN(self):
+        return ((self.eig_matrix**(4)).sum(axis=0)**(-1))[1:]
     
     def plot_diff(self, ax, label = r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
         """ """
