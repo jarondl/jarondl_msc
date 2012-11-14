@@ -52,6 +52,7 @@ class ExpModel_Banded_Logbox_pinning(ExpModel_Banded_Logbox):
     
     def pinning_matrix(self):
 		""" This matrix has negative disordered values on the diagonal"""
-		W = 1
-		pinning =  + np.random.permutation(np.linspace(1-W/2,1+W/2,self.sample.number_of_points()))
-		return pinning
+		W = 0.5
+		#pinning =  - np.random.permutation(np.linspace(0.5,1.5,self.sample.number_of_points()))
+		pinning =  - np.random.permutation(exp(np.linspace(-2*self.epsilon,0,self.sample.number_of_points())))
+		return np.diagflat(pinning)

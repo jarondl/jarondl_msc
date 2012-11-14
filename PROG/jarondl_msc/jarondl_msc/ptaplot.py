@@ -12,16 +12,17 @@ import os
 from numpy import random, pi, log10, sqrt,  exp, expm1, sort, eye, nanmin, nanmax, log, cos, sinc
 from scipy.special import gamma
 from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
-from matplotlib import use
-use('cairo.pdf')
-from matplotlib import pyplot as plt
+
+import plotdl
+from plotdl import plt
+
 
 import numpy as np
 import scipy as sp
 import matplotlib as mpl
 
 import ptsplot
-import plotdl
+
 import pta_models
 
 

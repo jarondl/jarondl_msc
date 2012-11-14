@@ -29,28 +29,18 @@ import logging
 
 from matplotlib import use
 if 'DISPLAY' in os.environ.keys() :
-    use('qt4agg')
+    use('gtk')
     X_AVAILABLE = True
 else:
     X_AVAILABLE = False
-    use('agg')
+    use('cairo')
 import matplotlib as mpl
-from matplotlib.backends.backend_agg import FigureCanvasAgg  # For raster rendering, e.g. png
-#from matplotlib.backends.backend_cairo import FigureCanvasCairo # For vector rendering e.g. pdf, eps  ###Doesn't have tex
-#from matplotlib.backends.backend_pdf import FigureCanvasPdf
-from matplotlib.backends.backend_cairo import FigureCanvasCairo as FigureCanvasPdf
-from matplotlib.backends.backend_ps import FigureCanvasPS
-from matplotlib.figure import Figure
+from matplotlib import pyplot as plt
+from matplotlib.pyplot import draw, draw_if_interactive
 from matplotlib import rc
 from matplotlib.colors import LogNorm
 from matplotlib.transforms import Bbox
-if X_AVAILABLE :
-    from matplotlib import pyplot
-    from matplotlib.pyplot import draw, draw_if_interactive
-    pyplot.ion()
-else:
-    def draw_if_interactive():
-        pass
+
 from matplotlib.widgets import Slider
 from matplotlib import ticker
 
@@ -99,37 +89,19 @@ def set_all(ax, title=None, xlabel=None, ylabel=None, legend_loc=False):
 
 
 def new_ax_for_file():
-    """  Create a new :class:`matplotlib.Figure` and a new :class:`matplotlib.Axes`.
+    """  OBSOLETE Create a new :class:`matplotlib.Figure` and a new :class:`matplotlib.Axes`.
 
         :return: A :class:`matplotlib.Axes` instance you can draw on.
+        
+        This is obsolete. Instead use plt.subplots
     """
-    fig = Figure()
-    ax = fig.add_subplot(1, 1, 1)
+    f, ax = plt.subplots()
     return ax
-
-def new_ax_for_screen():
-    """  Create a new :class:`matplotlib.Figure` and a new :class:`matplotlib.Axes`.
-
-        :return: A :class:`matplotlib.Axes` instance you can draw on.
-    """
-    if X_AVAILABLE:
-        fig = pyplot.figure()
-        ax = fig.add_subplot(1, 1, 1)
-        return ax
-    else:
-        print("X is not available")
-
 
 def save_ax(ax, fname, **kwargs):
     """  Save an axis to a pdf file.
     """
     save_fig(ax.get_figure(), fname, **kwargs)
-
-def save_fig_to_png(fig, fname):
-    """ """
-    canvas = FigureCanvasAgg(fig)
-    canvas.print_figure(fname + ".png")
-    print("Created:\n\t {0} ".format(fname + ".png"))
 
 def save_fig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor=(1, 1),pad=1.2, h_pad=None, w_pad=None, tight=True):
     """ Save figure to pdf and eps
@@ -138,25 +110,19 @@ def save_fig(fig, fname, size=[latex_width_inch, latex_height_inch], size_factor
     fig.set_size_inches((size[0] * size_factor[0], size[1] * size_factor[1]))
     if tight:
         tight_layout(fig, pad=pad, h_pad=h_pad, w_pad=w_pad)
-    canvas_pdf = FigureCanvasPdf(fig)
-    #canvas_ps = FigureCanvasPS(fig)
     pdfname = os.path.join("figures", fname + ".pdf")
-    #epsname = os.path.join("figures", fname + ".eps")
-    canvas_pdf.print_figure(pdfname)
-    #canvas_ps.print_figure(epsname)
+    fig.savefig(pdfname)
     print("Created:\n\t {0} ".format(pdfname))
-    #print("Created:\n\t {0} ".format(epsname))
-
+    
 
 def animate(plot_function, filename, variable_range, **kwargs):
-    """
+    """ matplotlib can now make animations
     """
     # Create temporary dir:
     tempdir = tempfile.mkdtemp()
 
-    fig = Figure()
-    ax = fig.add_subplot(1, 1, 1)
-
+    fig, ax = plt.subplots()
+    
     for num, var in enumerate(variable_range):
         plot_function(ax, var, num=num, **kwargs)
         tempname = os.path.join(tempdir, "img{0:04}".format(num))
