@@ -22,6 +22,7 @@ import matplotlib as mpl
 
 import ptsplot
 import plotdl
+import pta_models
 
 
 mpl.rc('figure', autolayout=True)
@@ -51,8 +52,8 @@ def plot_banded_pn_nopinning(ax, b, s_values, number_of_sites=1000):
     """ Banded 1d """
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
     for s in s_values:
-        model = ptsplot.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b)
-        model.plot_PN(ax, convention=0, label=r"$\sigma={0}$".format(s))
+        model = pta_models.ExpModel_Banded_Logbox_pinning(sample, epsilon=s, bandwidth1d=b)
+        model.plot_PN(ax, label=r"$\sigma={0}$".format(s))
 
 def plotf_banded_pn_nopinning():
     """  This plots the two relevant files from the `plot_banded_pn_nopinning`
