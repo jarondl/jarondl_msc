@@ -1,24 +1,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%  notes
+%%%  pts
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%\documentclass[onecolumn,fleqn,notitlepage,secnumarabic]{revtex4}
-\documentclass[onecolumn,fleqn]{revtex4}
-
+\documentclass[aps,pre,floats,floatfix,twocolumn]{revtex4}
 
 % special 
 \usepackage{ifthen}
 \usepackage{ifpdf}
-\usepackage{float}
 \usepackage{color}
-
-% fonts
-\usepackage{latexsym}
-\usepackage{amsmath} 
-\usepackage{amssymb} 
-\usepackage{bm}
-\usepackage{wasysym}
-
 
 \ifpdf
 \usepackage{graphicx}
@@ -28,30 +16,22 @@
 \usepackage{epsfig}
 \fi
 
+% fonts
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{wasysym}
 
-\usepackage[colorlinks,linkcolor=blue,bookmarks=true]{hyperref}
-
-
-% packages added by jarondl
-%
-%\usepackage{subfig}  %% causes odd captions
-%\usepackage{verbatim} % for multiline comments
-%\usepackage{natbib} % change the bibliography style 
-%\usepackage{fancybox} % allows putting boxes with borders
-%\usepackage{cmap}  % for making pdf mathmode searchable
-%\usepackage{sectsty}
-%\usepackage[pdftitle={Notes by Jarondl}]{hyperref}  % for hyperlinks in biblio. should be called last?
-%\graphicspath{{figures/},{../PROG/figures/}}
-
+%\usepackage{hyperref}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 % NEW 
 \newcommand{\abs}[1]{\left|#1\right|}
 \newcommand{\Prob}{\mbox{Prob}\,}
 \newcommand{\erf}{\mbox{erf}\,}
-\newcommand{\barline}[1]{#1}
+\newcommand{\df}{{\rm d}}
 
 % math symbols I
 \newcommand{\sinc}{\mbox{sinc}}
@@ -84,7 +64,8 @@
 %\newcommand{\mylabel}[1]{\textcolor{blue}{[#1]}\label{#1}} 
 \newcommand{\beq}{\begin{eqnarray}}
 \newcommand{\eeq}{\end{eqnarray}} 
-\newcommand{\be}[1]{\begin{eqnarray}\ifthenelse{#1=-1}{\nonumber}{\ifthenelse{#1=0}{}{\mylabel{e#1}}}}
+\newcommand{\be}[1]{\begin{eqnarray}\ifthenelse{#1=-1}
+{\nonumber}{\ifthenelse{#1=0}{}{\mylabel{e#1}}}}
 \newcommand{\ee}{\end{eqnarray}} 
 
 % arrangement
@@ -100,134 +81,1609 @@
 %\newcommand{\Fig}[1]{Fig.\!\!~\ref{#1}}  
 \newcommand{\Eq}[1]{\textcolor{blue}{Eq.\!\!~(\ref{#1})}} 
 \newcommand{\Fig}[1]{\textcolor{blue}{Fig.}\!\!~\ref{#1}} 
-\newcommand{\hide}[1]{} %{\textcolor{red}{[hidden text]}} %{}
-\newcommand{\rmrk}[1]{\textcolor{red}{#1}}
+\newcommand{\hide}[1]{}
+%\newcommand{\hide}[1]{\textcolor{red}{[hidden text]}} %{}
+\newcommand{\rmrk}[1]{#1}
+%\newcommand{\Rmrk}[1]{\textcolor{blue}{\LARGE\bf #1}}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% extra math commands by jarondl
-\newcommand{\inner}[2]{\left \langle #1 \middle| #2\right\rangle} % Inner product
-\newcommand{\avgangle}[1]{\left\langle #1 \right\rangle} % Average <x>
-
-%fminipage using fancybox package
-\newenvironment{fminipage}%
-  {\begin{Sbox}\begin{minipage}}%
-  {\end{minipage}\end{Sbox}\fbox{\TheSbox}}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Page setup
-\setlength{\parindent}{0cm} 
-\setlength{\parskip}{0.3cm} 
-
-%counters
-\renewcommand{\thesection}{\arabic{section}}
-\renewcommand{\thesubsection}{\arabic{subsection}}
-\setcounter{section}{0}
-\setcounter{subsection}{0}
-
-% Sections
-\newcommand{\sect}[1]
-{
-\addtocounter{section}{1} 
-\setcounter{subsection}{0}
-\ \\ 
-\pdfbookmark[1]{\thesection. \ #1}{sect.\thesection}
-{\Large\bf $=\!=\!=\!=\!=\!=\;$ [\thesection] \ #1}  
-\nopagebreak
-}
-
-% subections
-\newcommand{\subsect}[1]
-{
-\addtocounter{subsection}{1} 
-\ \\ 
-\pdfbookmark[2]{\ \ \ \ \thesection.\thesubsection. \ #1}{subsect.\thesection.\thesubsection}
-{\bf $=\!=\!=\!=\!=\!=\;$ [\thesection.\thesubsection] \ #1}  
-\nopagebreak
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%\renewcommand{\includegraphics}[2][]{\ \\ \ {\color{blue} FIGURE:} \ \\ \ }
-
+%\renewcommand{\includegraphics}[2][]{\ \\ \ FIGURE: \ \\ \ }
+\renewcommand{\cite}[1]{\textcolor{blue}{[\onlinecite{#1}}]} %{[\onlinecite{#1}]} 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\title{Notes regarding LRT to VRH crossover}
+\title{Diffusion in sparse networks: linear to semi-linear crossover}
 
-\author{Yaron de Leeuw, Doron Cohen}
-\date{\today}
+\author{Yaron de Leeuw and Doron Cohen}
+
+\affiliation{\mbox{Department of Physics, Ben Gurion University of the Negev, Beer Sheva 84105, Israel}} 
+
+\begin{abstract}
+We consider random networks whose dynamics is
+described by a rate equation, with transition rates $w_{nm}$
+that form a symmetric matrix. The long time evolution
+of the system is characterized by a diffusion coefficient~$D$.
+In one dimension it is well known that $D$ can display an abrupt
+percolation-like transition from diffusion (${D>0}$)
+to sub-diffusion (${D=0}$). A question arises whether
+such a transition happens in higher dimensions.
+Numerically $D$ can be evaluated using a resistor network
+calculation, or optionally it can be deduced from 
+the spectral properties of the system. Contrary to a recent 
+expectation that is based on a renormalization-group analysis, 
+we deduce that $D$ is finite; 
+suggest an ``effective-range-hopping" procedure to evaluate it;
+and contrast the results with the linear estimate.
+The same approach is useful for the analysis of 
+networks that are described by quasi-one-dimensional  
+sparse banded matrices. 
+\end{abstract}
+
+
 \maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-We consider 1D ($d{=}1$) or 2D ($d{=}2$) network systems whose dynamics is described 
-by a rate equation, with transitions rates $w_{nm}$ that form a symmetric matrix.
-For presentation purpose we regard the nodes of the network as {\em sites}, 
-each having a location~$x_n$. In particular (but no exclusively) we are interested 
-in a model where the rates depend exponentially on the distance 
-between randomly distributed sites, namely $w_{nm}\propto \exp(|x_n-x_m|/\xi)$. 
-It is natural to characterize such a system by a sparsity parameter~$s$ 
-that reflects the connectivity of the network. In the above example 
-the natural definition is $s=\xi/r_0$ where $r_0$ is the average distance 
-between neighboring sites. 
+\section{Introduction}
 
-The models that we address are related and motivated  
+The study of network systems is of interest in 
+diverse fields of Mathematics, Physics, and Computer and Life Sciences. 
+\rmrk{Commonly a network is described} by a symmetric matrix 
+that consists of real non-negative elements, e.g. the adjacency matrix, 
+or the link probability matrix, 
+that have unique spectral properties \cite{dorogovtsev,bradde}. 
+%  
+Physically motivated, in this work we consider $d$-dimensional 
+network systems, whose dynamics is described by a rate equation
+%
+\be{1}
+\frac{dp_n}{dt} \ \ =  \ \ \sum_m w_{nm} p_m 
+\eeq
+%
+The off-diagonal elements of $\bm{w}$ 
+are the transition rates, while the diagonal 
+elements are the decay rates 
+%
+\beq
+w_{nn} =-\gamma_n, 
+\ \ \ \ \  \gamma_n\equiv \sum_{m (\neq n)} w_{mn}  
+\eeq
+%
+We assume a symmetric matrix and write schematically
+%
+\beq
+\bm{w} \ \ = \ \ \text{matrix}\{w_{nm}\}
+\eeq
+%
+\rmrk{In some sense, one can regard $\bm{w}$ as 
+a discrete {\em Laplacian} that is associated with the network.}
+Clearly the physical problem is related to the study 
+of random walk in a disordered environment \cite{bouch,Montroll,Kaya}.
+
+For presentation purposes we regard the nodes 
+of the network as {\em sites}, 
+each having a location~$x_n$. 
+By construction, we assume that the transition rates $w_{nm}$ 
+are given by the expression ${w_0 \eexp{-\epsilon_{nm}} B(x_n{-}x_m)}$,  
+where $B(r)$ describes the systematic dependence 
+of the coupling on the distance between the sites, 
+and $\epsilon$ is a random variable that might  
+represent, say, the activation energy that is required 
+to make a transition. \rmrk{Consequently the 
+network is characterized by two functions:}
+%
+\be{4}
+w(r,\epsilon) \ \ &\equiv& \ \ w_0 \ \eexp{-\epsilon} \ B(r) \\
+\rho(r,\epsilon) \ \ &\equiv& \ \ \mbox{local density of sites}
+\eeq
+%
+The latter is defined as the density 
+of sites in $(r,\epsilon)$ space, 
+relative to some initial site. 
+Obviously the functional dependence 
+of this density on $r$ is affected 
+by the dimensionality of the network. 
+
+
+{\em Sparsity.-- }
+Our interest is focused on ``sparse" networks.
+This means that the transition rates between 
+neighboring sites are log-wide distributed    
+as in ``glassy" systems. These rates span 
+several orders of magnitudes as determined 
+by the dispersion of $r$ 
+or by the dispersion of $\epsilon$. 
+%
+In particular (but not exclusively) we are interested 
+in a random site model where the rates depend exponentially 
+on the distance between randomly distributed sites, 
+namely ${B(r) = \exp(-r/\xi)}$. 
+In this particular case one can characterize the 
+sparsity by the parameter 
+%
+\be{101}
+s \ \ = \ \ {\xi} / {r_0}
+\eeq
+%
+where $r_0$ is the average distance between 
+neighboring sites. We refer to such networks 
+as ``sparse" if $s\ll1$.
+
+
+{\em Sparsity vs percolation.-- }
+The problem that we consider is a variant of the percolation problem \cite{aa0}:
+Instead of considering a bi-modal distribution (``zeros" and ``ones")
+we consider a log-wide distribution of rates \cite{Halp}, 
+for which the median is much smaller than the mean value. 
+We call such a network ``sparse" (with quotation marks) because 
+the large elements constitute a minority.
+
+
+{\em Sparsity vs disorder.-- }
+While the standard  ``percolation" problem 
+can be regarded as the outcome of extreme ``sparsity", 
+the latter can be regarded as arising from an extreme ``disorder".  
+Accordingly, the model that we are considering 
+is a close relative of the Anderson localization 
+problem, and therefore we shall dedicate 
+some discussion to clarify the relation. 
+
+
+{\em Physical context.-- }
+%
+The model that we address is related and motivated  
 by various physical problems, for example: 
 phonon propagation in disordered solids \cite{phn1,phn2,amir}; 
-Mott hopping conductance \cite{mott,miller,AHL,pollak,VRHbook};
+Mott hopping conductance \cite{mott,miller,AHL,Halp,pollak,VRHbook};
+transport in oil reservoirs \cite{aa1,aa2};
 conductance of ballistic rings \cite{kbd};
-energy absorption by trapped atoms \cite{kbw}. 
+and energy absorption by trapped atoms \cite{kbw}. 
+%
 Optionally these models can be fabricated by combining oscillators: 
-say mechanical springs or electrical RC elements.    
+say mechanical springs or electrical resistor-capacitor elements. 
+%   
 In all these examples the issue is to understand how 
 the {\em transport} is affected by the {\em sparsity} of a network.  
-If the rates are induced by a driving source, this issue can be phrased as  
-going {\em beyond} the familiar framework of Linear Response Theory (LRT), 
+If the rates are induced by a driving source, 
+this issue can be phrased as  going {\em beyond} 
+the familiar framework of linear response theory (LRT), 
 as explained below.  
 
-Our interest is focused in the diffusion coefficient $D$ that characterizes the 
-long time dynamics of a spreading distribution. It can be defined or deduced 
-either from the variance ${S(t) \sim Dt}$ or from the decay of the 
-survival probability ${\mathcal{P}(t) \sim (D t)^{-d/2}}$. Hence it is 
-related to the spectral properties of the transition rate matrix ${\bm{w}=\{w_{nm}\}}$.
-Exploiting the formal analogy with a resistor network calculation \cite{miller},  
-namely $w_{nm}$ are like connectors and $D$ is like conductivity, 
-one realizes that $D$ is given by a semi-linear functional $D=D[\bm{w}]$ 
-that has the property ${D[\lambda \bm{w}] = \lambda D[\bm{w}]}$, 
-while in general ${D[\bm{w}^a+\bm{w}^b] > D[\bm{w}^a]+D[\bm{w}^b]}$ instead of equality.      
 
-In 1D it is well known \cite{alexander} that $D$ can display an abrupt 
+{\em Diffusion and subdiffusion.-- } 
+Our interest is focused on the diffusion coefficient $D$ that characterizes the 
+long time dynamics of a spreading distribution. The simplest way 
+to define it, \rmrk{as in standard textbooks}, is via 
+the variance $S(t) \equiv \left\langle r^2\right\rangle_t$. Namely,
+%
+\be{111}
+D \ \ \equiv \ \ (2d)^{-1} \ \lim_{t\rightarrow\infty} \frac{S(t)}{t}, 
+\eeq 
+%
+Optionally it can be defined or deduced from the decay of the 
+survival probability ${\mathcal{P}(t) \sim (D t)^{-d/2}}$. 
+Hence it is related to the spectral properties of the transition rate matrix. 
+
+In the $d{=}1$ case, it is well known \cite{alexander} that $D$ can display an abrupt 
 percolation-like transition from diffusive (${D>0}$) to sub-diffusive (${D=0}$) 
-behavior as the sparsity parameter drops below the critical value ${s_c=1}$.   
-The question arises whether such a transition happens also in 
-higher dimensions. In \cite{amir} the spectral properties in the 2D case 
-have been investigated very seriously, but the results were {\em inconclusive}  
-as far as the question above is concerned.
+behavior, as the sparsity parameter drops below the critical value ${s_{cr}=1}$.
+Similar anomalies are found for fractal structures with ${d<2}$, 
+also known as ``random walk on percolating clusters", %R3
+see \cite{havlin1,granek1,granek2,havlin,klemm}. 
+A question arises whether such a transition might happen in higher dimensions. 
+
+
+In \cite{amir} the spectral properties in the $d{=}2$ case 
+were investigated: on the basis of the renormalization group (RG) procedure 
+it was deduced that $\mathcal{P}(t)$ decays in a logarithmic way, 
+indicating anomalous (sub) diffusion.  
+%
+In the present work we shall introduce a different approach 
+that implies, contrary to the simple RG treatment, 
+that in spite of the sparsity, the long time dynamics 
+is in fact diffusive rather than sub-diffusive. 
+
+
+
+{\em Resistor network picture.-- }
+One can regard the $p_n$ in \Eq{e1} as the charge in site~$n$; 
+each site is assumed to have unit capacitance; 
+hence $p_n{-}p_m$ is the potential difference; 
+and $w_{nm}(p_m{-}p_n)$ is the current 
+from~$m$ to~$n$. Accordingly \Eq{e1} can be regarded
+as the Kirchhoff equation of the circuit.
+%
+While calculating $D$ it is illuminating to exploit 
+the implied formal analogy with a resistor network 
+calculation \cite{miller,pollak,kbd,camboni}.  
+Namely, regarding $w_{nm}$ as connectors, 
+it follows that $D$ is formally like conductivity.
+It follows that $D[\bm{w}]$ is in general a {\em semi-linear} function: 
+%
+\be{180}
+D[\lambda \bm{w}] \ &=& \ \lambda D[\bm{w}] 
+\\ \label{e181}
+D[\bm{w}^a+\bm{w}^b] &>& D[\bm{w}^a]+D[\bm{w}^b]
+\eeq
+%
+If the rates are induced by a driving source, 
+the above super additivity implies that 
+the analysis should go {\em beyond} the familiar framework 
+of linear-response theory \cite{slk}.
+
+
+In this work we obtain an improved estimate for~$D$ 
+that we call effective range hopping (ERH).
+Using this approach we show that in the $d{=}2$ case, as $s$ becomes small, 
+the functional $D[\bm{w}]$ exhibits a smooth crossover from ``linear" behavior  
+to ``semi-linear" VRH-type dependence.  
+%
+Our approach is inspired by the resistor network picture 
+of \cite{miller,AHL,Halp,pollak,VRHbook,aa1,aa2,kbd,kbw,slk},  
+and leads in the appropriate limit to the well known 
+Mott's variable range hopping (VRH) estimate for~$D$.  
+
+
+{\em Outline.-- } We first describe some known 
+results, and some additional numerical results, 
+for the spectral properties of $d{=}1$ and $d{=}2$ 
+networks, and for the dependence of $D$ on the sparsity.
+%
+Then we show that an ERH procedure 
+is useful in describing the crossover from the 
+linear regime (no sparsity) to the semi-linear regime.
+In the latter regime a ``resistor network"  approach 
+is essential, and the percolation threshold manifests 
+itself in the calculation. 
+%
+Finally we demonstrate that the same ERH procedure can 
+be applied in the case of a quasi-one-dimensional network 
+that is described by a sparse banded random matrix. 
+The latter is of relevance to previous studies 
+of energy absorption by a weakly chaotic system \cite{slk}.
+%
+We conclude with a discussion and a short summary.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The random site hopping model}
+
+\rmrk{Consider a network that consists of sites 
+that are distributed in space}, locations $x_n$.
+With each bond $nm$ we associate an activation 
+energy $\epsilon_{nm}>0$, and assume   
+%
+\beq
+w_{nm} \ \ = \ \  w_0 \ \eexp{-\epsilon_{nm}} \ \eexp{-|x_n-x_m|/\xi} 
+\eeq
+%
+Accordingly we have the identification 
+%
+\beq
+B(r) \ \ = \ \ \eexp{-r/\xi} 
+\eeq
+%
+We note that in the traditional formulation 
+of the Mott problem the ``activation energies"
+are not due to some ``barriers", 
+but are determined by the on-site binding energies, 
+namely $\epsilon_{nm}=|\varepsilon_n-\varepsilon_m|/T$,   
+where $T$ is the temperature.
+In this paper we treat the $\epsilon_{nm}$ 
+as an uncorrelated random variable.
+
+The density of sites relative to some initial site 
+is characterized  by a joint distribution function 
+%
+\be{7}
+\rho(r,\epsilon)drd\epsilon = \frac{\Omega_d \, r^{d-1}dr}{r_0^{d}} \ f(\epsilon)d\epsilon,     
+\ \ \ \ \ \Omega_d=2,2\pi,4\pi
+\eeq
+%
+We distinguish between the ``Mott hopping model" 
+and the ``degenerate hopping model". Namely, 
+%
+\be{72}
+f(\epsilon) &=& 1  \ \ \ \ \ \ \ \ \ \ \ \ \mbox{Mott hopping model}   \\        
+\label{e71}
+f(\epsilon) &=& \delta(\epsilon) \ \ \ \ \ \ \ \ \ \mbox{Degenerate hopping model}
+\eeq
+%
+The normalization of $f(\epsilon)$ as defined above 
+fixes the value of the constant $r_0^d$, which we regard 
+as the ``unit cell". 
+In the numerics we set the units of distance such that ${r_0=1}$.
+
+In the traditional formulation of the Mott problem 
+it is assumed that mean level spacing within $\xi^d$ 
+is $\Delta_{\xi}$, such that the number of accessible sites 
+is ${(d\varepsilon /\Delta_{\xi}) \, (d^3r/\xi^d)}$. 
+\rmrk{By the convention} of \Eq{e7} this implies 
+that the unit cell dimension is temperature dependent
+%
+\be{100}
+r_0^d \ \ = \ \  \left(\frac{\Delta_{\xi}}{T}\right) \, \xi^d
+\ \ \ \ \ \ \rmrk{\text{[for Mott model]}}
+\eeq
+%
+We re-emphasize that the number of sites per unit volume
+in the Mott problem is infinite, but effectively 
+only $\sim T/\Delta_{\xi}$ sites are accessible 
+within $\xi^d$ per attempted transition. 
+%
+It is convenient to characterize a random 
+site model by a ``sparsity" parameter that 
+is defined as in \Eq{e101}. Accordingly 
+%
+\be{1011}
+s \ \ \equiv \ \ \frac{\xi}{r_0} \ \ = \ \ \left(\frac{T}{\Delta_{\xi}}\right)^{1/d} 
+\ \ \ \ \ \ \rmrk{\text{[for Mott model]}}
+\eeq
+%
+We refer to a network as ``sparse" if $s\ll1$.
+
+
+\rmrk{The lattice model with near-neighbor (n.n.) transitions} 
+is one of the most popular models in statistical mechanics: 
+in particular the random walk problem on a lattice 
+is a standard textbook example. If the rates are 
+generated from a log-wide distribution, it can be regarded 
+as a variant of the random site hopping model. 
+For details see Appendix \ref{aLattice}. 
+% 
+In particular we note that the $d{=}1$ version is 
+formally equivalent: it does not matter whether 
+the distribution of $w$ is due to random distances $r$, 
+or due to random activation energies $\epsilon$.  
+
+Finally we note that a quasi-one-dimensional version 
+of the random site model arises in the study 
+of energy absorption as explained in Appendix \ref{aBanded}, 
+and later addressed in Section \ref{sBanded}.    
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The characterization of transport}
+
+The long time dynamics that takes place on the network 
+is characterized by the spreading $S(t)$, 
+and by the survival probability $\mathcal{P}(t)$.
+If the system is diffusive, these functions
+have the following functional form: 
+%
+\beq
+S(t) &=& \left\langle r^2\right\rangle_t \quad\sim\quad  (2d)Dt\ \\
+\mathcal{P}(t) &\sim&  \frac{r_0^d}{\left({4\pi D t}\right)^{d/2}} 
+\eeq
+%
+See Appendix \ref{diff} for details. The diffusion 
+coefficient~$D$ appears here \rmrk{in consistency with 
+its definition} in \Eq{e111}. 
+\rmrk{We note that in the case of sub-diffusion} 
+%
+\beq
+S(t) \ \ \propto \ \ t^{\alpha}, 
+\ \ \ \ \ \ \ [\alpha<1]
+\eeq
+%
+which implies by \Eq{e111} that ${D=0}$.
+
+
+\rmrk{The spectrum} of the matrix $\bm{w}$ consists 
+of the trivial eigenvalue $\lambda_0=0$ that is 
+associated with a uniform distribution,   
+and a set of negative numbers $-\lambda_k$
+that describe the decaying modes.   
+The spectral function~$\mathcal{N}(\lambda)$ 
+counts the number of eigenvalues up to the value~$\lambda$.
+We normalize it per site such that ${\mathcal{N}(\infty)=1}$.
+The associated density of eigenvalues $g(\lambda)$ 
+is related to $\mathcal{P}(t)$ by a Laplace transform.
+See Appendix \ref{diff} for details.
+It follows that in the case of a diffusive system 
+%
+\be{6}
+\mathcal{N}(\lambda) \ \ = \ \ \int^\lambda g(\lambda)d\lambda  
+\ \ \sim \ \ \left(\frac{r_0}{2\pi}\right)^d\left[\frac{\lambda}{D}\right]^{d/2} 
+\eeq
+%
+\rmrk{In Appendix \ref{deb} we clarify that this 
+expression agrees with {\em Debye law}. 
+Accordingly the calculation of $D$ parallels 
+the calculation of the speed of sound~$c$ in Debye model.} 
+
+
+Regarded as a transport coefficient $D$ relates 
+the probability current to the density gradient.
+This is known as Fick's law. 
+From the discussion in the Introduction
+it follows that $D$~is like the {\em conductivity} 
+of a resistor network, which relates the 
+electrical current to the voltage difference. 
+Some further details on the practical calculation 
+of the conductivity are presented in Appendix~\ref{res}. 
+On the basis of this analogy it should be clear 
+that $D[\bm{w}]$ is in general a {\em semi-linear} 
+function of the rates, see \Eq{e181}. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Exact and numerical results for the $d{=}1$ lattice model}
+\label{onedim}
+
+In the case of a $d{=}1$ lattice model with n.n. transitions 
+it is natural to use the notation $w_n=w_{n,n{-}1}$. 
+Pointing out the analogy with adding connectors in series 
+the expression for $D$ is 
+%
+\beq
+D \ = \ \left( \frac{1}{N} \sum_n \frac{1}{w_n} \right)^{-1} 
+= \ \ [s>1] \, \frac{s-1}{s} \, w_0
+\eeq
+%
+The calculation that leads to the last equality 
+has been done with the distribution of \Eq{e15}, 
+where ${s \equiv \xi/r_0}$.  Note that we have 
+here a serial addition of resistors $R=\sum_n R_n$, 
+where ${R_n=1/w_n}$.  For ${s<1}$ the distribution 
+of each $R_n$ is dominated by the large values, 
+hence ${R=\infty}$. On the other extreme for ${s>1}$ 
+the distribution of the $R_n$ has finite first and second moments,  
+and accordingly the result for $R$ becomes self-averaging, 
+as implied by the central limit theorem.
+This means the $D$ is ``well defined" only for ${s>2}$. 
+For ${1<s<2}$ the result for the average $R$ is finite 
+but not self-averaging.
+
+
+The dependence of $D$ on $s$ is illustrated in \Fig{f1}a.
+In the sub diffusive regime (${s<1}$),  
+where the result for the diffusion coefficient is ${D=0}$, 
+the dynamics becomes sub-diffusive.  
+The explicit results for the survival probability 
+and for the spreading are known~\cite{alexander}: 
+%
+\beq
+S(t) \ \ &\sim& \ \ t^{2s/(1+s)}   \\ 
+\mathcal{P}(t) \ \ &\sim& \ \ t^{-s/(1+s)}
+\eeq
+%
+and the associated spectral function is:
+%
+\beq
+\mathcal{N}(\lambda) \ \ \sim \ \ \lambda^{s/(1+s)}
+\eeq
+%
+The numerical demonstration of the latter expectation is displayed 
+in \Fig{f2} (left upper panel).
+We clearly see that for $s<1$ the asymptotic slope corresponds 
+to sub-diffusion, while for ${s>1}$ it corresponds to diffusion. 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Numerical results for the $d{=}2$ random site model}
+
+Results for the spectral counting function
+of the degenerate $d{=}2$ random site model are presented  
+in \Fig{f2} (right upper panel). 
+We also display there (in the lower panel) 
+the participation number (PN) for each eigenstate. 
+The PN of an eigenstate that corresponds to 
+an eigenvalue $\lambda_k$ is conventionally 
+defined as follows:
+%
+\beq 
+\text{PN} \ \ \equiv \ \ \left[ \sum_n |\langle n| \lambda_k \rangle|^4 \right]^{-1}
+\eeq
+%
+As expected from the study of localization
+in a disordered elastic medium \cite{loc}, 
+the PN becomes larger in the limit ${\lambda\rightarrow 0}$, 
+without apparent indication for a mobility threshold.
+
+
+Assuming localized modes that are conceived via dimerization of 
+neighboring sites, $\mathcal{N}(\lambda)$ should equal 
+the probability $\exp[-\mathsf{V}(r)/r_0^d]$ 
+not to have any neighboring site within 
+the volume $\mathsf{V}(r)$ of the sphere ${2w_0 \exp(-r/\xi) > \lambda}$. 
+The RG analysis of \cite{amir} refines this naive 
+expectation, adding a factor of~2 in the exponent, leading to 
+%
+\be{23}
+\mathcal{N}(\lambda) \ \ = \ \ \exp\left[ -\frac{\Omega_d}{2d} \Big(-s \ln\left(\frac{\lambda}{2w_0}\right)\Big)^d \right]
+\eeq
+%
+where $s \equiv \xi/r_0$. 
+This expectation is represented in \Fig{f2} (right upper panel) 
+by solid lines.  We see that it fails to capture the small $\lambda$ regime, 
+where the distribution corresponds to diffusive behavior. 
+
+
+Extracting $D$ via fitting to \Eq{e6} we get \Fig{f1}b. 
+We see that in the $d{=}2$ model {\em there is no abrupt crossover 
+to sub-diffusion}. We therefore would like to find a way 
+to calculate $D$, and hence to have the way to determine 
+the small $\lambda$ asymptotics. 
+
+
+\rmrk{{\em Note added.-- }
+%
+One should conclude that the RG of reference \cite{amir} 
+applies only for the analysis of the high frequency response, 
+while our interest is focused in the low frequency (dc) analysis.
+The crossover between the two regimes is implied. 
+For more details in this direction see a follow-up work \cite{amirNEW}
+that confirms our physical picture and demonstrates numerically 
+the implied crossover.
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Linear and ERH estimates for the diffusion coefficient}
+
+The standard way to calculate diffusion
+in a $d{=}1$ random walk problem is to inspect 
+the transient growth of the variance $\mbox{Var}(n)=2Dt$.
+In the stochastic context, if we start at site $n$
+we have ${\mbox{Var}(n)=\sum_{n'} p_{n'} (n'-n)^2}$, 
+with $p_{n'}=w_{n'n}t$, hence
+%
+\beq
+D_n \ \ = \ \ \frac{1}{2} \sum_{n'} (n'-n)^2 \ w_{n'n}
+\eeq
+%
+The generalization to more than one dimension
+is straightforward. Averaging the transient expression 
+over the starting point we get the result  
+%
+\be{25}
+D_{\tbox{linear}}  \ \ = \ \ \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
+\eeq
+%
+This expression is strictly {\em linear}.
+It describes correctly the average transient spreading. 
+In the absence of disorder we can trust it for 
+arbitrary long time. But if we have a disordered   
+or sparse network, the possibility for transport  
+is related to the theory of percolation \cite{AHL,Halp,pollak}.
+We are therefore motivated to introduce an approximation 
+scheme that takes the percolation aspect into account.
+We shall refer to this scheme as ``effective range hopping" (ERH) 
+because it is a variation on the well known VRH procedure.
+
+
+Inspired by \cite{AHL,Halp,pollak} we look for the threshold $w_c$ 
+that is required for percolation. In the ERH scheme 
+we suggest using the following equation for its determination: 
+%
+\be{30}
+\iint_{w(r,\epsilon)>w_c} \rho(r,\epsilon)drd\epsilon \ \ = \ \ n_c
+\eeq
+%
+Here $n_c$ is the effective coordination number that is 
+required for getting a connected sequences of transitions.
+%
+For a $d{=}2$ square lattice model it is reasonable to set $n_c=2$, 
+reflecting the idea of forming a simple chain of transitions. 
+Rephrased differently the requirement is to have an average of $50\%$ 
+connecting bonds per site. 
+%
+\rmrk{For a $d{=}2$ random site model one should be familiar 
+with the problem of percolation in a system that consists 
+of randomly distributed discs.} 
+The effective coordination number that is required for getting 
+percolation in such a model is ${n_c=4.5}$, as found in \cite{Dalton}, 
+and further discussed in Section~IV.A.1 of \cite{Pike}.   
+
+
+The second step in the ERH scheme is to form an effective 
+network whose sparse elements are suppressed to the threshold value.  
+Then it is possible to use the linear formula \Eq{e25}. Hence we get 
+
+%
+\be{31}
+D_{\tbox{ERH}} = \frac{1}{2d}\iint \min\{w(r,\epsilon),w_c\} \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr
+\eeq
+%
+This expression, as required, is {\em semi-linear} rather than linear. 
+It looks like the linear estimate of \Eq{e25}, but it involves a network 
+with $w_{nm}$ that are equal or smaller to the original values.
+The ``suppressed" connectors are those that are too sparse 
+to form percolating trajectories. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Variable range hopping (VRH) estimate}
+
+The ERH is similar to the generalized VRH procedure 
+that we have used in previous publications \cite{kbd,kbw}.
+The traditional VRH is based on the idea of associating
+an energy cost $\varepsilon(r)$ to a jump that has range $r$. Namely,  
+%
+\be{32}
+\varepsilon(r) \ \ \sim \ \ \left[\frac{\Omega_d}{d}\, r^d\right]^{-1} \Delta_0
+\eeq
+%  
+corresponding to the average level spacing 
+of the sites within a range~$r$. 
+%
+In our notations $\epsilon(r) \equiv \varepsilon(r)/T$.  
+For the general network models that we consider here,
+the relation between $\epsilon$ and $r$ 
+is determined through the equation 
+%
+\be{33}
+\int_0^{\epsilon} \int_0^{r} \rho(r',\epsilon')  dr'd\epsilon' \  = \  n^* 
+\eeq
+%
+where $n^*$ is of order unity. In fact we shall deduce later, 
+in Section \ref{sM}, that for consistency with the ERH estimate 
+this value should be $n^*=n_c/d$. With the substitution 
+of \Eq{e7} the trade-off equation can be written as 
+%
+\be{34}
+\Omega_d\left(\frac{r}{r_0}\right)^d \ F(\epsilon) \ = \ n_c
+\eeq
+%
+where $F(\epsilon)$ is the cumulative distribution function 
+that corresponds to the density $f(\epsilon)$.
+In the Mott problem $F(\epsilon)=\epsilon$, and \Eq{e32} is recovered.
+In words \Eq{e33} asks what is the $\epsilon$~window that 
+is required in order to guarantee that the particle will be able 
+to find with probability of order unity an accessible site within 
+a range~$r$. Larger jumps allow smaller cost. 
+Then we estimate $D$ as follows: 
+%
+\be{35}
+D_{\tbox{VRH}}  \ \ \sim \ \ 
+w^* \times \Big(r^*\Big)^2
+\eeq
+%
+where $r^*$ is the optimal range that maximizes $w(r,\epsilon(r))$, 
+with associated energy cost $\epsilon^*=\epsilon(r^*)$, 
+and effective transition rate ${w^*= w(r^*,\epsilon^*)}$. 
+See \Fig{fv} for illustration. 
+
+
+The VRH estimate, unlike the ERH, 
+does not interpolate with the linear regime. 
+It can be used to estimate $D$ 
+only if the system is very sparse ($s\ll1$).
+It can be regarded as an asymptotic evaluation of 
+the ERH integral: it assumes that the hopping is dominated 
+by the vicinity of the optimal point ${(r^*,\epsilon^*)}$.
+Accordingly, VRH-to-ERH consistency requires the identification ${w^*=w_c}$.  
+%
+\rmrk{However, using known results from percolation theory,} 
+one possibly can further refine the determination 
+of the optimal value $w^*$. Namely, a somewhat smaller 
+value than the threshold value $w_c$ might allow a better connectivity.    
+As~$s$ becomes very small, the effective range $\delta w$ in the ERH integral, 
+which contains the dominant contribution, becomes very small compared with $w_c-w^*$, 
+and one should be worried about the implied (sub-dominant) correction. 
+This speculative crossover is beyond the scope of the present study, 
+and possibly very hard to detect numerically. A useful analogy  
+here is with the crossover from ``mean-field" to ``critical" behavior 
+in the theory of phase transition, as implied by the Ginzburg criterion. 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ERH calculation for the $d{=}2$ lattice model}
+
+The $d{=}2$ lattice model, as defined in Appendix \ref{aLattice}, 
+is the simplest and most common example 
+for studies of percolation and percolation-related problems. 
+%
+We substitute into \Eq{e30} the effective density \Eq{e17}
+with the coordination number ${c_L=4}$, and deduce 
+that $w_c$ is merely the {\em median} value of the n.n. transition rates. 
+%
+% R3
+The ERH calculation using \Eq{e31} with \Eq{e17} 
+requires a simple $f(\epsilon)d\epsilon$ integration, 
+which can be rewritten as $\tilde{f}(w)dw$ integral.  
+This integral is the sum of ${w>w_c}$ and ${w<w_c}$ 
+contributions, namely  
+%
+\be{37}
+D_{\tbox{ERH}} =  \left[\frac{1}{2}w_c + \frac{1}{2}\int_0^{w_c} w\tilde{f}(w) dw\right]r_0^2
+\eeq
+% 
+Note that the first term in the square brackets 
+originates from the ${w>w_c}$ contribution.
+Note also that the result is $D= w_c r_0^2$ for a delta 
+distribution, i.e. in the absence of disorder. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ERH calculation for the degenerate hopping model}
+\label{sN}
+
+We now turn to the calculation of the ERH estimate for the
+degenerate hopping model. The ERH threshold 
+can be written as  $w_c=w_0\exp(-r_c/\xi)$, 
+where $r_c$ is determined \rmrk{through} \Eq{e30}, 
+which takes the form   
+%
+\be{735}
+\int_0^{r_c} \frac{\Omega_d r^{d-1} dr}{r_0^2} \ = \  n_c 
+\eeq
+%
+\rmrk{leading to} 
+%
+\beq
+w_c &=& w_0\exp\left(-\frac{r_c}{\xi}\right) \\
+r_c  &\equiv& \left(\frac{d}{\Omega_c}n_c\right)^{1/d}  r_0
+\eeq
+%
+\rmrk{The calculation of the ERH integral of \Eq{e31} 
+is detailed} in Appendix \ref{aERH}. We note that the 
+linear approximation of \Eq{e25} is formally obtained 
+by setting $r_c=0$, leading to 
+%
+\be{400}
+D_{\tbox{linear}} \ \ = \ \  
+\frac{(d{+}1)!\,\Omega_d}{2d} \, s^{d{+}2} \, w_0 r_0^2
+\eeq
+%
+Then it is possible to write the result of the ERH integral as
+%
+\be{40}
+D_{\tbox{ERH}} \ \ = \ \  
+\mathrm{EXP}_{d{+}2}\left(\frac{1}{s_c}\right)  \  \eexp{-1/s_c}  \ D_{\tbox{linear}}
+\eeq
+%
+where $s_c=\xi/r_c$, and 
+%
+\be{41}
+\mathrm{EXP}_{\ell}(x) \ \ = \ \ \sum_{k=0}^{\ell} \frac{1}{k!} \, x^k
+\eeq
+%
+The linear result is formally obtained 
+by setting ${n_c=0}$ or in the $d\rightarrow\infty$ limit. 
+In the other extreme of ${s\ll1}$ 
+we get a VRH-like dependence
+%
+\beq
+D \ \ \sim \ \ \eexp{-1/s_c}, \ \ \ \ \ \ \ \text{for} \ s\ll1 
+\eeq
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\em Numerical verification.-- } 
+%
+To obtain an ERH estimate we have to fix  
+the parameter $n_c$ in \Eq{e735}. 
+One approach is to regard it as a free fitting parameter.
+\rmrk{But it is of course better not to use any fitting parameters.}
+Fortunately we know from \cite{Dalton,Pike} 
+that $n_c=4.5$ is the average number of bonds 
+required to get percolation. 
+The verification of the ERH estimate for 
+the random site model with this value is 
+demonstrated in \Fig{f1}(b).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ERH calculation for the Mott hopping model}
+\label{sM}
+
+We turn to calculating the ERH estimate for the non-degenerate Mott hopping model, 
+and contrast it with the linear approximation, and with the traditional VRH estimate.
+The ERH threshold is determined \rmrk{through} \Eq{e30}, leading to   
+%
+\beq
+w_c &=& w_0\exp(-\epsilon_c) \\ 
+\epsilon_c &\equiv& \left( \frac{d}{\Omega_d} \frac{n_c}{s^d} \right)^{1/(d+1)}
+\eeq 
+%
+In the VRH procedure the optimal hopping range 
+is found by maximizing $w(r,\epsilon)$ 
+along the trade-off line of \Eq{e34}, 
+as illustrated in \Fig{fv}, leading to 
+%
+\beq
+r^* \ \ = \ \ \left(\frac{d^2}{\Omega_d} n^* \, s \right)^{1/(d+1)} r_0
+\eeq 
+%
+and the associated rate is 
+%
+\be{46}
+w^* = w_c \ \ \ \ \ \text{provided} \ n^*=n_c/d
+\eeq 
+%
+This identification is nexessary if we want the VRH to 
+describe correctly the asymptotic dependence of $D$ on $s$.
+
+
+\rmrk{The calculation of the ERH integral of \Eq{e31} 
+is detailed} in Appendix \ref{aERH}. 
+Thanks to our conventions the linear result is the same as \Eq{e400},  
+and the the final result can be written as follows:  
+%
+\be{47}
+D_{\tbox{ERH}} \ \ = \ \  
+\mathrm{EXP}_{d{+}3}\left(\epsilon_c\right)  \  \eexp{-\epsilon_c}  \ D_{\tbox{linear}}
+\eeq 
+%
+where $\mathrm{EXP}(x)$ is the polynomial 
+defined in \Eq{e41}. 
+The linear result is formally obtained by setting ${\epsilon_c=0}$
+or in the $d\rightarrow\infty$ limit. 
+
+We see that the VRH estimate can be regarded as an 
+asymptotic approximation that holds for ${s\ll1}$. 
+Using \Eq{e100} and \Eq{e1011} we deduce 
+from  \Eq{e400} and from \Eq{e47} that 
+%
+\beq
+D_{\tbox{linear}} \ \ \propto \ \ T
+\eeq
+%
+while for ${s\ll1}$
+%
+\beq
+D_{\tbox{ERH}} \ \ \sim \ \ \left(\frac{1}{T}\right)^{2/(d+1)} 
+\  \exp\left[-\left(\frac{T_0}{T}\right)^{1/(d+1)}\right]
+\eeq
+%
+where $T_0$ is a constant. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ERH calculation for the banded quasi-one-dimensional model}
+
+\label{sBanded}
+
+
+We can apply the ERH calculation also to the case 
+of the quasi-one-dimensional model that we have 
+studied in the past \cite{kbd,kbw}.
+This model is motivated by studies of energy absorption \cite{slk}.
+For details see Appendix \ref{aBanded}.
+%
+The network is defined by a banded matrix $\bm{w}$.
+\rmrk{For simplicity} we assume that the sites  are equally 
+spaced, and that the reason for the ``sparsity" is the log-wide 
+distribution of the in-band elements. 
+ 
+
+The ERH threshold $w_c$ is deduced from \Eq{e30}. 
+For a general $B(r)$ and $f(\epsilon)$ one can integrated 
+over $d\epsilon$, and then it takes the form 
+%
+\be{50}
+\int_0^{\infty}  
+\frac{\Omega_d \, r^{d-1}dr}{r_0^{d}} 
+\ F\left(\log\left(\frac{w_0}{w_c}B(r)\right)\right) 
+\ \ = \ \ n_c
+\eeq 
+%
+where $F(\epsilon)$ is the cumulative distribution function 
+that corresponds to the density $f(\epsilon)$.
+Here we are considering a $d{=}1$ network. 
+\rmrk{However, we are dealing with a banded matrix  
+which in some sense is like adding 
+an extra (but bounded) dimension to the lattice.} 
+ 
+Specifically we assume that ${B(r)=1}$ within the band, 
+and zero for ${|r|>b}$. 
+The non zero elements have a log-box distribution, 
+namely, $\epsilon$ is distributed uniformly over a range $[0,\sigma]$. 
+To have large $\sigma$ means ``sparsity".
+One should notice that this sparsity is less 
+traumatic than having $s\ll1$ in the $d{=}1$ lattice model 
+that we have considered in Section \ref{onedim}.
+This is because the distribution is bounded 
+from below by a finite non-zero values. 
+Accordingly we cannot have sub-diffusion here.  
+
+We now turn to estimate $D$ using the 
+the ERH procedure. It should be clear that the 
+success here is not guaranteed for reasons 
+that we further discuss in the last paragraph
+of this section.
+%  
+From \Eq{e50} it follows that ${w_c=w_0\exp(-\epsilon_c)}$, 
+where $\epsilon_c$ is the solution of 
+%
+\beq
+2b \ F\left( \epsilon_c \right) \ \ = \ \ n_c
+\eeq
+%
+For the assumed $\epsilon$ distribution the 
+solution of this equation is trivial 
+%
+\beq
+\epsilon_c \ \ = \ \ \frac{n_c}{2b}\sigma
+\eeq
+%
+While doing the ERH integral of \Eq{e31} note that 
+the integral $dr$ should be replaced by a sum.
+It is convenient to define
+%
+\beq
+\tilde{b} \ \ \equiv \ \ \sum_{r=1}^b r^2 \ \ = \ \ = \frac{1}{6}b(b+1)(2b+1)
+\eeq
+%
+Then the ERH estimate takes the form
+%
+\beq
+D_{\text{ERH}} \ \ = \ \ 
+\ \frac{1}{\sigma}\left[ 
+\left(1+\frac{n_c}{2b}\sigma\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}
+\right] \ \tilde{b} w_0
+\eeq 
+% 
+The linear estimate of \Eq{e25} is formally obtained 
+by setting ${n_c=0}$, and in the absence 
+of disorder it obviously reduced to $D=\tilde{b} w_0$. 
+We define 
+%
+\beq
+g_s \ \ = \ \ D/D_{\text{linear}}
+\eeq
+%
+Numerical results are presented in \Fig{f4}, 
+and they agree with the ERH estimate.
+
+At this point one wonders whether $D$ can be extracted 
+from the spectral analysis, i.e. via fitting to \Eq{e6}.
+In \Fig{f4}c we plot the "$D$" that is extracted 
+from the spectral analysis versus the $D$ that  
+has been found via the resistor network calculation.
+We observe that the obtained values are much smaller.
+Our interpretation for that is as follows: 
+the density of eigenvalues is related to the survival 
+probability $\mathcal{P}(t)$ via a Laplace transform;  
+For a quasi-one-dimensional system there is a short time $d{=}2$ like 
+relatively fast transient; Consequently the $d{=}1$ decay 
+holds only asymptotically with a smaller prefactor.  
+Accordingly we do not know whether there is a wise 
+way to deduce $D$ from the spectral analysis in the 
+case of a qausi-one-dimensional network.
+
+Concluding this section we would like to warn the reader
+that the use of the percolation picture in $d{=}1$ is 
+somewhat problematic: strictly speaking  
+there is no percolation transition. Obviously 
+for ${b=1}$ we are back with the $d{=}1$ lattice model 
+for which there is sub-diffusion if ${s<s_{cr}}$ 
+with ${s_{cr}=1}$. However, if $b$ is reasonably large, 
+it is not feasible to encounter such an anomaly 
+in practice. Even if the distribution is not bounded 
+from below, the redundancy due to ${b>1}$ 
+would lower the effective value of $s_{cr}$. 
+Furthermore: in the Fermi-golden-rule picture (see next section) 
+the occurrence of ``weak links" along the band  
+are practically not possible because the matrix elements $V_{nm}$ 
+are not uncorrelated random variables. 
+We can refer to this as the {\em rigidity}.
+This rigidity is implied by semi-classical considerations. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Semilinear response perspective}
+
+%R3
+Considering models of energy absorption, see (Appendix \ref{aBanded}), 
+it is assumed that the transition rate $w_{nm}$, between 
+unperturbed energy levels $m$ and $n$, is determined 
+by a driving source that has spectral content $\tilde{S}(\omega)$.
+The Fermi golden rule can be written as  
+%
+\beq
+w_{nm} \ \ = \ \ \tilde{S}(E_n-E_m) \ |V_{nm}|^2
+\eeq
+%
+where $V_{nm}$ is the perturbation matrix in the Hamiltonian.
+Accordingly we can write instead of~$D=D[\bm{w}]$ 
+an implied relation~$D=D[\tilde{S}(\omega)]$.
+This relation is in general semi-linear. 
+This means that only the first property below, 
+which corresponds to \Eq{e180} is satisfied, 
+not the second one.
+%
+\beq
+D\big[ \lambda \tilde{S}(\omega)\big]  &=&   \lambda \ D\big[\tilde{S}(\omega)\big] 
+\\
+D\big[\tilde{S}_a(\omega) + \tilde{S}_b(\omega)\big]  &=&  D\big[\tilde{S}_a(\omega)\big] + D\big[\tilde{S}_b(\omega)\big]
+\eeq
+%
+To have a semilinear rather than linear response 
+may serve as an experimental signature for the 
+applicability of resistor-network modeling of energy 
+absorption. We note, however, that if the 
+the driving were added ``on top" of a bath, 
+the response would become linear at small intensities. 
+Namely, if one substituted    
+%
+\beq
+\tilde{S}(\omega)_{\tbox{total}} \ \ = \ \ \tilde{S}_{\tbox{bath}}(\omega) + \tilde{S}(\omega)
+\eeq  
+%
+it would be possible to linearize~$D$ with respect 
+to the $\tilde{S}(\omega)$ of the driving source. 
+
+The statement that VRH is a ``semilinear response" theory rather than ``linear response"
+theory is a source for non-constructive debates on terminology. The reason for the 
+confusion about this point is related to the physical context. 
+Do we calculate ``current vs bias" or do we calculate ``diffusion vs driving".
+The response is linear in the former sense, but semi-linear in the latter sense.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion}
 
 It should be clear that there are two major routes in developing  
 a theory for~$D$. Instead of deducing it from spectral properties 
 as in \cite{amir}, one can try to find ways to evaluate it directly 
-via a resistor network calculation \cite{miller}.
-In \cite{kbd,kbw} this approach has been extended to handle matrices 
-whose elements have log-wide rather than Gaussian 
-distribution, leading to a generalized Variable Range Hopping (VRH) strategy. 
-In what follows we pursue the same direction and obtain an 
-improved Effective Range Hopping (ERH) estimate for~$D$.
-Using this approach we show that in the 2D case, as $s$ becomes small, 
-the functional $D[\bm{w}]$ exhibits a smooth crossover from LRT behavior  
-to semi-linear VRH-like dependence.  
+via a resistor network calculation \cite{miller,AHL,Halp,pollak,VRHbook}, 
+leading in the standard Mott problem to the VRH estimate for~$D$.   
+
+In \cite{kbd,kbw,slk} this approach was extended 
+to handle ``sparse" banded matrices whose elements have 
+log-wide distribution, leading to a generalized VRH estimate. 
+In this work we have pursued the same direction and obtained an 
+improved estimate for~$D$, the ERH estimate.
+Using this approach we showed that in the $d{=}2$ case, 
+as $s$ becomes small, the functional $D[\bm{w}]$ exhibits 
+a smooth crossover from ``linear" behavior to ``semi-linear" VRH-type dependence.  
+
+\rmrk{{\em Relation to other models.-- }}
+Disregarding the ``sparsity" issue, the model that we were considering 
+is a close relative of the Anderson localization problem.
+However it is not the same problem, and there are important 
+differences that we would like to highlight.
+For the purpose of this discussion it is useful to be reminded 
+that the hopping problem that we have addressed is essentially 
+the same as studying the spectrum of vibrations in 
+a disordered elastic medium. Hence $D^{1/2}$ parallels the  
+speed of sound $c$ of the Debye model. See Appendix \ref{deb}.
+
+\rmrk{{\em Mott vs Anderson.-- }}
+In the hopping model all the off diagonal elements are positive numbers, 
+while the negative diagonal elements compensate them.
+It follows that we cannot have ``destructive interference", 
+and therefore we do not have genuine Anderson localization. 
+Consequently in general we might have diffusion, even in $d{=}1$. 
+%
+In $d{=}2$ we have a percolation threshold, which is again 
+not like Anderson localization. 
+See the discussion of fractons in \cite{havlin}.
+
+
+\rmrk{{\em Debye vs Anderson.-- }}
+In the standard Anderson model the eigenvalues form 
+a band ${\lambda \in [-\lambda_c,\lambda_c]}$.
+The states at the edge of the band are always localized.
+The states in the middle of the band might be de-localized if ${d>2}$.  
+%
+The spectrum that characterizes the hopping model does
+not have the same properties. With regard to the 
+localization of vibrations in a disordered elastic medium \cite{loc},  
+it has been found that the spectrum is ${\lambda \in [0,\lambda_c]}$.
+The ground state is always the ${\lambda=0}$ uniform state.
+The localization length diverges in the limit ${\lambda \rightarrow 0}$.
+Consequently the Debye density of states is not violated:
+the spectrum is asymptotically the same as that of a 
+diffusive (non-disordered) lattice. It follows that the 
+survival probability should be like that of a diffusive 
+system, and therefore we also expect, and get, diffusive behavior
+for the transport: spreading that obeys a diffusion equation.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Summary}
+
+This was originally motivated by the necessity 
+to improve the resistor-network analysis of the diffusion 
+in quasi-one-dimensional networks \cite{kbd}, and additionally from the 
+desire to relate it to the recent RG studies \cite{amir} 
+of the spectral properties of random site networks.
+The key issue that we wanted to address was 
+the crossover from linear-like to semi-linear dependence 
+of $D$ on the rates. This crossover show up as the ``sparsity" 
+of the system is varied. 
+
+It should be clear that unlike the RG based expectation 
+of \cite{amir}, our analysis indicates that there is 
+no sub-diffusive behavior in $d{=}2$.
+%
+Accordingly, the anomalous $log(t)$ spreading that is 
+predicted in \cite{amir} should be regarded as a transient: 
+for very small value of the sparsity parameter this transient 
+might have a very long duration, but eventually normal diffusion  
+takes over. 
+
+One can regard ``sparsity" as an extreme type of disorder:
+the rates are distributed over many orders of magnitudes.
+Still, unlike the $d{=}1$ case, the implication of ``sparsity" 
+in $d{=}2$ is not as dramatic: there is no ``phase transition" 
+between two different results, but a smooth crossover.
+%
+It is therefore clear that our statements are consistent 
+with those of older works that relate to the diverging localization 
+properties of the low frequency vibrations in disordered elastic medium \cite{loc}. 
+
+
+The effective range hopping (ERH) procedure that we tested 
+in this paper is a refinement of well known studies of variable 
+range hopping \cite{mott,miller,AHL,Halp,pollak,VRHbook}.
+We used the insight of \cite{AHL,Halp,pollak} that connects VRH 
+with the theory of percolation.
+
+
+% R3
+Disregarding possible inaccuracy in the determination 
+of the optimal rate, the ERH calculation provides 
+a {\em lower} bound for $D$. Accordingly, by obtaining 
+a non-zero result it is rigorously implied that $D$ is finite. 
+The purpose of the numerics was to demonstrate that
+in practice the outcome of the ERH calculation provides  
+a very good estimate of the actual result, 
+interpolating very well the departure from linearity. 
+
+
+It was important for us to clarify that a large class of networks 
+can be treated {\em on an equal footing}. In particular we demonstrated that  
+the application of the ERH estimate does not require any fitting parameters.
+We have verified that the same prescription can be applied both in the case 
+of the $d{=}2$ lattice model, and in the case of the $d{=}2$ random-site model, 
+provided one uses the appropriate percolation threshold 
+that is known from percolation theory.  
+
+For the traditional Mott hopping model 
+and its degenerated version we obtained 
+the refined expressions \Eq{e47} and \Eq{e40} respectively. 
+%
+\rmrk{In these expressions the {\em full} dependence on 
+the dimensionality~($d$) is explicit, and the crossover 
+to linear response as a function of the sparsity~($s$)
+is transparent. Note that in the degenerate random site model 
+the sparsity is merely a geometrical feature, while in the 
+non-degenerate Mott model the sparsity depends on the temperature 
+as implied by \Eq{e1011}.}     
+
+We would like to re-emphasize that the original motivation 
+for this work is was the study of energy absorption by driven mesoscopic systems. 
+In this context the implication of the semi-linear crossover 
+is the breakdown of linear response theory. The latter 
+issue has been extensively discussed in past publications \cite{slk}. 
+
+\ \\
+
+{\bf Acknowledgments.-- }
+We thank Amnon Aharony, Ariel Amir, Ora Entin-Wohlman, Rony Granek, and Joe Imry 
+for illuminating discussions, comments, and references. 
+This work has been supported by the Israel Science Foundation (ISF). 
+
+
+
+
+\ \\ \ \\ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lattice model with n.n. hopping}
+
+\label{aLattice}
+
+For $s \ll 1$ the $d{=}1$ random site model is 
+essentially equivalent to a lattice model 
+with equally spaced sites, 
+near neighbor transitions, 
+and random $\epsilon$.
+From the identification $\epsilon=r/\xi$ 
+it follows that the distribution 
+of the ``activation energy" is 
+%
+\beq
+f(\epsilon) \ \ = \ \ s \ \exp(-s\epsilon), 
+\hspace{15mm} s \equiv \xi/r_0
+\eeq
+%
+This implies that the the distribution of the rates is 
+%
+\be{15}
+\tilde{f}(w) dw  \ \  =  \ \    \ [w < w_0] \, \frac{s \, w^{s-1} dw}{w_0^s}, 
+\eeq
+%
+The density of sites to which a transition can occur is
+%
+% R3
+\be{17}
+\rho(r,\epsilon) =  c_L \delta(r-r_0) \ f(\epsilon)  
+\eeq 
+%
+where $c_L=2$ is the coordination number. 
+This corresponds to the $d{=}1$ case of \Eq{e7}.
+
+The $d{=}2$ version of the lattice model has no 
+strict relation to the $d{=}2$ random site model. 
+A popular choice is to assume a box distribution
+for the activation energy within 
+some interval ${0<\epsilon<\sigma}$. 
+The density of sites to which a transition can occur 
+is $2\pi r f(\epsilon)$ for large $r$, 
+as implied by \Eq{e7}. But for small $r$  
+the effective density is given by \Eq{e17}
+with the coordination number ${c_L=4}$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The quasi-one-dimensional banded matrix model}
+
+\label{aBanded}
+
+On equal footing we consider the quasi-one-dimensional banded lattice model.
+This model is motivated by studies of energy absorption \cite{slk}.
+In this context the transition rates are determined 
+by the Fermi-Golden-Rule (FGR). Hence we write:
+%
+\be{143}
+w_{nm} \ \ = \ \ w_0 \ \eexp{-\epsilon_{nm}} \ B\left(E_n-E_m\right)
+\eeq
+% 
+Here $n$ and $m$ are unperturbed energy levels of the system, 
+but we shall keep calling them ``sites" in order to avoid 
+duplicated terminology.
+The density of sites relative to some initial site 
+is characterized by the same joint distribution function
+as for the $d{=}1$ network,  
+%
+\beq
+\rho(r,\epsilon) \ \ = \ \ 2f(\epsilon) 
+\eeq 
+%
+Here $r=|E_n-E_m|$ is the distance between the energy levels, 
+which is formally analogous to $r=|x_n-x_m|$ in the random site hopping model.
+We use here units such that the mean level spacing is unity.
+In the later numerical analysis we assume equally spaced levels 
+such that the distance is simply ${r=|n-m|}$. 
+
+In the physical context the band profile $B(r)$ is determined 
+by the semiclassical limit, while the distribution of the $\epsilon$ 
+values is implied by the intensity statistics of the matrix elements.
+This intensity statistics is known as Porter-Thomas in the strongly 
+chaotic case, corresponding to the Gaussian ensembles, 
+but it becomes log-wide for systems with ``weak quantum chaos" \cite{SparseMat},
+reflecting the sparsity that shows up in the limiting
+case of integrable system \cite{kbw}. 
+
+In the numerical analysis we have considered simple 
+banded matrices, for which $B(r)=1$ for ${r \leq b}$, 
+and zero otherwise. Accordingly $1{+}2b$ is the bandwidth.
+The elements within the band are log-box distributed:
+this means that $\epsilon$ is distributed uniformly over a range $[0,\sigma]$.  
+Note that log-box distribution is typical of glassy systems, 
+where the tunneling rate depends exponentially on the distance  
+between the sites.
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Numerical extraction of $D$}
+\label{diff}
+
+In a diffusive system the coarse grained spreading 
+is described by the standard diffusion equation,
+with an evolving Gaussian distribution  
+%  
+\beq
+\rho(x;t) \ \ = \ \ \prod_{i=1}^d \frac{1}{\sqrt{2\pi S_x(t)}} 
+\exp\left[-\frac{x_i^2}{2S_x(t)} \right]
+\eeq
+%
+where $S_x(t)=2Dt$. It follows from this expression that 
+% 
+\beq
+S(t) \ \ = \ \ \left\langle r^2(t) \right\rangle  \ \ = \ \ (2d)Dt
+\eeq
+%
+Starting with all the probability concentrated 
+in one ``unit cell" we get for the survival probability 
+%
+\beq
+\mathcal{P}(t) \ \ \sim \ \ \frac{r_0^d}{\left({4\pi D t}\right)^{d/2}} 
+\eeq
+%
+The eigenvalues of the diffusion equation are 
+%
+\be{323}
+\lambda_k \ = \ Dq_k^2, 
+\ \ \ \ \ \  k=\text{index}
+\eeq
+% 
+where the possible values of the momentum are determined  
+by the periodic boundary conditions as $q=(2\pi/L)\vec{k}$. 
+It follows that the cumulative number of eigenstates 
+per site is  
+%
+\be{324}
+\mathcal{N}(\lambda) \ \ = \ \ 
+\left(\frac{r_0}{2\pi}\right)^d
+\frac{\Omega_d}{d}
+\left[\frac{\lambda}{D}\right]^{d/2}
+\eeq
+
+
+It is well known that the survival probability 
+is related to the eigenvalues of $\bm{w}$ through the relation
+%
+\beq 
+\mathcal{P}(t) \ \ = \ \ \frac{1}{N}\sum_\lambda \eexp{-\lambda t} 
+\ \ \equiv \ \ \int_0^{\infty} g(\lambda)d\lambda \ \eexp{-\lambda t}
+\eeq
+%
+For a diffusive system one can verify that 
+the expressions above for $g(\lambda)$ and $\mathcal{P}(t)$ 
+are indeed related by a Laplace transform.  
+%
+More generally, it follows that $D$ can be deduced from 
+the asymptotic behavior of $g(\lambda)$
+in the ${\lambda\rightarrow 0}$ limit  
+where the diffusive description is valid.
+%
+In contrast to that for large $\lambda$ we expect $g(\lambda)$ to coincide 
+with the distribution of the decay rates $\gamma_n=\sum_{m}w_{mn}$, 
+reflecting localized modes.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Relation to Debye model}
+\label{deb}
+
+Consider a system of units masses that are connected by springs.
+Once can describe the system by a matrix $\bm{w}$ whose 
+of-diagonal elements $w_{nm}$ are the spring constants.
+The eigen-frequencies are determined accordingly, namely, ${\omega_k = \sqrt{\lambda_k}}$.
+%
+Assuming that the low lying modes are like 
+acoustic phonons with dispersion ${\omega = c |q|}$,
+where $c$ is the so called speed of sound,  
+one deduces that 
+%
+\beq
+\omega_k \ = \ \ = \ c |q_k|, 
+\ \ \ \ \ \  k=\text{index}
+\eeq 
+%
+Consequently the associated counting function is as in the Debye model:
+%
+\beq 
+\mathcal{N}(\omega) \ \ = \ \ 
+\left(\frac{r_0}{2\pi c}\right)^d
+\frac{\Omega_d}{d}
+\ \omega^{d}
+\eeq
+% 
+Comparing the above expressions with \Eq{e323} and \Eq{e324} 
+it follows that the calculation of~$c^2$ 
+is formally the same as the calculation of~$D$.  
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The resistor network calculation}
+\label{res}
+
+
+The diffusion coefficient $D$ is formally like the calculation 
+of the conductivity of the network. Therefore it can be determined 
+via a numerical solution of a circuit equation.   
+%
+It is convenient to use the language of electrical engineering 
+to explain how the resistor network calculation 
+is carried out in practice. 
+%
+Accordingly we use in this appendix the notation $\bm{G}$ 
+instead of $\bm{w}$ for the matrix that describes the 
+resistor network, and $\sigma$ instead of $D$ for its conductivity. 
+We define a vector $\bm{V}=\{V_n\}$, where $V_n$ is the voltage 
+at node $n$, analogous to $p_n$. We also define a vector $\bm{I}=\{I_n\}$ 
+of injected currents. The Kirchhoff equation \Eq{e1} for a steady 
+state can be written as $\bm{G} \bm{V}=0$. 
+
+
+If the nodes were connected to external ``reservoirs" 
+the Kirchhoff equation would takes the form $\bm{G} \bm{V}=\bm{I}$. 
+The matrix $\bm{G}$ has an eigenvalue zero which is associated  
+with a uniform voltage eigenvector. Therefore, it has 
+a pseudo-inverse rather than an inverse, and consequently 
+the Kirchhoff equation has a solution if and only 
+if the net current is ${\sum_n I_n=0}$.      
+
+
+For the purpose of calculating the conductivity
+we add a source ${I_1=-1}$ and a drain ${I_2=1}$.
+We select the location of the source (site \#1) 
+and the drain (site \#2) away from the endpoints. 
+From the solution of the Kirchhoff equation we deduce 
+%
+\beq
+\sigma [d{=}1] \ \ = \ \ \left[(V_2-V_1)/L\right]^{-1} 
+\eeq
+%
+where $L$ is the distance between the contacts.   
+
+
+%R3
+With regard to the quasi-one-dimensional model, 
+we take the distance between the contacts to 
+be ${L'=N/2}$  and look at the voltage drop along 
+an inner segment of length ${L=L'-2b}$, 
+to avoid the transients at the contact points.
+
+To find the conductivity in the $d{=}2$ case 
+we select contacts points that have 
+distance ${L\sim (N/2)^{1/2}}$, and use the formula 
+%
+\beq
+\sigma [d{=}2] \ \ = \ \ \left[(V_2-V_1)/\ln(L/\ell)\right]^{-1} 
+\eeq
+%
+where $\ell \sim 1$ is the shift of the measurement point
+from the contact point. Here the voltage drop 
+is divided by $\ln(L/\ell)$ instead of~$L$, 
+reflecting the two-dimensional geometry of the flow.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Calculation of the ERH integral}
+\label{aERH}
+
+The calculation of the ERH integral for the random site model 
+involved the incomplete $\Gamma$ function \cite{gamma}, 
+%
+\beq
+\Gamma(\ell{+}1,x) = \int_0^x r^{\ell} \eexp{-r} dr = 
+\ell! \ \mbox{EXP}_{\ell}(x)  \ \eexp{-x}
+\eeq
+%
+We first consider the degenerate Mott model. 
+We substitute in \Eq{e31},  
+the $w(r,\epsilon)$ of \Eq{e4}, 
+and the $\rho(r,\epsilon)$ of \Eq{e7} with \Eq{e71}.
+Thanks to the $\delta(\epsilon)$ we are left 
+just with a $dr$ integration that is split  
+into the domains ${0<r<r_c}$ and ${r>r_c}$. 
+Namely, 
+%
+\beq
+D_{\tbox{ERH}} &=& 
+\frac{w_0\Omega_d}{2d}\int_0^{r_c} \eexp{-r_c / \xi} \frac{r^{d+1}}{r_0^d} dr 
+\nonumber \\
+&&+ \frac{w_0\Omega_d}{2d}\int_{r_c}^\infty \eexp{-r / \xi} \frac{r^{d+1}}{r_0^d} dr 
+\nonumber \\
+&=& \frac{w_0\Omega_d}{2d} \eexp{-r_c / \xi} \frac{r_c^{d+2}}{d+2} \frac{1}{r_0^d}
+\nonumber \\
+&&+\frac{w_0\Omega_d}{2d} \frac{\xi^{d+2}}{r_0^d} \Gamma\left(d+2,\frac{r_c}{\xi}\right)
+\nonumber \\
+&=& \frac{w_0\Omega_d \xi^{d+2}}{2d(d+2)r_0^d}\Gamma\left(d+3,\frac{r_c}{\xi}\right)
+\eeq
+%
+This leads directly to \Eq{e40} with \Eq{e400}.
+
+
+Turning to the non-degenerated Mott model
+we have to deal with a two dimensional integral $drd\epsilon$
+that has, as in the previous case, two domains 
+${w>w_c}$ and ${0<w<r_c}$. The two domains are 
+separated by the line ${\epsilon+(r/\xi)=\epsilon_c}$.
+It is therefore natural to change variables:
+%
+\beq
+x\ \ &=& \ \ \epsilon+(r/\xi) \\
+y\ \ &=& \ \ \frac{1}{2}\left(-\epsilon+(r/\xi)\right) 
+\eeq
+%
+hence 
+%
+\beq
+D_{\tbox{ERH}} &=& 
+\frac{w_0\Omega_d}{2dr_0^d}\int_0^{\epsilon_c}\! \xi dx \int_{-x/2}^{x/2} \! dy \, \eexp{-\epsilon_c} \left(\xi y + \xi \frac{x}{2}\right)^{d+1} 
+\nonumber \\
+&& + \frac{w_0\Omega_d}{2dr_0^d}\int_{\epsilon_c}^{\infty} \! \xi dx \int_{-x/2}^{x/2} \! dy \, \eexp{-x} \left(\xi y+\xi \frac{x}{2}\right)^{d+1} 
+\nonumber \\
+&=& \frac{w_0\Omega_d}{2dr_0^d}\xi^{d+2} \eexp{-\epsilon_c} \frac{\epsilon_c^{d+3}}{(d+2)(d+3)}  
+\nonumber \\
+&& +\frac{w_0\Omega_d}{2dr_0^d(d+2)}\xi^{d+2} \Gamma\left(d+3,\epsilon_c\right)
+\nonumber \\
+&=& \frac{w_0\Omega_d \xi^{d+2}}{2d(d+2)(d+3)r_0^d}\Gamma\left(d+4,\epsilon_c\right)
+\eeq
+%
+This leads directly to \Eq{e47} with \Eq{e400}.
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{thebibliography}{99}
+
+
+% networks
+
+\bibitem{dorogovtsev}
+\rmrk{S.N. Dorogovtsev, A.V. Goltsev, J.F.F. Mendes, and A.N. Samukhin,}
+% Spectra of complex networks
+Phys. Rev. E 68, 046109 (2003).
+%  http://link.aps.org/doi/10.1103/PhysRevE.68.046109
+% spectra of complex networks (sometimes sparse),
+% finding that the high eigenvalues have tails
+% and do not obey Wigner's law..
+
+
+\bibitem{bradde}
+\rmrk{S. Bradde, F. Caccioli, L. Dall’Asta, and G. Bianconi,} 
+%  Critical Fluctuations in Spatial Complex Networks
+Phys. Rev. Lett. 104, 218701 (2010).
+%  http://link.aps.org/doi/10.1103/PhysRevLett.104.218701
+%They consider $d$ dimensional spatial embedded networks, Eq(13).
+
+
+
+% random walk
+
+\bibitem{bouch}
+\rmrk{J.-P. Bouchaud and A. Georges,} 
+% Anomalous diffusion in disordered media:
+% Statistical mechanisms, models and physical applications
+Physics Reports 195, 127 (1990).
+% http://www.sciencedirect.com/science/article/pii/037015739090099N
+
+\bibitem{Montroll}
+\rmrk{H. Scher and E.W. Montroll,} 
+% Anomalous transit-time dispersion in amorphous solids
+Phys. Rev. B 12, 2455 (1975).
+
+\bibitem{Kaya}
+\rmrk{D. Kaya, N.L. Green, C.E. Maloney,  M.F. Islam,}
+Science 329, 656 (2010).
+
+
+
+%%% Aharony
+
+\bibitem{aa0}
+D. Stauffer, A. Aharony, 
+{\em Introduction to Percolation Theory}
+(CRC Press, 1994) 
+
+
+%%% hlp
+
+\bibitem{Halp}
+B.I. Halperin, Physica D 38,  179 (1989).
+% Remarks on percolation and transport in networks with a wide range of bond strengths 
+% http://www.sciencedirect.com/science/journal/01672789
+
 
 
 %%% Phn
@@ -263,13 +1719,30 @@ A. Miller and E. Abrahams, Phys. Rev. {\bf 120}, 745 (1960).
 V. Ambegaokar, B. Halperin, J.S. Langer, 
 Phys. Rev. B {\bf 4}, 2612 (1971). 
 
+
 \bibitem{pollak}
 M. Pollak, J. Non-Cryst. Solids {\bf 11}, 1 (1972).
 
 \bibitem{VRHbook} 
 B.I. Shklovskii and A.L. Efros, 
-Electronic properties of doped semiconductors,
+{\em Electronic properties of doped semiconductors},
 (Springer-Verlag Berlin Heidelberg 1984).
+
+
+
+%%% oil
+
+\bibitem{aa1}
+A. Aharony, E.I. Hinrichsen, A. Hansen, J. Feder, T. Jossang, H.H. Hardy,  
+% Effective renormalization group algorithm for transport in oil reservoirs
+Physica A177, 260 (1991). 
+%http://www.sciencedirect.com/science/journal/03784371
+
+\bibitem{aa2}
+L. Hinrichsen, A. Aharony, J. Feder, A. Hansen, T. Jossang, H.H. Hardy, 
+% A fast Algorithm for estimating large-scale permeabilities of correlated anisotropic media
+Transport in Porous Media 12, 55 (1993). 
+
 
 
 %%% Ours
@@ -295,1415 +1768,258 @@ A. Stotland, L.M. Pecora, D. Cohen,
 Europhys. Lett. {\bf 92}, 20009 (2010);
 Phys. Rev. E {\bf 83}, 066216 (2011).
 
-%%% Results
+
+%%%  alexander, fractals
 
 \bibitem{alexander}
 S. Alexander, J. Bernasconi, W. R. Schneider, R. Orbach, 
 Rev. Mod. Phys. 53, 175 (1981).
 
-\bibitem{halvin}
-Halvin refs
+\bibitem{havlin1}
+\rmrk{S. Havlin, D. Movshovitz, B. Trus, G.H. Weiss,}
+J. Phys. A 18, L719 (1985).
+
+\bibitem{granek1}
+% subdiffsuion in fractal structures
+R. Granek, J. Klafter, Phys. Rev. Lett. 95, 098106 (2005).
+
+\bibitem{granek2}
+S. Reuveni, R. Granek, J. Klafter, PNAS 107, 13696 (2010);
+Phys. Rev. E 81, 040103 (2010).
+
+\bibitem{havlin}
+{\em Diffusion and Reactions in Fractals and Disordered Systems},
+D. Ben-Avraham and S. Havlin (Cambridge University Press, 2000).
+
+
+\bibitem{klemm}
+\rmrk{A. Klemm, R. Metzler, and R. Kimmich,} 
+%Diffusion on random-site percolation clusters:
+% Theory and NMR microscopy experiments with model objects
+Phys. Rev. E 65, 021112 (2002).
+% http://link.aps.org/doi/10.1103/PhysRevE.65.021112
+% fractal refs.
+
+
+% res-net
+
+\bibitem{camboni}
+\rmrk{F. Camboni and I.M. Sokolov,}
+%  Normal and anomalous diffusion in random potential landscapes
+Phys. Rev. E 85, 050104 (2012).
+%  http://link.aps.org/doi/10.1103/PhysRevE.85.050104
+% diffusion via resistor network calculation, bounds, sub-diffusion?
+
+
+\bibitem{slk} 
+For a review and further references 
+see ``Energy absorption by sparse systems: 
+beyond linear response theory",	arXiv:1202.5871  
+
+
+
+
+%%% localization
+
+\bibitem{loc}
+%Localization of Eigenstates and Transport Phenomena in the One-Dimensional Disordered System
+%http://ptp.ipap.jp/link?PTPS/72/232/pdf
+K. Ishii, 
+Prog. Theor. Phys. Suppl. 53, 77 (1973).
+%
+%
+%Localization in a disordered elastic medium near two dimensions
+%http://prb.aps.org/pdf/PRB/v27/i9/p5592_1
+S. John, H. Sompolinsky, M.J. Stephen,  
+Phys. Rev. B 27, 5592 (1983) 
+%
+%
+J.W. Kantelhardt, A. Bunde, 
+Phys. Rev. E 56, 6693 (1997).
+%
+%
+Q. Li, C.M. Soukoulis, G.S. Grest,
+Phys. Rev. B 41, 11713 (1990).  
+
+
+\bibitem{amirNEW}
+\rmrk{A. Amir, J.J. Krich, V. Vitelli, Y. Oreg, Y. Imry,} 
+% {\em Emergent percolation length and localization in random elastic networks},
+arXiv:1209.2169
+
+
+% percolation threshold
+
+\bibitem{Dalton}
+\rmrk{N.W. Dalton, C. Domb, M.F. Sykes,} 
+Proc. Phys. Soc. 83, 496 (1964).
+
+\bibitem{Pike}
+\rmrk{G.E. Pike and C.H. Seager,} 
+Phys. Rev. B {\bf 10}, 1421 (1974).
+
+
+% appendix
+
+\bibitem{SparseMat}
+T. Prosen and M. Robnik, J. Phys. A {\bf 26}, L319 (1993); \
+E. J. Austin and M. Wilkinson, Europhys. Lett. {\bf 20}, 589 (1992); \ 
+Y. Alhassid and R. D. Levine, Phys. Rev. Lett. {\bf 57}, 2879 (1986). \
+Y.V. Fyodorov, O.A. Chubykalo, F.M. Izrailev, and G. Casati, 
+Phys. Rev. Lett. {\bf 76}, 1603 (1996).
+
+
+\bibitem{gamma}
+See Section 8.4 and in particular Eq(8.4.8) and Eq(8.4.11)
+of "NIST Digital Library of Mathematical Functions",
+\url{http://dlmf.nist.gov}, Release 1.0.5 of 2012-10-01.
+Online companion to:
+F.W.J. Olver, D.W. Lozier, R.F. Boisvert, and C.W. Clark, editors.
+NIST Handbook of Mathematical Functions.
+Cambridge University Press, New York, NY, 2010.
 
 
 \end{thebibliography}
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{The model system}
 
-We consider a system that is described by a rate equations 
-%
-\beq
-\frac{dp_n(t)}{dt} = \sum_m w_{nm} p_m(t)
-\eeq
-%
-We assume $w_{nm}=w_{mn}$, hence there is a formal analogy 
-with a resistor network calculation. Our purpose is to calculate 
-the diffusion coefficient~$D=D[\bm{w}]$, which is analogous to the 
-calculation of {\em conductivity}.
-
-
-Our interest are in networks that consists of sites 
-that are distributed in space, locations $x_n$.
-With each bond we associate an activation energy $\epsilon_{nm}>0$. 
-By construction the rates rates $w_{nm}$ are determined 
-by a function $w(r,\epsilon)$, where $r$ is the distance 
-between the sites. Specifically   
-%
-\beq
-w_{nm} \ \ = \ \  w_0 \ \eexp{-\epsilon_{nm}} \ \eexp{-|x_n-x_m|/\xi} 
-\ \ \ \ \ \ \ \mbox{[random site hopping model]}
-\eeq
-%
-On equal footing we also consider the quasi 1D banded lattice model
-%
-\beq
-w_{nm} \ \ = \ \ w_0 \ \eexp{-\epsilon_{nm}} \ B\left(E_n-E_m\right)
-\ \ \ \ \ \ \ \mbox{[banded lattice model]}
-\eeq
-% 
-Here $r=|E_n-E_m|$ is the distance between energy levels, 
-which is formally analogous to $r=|x_n-x_m|$ in the random site model.
-In the physical context the band profile $B(r)$ is determined 
-by the semiclassical limit, while the distribution of the $\epsilon$ 
-values is implied by the quantization.   
-For flat band $B(r)=1$ for ${r \leq b}$, and zero otherwise,  
-where $1{+}2b$ is the bandwidth. For a model with near-neighbor transitions ${b=1}$.
-
-
-The density of sites relative to some initial site 
-is characterized  by a joint distribution function 
-%
-\beq\label{eq:density_distribution}
-\rho(r,\epsilon)drd\epsilon \ \ = \ \ \frac{\Omega_d \, r^{d-1}dr}{r_0^{d}} \ f(\epsilon)d\epsilon,     
-\ \ \ \ \ \ \ \ \Omega_d=2,2\pi,4\pi, \ \ \ \ \ \ \ \ f(\epsilon)=\mbox{uniform or normalized}
-\eeq
-%
-The constant $r_0^d$ is the "unit volume", and it is defined by $Nr_0^d = L^d$, 
-where $N$ is the number of sites, and $L^d$ is the volume of the system.
-We set the units of distance such that ${r_0=1}$.
-
-
-In the banded lattice model $f(\epsilon)$ is the size distribution 
-of the in-band matrix elements of the perturbation matrix.
-It has unit normalization, corresponding to a single site per unit volume. 
-Accordingly 
-%
-\beq
-w(r,\epsilon)=w_0\eexp{-\epsilon}B(r), \ \ \ \ \rho(r,\epsilon)=2f(\epsilon) 
-\ \ \ \ \ \ \ \mbox{[banded lattice model]}
-\eeq 
-%
-In the random site hopping model we assume a uniform distribution 
-of sites in energy space, hence ${f(\epsilon)=\const}$ in some wide range.
-Specifically, in the finite temperature Mott problem $\epsilon_{nm}=|\varepsilon_n-\varepsilon_m|/T$ 
-where $T$ is the temperature and accordingly ${f(\epsilon)= T/\Delta_0}$,  
-where $\Delta_0$ is the local mean level spacing per unit volume.
-In such case in each location there are infinitely many sites, 
-but effectively only finite number of sites ($\sim T/\Delta_0$) 
-is accessible per unit volume per attempted transition.
-
-
-What we call below "random site model" (as opposed to "random site hopping model") 
-refers to the special choice $f(\epsilon)=\delta(\epsilon)$, 
-corresponding to a single site per unit volume. 
-%
-The 1D random site model is qualitatively similar 
-to a banded lattice model with near neighbor transitions (${b=1}$),
-with the identification $\epsilon=r/\xi$,   
-and $f(\epsilon) = s\exp(-s\epsilon)$, where $s \equiv \xi/r_0$. 
-This implies that the the distribution of the rates is 
-%
-\beq
-\tilde{f}(w) dw  \ \  =  \ \    \ [w < w_0] \, \frac{s \, w^{s-1} dw}{w_0^s}, 
-\ \ \ \ \ \ \ \ s \equiv \xi/r_0
-\ \ \ \ \ \ \ \mbox{[1D random chain model]}
-\eeq
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\clearpage
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Normal diffusion}
-
-The long time dynamics are characterized by the spreading $S(t)$, 
-the survival probability $\mathcal{P}(t)$, 
-and the spectral counting function $\mathcal{N}(\lambda)$. 
-If the system is diffusive, these functions are (see \ref{diff}):
-%
-\beq
-S(t) &=& \left\langle r^2(t)\right\rangle \quad\sim\quad  (2d)Dt\ \\
-\mathcal{P}(t) &\sim&  \frac{1}{\left({D t}\right)^{d/2}} \\
-\mathcal{N}(\lambda)  &=& \int^\lambda g(\lambda)d\lambda  \quad\sim\quad \left[\frac{\lambda}{D}\right]^{d/2} 
-\eeq
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Exact results for the 1D chain model}
-
-In the case of the chain model
-using the notation $w_n=w_{n,n{-}1}$ 
-and making the analogy with adding connectors in series 
-the expression for $D$ is 
-%
-\beq
-D \ \ = \ \ D[w_n] \ \ = \ \ \left( \frac{1}{N} \sum_n \frac{1}{w_n} \right)^{-1} 
-\ \ = \ \ \frac{s-1}{s} \, w_0, 
-\hspace{2cm} s \equiv \xi/r_0
-\eeq
-%
-where the last equality is for the distribution of Eq(5).
-In the sub diffusive regime (${0<s<1}$) the results 
-for the survival probability and the spreading are 
-%
-\beq
-S(t) \ \ &\sim& \ \ t^{2s/(1+s)}   \\ 
-\mathcal{P}(t) \ \ &\sim& \ \ t^{-s/(1+s)}\\
-\mathcal{N}(\lambda) \ \ &\sim&  \ \ \lambda^{s/(1+s)}
-\eeq
-%
-These results are summed up in \Fig{f1}. We clearly see that for $s<1$ 
-the asymptotic slope is sub-diffusive, while for ${s>1}$ it 
-corresponds to diffusion. Note that only for ${s>2}$ the result 
-for $D$ is self-averaging (adding resistors in series, finite second moment, 
-hence central limit theory applies). \\
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Numerical results for the 2D random site model}
-
-These results are summed up in \Fig{f2}.
-Amir et all \cite{amir} have carried out an RG analysis 
-that has been based on the assumption of having 
-localized modes via dimerization. Accordingly, 
-up to a factor of~2 in the exponent, $\mathcal{N}(\lambda)$ 
-is the same as the distribution of distances between the sites:  
-%
-\beq\label{eq:amir_expected}
-\mathcal{N}(\lambda) \ \ = \ \ \exp\left[ -\frac{\Omega_d}{2d} \Big(-s \ln(\lambda/2)\Big)^d \right], 
-\hspace{2cm} s \equiv \xi/r_0
-\eeq
-%
-This expectation is represented in \Fig{f2} by lines.  
-We see that it fails to capture the small $\lambda$ regime, 
-where the distribution corresponds to diffusive behavior. 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 \clearpage
 
-\begin{figure}[H]
-\includegraphics{ptsD_1D}
-\includegraphics{ptsD_2D}
 
-\caption{Spreading in the 1D and in the 2D random site models. 
-The average distance between the sites is $r_0=1$.
-In the 1D case only near-neighbor transitions are allowed.
-In the $1D$ plot, on the left, the blue line is the power of the spreading. 
-It shows a sub-diffusive regime where $0<s<1$, and a diffusive regime for $s>1$. 
-The red line is of the diffusion coefficient $D$, which is zero for the sub-diffusive regime $s<1$. 
-In the $2D$ plot, on the right, the numerical results for the diffusion coefficient agree 
-with the ERH estimate. The $Y$ axis is $D$ in logarithmic scale, while the $X$ axis is $X=-1/s$. 
-The numerical dots are extracted from the spectral analysis, as in \Fig{f2}. 
-The dashed line is the LRT result (${n_c = 0}$), 
-while the solid line is the ERH estimate with ${n_c = 5}$.}
+\onecolumngrid
+
+
+%%%%%%%%%%%%%%%%%%
+\begin{figure}[h!]
+(a) \hspace{0.5\hsize} (b) \\
+\includegraphics[height=7cm]{ptsD_1D_long}
+\includegraphics[height=7cm]{ptsD_2D_long}
+
+\caption{Spreading in the $d{=}1$ lattice model (a), 
+and in the $d{=}2$ degenerate random site model (b). 
+% R3
+Panel~(a) is based on known exact results.   
+Its dashed blue line is the power $\alpha$ of the spreading,  
+showing a sub-diffusive regime for $s<1$, and a diffusive regime for $s>1$. 
+Its solid red line is the diffusion coefficient $D$, 
+which is zero in the sub-diffusive regime. 
+%
+Panel~(b) displays numerical results that refer 
+to a network that consists of ${N=2000}$ sites 
+randomly scattered over a square with periodic boundary conditions.
+%
+The vertical axis is the diffusion coefficient $D$ 
+in a logarithmic scale, while the horizontal axis is $X=-1/s$. 
+The numerical red dots are based on a resistor network calculation (see App.\ref{res}), 
+while the stars are extracted from the spectral analysis (see \Fig{f2}).  
+The dashed line is the linear estimate (corresponds to ${n_c = 0}$), 
+while the solid line is the ERH estimate with ${n_c = 4.5}$.
+One observes that the ERH calculation describes very well 
+the departure from the linear prediction.
+}
 \label{f1}
 \end{figure}
 
 
 
-%%%%%%%%%%%%%%%%%%5
-\begin{figure}[H]
-\includegraphics[clip]{pts_Sepctral_PN}
+%%%%%%%%%%%%%%%%%%
+\begin{figure}[h!]
+\includegraphics[width=0.7\hsize,clip]{pts_Sepctral_PN}
 
 \caption{ 
-The $1D$ and the $2D$ cumulative eigenvalue distribution, for several values of $s$.
-The dots represent numerical diagonalization. 
-The dashed lines are the expected diffusion results according to \Eq{eq:expected_D_2d}, 
-with $D$ as a fitting parameter. The solid lines are according to the RG analysis of \cite{amir}, 
-namely \Eq{eq:amir_expected} . There is a striking difference between the $1D$ and the $2D$ cases. 
-For $1D$, the slope for sparse models ($s<1$) is less than $\frac{1}{2}$, 
-meaning that we have sub-diffusion. In the $2D$ case the low-$\lambda$ slope is always~$1$, 
-which corresponds to normal diffusion.} 
+The cumulative eigenvalue distributions $\mathcal{N}(\lambda)$ 
+for the $d{=}1$ (1D) and for the $d{=}2$ (2D) models of \Fig{f1}, 
+and the respective PN of the eigenstates (lower panels).
+Several representative values of $s$ are considered.
+% 
+% R3
+The dots are determined via numerical diagonalization of $N \times N$ matrices,  
+each representing a network that consists of ${N=1000}$ sites 
+randomly scattered over a square with periodic boundary conditions.
+%
+There is a striking difference between the $d{=}1$ and the $d{=}2$ cases. 
+For $d{=}1$, the log-log slope of $\mathcal{N}(\lambda)$, 
+see dashed lines, is less than~$d/2$ for sparse networks ($s<1$), 
+meaning that we have sub-diffusion. 
+In the $d{=}2$ case the small-$\lambda$ log-log slope 
+is always~$d/2$, which corresponds to normal diffusion.
+%  
+The solid lines in the upper 2D plot are according 
+to the RG analysis of \cite{amir}, namely \Eq{e23}. 
+%
+The horizontal dashed line in the lower panels indicates 
+the special value PN$=2$ that corresponds to dimer formation.
+} 
 \label{f2}
 \end{figure}
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-\clearpage
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Digression - numerical extraction of $D$}
-\label{sec:num_d_2d}
-\label{diff}
-
-The diffusion coefficient $D$ is formally like calculation 
-of the conductivity of the network. Therefore it can be determined 
-via a numerical solution of a circuit equation $\bm{G}\bm{V} = \bm{I}$, 
-as in mechanical engineering.  The result should be correlated 
-with the small $\lambda$ distribution of the eigenvalues.
-This point is explained below.
-
-In a diffusive system the coarse grained spreading 
-is described by the standard diffusion equation,
-with an evolving Gaussian distribution  
-%  
-\beq
-\rho(x;t) \ \ = \ \ \prod_{i=1}^d \frac{1}{\sqrt{2\pi}\sigma(t)} 
-\exp\left[-\frac{1}{2}\left(\frac{x_i}{\sigma(t)}\right)^2 \right]
-\eeq
-%
-where $\sigma^2=2Dt$. It follows from this expression that 
-% 
-\beq
-S(t) \ \ = \ \ \left\langle r^2(t) \right\rangle  \ \ = \ \ (2d)Dt
-\eeq
-%
-and 
-%
-\beq
-\mathcal{P}(t) \ \ \sim \ \ \frac{1}{\left({4\pi D t}\right)^{d/2}} 
-\qquad\qquad[r_0^d=1]
-\eeq
-%
-The eignevalues of the diffusion equation are $\lambda=Dq^2$ 
-where the possible values of the momentum are determined  
-by the periodic boundary conditions as $q=(2\pi/L)\vec{n}$. 
-It follows that the cumulative number of eigenstates is  
-%
-\beq \label{eq:expected_D_2d}
-\mathcal{N}(\lambda) \ \ = \ \ 
-\int_0^\lambda g(\lambda')d\lambda' \quad 
-= \quad \left(\frac{L}{2\pi}\right)^d
-\frac{\Omega_d}{d}
-\left[\frac{\lambda}{D}\right]^{d/2}
-\eeq
-
-
-
-It is well known that the survival probability 
-is related to the eigenvalues of $\bm{w}$ through the relation
-%
-\beq \label{eq:survival}
-\mathcal{P}(t) \ \ = \ \ \frac{1}{N}\sum_\lambda \eexp{\lambda t} \ \ \equiv \ \ \int_0^{\infty} g(\lambda)d\lambda \ \eexp{\lambda t}
-\eeq
-%
-For a diffusive system one can verify that the 
-indeed the expressions above 
-for $g(\lambda)$ and $\mathcal{P}(t)$ 
-are related by a Laplace transform.  
-%
-More generally, it follows that $D$ can be deduced from 
-the asymptotic behavior of $g(\lambda)$
-in the ${\lambda\rightarrow 0}$ limit  
-where the diffusive description is valid.
-%
-In contrast to that for large $\lambda$ we expect $g(\lambda)$ to coincide 
-with the distribution of the decay rates $\gamma_n=\sum_{m}w_{mn}$, 
-reflecting localized modes.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-\clearpage
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Linear response theory (LRT) estimate}
-
-If we had an ordered lattice, then the exact result for $D$ would be 
-%
-\beq
-D \ \ = \ \ D_{\tbox{LRT}}[\bm{w}]  \ \ = \ \ \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
-\eeq
-%
-This expression is strictly {\em linear}.
-For the infinite temperature variation of 2D random site model we get  
-%
-\be{20}
-D \ \ = \ \ 3\pi \, s^4 \, w_0
-\eeq
-%
-This expression will not work for ${s<1}$ because sparse contribution 
-of strongly coupled sites do not contribute to the transport. 
-Only percolating trajectories do have a contribution. We are therefore urged 
-to introduce approximation schemes that takes this connectivity 
-issue into account.  
- 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Effective Range Hopping (ERH) estimate}
-
-What we call effective range hopping (ERH) estimate is based 
-on the idea of finding a lower bound for $D$, taking the 
-percolation threshold into account. We define an ERH threshold $w_c$ 
-through the requirement 
-%
-\beq
-\iint_{w(r,\epsilon)>w_c} \rho(r,\epsilon)drd\epsilon \ \ = \ \ n_c, 
-\ \ \ \ \ \ \ \ \ \mbox{with $n_c$ of order unity \rmrk{(in the figures is called $p_c$)}}
-\eeq
-%
-Then we calculate $D$ as follows:
-%
-\beq
-D \ \ = \ \ D_{\tbox{ERH}}[\bm{w}]  \ \ = \ \ \frac{1}{4}\iint \min\{w(r,\epsilon),w_c\} \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr
-\eeq
-%
-This is similar to the LRT estimate, with network that has $w_{nm}$ 
-that are equal or smaller to the original values. The "suppressed" 
-connector are those that are too sparse to form percolating trajectories. 
-Note that this expression, as required, is {\em semi-linear} 
-rather than linear [see explanation below].
-For the infinite temperature variation of 2D random site model we get  
-%
-\beq
-D \ \ \sim \ \ 3\pi \, s^4 \, \eexp{-\const/s} \, w_0, 
-\ \ \ \ \ \ \ \ \ \ \ \const\sim 1 \mbox{(fitting)} 
-\eeq
-
-
-{\bf Details of calculation: }
-\rmrk{[we should refer to the general case of Mott hopping. 
-For laziness we refer to the infinite temperature random site model.]}
-We consider $w(r) =w_0 e^{-\frac{r}{s}}$, and $\rho(r) = 2\pi r$,  
-as defined in \Eq{eq:density_distribution}. 
-We look for the ERH threshold value $w_c=w(r_c)$ that is 
-defined through the equation  
-%
-\beq
-\int_0^{r_c} 2\pi r dr = n_c, 
-\hspace{2cm} \leadsto \hspace{2cm} 
-r_c  = \sqrt\frac{n_c}{\pi}
-\eeq
-%
-The calculation of the ERH integral leads to the result 
-%
-\beq
-D_{\tbox{ERH}} \ \ =  \ \ 
-\frac{\pi}{2} w_0
-\left[\frac{1}{4}{r_c}^4 +  {r_c}^3 s + 3{r_c}^2 s^2 + 6r_cs^3 +6 s^4  \right]
-\ \eexp{-\frac{r_c}{s}}
-\eeq
-%
-Formally for zero percolation threshold (${n_c=0}$) 
-we get the LRT estimate \Eq{e20}. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\clearpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Variable Range Hopping (VRH) estimate}
-
-The ERH is similar to the generalized VRH procedure 
-that we have introduced in previous publications.
-We define below what we mean by generalized VRH. 
-It would be clear that ERH gives a better 
-lower bound compared with VRH, namely, 
-%
-\beq
-D_{\tbox{VRH}}[\bm{w}]  
-\ \ < \ \ D_{\tbox{ERH}}[\bm{w}]
-\ \ < \ \ D[\bm{w}]
-\ \ < \ \ D_{\tbox{LRT}}[\bm{w}]
-\eeq
-%
-The VRH is based on the idea to associate
-with the range of the jump $r$ its typical 
-energy cost $\epsilon(r)$. In the Mott problem 
-the relation is $\epsilon(r) = (r_0/r)^d \Delta_0$, 
-corresponding to the effective DOS in range~$r$. 
-More generally the relation between $\epsilon$ and $r$ 
-is determined through the equation 
-%
-\beq
-\int_0^{\epsilon} \int_0^{r} \rho(r',\epsilon')  dr'd\epsilon' \  = \  n_c 
-\ \ \ \ \ \ \ \ \leadsto \ \ \ \ \ \ \ \ 
-\left(\frac{r}{r_0}\right)^d \ F(\epsilon) \ = \ n_c
-\eeq
-%
-where $F(\epsilon)$ is the cumulative distribution function.
-In words this equation asks what is the $\epsilon$~window that 
-is required in order to guarantee that the particle will be able 
-to find with probability of order unity an accessible site within 
-a range~$r$. Larger jumps allow smaller cost. 
-Then we estimate $D$ as follows: 
-%
-\beq
-D \ \ = \ \ D_{\tbox{VRH}}[\bm{w}]  \ \ \sim \ \ 
-w(r^*,\epsilon^*) \times  \Big(r^*\Big)^2
-\eeq
-%
-It is like an asymptotic evaluation of the ERH integral 
-that holds for sparse models. It should be realized that 
-in the Mott problem the hopping is dominated by the vicinity 
-of the optimal point ${(r^*,\epsilon^*)}$, 
-where $\epsilon^*=\epsilon(r^*)$. 
-Therefore, in the Mott problem VRH can replace the ERH, 
-but it does not interpolate well with the LRT regime.
-What we called in the past generalized VRH is a slightly 
-improved version of VRH. 
-
+\twocolumngrid
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}[H]
-\includegraphics[width=0.5\hsize]{wdiagrm}
-\caption{ Comparing VRH with ERH: }
+\begin{figure}[h!]
+\includegraphics[width=\hsize]{wdiagrm}
+
+\caption{Comparing the VRH with the ERH procedure. 
+The solid blue line that corresponds to the ERH threshold $w_c$ 
+encloses an ``area" that corresponds to $n_c$. 
+The VRH trade-off is represented by the dashed red line. 
+The VRH optimum is represented by the thick red dot.
+The VRH-to-ERH consistency requirement \Eq{e46} 
+is to have the VRH optimum sitting on on the solid blue line.}
+\label{fv}
 \end{figure}
 
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\clearpage 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Results for the banded $1D$ model}
-
-Consider a quasi 1D network that is represnted by 
-a banded matrix of width~$b$.  Namely we assume 
-that ${B(r)=1}$ within the band and zero for ${|r|>b}$. 
-The non zerohe elements have a log-box distribution, 
-namely, $\epsilon$ is distributed uniformly over a range $[0,\sigma]$. 
-The results for $D/D_{LRT}$ are presented in \Fig{f3}.
-They agree with the ERH estimate:
-%
-\beq
-D_{\text{ERH}} \ \ = \ \ 
-\frac{b(b+1)(2b+1)}{6} w_0 \left[ \eexp{-2\sigma\frac{n_c}{b}}\left(2\sigma\frac{n_c}{b} + 1\right) - e^{-2\sigma}\right]
-\eeq 
-% 
-The results are presented in \Fig{f3}.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}[H]
+\begin{figure}[h!]
 
-\includegraphics[width=0.5\hsize]{ptsD_Banded_Image}
-\includegraphics[width=0.5\hsize]{ptsD_Banded}
+(a) 
 
-\caption{(left) The numerical result for $D/D_{\tbox{LRT}}$ imaged as a function of $\sigma$ and $b$. 
-(right) Plot of the results for a $b=10$ matrix. 
-The blue points are based on spectral analysis (involving an undeterminded pre-factor). 
-The curve is our ERH prediction.}
-\label{f3}
-\end{figure}
+\includegraphics[width=\hsize,clip]{ptsD_Banded_Image}
 
+\ \\ \ \\ \ \\ 
 
-\ \\
+(b)  
+\includegraphics[width=\hsize,clip]{ptsD_Banded}
 
+\ \\ \ \\ \ \\ 
 
-Motivated by the FGR picture we consider a quasi 1D network 
-that is represnted by a matrix with band profile $B(r)=1/r^2$, 
-with zero elemnts for ${|r|>b}$. 
-The $\epsilon$ is distributed uniformly over a range $[0,\sigma]$. 
-The results for $D/D_{LRT}$ are presented in \Fig{f4}.
-They agree with the ERH estimate:
+(c) 
+\includegraphics[width=\hsize,clip]{ptsD_Banded_scatter}
+
+\caption{
+%R3
+We consider a quasi $d{=}1$ network that consists 
+of ${N=1000}$ sites with periodic boundary conditions. 
+The network is described by a sparse banded matrix. 
+The bandwidth is~$b$, and the log-width of the rate 
+distribution is~$\sigma$. See text for details.
 %
-\beq
-D_{\text{ERH}} \ \ = \ \ 
-2b w_0 \left[ \eexp{-2\sigma\frac{n_c}{b}}\left(2\sigma\frac{n_c}{b} + 1\right) - e^{-2\sigma}\right]
-\eeq
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}[H]
-
-\includegraphics[width=0.5\hsize]{ptsD_Banded_Image_X}
-\includegraphics[width=0.5\hsize]{ptsD_Banded_X}
-
-\caption{(left) The numerical result for $D/D_{\tbox{LRT}}$ imaged as a function of $\sigma$ and $b$.
-(right) Plot of the results for a $b=10$ matrix. The blue points are based on spectral analysis (involving an undeterminded pre-factor). 
-The curve is our ERH prediction.}
+{\bf \ (a)}~The numerical result for $g_s=D/D_{\tbox{linear}}$ 
+imaged as a function of $\sigma$ and~$b$.
+The values of $D$ are found via a numerical 
+resistor network calculation, see App.\ref{res}.  
+%
+{\bf \ (b)}~Plot of the subset of results that 
+refer to the $b=10$ matrix. 
+The curve is the ERH prediction. 
+%
+{\bf \ (c)}~Scatter diagram that shows 
+the correlation between the "$D$" that is extracted 
+from the spectral analysis, and the $D$ that  
+has been found via the resistor network calculation.}
 \label{f4}
 \end{figure}
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\clearpage 
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Open issue for discussion}
-
-One issue - already pointed out - is it possible to extract $D$ from spectral analysis.
-In the quasi 1D analysis the value that is extracted from spectral analysis
-is much smaller than the value that is obtained from the resistor network calculation.
-
-In the standard Anderson model the eigenvalues form a band ${\lambda \in [-\lambda_c,\lambda_c]}$.
-The states at the edge of the band are always localized.
-The states in the middle  of the band might be de-localized if ${d>2}$.  
-
-In the problem we discuss here all the off diagonal elements are {\em positive},  
-and the diagonal elements compensate them. Consequently the spectrum is ${\lambda \in [0,\lambda_c]}$.
-The ground state is always the ${\lambda=0}$ uniform state. 
-Do we have diverging "localization length" in the limit ${\lambda \rightarrow 0}$.
-
-Since all the  off diagonal elements are {\em positive} 
-it is clear that we cannot have "destructive interference", 
-and therefore we do not have genuine Anderson localization. 
-Therefore in general we might have diffusion, even in 1D. 
-In 2D we have a percolation threshold, which is again 
-not like Anderson localization.  
-
-\ \\ 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{The semi-linear response perspective}
-
-Assume that the rates $w_{nm}$ are induced 
-by a driving source that has spectral content $\tilde{S}(\omega)$. 
-Say that the rates are determined by the Fermi golden rule:
-%
-\beq
-w_{nm} \ \ = \ \ \tilde{S}(E_n-E_m) |V_{nm}|^2
-\eeq
-%
-Accordingly we can write instead of~$D=D[\bm{w}]$ a relation~$D=D[\tilde{S}(\omega)]$.
-This relation is in general semilinear. This means that only the first property below 
-is satisfied, not the second one.
-%
-\beq
-D\big[ \lambda \tilde{S}(\omega)\big]  \ \ &=& \ \  \lambda \ D\big[\tilde{S}(\omega)\big] 
-\\
-D\big[\tilde{S}_a(\omega) + \tilde{S}_b(\omega)\big]  \ \ &=& \ \  D\big[\tilde{S}_a(\omega)\big] + D\big[\tilde{S}_b(\omega)\big]
-\eeq
-%
-A typical situation is that the driving is "on top" of a bath. Namely 
-%
-\beq
-\tilde{S}(\omega) \ \ = \ \ \tilde{S}_{\tbox{bath}}(\omega) + \tilde{S}_{\tbox{driving}}(\omega)
-\eeq  
-%
-In such case we can linearize~$D=D[\tilde{S}(\omega)]$, and then we get 
-linear-response. Otherwise the response is typically semi-linear rather than linear. 
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Additional sections}
-
-Mechanical and electrical analogs.
-
-Regarding $D$ as conductivity.
-
-Relation between $S(t)$ and $P(t)$ - simplify as in QM lecture notes.
-
-Remark on results for [aaa...] and for [abab...] lattices.
-
-Remark on results for diffusion and sub-diffusion in 1D. 
-
-Remark about aging.
-
-Spacing distribution $P(r)$ in $d$ dimensions.
-
-Implied $P(w)$ in $d$ dimensions. 
-
-Analysis of the "random site" model (LRT to ERH crossover) 
-
-Remark on the results of Amir in 2D. 
-
-Analysis of banded matrices (LRT to ERH crossover)
-
-The errata KBD model. 
-
-
 \clearpage
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-\section{Introduction}
-This work concerns the survival probality and spreading (defined in section \ref{sec:definitions}) for systems with multiple intercontected sites. We will study which physical and mathematical properties are necessary to describe the system. The systems are defined using the transition rates between sites (and sometimes the energy of the sites). Some sort of random distribution is used for building th systems, either by randomly setting the transition rates themselves, or by randomly positioning them in space, obtaining the transition rates from their distances. These physical systems are mapped to matrices, which are then further studied. The matrices have random origin, but are not completely random, due to physical or topological considirations.
-
-
-In regular diffusion there is a known relation between the survival probability and the diffusion. 
-A known solution for the diffusion constant in a nearest neighbor network is \cite{Derrida:1983}:
-\begin{align}
-D=\overline{w}_{harmonic} =(\overline{w^{-1}})^{-1}=\left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1}
-\end{align}
-
-
-
-%%%%%%%%%%%%
-\section{Questions}
-\begin{itemize}
-    \item Is the known relation $\mathcal{P}(t) \sim \frac{1}{\sqrt{S(t)}}$ general, and does it hold for more than two dimensions?
-    \item Do geometrical and topological considirations matter, or is the rate distribution enough to find the survival and spreading?
-    \item Could a resistor network calculation be the generalization of Alexander's solution (see section {sec:alexander}) for more than $1d$ (Quasi $1d$ or even $d>1$?
-    \item What are the implications of different site energies, and does the VRH method address them correctly?
-\end{itemize}
-%%%%%%%%%%%%
-\section{Tentative working plan}
-Several systems of interest are defined in section \ref{sec:sys_of_interest}. With those systems 
-\begin{itemize}
-    \item Solve $1d$ nearest neighbors problems, analytically, numerically, and using the resistor network method. The numerical solution is based on finding the eigenvalues.
-    \item Solve quasi-1d and strip systems.
-    \item Analyze $2d$ systems, analytically and numerically.
-    \item VRH: Variable-Range-Hopping, insert different energies for the sites, 
-    \item Resistor network calculation \ref{sec:res_net}. Could a resistor network calculation be the generalization of Alexander's solution for more than $1d$ (Quasi $1d$ or even $d>1$?
-
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%
-\section{definitions}\label{sec:definitions}
-\begin{description}
-    \item[Site probability - $P_n(t)$ : ] The probability to be in site $n$ at time $t$.
-    \item[Survival probability - $\mathcal{P}(t)$ : ] The probability to remain in the starting site. If the initial condition was $P_0(0)=1$, $P_i(0)=0 \textrm{  for  } i\neq 0$, then $\mathcal{P}(t)= P_0(t)$
-    \item[Spreading - $S(t)$ : ] The squared width (second moment) of the probability distribution. $S(t) \equiv \sum_n n^2 P_n -\left(\sum_n n P_n\right)^2$. 
-    \item[Diffusion coefficient - $D$ : ] The long term ratio of spreading to time, with $S(t) \sim 2Dt$.
-    \item[Rate matrix - $W_{ij}$ : ] A matrix describing the transition rates between sites. $W_{ij}$ is the rate of transitions from site $j$ to site $i$.
-    \item[Probability conserving matrix : ]\label{def:prob_conserv} A matrix where the sum of each and every row is zero - $\sum_i W_{ij} = 0 \qquad \forall j$. This relates to conserving probability if this matrix is a rate matrix.
-    \item[Banded matrix, with width $b$ : ] A matrix that has non zero values only within the first $b$ off diagonals, meaning $2b+1$ diagonals with values.
-\end{description}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Rate equation}
-
-The basic model is of a particle distributed among many sites. The particle moves from site to site, with a transition rate matrix $W_{ij}$. Then, the probability to find the particle at a given site $i$, denoted $P_i$, obeys the rate equation:
-\begin{align}
-\frac{dP_n(t)}{dt} = \sum_m W_{nm}P_m(t)
-\end{align}
-We can generally describe a system by defining its transition matrix $W_{ij}$.
-
-%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Systems of interest}\label{sec:sys_of_interest}
-
-In the following sections we will describe several systems by defining their transition matrices. Unless stated otherwise, all the matrices are symmetric and probability conserving as defined previously \ref{sec:definitions}. The rates are obviously non negative.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{One dimensional nearest neighbor systems with wide distributions}
-
-This class of systems has only nearest neighbor transitions, with non zero rates only on the first off diagonals. The rate distribution is wide, say $P(w) \sim \textrm{log wide}$.
-
-
-If the transition rates are $w_1,w_2,w_3,...$, the matrix looks like this:
-\begin{align}
-W = 
-\begin{pmatrix}
--w_1  & w_1 \\
-w_1  & -w_1-w_2 &  w_2 \\
- & w_2 & -w_2-w_3 &  w_3 \\
-& & w_3 & -w_3-w_4 & \; w_4 \\
-& & & \ddots &\ddots&\;\;\ddots
-\end{pmatrix}
-\end{align}
-%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{One dimension, beyond nearest neighbors}
-
-This system has non zero rates to sites beyond the nearest neighbors. The largest distance with non zero rates will define the matrix bandwidth $b$.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Quasi one dimensional - strip}
-
-This system is two dimensional, but one of the dimensions is very small compared to the other. This matrix will also be banded.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Two or higher dimensions}
-
-This class of systems has the sites in a two (or more) dimensional system. An added difficulty is that there is more then one coordinate, so that there are several ways to map this to 1d vectors.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Variable site energy}
-
-Contrary to all the previous systems, here the energy per site is not constant. We can \cite{Ambegaokar:1971} accommodate for this, by including Boltzmann's factor in the transition rates. Another consequence is that the transition rates is not symmetric.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The relation between the survival probability and the eigenmode distribution}
-The matrix has eigenmodes $V_\lambda$ with eigenvalues $\lambda$. 
-We define a standard inner product :
-\begin{align}
-\inner{A}{B} = \sum_{ii} A_iB_i
-\end{align}
-Then we can write the probability vector $P$ as a sum of the normalized eigenmodes.
-\begin{align}
-P_n(t) = \sum_\lambda \inner{P(t)}{V_\lambda}{V_\lambda }_n = \sum_\lambda C_\lambda(t) {V_\lambda}_n
-\end{align}
-Where we have defined $C_\lambda(t)\equiv \inner{P(t)}{V_\lambda}$.
-
-The rate equation becomes
-\begin{align}
-&\sum_\lambda \left( \frac{dC_\lambda(t)}{dt}{V_\lambda}_n - C_\lambda(t)\sum_m W_{nm}{V_\lambda}_n \right)= \sum_\lambda \left( \frac{dC_\lambda(t)}{dt} - \lambda C_\lambda(t)\right){V_\lambda}_n =0\\
-&C_\lambda(t) = C_\lambda(0)e^{\lambda t}\\
-&P_n(t) = \sum_\lambda C_\lambda(t) {V_\lambda}_n = \sum_\lambda  C_\lambda(0)e^{\lambda t} {V_\lambda}_n 
-\end{align}
-The survival probability is defined as the probability to remain in a specific site. If we begin with a probability vector whose only non zero element is $P_i(0)=1$, the corresponding $C_\lambda(0)$s will be:
-\begin{align}
-C_\lambda(0) = \inner{P(0)}{V_\lambda}= {V_\lambda}_ito
-\end{align}
-And then the survival probability will be:
-\begin{align}
-\mathcal{P}_i(t) = P_i(t) = \sum_\lambda  C_\lambda(0)e^{\lambda t} {V_\lambda}_i=\sum_\lambda ({V_\lambda}_i)^2 e^{\lambda t} 
-\end{align}
-The mean survival probability will be:
-\begin{align} \label{eq:surv_eigenvalues}
-\mathcal{P}(t) = \sum_i \frac{1}{N} P_i(t)=\sum_i \frac{1}{N} \sum_\lambda ({V_\lambda}_i)^2 e^{\lambda t}  =\frac{1}{N}\sum_\lambda e^{\lambda t} = \int g(\lambda) e^{\lambda t}
-\end{align}
-Where $g(\lambda)$ stands for the density of eigenvalues. This last results means that the survival probability is the Laplace transform of the eigenvalue distribution.
-
-
-%%%%%%%%%%%%%%
-\section{The relation between the diffusion coefficient and the survival probability}
-If $D$ exists, the long time decay of $\mathcal{P}(t)$, according to Alexander et al \cite{Alexander:1981:RMP}, (and consistent with the scaling hypothesis $\mathcal{P}(t)\sqrt{S(t)} \propto 1$) is:
-\begin{align}
-    \mathcal{P}(t) = \frac{1}{\sqrt{4\pi D t}} \\
-    g(\lambda) = \mathcal{L}^{-1}[\mathcal{P}(t)] = \mathcal{L}^{-1}\left[\frac{1}{\sqrt{4\pi D t}}\right]
-\end{align}
-Where $\mathcal{L}^{-1}$ is the inverse Laplace transform, (The Bromwich integral).
-\begin{align}
-    g(\lambda) = \mathcal{L}^{-1}\left[\frac{1}{\sqrt{4\pi Dt}}\right] = \frac{1}{\sqrt{4\pi^2 D\lambda}} \\
-    \int_0^\lambda g(\lambda')d\lambda' = \sqrt{\frac{\lambda}{\pi^2 D}}
-\end{align}
-
-%%%%%%%%%%%%%%%%%55
-\section{The harmonic mean of log normal distribution}
-The harmonic mean of the log normal distribution with normal width $\sigma$ is given by:
-\begin{align}
-\left(\frac{1}{N}\sum\frac{1}{w_n}\right)&= \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{x^2}{2\sigma^2}} \frac{1}{e^x} dx  = \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{x^2}{2\sigma^2}-x} dx \\
-&= \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{\left(x-\sigma^2\right)^2}{2\sigma^2}+\frac{\sigma^2}{2}} dx = e^{\frac{\sigma^2}{2}}\\
-\left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1} = e^{-\frac{\sigma^2}{2}}
-\end{align}
-The generalization for $\mu\neq 0$ is :
-\begin{align}
-\overline{w}_{harmonic} = e^{-\frac{\sigma^2}{2}+\mu}
-\end{align}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Solving nearest neighbor alternating transition rates analytically}
-In this section I solve the alternating transition rates problem exactly.
-
-We can think of a model where every second transition is different, so the transitions are a,b,a,b,a,b... And the matrix is:
-\begin{align}
-W = 
-\begin{pmatrix}
--a  & a \\
-a  & -a-b &  b \\
- & b & -a-b &  a \\
-& & a & -a-b & \; b \\
-& & & \ddots &\ddots&\;\;\ddots
-\end{pmatrix}
-\end{align}
-The diffusion coefficient according to \ref{eq:diff} should be:
-\begin{align}\label{eq:D_alter}
-D = \left(\frac{1}{N}\sum\frac{1}{w_n}\right)^{-1} = \frac{2}{\frac{1}{a} + \frac{1}{b}} = \frac{2ab}{a+b}
-\end{align}
-
-Applying the eigenvalue equation to this matrix gives us two inidical equations, for even and odd $n$'s. If we take an odd $n$ the equations are:
-\begin{align}
-a {V_\lambda}_n - (a+b+\lambda){V_\lambda}_{n+1} + b {V_\lambda}_{n+2} =0  \\
-b {V_\lambda}_{n+1} - (a+b+\lambda){V_\lambda}_{n+2} + a {V_\lambda}_{n+3} =0 
-\end{align}
-The solution with real eigenmodes is rather cumbersome, but the eigenvalues found by any set of orthogonal eigenmodes have to be the same. So for purely analytical reasons we find the eigenvalues with complex eigenmodes, although they have no meaning in our model.
-
-
-The eigenvalues for this matrix can be found analytically, using Bloch's theorem. The solution for a periodic structure with a unit cell is ${V_\lambda}_n = e^{ikn} u(x)$ where $u(x)$ is a function with the periodicity of the unit cell. In our case this simplifies to:
-\begin{align}
-{V_\lambda}_n = \begin{cases}e^{ikn} c_1 \; &, \text{n odd} \\ e^{ikn} c_2 \; &, \text{n even} \end{cases}
-\end{align}
-Periodic boundary conditions dictate $k=\frac{2\pi}{N}m$ where $m$ is an integer.
-
-When we apply the eigenvalue equation to this vector ($WV_\lambda = \lambda V_\lambda$), we obtain two linear equations:
-\begin{align}
-ac_1e^{-ik}   -(a+b)c_2 +bc_1e^{ik} &= \lambda c_2 \\
-bc_2e^{-ik}   -(a+b)c_1 +ac_2e^{ik} &= \lambda c_1 
-\end{align}
-The solution for $\lambda$ is
-\begin{align}
-(a+b+\lambda)^2 = a^2+b^2+2ab\cos 2k \\
-\lambda = -(a + b) \pm \sqrt{a^2+b^2+2ab\cos 2k}  \label{eq:abab_eigenvals}
-\end{align}
-We are interested in the eigenvalues close to zero, which means taking the plus sign, and $k\ll 1$:
-\begin{align}
-\lambda \approx -(a + b) + \sqrt{a^2+b^2+2ab(1-2k^2)} = -(a+b) +(a+b)\sqrt{1 - \frac{4abk^2}{(a+b)^2}}\approx \frac{2abk^2}{a+b}
-\end{align}
-The $k$'s are $k=\frac{2\pi}{N}m$, but with degeneracy of $2$ ($\pm k$ give the same result) and therefore the cumulative eigenvalues are:
-\begin{align}
-\sqrt{\lambda\frac{a+b}{2ab}}\frac{N}{\pi}
-\end{align}
-Or, using the diffusion coefficient we have found in \eqref{eq:D_alter}:
-\begin{align}
-\sqrt{\frac{\lambda}{D}}\frac{N}{\pi}
-\end{align}
-
-Now that we have the eigenvalues, we may use equation \ref{eq:surv_eigenvalues} to find the survival probability as a function of time:
-\begin{align}
-\mathcal{P}(t) =\int g(\lambda) e^{\lambda t} = \frac{1}{\sqrt{4 \pi D t}}
-\end{align}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The relation between the eigenvalue distribution and the transition matrix}
-In the supplementary material of \cite{Amir:2010:PRL} the moments of the distribution of the eigenvalues are found. 
-
-If we define $D$ as the diagonalized matrix $W$ as in $W=UDU^{-1}$, we have
-\begin{align}\label{eq:eig_moments}
-\sum_\lambda \lambda^k = Tr (D^k) = Tr(UDU^{-1}UDU^{-1}UDU^{-1}UDU^{-1}...) = Tr (W^k)
-\end{align}
-So the exponent $k$ of the matrix $W$ is equal to the $k^{th}$ moment of the distribution of the eigenvalues. If one can find the exponents of the matrix, he can find the moments of the distribution, and hopefully the distribution itself. 
-
-
-%%%%%%%%%%%%%%
-\section{Solving the spacing distribution for uniformly random points in d dimensions} \label{subsec:euclid}
-Random Euclidean distance matrices were widely researched \cite{Mezard:1999:NPB}, [insert more refs..]. Amir et al \cite{Amir:2010:PRL} have studied a model with the exponents of euclidean distances. They obtain the survival probability by finding the distribution of the eigenvalues, using the idea of \ref{eq:eig_moments}. 
-
-In one dimension, the transition rates are related to the distance between points distributed uniformly, with density $n$. The nearest neighbor distribution can be considered as the probability for no neighbor at $x'<x$, and a neighbor at $x<x'<x+dx$. Because the points are distributed uniformly, the probability for no neighbors at a small interval $\Delta x$ is :
-\begin{align}P_0(\Delta x) = (1-n\Delta x) \end{align}
-So for a larger interval, we can divide $x$ to $N$ parts:
-\begin{align}P_0(x) = \lim_{N\rightarrow \infty}(1-\frac{nx}{N})^N = e^{-n x} \end{align}
-The probability for a neighbor at $x<x'<x+dx$ is:
-\begin{align}P_1(x<x'<x+dx) = n dx \end{align}
-So the probability for a nearest neighbor between $x$ and $x+dx$ is:
-\begin{align}P_{NN}(x< x'<x+dx) = P_0(x'<x)\cdot P_1(x<x'<x+dx) = e^{-n x}ndx \end{align}
-And the distribution density functions is:
-\begin{align} f(x) = e^{-n x}n\end{align}
-
-For higher dimensions, if we assume that site density is constant (denoted $n$), then the probability for no neighbors in volume $V(r)$ is:
-\begin{align} P_0( V(r)) = e^{-nV(r)}\end{align}
-So the cumulative probability for the nearest neighbor distance to be less than $r$ is:
-\begin{align} F (r) = 1-P_0(V(r)) = 1- e^{-nV(r)} \end{align}
-The probability density is the derivative of the cumulative probability:
-\begin{align} f(r) = \frac{dF(r)}{dr} =   e^{-nV(r)} n \frac{dV(r)}{dr} \end{align}
-For two dimensions:
-\begin{align} f(r) = e^{-n \pi r^2}n2\pi r \end{align}
-For three dimensions:
-\begin{align} f(r) = e^{-n \frac{4\pi}{3} r^3}n4\pi r^2 \end{align}
-Amir et al. \cite{Amir:2010:PRL} come to the same equation in their supplementary material:
-
-%%
-\begin{fminipage}{\textwidth}
-\begin{align}P_{nn}(r)=\frac{d
-V_d}{r_{nn}} {(r/r_{nn})}^{d-1} e^{-V_d {(r/r_{nn})}^d}\end{align} 
-where $V_d$ is the volume of a $d$ dimensional sphere and $r_{nn}$ is the
-average nearest-neighbor distance.
-\end{fminipage}
-
-In our notation (replacing $V_d$ with the more conventional $\frac{\Omega_d}{d}$ ), we can write it as:
-\begin{align} f(r) = e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1} \end{align}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Finding the transition rate distribution for $w= e^{-r/ \xi}$, with random points}
-We can change the random variable from $r$ to $w= e^{-r/ \xi}$, with $0<w<1$:
-\begin{align}
-    &|f_w(w)dw| = |f_r(r)dr| \\
-    &f_w(w) = f_r(r)\left|\frac{dr}{dw}\right| = f_r(-\xi \ln w)\frac{\xi}{w} = e^{-n \frac{\Omega_d}{d} (-\xi\ln w)^d} n\Omega_d (-\xi\ln w)^{d-1}\frac{\xi}{w} \\
-    &f_w(w) \sim \frac{|\ln w|^{d-1}}{w} e^{-|\ln w|^d}
-\end{align}
-In $1d$ that becomes:
-\begin{align} f(w)= e^{n \xi\ln w} \frac{n\xi}{w} = w^{n\xi-1}n\xi\end{align}
-Which matches Alexander's $\alpha = 1-n\xi$, and therefore should have survival of $\mathcal{P}(t)\propto t^{-\frac{1-\alpha}{2-\alpha}}= t^{-\frac{n\xi}{1+n\xi}}$. This result appears also in Amir's article.
-
-
-
-For $2d$:
-\begin{align} f(w) = e^{-n \pi (-\xi\ln w)^2} n 2\pi  (-\xi\ln w)\frac{\xi}{w}\end{align}
-
-The diffusion coefficient is given by $\left(\overline{(w^{-1})}\right)^{-1}$:
-\begin{align}
-    & \overline{(w^{-1})} = \int_0^\infty \frac{1}{w} e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1} dr = \int_0^\infty e^{-n \frac{\Omega_d}{d} r^d} n\Omega_d r^{d-1}e^{r/\xi} dr 
-\end{align}
-For $d>1$ this integral converges. If the naive $1d$ calculation holds, normal diffusion should occur.
-
-Amir also finds the eigenvalue distribution (using the idea of equation \eqref{eq:eig_moments} ):
-
-%%
-\begin{fminipage}{\textwidth}
-\begin{align} P(\lambda)=  \frac{\epsilon^d d V_d /2
-(-\rm{log}(-\lambda/2))^{d-1} e^{-\frac{V_d}{2} \epsilon^d
-(-\rm{log}(-\lambda/2))^d}}{\lambda} \end{align}
-
-
-The cumulative $C(\lambda)$ of this distribution takes a
-particularly simple form: 
-\begin{align} C(\lambda)\equiv \int_\lambda^0
-P(\lambda)d\lambda= e^{-\frac{V_d}{2} \epsilon^d
-(-\rm{log}(-\lambda/2))^d} \end{align}
-\end{fminipage}
-Or in our notation:
-\begin{align} C(\lambda)= e^{-\frac{\Omega_d}{d} n\xi^d \left( -\log(\frac{\lambda}{2})\right)^d}  \end{align}
-In 2D that becomes:
-\begin{align} C(\lambda) = e^{-\pi n\xi^2 \left(\log(\frac{\lambda}{2})\right)^2 } \end{align}
-This cumulative distribution is the same as the log-normal probability distribution. 
-
-%%%%%%%%%%%%%%%%%%%%%%
-\section{The survival and spreading for the one dimensional problem}\label{sec:alexander}
-We present the survival and spreading for several cases of 1d systems, based on the work by \textcite{Alexander:1981:RMP}.
-
-Three classes are classified:
-\begin{align} 
-    &\mathrm{(a) : }\qquad (\overline{w^{-1}})^{-1} < \infty  \\
-    &\mathrm{(b) : }\qquad P(w)\rightarrow \mathrm{const} \qquad\mathrm{as}\qquad w \rightarrow 0 \\
-    &\mathrm{(c) : }\qquad P(w) = 
-        \begin{cases} 
-            (1-\alpha)w^{-\alpha} , & 0\le w \le 1 \\
-            0, & \mathrm{otherwise}
-        \end{cases}
-        \qquad\mathrm{with}\qquad 0<\alpha<1
-\end{align}
-For two of the three classes the survival at $w\rightarrow 0$ and $t\rightarrow \infty$ are (6.13) [Where $D=(\overline{w^{-1}})^{-1}$ ]:
-\begin{align}
-&\mathrm{(a) : }\qquad \mathcal{P}(t) \approx \sqrt{\frac{1}{4\pi D t}}  \\
-&\mathrm{(c) : }\qquad \mathcal{P}(t) \propto t^{-\frac{1-\alpha}{2-\alpha}}
-\end{align}
-The spreading is defined by (7.3):
-\begin{align}\label{eq:spreading}
-     S(t) = \overline{x^2(t)} = \sum_n n^2 P_n(t) 
-\end{align}
-And it is solved (7.18):
-\begin{align}
-    &\mathrm{(a) : }\qquad S(t) \approx 2Dt  \\
-    &\mathrm{(b) : }\qquad S(t) \propto \frac{t}{\ln t}  \\
-    &\mathrm{(c) : }\qquad S(t) \propto t^{2\frac{1-\alpha}{2-\alpha}}
-\end{align}
-Using a scaling hypothesis , he claims:
-\begin{align}\label{eq:scaling_hypo}
-S(t) \propto \left(\mathcal{P}(t)\right)^{-2} \qquad \mathrm{as}\qquad t\rightarrow \infty
-\end{align}
-
-%%%%%%%%%%
-\section{Higher dimension considerations}
-To solve the problem in higher dimensions, we label the sites with a 1d coordinate, and solve the matrix.
-
-The claim in \eqref{eq:eig_moments} that $\sum_\lambda \lambda^k = Tr (W^k)$, is still be valid in higher dimensions. Therefore, the survival probability should stay the same.
-
-The interesting question regards the spreading. If the hypothesis $S(t) \propto \left(\mathcal{P}(t)\right)^{-2}$ \eqref{eq:scaling_hypo} holds, the spreading should also stay the same. 
-
-The definition of spreading Alexander uses \eqref{eq:spreading} ($\sum_n n^2 P_n(t)$) does match the average distance squared in 1D, but not in higher dimensions. The question is whether we can enumerate the sites in such a way that the methods presented so far apply.
-
-%%%%%%%%%%%%%%%
-\section{Defining sparsity?}
-Stotland's \cite{Stotland:2010:PRB}  sparsity characterization is:\\*
-%%%%%%%%%%%%%%%% minipage
-\begin{fminipage}{\textwidth}
-The sparsity of a matrix that consists of 
-uncorrelated realizations can be characterized 
-by a parameter~$s$ or optionally 
-by the parameters~$p$ and~$q$ that 
-are defined as follows: 
-%
-\begin{align}
-s \ \ &=& \ \ \langle x \rangle^2 / \langle x^2 \rangle \\
-p \ \ &=& \ \ \mbox{Prob}(x {>} \langle x\rangle) \\
-q \ \ &=& \ \ \langle\langle x \rangle\rangle_{\tbox{median}}/\langle x \rangle
-\end{align}
-%
-By this definition $p$ is the fraction of the elements that 
-are larger than the algebraic average and $q$ is the ratio between the median
-and the algebraic average.
-We regard a matrix as sparse if $s\ll1$  
-or equivalently if $p \ll 1$ or $q \ll 1$. 
-
-\end{fminipage}
-%%
-\\
-
-The direct calculation for the survival in a log normal banded matrix is depicted in figure \ref{fig:p_lognormal_band}. For each value of $b$, a matrix (currently $100
-\times 100$) with a band b filled with log-normally distributed ($\sigma=1$) values was constructed. Then, the eigenvalues were numerically calculated, and then the Laplace sum $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$.
-%%%
-%\begin{figure}[H]
-%\dontincludegraphics[clip, width=0.9\hsize]{P_lognormal_band.pdf}
-%\caption{$\mathcal{P}(t)$ for constant sparsity, and variable bandwidth. The survival was calculated using $\mathcal{P}(t) =\frac{1}{N}\sum_\lambda e^{\lambda t}$ \eqref{eq:surv_eigenvalues} with numerical diagonalization of the transition matrix.
-%}
-%\label{fig:p_lognormal_band}
-%\end{figure}
-
-%%%%%%%%%%
-\section{Resistor Network Calculation} \label{sec:res_net}
-Our basic equation is 
-\begin{align} \boldsymbol{ \dot P } = \boldsymbol{W} \boldsymbol{P} \end{align}
-It can be rewritten as:
-\begin{align}  \boldsymbol{P} = \boldsymbol{W}^{-1}\boldsymbol{ \dot P } \end{align}
-Which resembles resistivity calculations:
-\begin{align} \boldsymbol{V} = \boldsymbol{R}\boldsymbol{ I } \end{align}
-If we define the inverse resistivity as:
-\begin{align} \boldsymbol{R} = \boldsymbol{W}^{-1} \end{align}
-So our calculations become similar to those of resistors, whose rules are well known.
-
-The resistor network calculation has been used by Stotland to find the diffusion of quasi one dimensional systems.
-
-To solve the problem, we need to find the inverse of $\boldsymbol{W}^{-1}$. Such an inverse does not exist, because $\boldsymbol{W}$ always has a zero valued eigenmode.
-
-%%%%%%%%
-\section{Random Matrix Construction}\label{sec:matrix_construction}
-To create a $N\times N$ matrix, we have to choose $N-1$ random numbers. To make sure our distribution is truly log-normal, we create $N-1$ numbers forming a log-normal distribution, and permute them. In order to create the numbers, first we create a vector of $N-1$ linearly spaced values between $0$ and $1$. Then we apply element-wise the inverse cumulative distribution function of the normal distribution \ref{eq:invcdf}, using the inverse complementary error function. This gives a $N-1$ vector with normal distributed values. The vector is then scaled ($\tilde{y} = \mu+\sigma\cdot y$) to the appropriate width and mean [of the normal distribution]. The last step is to permute the vector, and apply an exponent element-wise.
-\begin{align}\label{eq:invcdf}
-y = -\sqrt{2}\cdot\operatorname{erfcinv}(2\cdot x) 
-\end{align}
-
-To check ourselves, we have plotted the eigenvalue distribution for the lognoraml banded matrix, and a uniform random matrix in figure \ref{fig:eigenvalue_distribution}, and also compared between $b=5$ and $b=10$ in figure \ref{fig:eigenvalue_distribution_5_10}
-\begin{figure}[H]
-    {\dontincludegraphics[clip, width=0.9\hsize]{eigvals_uniform}}
-\caption{Uniform distribution}
-    \label{fig:eigenvalue_distribution}
-\end{figure}
-\begin{figure}[H]
-    {\dontincludegraphics[clip, width=0.9\hsize]{eigvals_lognormal_loglog}}
-    \caption{Lognoraml nearest neighbor matrix}
-
-\end{figure}
-\begin{figure}[H]
-    \dontincludegraphics[clip,width=0.9\hsize]{eigvals_lognormal_normal}
-    \caption{Cumulative eigenvalue distribution, in a normal scale}
-\end{figure}
-\begin{figure}[H]
-    \dontincludegraphics[clip, width=0.9\hsize]{eigvals_ones_loglog}
-\end{figure}
-\begin{figure}[H]
-    \dontincludegraphics[clip, width=0.9\hsize]{eigvals_alter_loglog}
-\end{figure}
-\begin{figure}[H]
-    \dontincludegraphics[clip, width=0.9\hsize]{eigvals_box_loglog}
-\end{figure}
-
-%%%%%%%%%%%%%
-\section{Geometry's role} \label{sec:geometry}
-Random points were chosen on a torus. A matrix with transition rates $W_{ij} = e^{-r_{ij}}$ was constructed, for which eigenvalues and survival were calculated. Later, the matrix elements were permuted, and the same calculations were made. \ref{fig:distance}. Since the matrix should remain symmetric, the elements distribution should stay the same, and the sum of each row should stay $0$, the permutation was done on the upper triangle of the matrix only. (And then transposed to the other triangle, and the diagonal set match the zero sum demand).
-
-%%%%%%%%%%%%
-\section{Resistor network computation for 2d surfaces}
-Here I will explain the dependence of $G(r)$ in $r$, so we could be able to use the resistor network calculation for $2d$ problems.
-
-The basic idea, as in $1d$ networks, is to add a source of current ($+1$) and a sink ($-1$). If we can calculate the voltage between those "electrodes", we know the conductance, as $G = \frac{I}{V}$. 
-
-Instead of calculating the system with both current connections, we can think of each of them seperately, and then superpose them. If a current goes from a single spot to infinity, the current should have radial symmetry. If so, the voltage at distance $r$ will be :
-\begin{align}
-  E = \frac{J}{\sigma} = \frac{I}{2\pi r\sigma} \\
-  V = \int E dr = \frac{I}{2\pi\sigma}\ln\frac{r}{r_0}
-\end{align}
-The superposition of the sink just doubles the result, and we obtain:
-\begin{align}
-    G = \frac{I}{V} = \frac{\pi\sigma }{\ln\frac{r}{r_0}}  \\
-    \sigma = \frac{1}{\pi}G\ln\frac{r}{r_0}
-\end{align}
-
-
-%%%%%%%%%%%
-\section{After the Research Proposal - Spacing statistics}
-We are working on a model with the following rates:
-\begin{align}
-    w(r) = w_0 e^{\frac{r_0-r}{\xi}}=w_0e^{(1-\frac{r}{r_0})/\epsilon} = w_0 \left(e^{1-\frac{r}{r_0}}\right)^\frac{1}{\epsilon}\\
-    \frac{r}{r_0} = 1 - \epsilon\ln \left(\frac{w}{w_0}\right)
-\end{align}
-For the sake of simplicity, we shall take $w_0=1$.
-
-The spacing (nearest neighbor) statistics have the following cummulative distribution:
-\begin{align}
-    C(r) = 1-e^{-\frac{\Omega_d}{d}\left(\frac{r}{r_0}\right)^d}
-\end{align}
-This works well for $1d$, $2d$ and $3d$ (see figures \ref{fig:1d_dist},\ref{fig:2d_dist},\ref{fig:3d_dist}). There is some issue of a factor of $2$. The problem is with the definition of the spacing. What I did in those plots is to take the minimum of each row. However, those minimums are not unique, because more often than not we count the same rate twice, once for each "direction". This is particulary prevalent in the lower distances.
-
-\begin{figure}[H]
-    \dontincludegraphics[clip,width=0.9\hsize]{dist_1d_1000}
-    \caption{Cumulative distance distribution for $1d$, in a normal scale}
-    \label{fig:1d_dist}
-\end{figure}
-\begin{figure}[H]
-    \dontincludegraphics[clip,width=0.9\hsize]{dist_2d_1000}
-    \caption{Cumulative distance distribution for $2d$, in a normal scale}
-    \label{fig:2d_dist}
-\end{figure}
-\begin{figure}[H]
-    \dontincludegraphics[clip,width=0.9\hsize]{dist_3d_1000}
-    \caption{Cumulative distance distribution for $3d$, in a normal scale}
-    \label{fig:3d_dist}
-\end{figure}
-
-So the cummulative distribution of the nearest neighbor rates is:
-\begin{align}
-    C(r(w)) &= \exp\left[{-\frac{\Omega_d}{d}\left(1-\epsilon\ln \left(\frac{w}{w_0}\right)\right)^d}\right] \\
-&= \begin{cases} 
-    e^{-2}w^{2\epsilon} &d=1 \\
-e^{-\pi(1-\epsilon\ln w)^2} &d=2 \\
-e^{-\frac{4}{3}\pi(1-\epsilon\ln w)^3} &d=3 \\
-   \end{cases}
-\end{align}
-The highest possible rate is $r=0\rightarrow w=\exp(\frac{1}{\epsilon})$, which means that $w < \exp(\frac{1}{\epsilon})$.
-
-For low $\epsilon$, the decay values (the main diagonal of the matrix), almost equal the highest rates per row, because the highest value contributes most of the sum. Then we get the dimer approximation, with $\lambda \approx 2\gamma \approx 2w$. 
-
-\begin{figure}[H]
-    \dontincludegraphics[clip,width=0.9\hsize]{{{exp_1d_0.2_pn}}}
-    \caption{$1d$, $\epsilon = 0.2$}
-\end{figure}
-\begin{figure}[H]
-    \dontincludegraphics[clip,width=0.9\hsize]{{{exp_2d_0.05_pn}}}
-    \caption{$2d$, $\epsilon = 0.05$}
-\end{figure}
-
-For high $\epsilon$, in $1d$, both rates, "to the left", and "to the right", are of the same order of magnitude, so that $\gamma \approx 2w$. The eigenmodes are long-range.
-
-\begin{figure}[H]
-    \dontincludegraphics[clip,width=0.9\hsize]{{{exp_1d_5_pn}}}
-    \caption{$1d$, $\epsilon = 5$}
-\end{figure}
-
-For high $\epsilon$, in $2d$, many values contribute to the sum, and it can be orders of magnitude more than the "highest rate per row". For those systems $\lambda \approx \gamma \gg w$. 
-
-\begin{figure}[H]
-    \dontincludegraphics[clip,width=0.9\hsize]{{{exp_2d_5_pn}}}
-    \caption{$2d$, $\epsilon = 5$}
-\end{figure}
-
-%%%% 
-\section{eigenvalue distribution for 1d lattices}
-We know already that the rate distribution for 1d lattices follows:
-\begin{align}
-C(w) = e^{-1}w^{\epsilon}
-\end{align}
-According to Alexander, we have two regimes. One is when $\epsilon > 1$, where we have diffusion with the following properties:
-\begin{align}
-D = \frac{\epsilon-1}{\epsilon}e^{\frac{1}{\epsilon}} \\
-\mathcal{P}(t) = \sqrt{\frac{1}{4\pi D t}} \\
-g(\lambda) = \mathcal{L}^{-1}[\mathcal{P}(t)] = \sqrt{\frac{1}{\pi^2 D \lambda}} \\ 
-C(\lambda) = \sqrt{\frac{\lambda}{\pi^2 D}}
-\end{align}
-The other regime is where $\epsilon <1 $, where the survival, and by extension the eigenvalue distribution are:
-\begin{align}
-  \mathcal{P}(t) = \frac{1}{\Gamma\left(\frac{1}{1+\epsilon}\right)}t^{-\frac{\epsilon}{1+\epsilon}} \\
-  C(\lambda) = \sinc\left(\frac{\epsilon}{1+\epsilon}\right)e^{-1}\lambda^{\frac{\epsilon}{1+\epsilon}}
-\end{align}
-(Side note to me: $\mathcal{L}[\lambda^{\eta-1}] = \Gamma(\eta)w^{-\eta}$, and some $\Gamma$ function identities lead to this result. Also, the sinc is normalized: $\sinc=\frac{\sin(\pi x)}{\pi x}$)
-\begin{figure}[H]
-\dontincludegraphics[clip, width=0.9\hsize]{bloch_1d_2nn_rand_log_eig}
-\caption{$1d$ network, the dotted lines represent the theoretical distributions}
-\end{figure}
-
-\begin{figure}[H]
-\dontincludegraphics[clip, width=0.9\hsize]{alexander_1d_theory}
-\caption{$1d$ theoretical diffusion and power}
-\end{figure}
-
-%%%%%%%%%%%%
-\section{eigenvalue distribution for 2d lattices}
-Scattered points on a $2d$ surface were considered. We define the transition rates between the sites to be 
-\begin{align}   W_{nm} = w_0 e^{(r_0 - r_{nm})/(r_0\epsilon)} \end{align}  
-Assuming that we have diffusion, we can using scaling to get:
-\begin{align} 
-    \mathcal{P}(t) \cdot \pi <r^2> &\sim 1 \\
-    \mathcal{P}(t) &\sim \frac{1}{2\pi Dt}\\
-    g(\lambda)\mathcal{L}^{-1}\left[\mathcal{P}(t)\right]&= \frac{1}{2\pi D} \\
-    C(\lambda) &= \int g(\lambda) = \frac{1}{2\pi D}\lambda
-\end{align}
-In the following plots, the eigenvalue distibution of the $2d$ points (small circles, $900$ points), are compared to the distribution of ordered bloch networks (empty circles, $30\times30=900$ points). The crosses represent the theoratical eigenvalue distribution for a nearest neighbor bloch model. The grey dots are straight lines (in logspace), with slope $1$. First comes a plot for a wide range of epsilons, and it is followed by plots for small ($<1$) and large ($>1$) epsilons.
-
-%%%%%%%%%
-\begin{figure}[H]
-\dontincludegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d}
-\caption{The filled dots are the eigenvalues of a $2d$-scatter system. The empty circles are of an ordered lattice with the same all-to-all transitions. The crosses are the theoretical values for a bloch n.n. model. The lines are fitted linear lines with tangent 1.}
-\end{figure}
-\begin{figure}[H]
-\dontincludegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_small}
-\caption{}
-\end{figure}
-\begin{figure}[H]
-\dontincludegraphics[clip, width=0.9\hsize]{scatter_and_bloch_2d_large}
-\end{figure}
-
-
-%%%% 
-
-The last plot is of a bloch model, with randomized values for the 4 nn jumps. Note the reversal of order.
-\begin{figure}[H]
-\dontincludegraphics[clip,width=0.9\hsize]{bloch_2d_4nn_rand_log_eig}
-\end{figure}
-
-\section{Linear Response}
-After an infinitisimal amount of time $\delta t$, the spreading is:
-\begin{align}   <r^2> = \sum_n w(r_n) r_n^2 \delta t \end{align}  
-Therefore, the diffusion is:
-\begin{align}   D = \frac{<r^2>}{2t} =  \overline{\frac{1}{2} \sum_n w(r_n) r_n^2} = \frac{1}{2}\sum_n \overline{w(r_n)r_n^2}\end{align}  
-The number of sites upto a distance $r$ is:
-\begin{align}   N(r) = n\cdot \pi r^2 = 2\pi\left(\frac{r}{r_0}\right)^2\end{align}  
-Therefore, the probability density is:
-\begin{align}   n(r)dr = \frac{dN(r)}{dr}dr = 2\pi \frac{r}{r_0}\frac{dr}{r_0}\end{align}  
-So we can convert the diffusion calculation sum to an integral:
-\begin{align} 
-  D &= \frac{1}{2}\int_0^\infty w(r) r^2 2\pi \frac{r}{r_0} \frac{dr}{r_0} \\
-  D/r_0^2 &= \pi \int_0^\infty w_0 e^{\frac{1}{\epsilon}-\frac{r}{r_0\epsilon}} \left(\frac{r}{r_0}\right)^3 \frac{dr}{r_0} \\
-  D/r_0^2 &= \pi w_0 e^{\frac{1}{\epsilon}}\int_0^\infty  e^{-x} (x\epsilon)^3 \epsilon dx\\
-  D/r_0^2 &= 6\pi w_0 e^{\frac{1}{\epsilon}}\epsilon^4 
-\end{align}
-\section{VRH}
-The idea of the VRH scheme is to consider the probability of finding a site when considering the probability to transit to this site. In the $2d$ scatter model, the space is homogenous, so the probabilty of finding a site is equal to the density times the volume. The probability to find a site {\bf up to} distance $r$, is:
-\begin{align}   N(r) = n\cdot \pi r^2 = \pi \left(\frac{r}{r_0}\right)^2\end{align}  
-\begin{align}   n(r)dr = \frac{dN(r)}{dr}dr = 2\pi \frac{r}{r_0}\frac{dr}{r_0}\end{align}  
-The transition probability density per unit time is:
-\begin{align}  p(r)dr = w(r)n(r)dr = w_0 e^{-\frac{r}{r_0\epsilon}}2\pi \frac{r}{r_0}\frac{dr}{r_0}=2\pi w_0 e^{-\frac{r}{r_0\epsilon} + \log\frac{r}{r_0}}\frac{dr}{r_0}
-\end{align}  
-
-%%%%%%%%
-
-
-
-%
-
-
-\section{Stotland}
-We define $s$ by:
-\[ s = \frac{\avgangle{x}^2}{\avgangle{x^2}} \]
-The log-box distribution is :
-\[ \rho(x)dx = \frac{1}{\ln(x_1/x_0)} \frac{dx}{x}\]
-We can easily calculate:
-\[ \avgangle{x} = \frac{x_1-x_0}{\ln(x_1/x_0)}\]
-and:
-\[ \avgangle{x^2} = \frac{x_1^2-x_0^2}{2\ln(x_1/x_0)}\]
-Finally:
-\[ s= \frac{\avgangle{x}^2}{\avgangle{x^2}} = \tanh\left(\frac{\ln(x_1/x_0)}{2}\right)\frac{2}{\ln(x_1/x_0)}\]
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{ERH for 2d}\label{sec:ERH_2d}
-Let us do the ERH calculation for our specific case 
-where $w =w_0 e^{-\frac{r}{s}}$, and $\rho(r) = 2\pi r$,  
-as defined in \Eq{eq:density_distribution}.
-%
-\begin{align}
-\iint_{w(r,\epsilon)>w*} \rho(r,\epsilon)drd\epsilon \quad &= \quad n_c, \\
-\int_0^{r^*} 2\pi r dr \quad &=\quad n_c \\
-r^*  &= \sqrt\frac{n_c}{\pi}
-\end{align}
-%
-Then we calculate $D$ as follows:
-%
-\begin{align}
-D_{\tbox{ERH}}[\bm{w}] \quad&=\quad \frac{1}{4}\iint \min\{w(r,\epsilon),w^*\} \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr \\
-&= \frac{1}{4}\int_0^{r^*} w^* r^2\rho(r) dr  + \frac{1}{4}\int_{r^*}^\infty w(r) r^2\rho(r)dr \\
-&= \frac{1}{4}\int_0^{r^*} w^* r^2 2\pi rdr  + \frac{1}{4}\int_{r^*}^\infty w_0e^{-\frac{r}{s}} r^2 2\pi rdr \\
-&=  \frac{\pi}{8}w_0 e^{-\frac{r^*}{s}}{r^*}^4 + \frac{\pi}{2} w_0  e^{-\frac{r^*}{s}}\left( \left(\frac{r^*}{s}\right)^3 + 3\left(\frac{r^*}{s}\right)^2 + 6\left(\frac{r^*}{s}\right) +6 \right) s^4 \\
-&=  e^{-\frac{r^*}{s}}\frac{\pi}{2} w_0\left[\frac{1}{4}{r^*}^4 +  {r^*}^3 s + 3{r^*}^2 s^2 + 6r^*s^3 +6 s^4  \right]
-\end{align}
-
-%%%%% \int_y^\infty x^3 exp(-x) = exp(-y)(y^3 + 3y^2+ 6 y + 6)
-%
-If $r^* \rightarrow 0$, the solution approaches the LRT estimate: 
-%
-\beq
-D_{\tbox{LRT}}[\bm{w}] = 3\pi w_0 s^4 
-\eeq
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Banded matrices} \label{sec:banded}
-We treat banded matrices with a width of $2b$. The values 
-are $w = w_0e^{-\epsilon}$, where $\epsilon \in [0,2\sigma]$ is box distributed,
-and therefore $w$ is log-box distributed in the range $[w_0e^{-2\sigma}, w_0]$.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{LRT}
-According to linear response, we have:
-\begin{align}
-   D= \sum_r w(r,\epsilon)r^2
-\end{align}
-We will define $r_0\equiv 1$, and recall that $w$ does not depend on $r$.
-The sum over $r^2$ is therefore simply a sum from $1$ to $b$:
-\begin{align}
-   D= \sum_{r=1}^b w(r,\epsilon) r^2 = \frac{b(b+1)(2b+1)}{6} w(\epsilon)
-\end{align}
-We average over $\epsilon$ to arrive at:
-\begin{align}
-   D_0 = \frac{b(b+1)(2b+1)}{6} \int_0^{2\sigma} w_0e^{-\epsilon} = \frac{b(b+1)(2b+1)}{6} w_0\left(1-e^{-2\sigma}\right)\frac{1}{2\sigma}
-\end{align}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{ERH}
-To apply the ERH method, we first have to find the cut-off $w*$, or, as is easier, find $\epsilon*$.
-\begin{align}
-\iint_{w>w*} \rho(r,\epsilon) dr d\epsilon = n_c \\
-\iint_{\epsilon<\epsilon*} b\cdot f(\epsilon) d\epsilon = b\cdot\frac{\epsilon*}{2\sigma} = n_c\\
-\epsilon* = \frac{2\sigma n_c}{b}
-\end{align}
-
-Now, we integrate over $min(w(r,\epsilon*),w(r,epsilon))r^2$ to obtain:
-\begin{align}
-   D_\textrm{ERH} &= \frac{b(b+1)(2b+1)}{6}(\int_0^{\epsilon*}w_0e^{-\epsilon*}\frac{d\epsilon}{2\sigma} +  \int_{\epsilon*}^{2\sigma} w_0e^{-\epsilon})\frac{d\epsilon}{2\sigma} \\
-   &= \frac{b(b+1)(2b+1)}{6} w_0\left(e^{-\epsilon*}\epsilon*+e^{-\epsilon*}-e^{-2\sigma}\right)\frac{1}{2\sigma}\\
-   &=\frac{b(b+1)(2b+1)}{6} w_0 \left( e^{-2\sigma\frac{n_c}{b}}\left(2\sigma\frac{n_c}{b} + 1\right) - e^{-2\sigma}\right)
-\end{align}
-
-The correction is indeed in the correct area, as can be seen here:
-\begin{figure}[H]
-\includegraphics{BANDED_ERH}
-\caption{This is a plot of $D_\textrm{ERH}/D_0$, with $n_c=1$}
-\end{figure}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Peak avoidance}
-
-In the resistor network scheme, we apply current through a network of resistors, and measure the "voltage". At first, our results were unsatisfactory. To debug, we used a $1000x1000$ matrix, with $b=40$ and $s=0$, then, we pseudo - inverted the $W$ matrix to obtain $W^{-1}$. 
-Finaly, I constructed a zero-filled vector $I$, with $(-1)$ on site 250, and $(+1)$ on site 750 (there are 1000 sites overall).
-\begin{figure}[H]
-\includegraphics{voltage_b40}
-\caption{This is a plot of $V=W^{-1}I$}
-\end{figure} 
-We can see in the plot large voltage bumps where the current has been applied. We can also see a voltage drop after $b$ sites. To avoid the peaks and measure the true resistivity of the network, we applied the same current, but measured the voltage $b$ sites away from the peak.
-
-Our final measurement on the voltage vector is:
-\begin{align}
-D = \frac{1}{2}\frac{(N/2-2b)}{V[b] - V[N/2-b]}
-\end{align}
-Where the $\frac{1}{2}$ factor is there because for the periodic networks we actually measure one of two resistors connected in series.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Banded matrices with $B(n,m) = \frac{1}{(n-m)^2}$}\label{sec:OOS}
-Now, we treat banded matrices with a width of $2b$, but with a non uniform profile :
-\begin{align}
-   B(n,m) = \frac{1}{(n-m)^2}
-\end{align}
-The rates will be $w = w_0B(r)e^{-\epsilon}$, where $\epsilon \in [0,2\sigma]$ is box distributed,
-and therefore $w$ is log-box distributed in the range $[w_0e^{-2\sigma}, w_0]$.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{LRT}
-According to linear response, we have:
-\begin{align}
-   D= \sum_r w(r,\epsilon)r^2
-\end{align}
-We will define $r_0\equiv 1$. $w(r,\epsilon)$ is seperable so that $w(\epsilon,r) = \tilde{w}(\epsilon)B(r)$.
-The sum over $B(r)r^2$ is:
-\begin{align}
-  \sum_r B(r)r^2 = \sum_{r=-b}^b \frac{1}{r^2}r^2 = 2b
-\end{align}
-Therefore we have
-\begin{align}
-   D= 2b\int w(\epsilon)f(\epsilon)d\epsilon
-\end{align}
-We average over $\epsilon$ to arrive at:
-\begin{align}
-   D_\text{LRT} = 2 b w_0\left(1-e^{-2\sigma}\right)\frac{1}{2\sigma}
-\end{align}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{ERH}
-To apply the ERH method, we first have to find the cut-off $w*$, or, as is easier, find $\epsilon*$.
-\begin{align}
-\iint_{w>w*} \rho(r,\epsilon) dr d\epsilon = n_c \\
-\iint_{\epsilon<\epsilon*} b\cdot f(\epsilon) d\epsilon = b\cdot\frac{\epsilon*}{2\sigma} = n_c\\
-\epsilon* = \frac{2\sigma n_c}{b}
-\end{align}
-
-Now, we integrate over $min(w(r,\epsilon*),w(r,epsilon))r^2$ to obtain:
-\begin{align}
-   D_\textrm{ERH} &= 2b\int_0^{\epsilon*}w_0e^{-\epsilon*}\frac{d\epsilon}{2\sigma} +  \int_{\epsilon*}^{2\sigma} w_0e^{-\epsilon})\frac{d\epsilon}{2\sigma} \\
-   &= 2b w_0\left(e^{-\epsilon*}\epsilon*+e^{-\epsilon*}-e^{-2\sigma}\right)\frac{1}{2\sigma}\\
-   &= 2b w_0 \left( e^{-2\sigma\frac{n_c}{b}}\left(2\sigma\frac{n_c}{b} + 1\right) - e^{-2\sigma}\right)
-\end{align}
-
-
-
-%%% 1d :bloch_1d_2nn_rand_log_eig
-
-%%% 2d 4nn: bloch_2d_4nn_rand_log_eig
-
-%\bibliographystyle{plainnat}
-\bibliography{jarondl}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
+
+
