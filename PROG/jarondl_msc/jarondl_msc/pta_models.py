@@ -11,7 +11,7 @@ import scipy as sp
 
 from numpy import exp
 
-from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum, lazyprop, omega_d
+from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum, lazyprop, omega_d, pi_phasor
 from ptsplot import ExpModel, ExpModel_1d
 
 ### Raise all float errors
@@ -43,6 +43,14 @@ class ExpModel_Banded_Logbox(ExpModel_1d):
     def plot_PN(self,ax,**kwargs):
 		""" In this model convention=0"""
 		return ExpModel_1d.plot_PN(self,ax,convention=0, **kwargs)
+		
+
+class ExpModel_Banded_Logbox_pi(ExpModel_Banded_Logbox):
+   	def rate_matrix(self,convention=0):
+		m = ExpModel_Banded_Logbox.rate_matrix(self)
+		return m*pi_phasor(self.sample.number_of_points())
+   	
+
 
 class ExpModel_Banded_Logbox_pinning(ExpModel_Banded_Logbox):
     def rate_matrix(self,convention=0):

@@ -18,7 +18,7 @@
 \usepackage{array}
 %\usepackage{multicol}
 \usepackage[caption=false]{subfig} %subcaption is not compat with revtex
-\usepackage[pdftitle={DTS},bookmarks]{hyperref}
+\usepackage[pdftitle={PTA},bookmarks]{hyperref}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -126,8 +126,14 @@ The diagonal elements are set so that each row's sum will be zero.
 w_{nn} = -\sum_{m\ne n} w_{nm}  
 \end{align}
 %
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{PN plots}
+
+We have produced several plots of PN vs $\lambda$. For low-sparsity, there is an 
+agreement with the two "windows" observation. (For very low sparsity there are even hints
+of three windows). It seems that the effect of sparsity is to shorten the more extended window,
+up to a point where very few modes are extended (remember that the special $\lambda=0$ is always fully extended).
+
 
 \begin{figure}[H]
   \subfloat[Low sparsity]{
@@ -165,8 +171,10 @@ in order to discern the effect.
 
 
 It seems that the only difference is some localization in
-the low-eigenvalues. To highlight the low eigenvalues,
-we have used log-scale for the $\lambda$ axis:
+the low-eigenvalues. The lowest modes are replaced with less 
+extended modes with higher eigenvalues. Note that the $\lambda=0$ mode no longer
+exist. To highlight the low eigenvalues,
+we have used log-scale for the $\lambda$ axis.
 
 \begin{figure}[H]
 \includegraphics{pta_low_s_log_nopin}

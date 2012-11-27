@@ -298,6 +298,18 @@ def periodic_banded_ones(N, bandwidth, periodic=True):
     assert N > bandwidth*2
     return (numpy.tri(N, k=bandwidth)*numpy.tri(N,k=bandwidth).T +
            numpy.tri(N, k=(bandwidth-N)) + numpy.tri(N,k=(bandwidth-N)).T)
+           
+def pi_phasor(N):
+	""" returns a matrix with 1 at N/2 diagonals,
+	    and -1 at the rest. e.g.:
+	     1, 1,-1,-1
+	     1, 1, 1,-1
+	    -1, 1, 1, 1
+	    -1,-1, 1, 1
+	    For a one dimensional network, it gives a pi phase boundary condition.
+	    """
+	M = np.ones((N,N))
+	return M - 2 * ( np.tri(N,k=-N//2) + np.tri(N,k=-N//2).T)
 
 def lazyprop(fn):
     """ based on http://stackoverflow.com/questions/3012421/python-lazy-property-decorator"""

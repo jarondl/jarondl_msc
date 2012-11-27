@@ -61,6 +61,15 @@ def plot_banded_pn(ax, b, s_values, number_of_sites=1000, pinning=False):
         else:
 	        model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b)
         model.plot_PN(ax, label=r"$\sigma={0}$".format(s))
+        
+def plot_thoules_g(ax, b, s_values, number_of_sites=1000):
+    sample = ptsplot.create_bloch_sample_1d(number_of_sites)
+    for s in s_values:
+        model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b)
+        model_pi = pta_models.ExpModel_Banded_Logbox_pi(sample, epsilon=s, bandwidth1d=b)
+        g = (model.eigvals[1:] - model_pi.eigvals[1:])
+        ax.plot(-model.eigvals[1:], g)
+        ax.set(xlabel=r"$\lambda$", ylabel=r"$g$")
 
 def plotf_banded_pn(pinning=False):
     """  This plots the two relevant files from the `plot_banded_pn_nopinning`
