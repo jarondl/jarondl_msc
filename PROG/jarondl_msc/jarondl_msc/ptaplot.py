@@ -14,7 +14,7 @@ from scipy.special import gamma
 from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
 import plotdl
-from plotdl import plt
+from plotdl import plt, tight_layout
 
 
 import numpy as np
@@ -35,6 +35,9 @@ EXP_MAX_NEG = np.log(np.finfo( np.float).tiny)
 #set up logging:
 logging.basicConfig(format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
+
+# show warnings (remove for production)
+logger.setLevel("DEBUG")
 
 info = logger.info
 warning = logger.warning
@@ -67,26 +70,30 @@ def plotf_banded_pn(pinning=False):
     plot_banded_pn(ax, 5, [0.1,0.2,0.4,0.6],pinning=pinning)
     plotdl.set_all(ax, xlabel = r"$\lambda$", ylabel = "PN", legend_loc='best')
     ax.set_yscale('log')
-    fig.tight_layout()
+    tight_layout(fig)
     fig.savefig('pta_low_s_{}.pdf'.format(pin))
     ax.set_xscale('log')
+    ax.set_xlim([1e-3,2e1]) ## That is to allow comparison between pin an nopin
     fig.savefig('pta_low_s_log_{}.pdf'.format(pin))
     ax.cla()
     plot_banded_pn(ax, 5, [1,2,3,4],pinning=pinning)
     plotdl.set_all(ax, xlabel = r"$\lambda$", ylabel = "PN", legend_loc='best')
     ax.set_yscale('log')
-    fig.tight_layout()
+    tight_layout(fig)
     fig.savefig('pta_higher_s_{}.pdf'.format(pin))
     ax.cla()
     plot_banded_pn(ax, 5, [10,20,30,40],pinning=pinning)
     plotdl.set_all(ax, xlabel = r"$\lambda$", ylabel = "PN", legend_loc='best')
     ax.set_yscale('log')
-    fig.tight_layout()
+    tight_layout(fig)
     fig.savefig('pta_highest_s_{}.pdf'.format(pin))
     ax.set_xscale('log')
-    fig.tight_layout()
+    tight_layout(fig)
     fig.savefig('pta_highest_s_log_{}.pdf'.format(pin))
 
 if __name__ ==  "__main__":
-    print("Not Implemented")
+	
+    #print("Not Implemented")
+    plotf_banded_pn(pinning=False)
+    plotf_banded_pn(pinning=True)
     

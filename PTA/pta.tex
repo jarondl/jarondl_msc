@@ -17,7 +17,7 @@
 % extra by jarondl
 \usepackage{array}
 %\usepackage{multicol}
-\usepackage{subfig}
+\usepackage[caption=false]{subfig} %subcaption is not compat with revtex
 \usepackage[pdftitle={DTS},bookmarks]{hyperref}
 
 
@@ -95,6 +95,8 @@
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\graphicspath{{figures/}}
 \begin{document}
 
 \title{PTA}
@@ -110,41 +112,67 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{Model}
 
-A periodic banded logbox model. The band profile is flat, and
+A periodic banded logbox model. The band profile is flat ($\Theta(b)$).
+The off diagonal elements are log-box:
 %
 \begin{align}
 w_{nm} &= w_0 \eexp{-\epsilon} \\
 \epsilon &\in \textrm{uniform  } [0,2\sigma]
 \end{align}
+%
+The diagonal elements are set so that each row's sum will be zero.
+%
+\begin{align}
+w_{nn} = -\sum_{m\ne n} w_{nm}  
+\end{align}
+%
 
 \sect{PN plots}
 
-These plots are for $N=1000$ and $b=5$.
-
-Low $\sigma$ means almost no disorder.
-
-\includegraphics{pta_low_s}
-
-
-The $\sigma$s a bit higher:
-
-
-\includegraphics{pta_higher_s}
-
-
-And even higher:
-
-
-\includegraphics{pta_highest_s}
-
-
-The same values for $\sigma$ but in log scale to highlight the low-$\lambda$
-behavior.
-
-
-\includegraphics{pta_highest_s_log}
+\begin{figure}[H]
+  \subfloat[Low sparsity]{
+    \includegraphics{pta_low_s_nopin}
+    
+  }
+  \subfloat[Sparse]{
+    \includegraphics{pta_higher_s_nopin}
+    
+  }
+  \\
+  \subfloat[Very sparse]{
+\includegraphics{pta_highest_s_nopin}
+    
+  }
+\subfloat[Very sparse - logscale]{
+\includegraphics{pta_highest_s_log_nopin}
+    
+  }
+  \caption{{\bf PN} as a function of $\lambda$ for sparse systems.
+  For all the plots $N=1000$ and $b=5$}
+\end{figure}
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{The effects of pinning}
+
+By pinning we mean adding some elements to the diagonal,
+that represent a spring attaching a ball to a fixed origin.
+
+
+We used a uniform distribution on the range $[-0.3,0]$,
+in order to discern the effect.
+
+
+It seems that the only difference is some localization in
+the low-eigenvalues. To highlight the low eigenvalues,
+we have used log-scale for the $\lambda$ axis:
+
+\begin{figure}[H]
+\includegraphics{pta_low_s_log_nopin}
+\includegraphics{pta_low_s_log_pin}
+\caption{On the left, without pinning, and on the right with pinning}
+\end{figure}
 
 
 \end{document}
