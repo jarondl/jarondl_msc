@@ -49,39 +49,43 @@ debug = logger.debug
 ##########################################################
 ################  Plotting functions  ####################
 ##########################################################
-def plot_banded_pn_nopinning(ax, b, s_values, number_of_sites=1000):
+def plot_banded_pn(ax, b, s_values, number_of_sites=1000, pinning=False):
     """ Banded 1d """
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
     for s in s_values:
-        model = pta_models.ExpModel_Banded_Logbox_pinning(sample, epsilon=s, bandwidth1d=b)
+        if pinning:
+            model = pta_models.ExpModel_Banded_Logbox_pinning(sample, epsilon=s, bandwidth1d=b)
+        else:
+	        model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b)
         model.plot_PN(ax, label=r"$\sigma={0}$".format(s))
 
-def plotf_banded_pn_nopinning():
+def plotf_banded_pn(pinning=False):
     """  This plots the two relevant files from the `plot_banded_pn_nopinning`
          function """
+    pin = 'pin' if pinning else 'nopin'
     fig, ax = plt.subplots()
-    plot_banded_pn_nopinning(ax, 5, [0.1,0.2,0.4,0.6])
+    plot_banded_pn(ax, 5, [0.1,0.2,0.4,0.6],pinning=pinning)
     plotdl.set_all(ax, xlabel = r"$\lambda$", ylabel = "PN", legend_loc='best')
     ax.set_yscale('log')
     fig.tight_layout()
-    fig.savefig('pta_low_s.pdf')
+    fig.savefig('pta_low_s_{}.pdf'.format(pin))
     ax.set_xscale('log')
-    fig.savefig('pta_low_s_log.pdf')
+    fig.savefig('pta_low_s_log_{}.pdf'.format(pin))
     ax.cla()
-    plot_banded_pn_nopinning(ax, 5, [1,2,3,4])
+    plot_banded_pn(ax, 5, [1,2,3,4],pinning=pinning)
     plotdl.set_all(ax, xlabel = r"$\lambda$", ylabel = "PN", legend_loc='best')
     ax.set_yscale('log')
     fig.tight_layout()
-    fig.savefig('pta_higher_s.pdf')
+    fig.savefig('pta_higher_s_{}.pdf'.format(pin))
     ax.cla()
-    plot_banded_pn_nopinning(ax, 5, [10,20,30,40])
+    plot_banded_pn(ax, 5, [10,20,30,40],pinning=pinning)
     plotdl.set_all(ax, xlabel = r"$\lambda$", ylabel = "PN", legend_loc='best')
     ax.set_yscale('log')
     fig.tight_layout()
-    fig.savefig('pta_highest_s.pdf')
+    fig.savefig('pta_highest_s_{}.pdf'.format(pin))
     ax.set_xscale('log')
     fig.tight_layout()
-    fig.savefig('pta_highest_s_log.pdf')
+    fig.savefig('pta_highest_s_log_{}.pdf'.format(pin))
 
 if __name__ ==  "__main__":
     print("Not Implemented")
