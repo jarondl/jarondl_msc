@@ -11,7 +11,8 @@ import scipy as sp
 
 from numpy import exp
 
-from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum, lazyprop, omega_d, pi_phasor
+from sparsedl import (sorted_eigvalsh, banded_ones, periodic_banded_ones,
+           zero_sum, lazyprop, omega_d, pi_phasor,boundary_phasor)
 from ptsplot import ExpModel, ExpModel_1d
 
 ### Raise all float errors
@@ -31,6 +32,8 @@ debug = logger.debug
 class ExpModel_Banded_Logbox(ExpModel_1d):
     def rate_matrix(self, convention=0):
         # we map epsilon to sigma, and the distribution goes from -2\sigma to 0.
+        if self.rseed is not None:
+            np.random.seed(self.rseed)
         n = self.sample.number_of_points()
         x = np.triu(periodic_banded_ones(n, self.bandwidth1d, self.periodic), 1)
         m = np.zeros_like(x)
@@ -41,27 +44,37 @@ class ExpModel_Banded_Logbox(ExpModel_1d):
         return m
         
     def plot_PN(self,ax,**kwargs):
-		""" In this model convention=0"""
-		return ExpModel_1d.plot_PN(self,ax,convention=0, **kwargs)
-		
+        """ In this model convention=0"""
+        return ExpModel_1d.plot_PN(self,ax,convention=0, **kwargs)
+        
 
 class ExpModel_Banded_Logbox_pi(ExpModel_Banded_Logbox):
-   	def rate_matrix(self,convention=0):
-		m = ExpModel_Banded_Logbox.rate_matrix(self)
-		return m*pi_phasor(self.sample.number_of_points())
-   	
+    def rate_matrix(self,convention=0):
+        if self.rseed is not None:
+            np.random.seed(self.rseed)
+        m = ExpModel_Banded_Logbox.rate_matrix(self)
+        return m*pi_phasor(self.sample.number_of_points())
+    
+class ExpModel_Banded_Logbox_phase(ExpModel_Banded_Logbox):
+    def rate_matrix(self,convention=0):
+        if self.rseed is not None:
+            np.random.seed(self.rseed)
+        m = ExpModel_Banded_Logbox.rate_matrix(self)
+        return m * boundary_phasor(self.sample.number_of_points(), self.phi)   
 
 
 class ExpModel_Banded_Logbox_pinning(ExpModel_Banded_Logbox):
     def rate_matrix(self,convention=0):
+        if self.rseed is not None:
+            np.random.seed(self.rseed)
         m = ExpModel_Banded_Logbox.rate_matrix(self)
         m += self.pinning_matrix()
         return m
     
     def pinning_matrix(self):
-		""" This matrix has negative disordered values on the diagonal"""
-		W = 0.3
-		#pinning =  - np.random.permutation(np.linspace(0.5,1.5,self.sample.number_of_points()))
-		# The pinning is uniform on [0,W]
-		pinning =  - np.random.permutation(np.linspace(0,W,self.sample.number_of_points()))
-		return np.diagflat(pinning)
+        """ This matrix has negative disordered values on the diagonal"""
+        W = 0.3
+        #pinning =  - np.random.permutation(np.linspace(0.5,1.5,self.sample.number_of_points()))
+        # The pinning is uniform on [0,W]
+        pinning =  - np.random.permutation(np.linspace(0,W,self.sample.number_of_points()))
+        return np.diagflat(pinning)

@@ -165,7 +165,8 @@ class ExpModel(object):
           +--- ExpModel_Bloch_1d
         +---
     """
-    def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",bandwidth1d = None, periodic=True, convention=1):
+    def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",
+                 bandwidth1d = None, periodic=True, convention=1, rseed=None, phi=None):
         """ Take sample and epsilon, and calc eigvals and eigmodes"""
         self.epsilon = epsilon
         self.sample = sample
@@ -175,6 +176,8 @@ class ExpModel(object):
         self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.permuted = False
         self.basename = basename.format(**self.vals_dict)
+        self.rseed = rseed
+        self.phi = phi
         #self.logxlim = self.logvals[[1,-1]]
 
     def rate_matrix(self, convention):
