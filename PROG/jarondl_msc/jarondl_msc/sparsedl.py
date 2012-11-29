@@ -300,32 +300,39 @@ def periodic_banded_ones(N, bandwidth, periodic=True):
            numpy.tri(N, k=(bandwidth-N)) + numpy.tri(N,k=(bandwidth-N)).T)
            
 def pi_phasor(N):
-	""" returns a matrix with 1 at N/2 diagonals,
-	    and -1 at the rest. e.g.:
-	     1, 1,-1,-1
-	     1, 1, 1,-1
-	    -1, 1, 1, 1
-	    -1,-1, 1, 1
-	    For a one dimensional network, it gives a pi phase boundary condition.
-	    """
-	M = np.ones((N,N))
-	return M - 2 * ( np.tri(N,k=-N//2) + np.tri(N,k=-N//2).T)
-	
+    """ returns a matrix with 1 at N/2 diagonals,
+        and -1 at the rest. e.g.:
+         1, 1,-1,-1
+         1, 1, 1,-1
+        -1, 1, 1, 1
+        -1,-1, 1, 1
+        For a one dimensional network, it gives a pi phase boundary condition.
+        """
+    M = np.ones((N,N))
+    return M - 2 * ( np.tri(N,k=-N//2) + np.tri(N,k=-N//2).T)
+    
            
 def boundary_phasor(N,phi):
     """ returns a matrix with 1 at N/2 diagonals,
          and -1 at the rest. e.g.:
          1, 1,-1,-1
          1, 1, 1,-1
-	    -1, 1, 1, 1
+        -1, 1, 1, 1
         -1,-1, 1, 1
         For a one dimensional network, it gives a pi phase boundary condition.
-	    """
+        """
     M = np.ones((N,N))*(1+0j)
     #return M - 2 * ( np.tri(N,k=-N//2) + np.tri(N,k=-N//2).T)
     M += (np.exp(-phi*1j)-1)*np.tri(N,k=-N//2)
     M += (np.exp(phi*1j)-1)*np.tri(N,k=-N//2).T
     return M
+    
+    
+def window_avg_mtrx(N, win_size=4):
+    """ Create the matrix neccesary for window averaging
+    """
+    M = np.tri(N, k=win_size//2)*(np.tri(N, k=win_size//2).T)
+    return ( M / M.sum(axis=0)).T
 
 def lazyprop(fn):
     """ based on http://stackoverflow.com/questions/3012421/python-lazy-property-decorator"""

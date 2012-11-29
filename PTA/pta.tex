@@ -183,4 +183,51 @@ we have used log-scale for the $\lambda$ axis.
 \end{figure}
 
 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{Thouless conductance}
+
+Extended modes are more sensitive to boundary conditions. To measure
+the effect quantitivly, we've used Thouless' method of adding
+a phase to the boundary condition, and measuring the change in the eigenvalues.
+
+We define $\lambda_0$ as the eigenvalue with regular periodic boundary conditions,
+and $\lambda_\phi$ as the eigenvalue after applying a phase of $\phi$ to the boundary conditions.
+Then $g$ is defined as
+%
+\begin{align}
+  g = \frac{|\lambda_\phi - \lambda_0 |}{\phi^2}\ \times \ \textrm{LDOS}
+\end{align}
+%
+Where local-density-of-states (LDOS) is the inverse of the level spacing 
+($\frac{1}{\lambda_{n+1}-\lambda_n}$). In practice, we have averaged over five 
+neighboring spacings to avoid artifacts.
+
+
+The resulting $g(\lambda)$ is strikingly similar to the $PN(\lambda)$ results,
+but the change is much stronger (note the logarithmic $y$-scale).  
+
+
+\begin{figure}[H]
+  \subfloat[Low sparsity]{
+    \includegraphics{pta_thouless_low_s}
+    
+  }
+  \subfloat[Sparse]{
+    \includegraphics{pta_thouless_higher_s}
+    
+  }
+  \\
+  \subfloat[Very sparse]{
+\includegraphics{pta_thouless_highest_s}
+    
+  }
+\subfloat[Very sparse - logscale]{
+\includegraphics{pta_thouless_highest_s_log}
+    
+  }
+  \caption{$g$ as a function of $\lambda$ for sparse systems.
+  For all the plots $N=1000$ and $b=5$}
+\end{figure}
+
 \end{document}
