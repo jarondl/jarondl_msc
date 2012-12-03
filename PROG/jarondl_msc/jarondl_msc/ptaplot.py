@@ -46,6 +46,16 @@ debug = logger.debug
 
 
 
+##### Dirty hack, should be fixed by matplotlib 1.2.0
+def get_LogNLocator(N = 6):
+    try:
+        return LogLocator(numticks=6)
+    except TypeError:
+        warning('using undocumented hack for log ticks')
+        Log6Locator = LogLocator()
+        Log6Locator.numticks = 6
+        return Log6Locator
+
 
 
 
@@ -76,6 +86,7 @@ def plot_thoules_g(ax, b, s_values, number_of_sites=1000,phi=0.1):
         ax.plot(-model.eigvals[1:-1], g[:-1]/avg_spacing, '.', markersize=7,label=r"$\sigma={0}$".format(s))
     ax.legend(loc='best')
     ax.set(xlabel=r"$\lambda$", ylabel=r"$g$", yscale = 'log')
+    ax.yaxis.set_major_locator(get_LogNLocator())
 
 
 #################################################################
@@ -91,6 +102,7 @@ def plotf_banded_pn(pinning=False):
     plot_banded_pn(ax, 5, [0.1,0.2,0.4,0.6],pinning=pinning)
     plotdl.set_all(ax, xlabel = r"$\lambda$", ylabel = "PN", legend_loc='best')
     ax.set_yscale('log')
+    ax.yaxis.set_major_locator(get_LogNLocator())
     tight_layout(fig)
     fig.savefig('pta_low_s_{}.pdf'.format(pin))
     ax.set_xscale('log')
@@ -109,6 +121,7 @@ def plotf_banded_pn(pinning=False):
     tight_layout(fig)
     fig.savefig('pta_highest_s_{}.pdf'.format(pin))
     ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
     tight_layout(fig)
     fig.savefig('pta_highest_s_log_{}.pdf'.format(pin))
 
@@ -128,6 +141,7 @@ def plotf_thouless_g():
     tight_layout(fig)
     fig.savefig('pta_thouless_highest_s.pdf')
     ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
     fig.savefig('pta_thouless_highest_s_log.pdf')
     ax.cla()
     
@@ -137,5 +151,6 @@ if __name__ ==  "__main__":
     #print("Not Implemented")
     plotf_banded_pn(pinning=False)
     plotf_banded_pn(pinning=True)
+    plotf_thouless_g()
     
 
