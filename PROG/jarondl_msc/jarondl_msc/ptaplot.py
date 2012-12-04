@@ -74,6 +74,32 @@ def plot_banded_pn(ax, b, s_values, number_of_sites=1000, pinning=False):
         model.plot_PN(ax, label=r"$\sigma={0}$".format(s))
 
 
+def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = 0.01):
+    sample = ptsplot.create_bloch_sample_1d(number_of_sites)
+    win_avg_mtrx = sparsedl.window_avg_mtrx(number_of_sites - 1)
+    res_type =  np.dtype([("ev",(np.float64,number_of_sites)),
+                          ("PN",(np.float64,number_of_sites)),
+                          ("thoules_g",(np.float64,number_of_sites)),
+                          ("s",np.float64),
+                          ("b",np.float64)
+                          ])
+    
+    s_grid, b_grid = np.meshgrid(np.asarray(s_space), np.asarray(b_space))
+    
+    res = np.zeros(s_grid.size, dtype = res_type) # preallocation is faster..
+    for n,(s,b) in enumerate(zip(s_grid.flat, b_grid.flat)):
+        debug('eigenvals ,PN and thouless for s = {0}, b= {1}, n={2}'.format(s,b,n))
+        model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b, rseed=1)
+        model_phi = pta_models.ExpModel_Banded_Logbox_phase(sample, epsilon=s, bandwidth1d=b,rseed=1,phi=phi)
+        g = abs(model.eigvals - model_phi.eigvals) / (phi**2)
+        avg_spacing = win_avg_mtrx.dot(-model.eigvals[1:]+model.eigvals[:-1])
+        # avg_spacing is now smaller than eigvals. We duplicate the last value to accomodate (quite  hackish)
+        avg_spacing = np.append(avg_spacing,avg_spacing[-1])
+        res[n] = ( model.eigvals, model.PN_N, g/avg_spacing , s, b)
+        
+    return res
+
+
 def plot_thoules_g(ax, b, s_values, number_of_sites=1000,phi=0.1):
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
     win_avg_mtrx = sparsedl.window_avg_mtrx(number_of_sites - 2)
@@ -87,6 +113,7 @@ def plot_thoules_g(ax, b, s_values, number_of_sites=1000,phi=0.1):
     ax.legend(loc='best')
     ax.set(xlabel=r"$\lambda$", ylabel=r"$g$", yscale = 'log')
     ax.yaxis.set_major_locator(get_LogNLocator())
+
 
 
 #################################################################

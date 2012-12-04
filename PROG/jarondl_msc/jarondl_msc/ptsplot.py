@@ -222,7 +222,12 @@ class ExpModel(object):
         
     @lazyprop
     def PN(self):
-        return ((self.eig_matrix**(4)).sum(axis=0)**(-1))[1:]
+        return ((self.eig_matrix**(4)).sum(axis=0)**(-1))[1:] # why give N-1?
+        
+    @lazyprop
+    def PN_N(self):
+        """ PN with N values.. PN is legacy?"""
+        return ((self.eig_matrix**(4)).sum(axis=0)**(-1))
     
     def plot_diff(self, ax, label = r"$\frac{{D}}{{r_0^2}} = {D:.3G} $", **kwargs):
         """ """
