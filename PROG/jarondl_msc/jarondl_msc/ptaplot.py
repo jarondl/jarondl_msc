@@ -89,8 +89,8 @@ def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = 0.01):
     res = np.zeros(s_grid.size, dtype = res_type) # preallocation is faster..
     for n,(s,b) in enumerate(zip(s_grid.flat, b_grid.flat)):
         debug('eigenvals ,PN and thouless for s = {0}, b= {1}, n={2}'.format(s,b,n))
-        model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b, rseed=1)
-        model_phi = pta_models.ExpModel_Banded_Logbox_phase(sample, epsilon=s, bandwidth1d=b,rseed=1,phi=phi)
+        model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b, rseed=n)
+        model_phi = pta_models.ExpModel_Banded_Logbox_phase(sample, epsilon=s, bandwidth1d=b,rseed=n,phi=phi)
         g = abs(model.eigvals - model_phi.eigvals) / (phi**2)
         avg_spacing = win_avg_mtrx.dot(-model.eigvals[1:]+model.eigvals[:-1])
         # avg_spacing is now smaller than eigvals. We duplicate the last value to accomodate (quite  hackish)
