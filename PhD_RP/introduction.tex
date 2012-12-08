@@ -101,7 +101,12 @@ might fit a large number of physical situations. Some physical applications incl
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Relationship with Anderson localization}
 
-In 
+In the Anderson model\cite{anderson_absense_1985}, a nearest neighbor network is formed
+on a lattice. The bonds are all equal, and the on-site energies are random.
+For $d=1$ and $d=2$, all states are localized, while for $d>2$, there exists
+a transition between localized and extended modes. 
+
+Localized eigenstates do not repel each other, and there
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Modeling quantum diffusion with resistor networks}
@@ -116,6 +121,33 @@ for very short time the transition probability is:
 WRONG p(n, n_0)\ =\ \left| \epsilon \bra{n} \mathcal{H}\ket{n_0}\right|^2
 \end{align}
 %
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{About banded matrices}
+
+Some facts about banded matrices, with 
+\begin{align}
+  w_{ij} = 
+  \begin{cases}
+    1 \quad &\textrm{  if  } |i-j|\le b   \\
+    -\sum_{k \ne j} w_{kj} &\textrm{  if  } i = j  \\
+    0 \quad &\textrm{  otherwise }
+  \end{cases}
+\end{align}
+
+The analytical eigenvalues are:
+\begin{align}
+  \lambda &= 2\sum_{n=1..b} (\cos(n\cdot k) -1) \\
+  k &= \frac{2\pi m}{N}
+\end{align}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Sinai diffusion}
+
+For example, by adding spatial correlations, the behavior can be changed 
+from $S(t) \sim (\log t)^4$ to $S(t) \sim (\log t)^y$ with $y \in [4,\inf]$ \cite{stanley_generalization_1987}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Organization}

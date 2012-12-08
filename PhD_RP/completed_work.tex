@@ -1,6 +1,12 @@
 \chapter{Completed Work}
 
 
+This work was published at Physical Review A \cite{de_leeuw_diffusion_2012},
+and reprinted here in \autoref{sec:papers}. In the
+following sections we will provide an overview
+of the main results.
+
+
 %%%%%%%%%%%%%%   Overview over article should not include too much equations
 %%  bottom line - take home message - the derivations should ref the article
 
@@ -13,82 +19,30 @@
 %%                   if that doesn't work, leave the figure out.
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The $d=1$ random site model with nearest neighbor hopping}
+\section{Regular diffusion in the $2d$ sparse network}
 
-In $d=1$, a network with randomly distributed sites is equivalent to
-an ordered lattice with random transition rates. To make this mapping
-we have to know the spacing distribution for this system. We find the
-spacing distribution in \autoref{sec:spacing}. A $1d$ lattice with
-a known transition rates distribution is exactly solvable \cite{alexander_excitation_1981}.
-Basically, it is analogous to adding connectors in series, and 
-the diffusion coefficient is the inverse of the combined resistivity
-%
-\begin{align}
-D \ =\ \left(\frac{1}{N} \sum_n \frac{1}{w_{n,n-1}}\right)^{-1}
-\end{align}
-%
-The rates are 
-%
-\begin{align}
-w_{n,n-1} \ =\ w_0 \eexp{-r_{n,n-1}/\xi}
-\end{align}
-Using the spacing distribution from \autoref{eq:spacing_dist}, we can change distribution variables
-from $r$ to $w$. Defining $s \equiv \xi/r_0$ and converting the sum to an integral, we obtain
-%
-\begin{align}
-D \ =\ \left(\frac{1}{N} \int_0^{w_0} \frac{s w^{s-1}dw}{w_0^s}\right)^{-1} \
-\ =\ [s>1]\quad \frac{s-1}{s}w_0
-\end{align}
-% TODO : something is wrong with the N in this expression
-This result is valid only for $s>1$. For $s<1$, $D=0$ and we have
-subdiffusion, for which the survival probability and spreading 
-are also exactly solvable \cite{alexander_excitation_1981}, leading to:
-%
-\begin{align}
-S(t)           \ &\sim \ t^{2s/(1+s)} \\
-\mathcal{P}(t) \ &\sim \ t^{-s/(1+s)}
-\end{align}
-%
-%%%%%%%%%%%%%%%%%%%
-\section{The ERH - Effective Range Hopping - procedure}
-
-The diffusion coefficient is defined by the dependence
-of the variance in time:
-%
-\begin{align}
-\textrm{Var}(n) \quad =\quad 2d\ D\ t
-\end{align}
-%
-Within the transient diffusion stage,
-assuming we start at a specific node $n$, the variance after time
-$t$ will be
-%
-\begin{align}
-\textrm{Var}(n) = \sum_m w_{nm} t (x_m-x_n)^2
-\end{align}
-Therefore, the diffusion coefficient for evolution 
-starting at node $n$ is
-%
-\begin{align}
-D_n \quad=\quad \frac{1}{2d}\sum_m (x_m-x_n)^2 w_{nm}
-\end{align}
-%
-Averaging over the starting node, and converting the sum to an integral,
-we have
-%
-\begin{align}\label{eq:linear_D}
-D_{\tbox{linear}}  \ \ = \ \ \frac{1}{2d}\iint w(r,\epsilon) \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr 
-\end{align}
-%
-
-This expression describes the spreading in absence of disorder correctly
-for arbitrary long time. However, in a sparse disordered system such as ours,
-the possibility of transport is a bit less trivial. Therefore, we suggest
-a method to approximate the diffusion, which takes percolation into account.
+We studied models with a rate equation of the type $w_{ij}=w_0 \exp{-r_{ij}/\xi}$ 
+(see section II of the attached article). In particular, we have mapped the
+$d=1$ model to known results of the transport and survival \cite{alexander_excitation_1981},
+and compared this with our numerics. 
 
 
-The basic idea behind \emph{ERH} is that in the linear
+The $d=2$ case was studied using RG techniques in \cite{amir_mean-field_2008,*amir_localization_2010}, 
+where it was suggested that anomalous diffusion takes place for sparse configurations.
+However, our analysis indicates that for any amount of sparsity,
+the diffusion is regular ($S(t)\sim (2d)(Dt)$).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The effective range hopping procedure}
+
+
+Feeling unsatisfied with the linear expression for the diffusion
+in sparse systems,
+we set off for a better diffusion approximation.
+
+The basic idea behind \emph{ERH} (effective range hopping) is that in the linear
 expression, nearby sites 
 with $r\ll 1$ (and therefore $w \gg 1$ ) are over represented in
 the diffusion coefficient calculation. While the transition to
@@ -96,26 +50,8 @@ these sites is indeed high, the distance covered is not enough
 to form a percolating cluster. Therefore, we use a threshold based
 on percolation theory and flat-down the rates higher then this threshold.
 
-The rate threshold $w_c$ is determined using the following expression
-%
-\begin{align}\label{eq:threshold}
-\iint_{w(r,\epsilon)>w_c} \rho(r,\epsilon)drd\epsilon \ \ = \ \ n_c
-\end{align}
-%
-Where $n_c$ is the number of connected sites necessary to form a percolation
-cluster.
 
-
-Next, we suppress the rates higher than $w_c$ to have the value $w_c$,
-and use the linear expression \ref{eq:linear_D}, to obtain:
-%
-\begin{align}\label{eq:ERH_D}
-D_{\tbox{ERH}} = \frac{1}{2d}\iint \min\{w(r,\epsilon),w_c\} \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr
-\end{align}
-%
-
-
-Using the ERH procedure we have calculated the diffusion for several models.
+Using the \emph{ERH} procedure we have calculated the diffusion for several models.
 
 
 For the $d=2$ ordered lattice with nearest neighbor random hopping:
@@ -162,9 +98,21 @@ D_{\text{ERH}} \ \ = \ \
 %%%%%%%%   I need to add dts.tex here.
 %%%%%%%%   I could also add D(g_s) and say that it failed
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The quasi one dimensional rate equation}
+
+The quasi one dimensional system, is a one dimensional system
+with a bandwidth greater than $1$ (going beyond nearest neighbors). 
+We continue our theme by studying the survival and transport properties 
+in those systems, specifically in sparse configurations.
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The quasi one dimensional Hamiltonian}
 
+In this section the numerical work was done by our collaborators,
+Eli Halperin and Tsampikos Kottos of Wesleyan university.
 
 In this model , described in \autoref{sec:quasi_bg}, initial analysis of
 the numerical results reveals that the sparsity affects the diffusion coefficient.
@@ -173,11 +121,22 @@ As might be expected, the lower bandwidth ensembles are more
 susceptible, as the system is more vulnerable to disconnections.
 
 
-
 \begin{figure}
 \includegraphics{dts_D2}
 \caption{The transient diffusion coefficient for quantum spreading in
 a banded sparse network. The ratio $D/D_0$ between the numerical diffusion 
 coefficient and the expected value decreases as $\sigma$ increases. The effect
 is stronger for low bandwidth.}
+\end{figure}
+
+
+Our first question was whether our rate equation analysis might
+hold also for the quantum case, because in first order perturbation theory,
+the transition probability $p_{nm}$ is proportional to $\left|\bra n|\mathcal{H} | m \ket\right|^2$.
+Naively using our previously obtained suppression factor $g_s = \frac{D_{ERH}}{D_{\textrm{linear}}}$,
+did not prove to be sufficient, as can be seen in \autoref{fig:d_vs_g}.
+
+\begin{figure}
+\includegraphics{dts_D2_vs_gs_loglog}
+\caption{Scaled $D$ vs $g_s$. }\label{fig:d_vs_g}
 \end{figure}

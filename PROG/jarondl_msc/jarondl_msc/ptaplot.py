@@ -58,6 +58,13 @@ def get_LogNLocator(N = 6):
 
 
 
+def theor_banded_ev(b,N):
+    k = 2*pi*np.arange(N)/N
+    n = np.arange(1,b+1)
+    km,nm = np.meshgrid(k,n)
+    return -2*(np.cos(km*nm)-1).sum(axis=0)
+
+
 
 
 ##########################################################
