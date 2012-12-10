@@ -1,7 +1,7 @@
 \chapter{Completed Work}
 
 
-This work was published at Physical Review A \cite{de_leeuw_diffusion_2012},
+This work was published at Physical Review E \cite{de_leeuw_diffusion_2012},
 and reprinted here in \autoref{sec:papers}. In the
 following sections we will provide an overview
 of the main results.
@@ -105,6 +105,59 @@ The quasi one dimensional system, is a one dimensional system
 with a bandwidth greater than $1$ (going beyond nearest neighbors). 
 We continue our theme by studying the survival and transport properties 
 in those systems, specifically in sparse configurations.
+
+
+In recent studies \cite{bodyfelt_unpub} an interesting structure of
+PN (participation number) was observed in a similar model. In this model,
+there is a finite bandwidth $b$ with random uncorrelated off diagonal elements.
+Additionally, diagonal disorder was introduced. As can be seen
+in \autoref{fig:PN_kottos}, for the low eigenvalues, instead of the 
+expected large PN, we have some decrease. After that, follows a period
+of large PN, followed by another segment with somewhat smaller PN.
+
+
+
+
+
+\begin{figure}[H]
+  %\subfloat[Low sparsity]{
+  \begin{subfigure}{.5\linewidth}
+    \includegraphics{pta_low_s_pin}
+    \caption{Low sparsity, with diagonal disorder}\label{fig:PN_kottos}
+  \end{subfigure}      
+
+  \begin{subfigure}{.5\linewidth}
+    \includegraphics{pta_low_s_nopin}
+    \caption{Low sparsity, without diagonal disorder}\label{fig:PN_kottos_nopin}
+  \end{subfigure}
+    \begin{subfigure}{.5\linewidth}
+
+\includegraphics{pta_highest_s_log_nopin}
+  \caption{How sparsity, without diagonal disorder}\label{fig:PN_kottos_sparse}
+    
+  \end{subfigure}
+
+  \caption{{\bf PN} as a function of $\lambda$.
+  For all the plots $N=1000$ and $b=5$. 
+  The off diagonal elements are 
+  $w_{ij} = \eexp{-\epsilon} \quad \, \epsilon \in \textrm{uniform} [0,2\sigma]$.
+  For (b) and (c), the diagonal elements are $w_{ii} = -\sum_j w_{ij}$, while for 
+  (a) we added to that a uniform disordered parameter $x \quad \in \textrm{uniform} [0,0.3]$.
+  }
+\end{figure}
+
+
+
+In \autoref{fig:PN_kottos_nopin}, our initial numerical analysis shows that the low-eigenvalue decrease
+is caused by the diagonal disorder. This disorder removes the one special 
+$\lambda=0$ eigenmode, and decreases the PN of several other modes.
+
+
+
+In \autoref{fig:PN_kottos_sparse}, we see that once we use a much wider
+distribution of off diagonal elements, i.e. increase the \emph{sparsity}, 
+the two segment structure disappears.
+
 
 
 

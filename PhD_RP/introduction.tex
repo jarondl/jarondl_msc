@@ -45,7 +45,7 @@ parameter $\xi$.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{matrix categories}\label{sec:matrix_categories}
+\section{Matrix categories}\label{sec:matrix_categories}
 
 % Three categories:
 % wnm = wmn  - no talk about steady state - equilibrium transient diffusion
@@ -68,7 +68,7 @@ In general, the transition matrices have three symmetry categories:
       the analogy of a "stochastic field", $\varepsilon(x) = \frac{E_n-E_m}{T}$.
       Any closed loop integral over such a field must equal zero.
       Note that any product of a symmetric operator with a diagonal operator
-      can be said to satisfy detailed balance \cite{kologromov_zur_1936}
+      can be said to satisfy detailed balance \cite{kolmogoroff_zur_1936}
   \item
     $w_{nm} \ne w_{mn}$\ -\ In the assymetric case, a Non Equilibrium Steady
       State (NESS) might be reached. 
@@ -101,17 +101,17 @@ might fit a large number of physical situations. Some physical applications incl
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Relationship with Anderson localization}
 
-In the Anderson model\cite{anderson_absense_1985}, a nearest neighbor network is formed
+In the Anderson model\cite{anderson_absence_1958}, a nearest neighbor network is formed
 on a lattice. The bonds are all equal, and the on-site energies are random.
 For $d=1$ and $d=2$, all states are localized, while for $d>2$, there exists
 a transition between localized and extended modes. 
 
-Localized eigenstates do not repel each other, and there
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Modeling quantum diffusion with resistor networks}
 
-In past work \cite{PRL_2000} 
+In past work \cite{cohen_wave_2000} 
 
 In a model described by a Hamiltonian $\mathcal{H}$,
 according to the first step of perturbation theory,
@@ -125,6 +125,15 @@ WRONG p(n, n_0)\ =\ \left| \epsilon \bra{n} \mathcal{H}\ket{n_0}\right|^2
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{About banded matrices}
+
+
+For wide bandwidth and uncorrelated matrix elements, the high eigenvalues
+should follow the Wigner semicircle law ($g(\lambda) = \frac{2}{\pi R^2}\sqrt{R^2-\lambda^2}$)
+\cite{erdos_local_2012,fyodorov_scaling_1991,wigner_characteristic_1955}. However,
+the low eigenvalues can still follow other rules, allowing for a transition
+between diffusion and subdiffusion.
+
+
 
 Some facts about banded matrices, with 
 \begin{align}
@@ -146,8 +155,10 @@ The analytical eigenvalues are:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Sinai diffusion}
 
+
+
 For example, by adding spatial correlations, the behavior can be changed 
-from $S(t) \sim (\log t)^4$ to $S(t) \sim (\log t)^y$ with $y \in [4,\inf]$ \cite{stanley_generalization_1987}.
+from $S(t) \sim (\log t)^4$ to $S(t) \sim (\log t)^y$ with $y \in [4,\inf]$ \cite{stanley_generalisation_1987}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Organization}
