@@ -106,6 +106,16 @@ def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = 0.01):
         
     return res
 
+def get_ev_for_phases(b,s,phases,number_of_sites=1000, rseed=1):
+    """ return the complete eigenvalue list for every phase """
+    sample = ptsplot.create_bloch_sample_1d(number_of_sites)
+
+    evs = np.zeros([len(phases), number_of_sites], dtype=np.float64)
+    for n,phase in enumerate(phases):
+        model = pta_models.ExpModel_Banded_Logbox_phase(sample,
+                    epsilon=s, bandwidth1d=b,rseed=rseed,phi=phase)
+        evs[n] = -model.eigvals
+    return evs
 
 def plot_thoules_g(ax, b, s_values, number_of_sites=1000,phi=0.1):
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
