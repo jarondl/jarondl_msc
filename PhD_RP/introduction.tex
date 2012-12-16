@@ -107,6 +107,26 @@ For $d=1$ and $d=2$, all states are localized, while for $d>2$, there exists
 a transition between localized and extended modes. 
 
 
+The expression for conductivity\cite{kubo,greenwood,thouless_electrons_1974} can be written as
+%
+\begin{align}
+\sigma(\omega) = \frac{\pi e^2}{\Omega} \sum_\alpha \sum_{\beta\ne\alpha} 
+                 \hat{x}_{\alpha\beta}\hat{x}_{\beta\alpha}\delta(E_\alpha-E_\beta - \hbar\omega)(f_\beta-f_\alpha)\omega
+\end{align}
+%
+
+There are several routines used to distinguish between exponentially localized and delocalized modes.
+The most straight forward one seems to be the participation number (PN) 
+\cite{edwards_numerical_1972}, which is defined by its inverse:
+%
+\begin{align}
+PN^{-1} \ =\ \sum_i p_i^2
+\end{align}
+where $p_i$ is the probability to be in a specific site, equal to $|\psi_i|^2$ 
+for a quantum wave function.
+
+
+\cite{edwards_numerical_1972}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Modeling quantum diffusion with resistor networks}
@@ -121,6 +141,59 @@ for very short time the transition probability is:
 WRONG p(n, n_0)\ =\ \left| \epsilon \bra{n} \mathcal{H}\ket{n_0}\right|^2
 \end{align}
 %
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Heat conductance}
+
+One can take one of our suggested models, and couple each end to a different heat bath.
+In steady state, it is expected that the heat current will obey Fourier's law:
+%
+\begin{align}
+j = -\kappa\nabla T
+\end{align}
+%
+Assuming $\kappa$ does not change significantly with temperature, a given 
+temperature difference $\delta T$ over sample length $L$ should yield:
+%
+\begin{align}
+j = \frac{\kappa \delta T}{L}
+\end{align}
+%
+However, many one-dimensional models 
+\cite{narayan_anomalous_2002,dhar_heat_2001,lepri_anomalous_1998,savin_heat_2002} 
+exhibit sample size scaling of the form
+%
+\begin{align}
+j         &\propto L^{\alpha-1}\quad [\alpha>0] \\
+\kappa    &\propto L^\alpha
+\end{align}
+
+It is debated whether for $d=1$ systems
+with momentum conservation,  $\alpha=1/3$,$\alpha=2/5$ or neither
+\cite{narayan_anomalous_2002,delfini_comment_2008,dhar_dhar_2008,wang_power-law_2011}.
+
+
+
+The high frequency eigenmodes are strongly localized, hence only the
+first part of the spectrum contributes to the heat flux\cite{lepri_thermal_2001}.
+localization
+
+
+In the harmonic chain model, $N$ equal masses connected by springs are described by a classical Hamiltonian:
+%
+\begin{align}
+\mathcal{H} &= \sum_n \left( \frac{p_n^2}{2m} + \frac{1}{2}\sum_{j} \frac{1}{2}k_{nj} (x_n-x_j)^2 \right) \\
+            &= \sum_{n} \frac{p_n^2}{2m} +  \frac{1}{2}\vec{x}^{\intercal} K \vec{x} \\
+            K_{ij} &= \begin{cases} 
+            \sum_{n\ne i} k_{in}  \quad &\textrm{if}\quad i=j \\ 
+            - k_{ij}  \quad &\textrm{if}\quad i\ne j 
+            \end{cases}\\
+            \vec{x} &= (x_1,x_2,\ldots,x_N)
+\end{align}
+%
+
+ 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

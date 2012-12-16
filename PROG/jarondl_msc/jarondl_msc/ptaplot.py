@@ -9,7 +9,7 @@ import logging
 import os
 
 #from scipy.sparse import linalg as splinalg
-from numpy import random, pi, log10, sqrt,  exp, expm1, sort, eye, nanmin, nanmax, log, cos, sinc
+from numpy import random, pi, log10, sqrt,  exp, expm1, sort, eye, nanmin, nanmax, log, cos, sinc, ma
 from scipy.special import gamma
 from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
@@ -32,6 +32,7 @@ mpl.rc('figure', autolayout=True)
 ### Raise all float errors
 np.seterr(all='warn')
 EXP_MAX_NEG = np.log(np.finfo( np.float).tiny)
+FLOAT_EPS = np.finfo(np.float).eps
 
 #set up logging:
 logging.basicConfig(format='%(asctime)s %(message)s')
@@ -81,7 +82,7 @@ def plot_banded_pn(ax, b, s_values, number_of_sites=1000, pinning=False):
         model.plot_PN(ax, label=r"$\sigma={0}$".format(s))
 
 
-def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = 0.01):
+def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = pi):
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
     win_avg_mtrx = sparsedl.window_avg_mtrx(number_of_sites - 1)
     res_type =  np.dtype([("ev",(np.float64,number_of_sites)),
@@ -99,6 +100,9 @@ def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = 0.01):
         model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b, rseed=n)
         model_phi = pta_models.ExpModel_Banded_Logbox_phase(sample, epsilon=s, bandwidth1d=b,rseed=n,phi=phi)
         g = abs(model.eigvals - model_phi.eigvals) / (phi**2)
+        # Approximation of  the minimal precision:
+        prec = FLOAT_EPS * max(abs(model.eigvals))* number_of_sites  
+        g = ma.masked_less(g,prec)
         avg_spacing = win_avg_mtrx.dot(-model.eigvals[1:]+model.eigvals[:-1])
         # avg_spacing is now smaller than eigvals. We duplicate the last value to accomodate (quite  hackish)
         avg_spacing = np.append(avg_spacing,avg_spacing[-1])
@@ -112,6 +116,7 @@ def get_ev_for_phases(b,s,phases,number_of_sites=1000, rseed=1):
 
     evs = np.zeros([len(phases), number_of_sites], dtype=np.float64)
     for n,phase in enumerate(phases):
+        debug('calculating eigenvalues for phase number {0}  : {1}'.format(n,phase))
         model = pta_models.ExpModel_Banded_Logbox_phase(sample,
                     epsilon=s, bandwidth1d=b,rseed=rseed,phi=phase)
         evs[n] = -model.eigvals
@@ -131,6 +136,28 @@ def plot_thoules_g(ax, b, s_values, number_of_sites=1000,phi=0.1):
     ax.set(xlabel=r"$\lambda$", ylabel=r"$g$", yscale = 'log')
     ax.yaxis.set_major_locator(get_LogNLocator())
 
+
+def plot_represntive_vectors(fig_vecs, ax_PN, number_of_sites=1000):
+    sample = ptsplot.create_bloch_sample_1d(number_of_sites)
+    b = 5
+    s = 0.1
+    rseed = 1
+    mob0 = pta_models.ExpModel_Banded_Logbox_phase(sample,
+                    epsilon=s, bandwidth1d=b,rseed=rseed,phi=0)
+    mobpi = pta_models.ExpModel_Banded_Logbox_phase(sample,
+                    epsilon=s, bandwidth1d=b,rseed=rseed,phi=pi)
+    ev0 = -mob0.eigvals
+    evpi = -mobpi.eigvals
+    g = abs(ev0-evpi)
+    ax_PN.plot(mob0.PN_N,".")
+    rep_vecs = [100,200,500,800,900,995]
+    ylabels = map(lambda n: r"$\lambda = {ev}  PN = {PN}  g = {g}$".format(ev=ev0[n], PN = mob0.PN_N[n],
+                                                                               g = g[n]), rep_vecs)
+    for vec_n in rep_vecs:
+        ax_PN.vlines(vec_n, 0,1000)
+        
+    plotdl.plot_several_vectors_dense(fig_vecs, mob0.eig_matrix[:,rep_vecs], ylabels)
+    
 
 
 #################################################################

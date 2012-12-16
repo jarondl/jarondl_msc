@@ -157,7 +157,25 @@ def matshow_cb(ax, matrix, vmin=10**(-10), colorbar=True):
     ms = ax.matshow(matrix, norm=LogNorm(vmin=vmin ))
     if colorbar:
         ax.figure.colorbar(ms)
+        
+def plot_several_vectors_dense(fig, vectors, ylabels):
+    """  Plots vectors 
+    """
+    num_of_vectors = len(vectors)
+    axes = {} # empty_dict
 
+    for n,(vec,ylabel) in enumerate(zip(vectors,ylabels)):
+        if n==0:
+            axes[n] = fig.add_subplot(num_of_vectors,1,n+1)
+        else:
+            axes[n] = fig.add_subplot(num_of_vectors,1,n+1, sharex=axes[0])
+        axes[n].plot(vec)
+        axes[n].set_ylabel(ylabel)
+        axes[n].set_yticks([])
+        axes[n].set_xticks([])
+    fig.subplots_adjust(hspace=0)
+
+    
 
 def autoscale_based_on(ax, lines):
     """ http://stackoverflow.com/questions/7386872/make-matplotlib-autoscaling-ignore-some-of-the-plots/7396313#7396313 """
