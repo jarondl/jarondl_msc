@@ -108,7 +108,7 @@ def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = pi):
         # avg_spacing is now smaller than eigvals. We duplicate the last value to accomodate (quite  hackish)
         avg_spacing = np.append(avg_spacing,avg_spacing[-1])
         ga = ma.masked_less(g/avg_spacing,prec)
-        res[n] = ( model.eigvals, model.PN_N, ma.filled(ga, fill_value=-0) , s, b)
+        res[n] = ( model.eigvals, model.PN_N, ma.filled(ga, fill_value=prec) , s, b)
         
     return res
 
@@ -126,15 +126,19 @@ def get_ev_for_phases(b,s,phases,number_of_sites=1000, rseed=1):
     
     
 def plot_scatter_g(ax):
-    g = get_ev_thoules_g([5],[0.2,1,10],phi=pi)
-    log_g = -log(g['thoules_g'])
-    log_IPN = -log(g['PN'])
-    ax.plot(log_g[0], log_IPN[0], '.', label=r"$\sigma = 0.2 ({0})$".format(np.isinf(log_g[0]).sum()))
-    ax.plot(log_g[1], log_IPN[1], '.', label=r"$\sigma = 1   ({0})$".format(np.isinf(log_g[1]).sum()))
-    ax.plot(log_g[2], log_IPN[2], '.', label=r"$\sigma = 10  ({0})$".format(np.isinf(log_g[2]).sum()))
-    ax.legend(loc='lower right')
-    ax.set_xlabel(r"$-\log(g)$")
-    ax.set_ylabel(r"$-\log(PN)$")
+    nums = get_ev_thoules_g([5],[0.2,1,10],phi=pi)
+    gg = nums['thoules_g']
+    PN = (nums['PN'])
+    #log_g[np.isinf(log_g[0])].fill(log_g.min())
+    ax.plot(gg[0], PN[0], '.')#, label=r"$\sigma = 0.2 ({0})$".format(np.isinf(log_g[0]).sum()))
+    ax.plot(gg[1], PN[1], '.')#, label=r"$\sigma = 1   ({0})$".format(np.isinf(log_g[1]).sum()))
+    ax.plot(gg[2], PN[2], '.')#, label=r"$\sigma = 10  ({0})$".format(np.isinf(log_g[2]).sum()))
+    #ax.legend(loc='lower right')
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
+    ax.set_xlabel(r"$g$")
+    ax.set_ylabel(r"PN")
 
 def plot_thoules_g(ax, b, s_values, number_of_sites=1000,phi=0.1):
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
