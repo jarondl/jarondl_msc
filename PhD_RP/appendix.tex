@@ -175,6 +175,31 @@ The analytical eigenvalues are:
   k &= \frac{2\pi m}{N}
 \end{align}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Heat transport model}
+
+To study heat transport by phonons, we define a simple harmonic chain.
+In this model,
+$N$ equal masses are connected by springs up to a bandwidth $b$. In addition to these
+springs, there are "pinning" springs from each mass to its initial position, with
+strength $\epsilon_n$, as described by the classical Hamiltonian:
+
+\begin{align}
+\mathcal{H} &= \sum_n \left( \frac{p_n^2}{2m} +\epsilon_n\frac{x_n^2}{2}+ \frac{1}{2}\sum_{j} \frac{1}{2}k_{nj} (x_n-x_j)^2 \right) \\
+            &= \sum_{n} \frac{p_n^2}{2m} +  \frac{1}{2}\vec{x}^{\intercal} K \vec{x} \\
+            K_{nm} &= \begin{cases} 
+            \sum_{l\ne n} k_{ln} +\epsilon_n \quad &\textrm{if}\quad n=m \\ 
+            - k_{nm}  \quad &\textrm{if}\quad n\ne m
+            \end{cases}\\
+            \vec{x} &= (x_1,x_2,\ldots,x_N)
+\end{align}
+
+By using random springs we create disorder in the matrix $K$, which
+is symmetric. Without pinning ($\epsilon_n=0$), each row's sum is zero,
+creating an ergodic mode. Adding random pinning i.e.\ disordering the diagonal,
+removes this mode.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Numerical Routines}

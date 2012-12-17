@@ -21,26 +21,35 @@ of the main results.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Regular diffusion in the $2d$ sparse network}
 
-We studied models with a rate equation of the type $w_{ij}=w_0 \exp{-r_{ij}/\xi}$ 
-(see section II of the attached article). In particular, we have mapped the
-$d=1$ model to known results of the transport and survival \cite{alexander_excitation_1981},
-and compared this with our numerics. 
+%%%%%%%%%%%%%
+%\section{Article abstract}
+\rmrk{This is the article abstract..}
 
 
-The $d=2$ case was studied using RG techniques in \cite{amir_mean-field_2008,*amir_localization_2010}, 
-where it was suggested that anomalous diffusion takes place for sparse configurations.
-However, our analysis indicates that for any amount of sparsity,
-the diffusion is regular ($S(t)\sim (2d)(Dt)$).
+We consider random networks whose dynamics is
+described by a rate equation, with transition rates $w_{nm}$
+that form a symmetric matrix. The long time evolution
+of the system is characterized by a diffusion coefficient~$D$.
+In one dimension it is well known that $D$ can display an abrupt
+percolation-like transition from diffusion (${D>0}$)
+to sub-diffusion (${D=0}$). A question arises whether
+such a transition happens in higher dimensions.
+Numerically $D$ can be evaluated using a resistor network
+calculation, or optionally it can be deduced from 
+the spectral properties of the system. Contrary to a recent 
+expectation that is based on a renormalization-group analysis, 
+we deduce that $D$ is finite; 
+suggest an ``effective-range-hopping" procedure to evaluate it;
+and contrast the results with the linear estimate.
+The same approach is useful for the analysis of 
+networks that are described by quasi-one-dimensional  
+sparse banded matrices. 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The effective range hopping procedure}
 
-
-Feeling unsatisfied with the linear expression for the diffusion
-in sparse systems,
-we set off for a better diffusion approximation.
 
 The basic idea behind \emph{ERH} (effective range hopping) is that in the linear
 expression, nearby sites 
@@ -54,22 +63,15 @@ on percolation theory and flat-down the rates higher then this threshold.
 Using the \emph{ERH} procedure we have calculated the diffusion for several models.
 
 
-For the $d=2$ ordered lattice with nearest neighbor random hopping:
-%
-\begin{align}
-D_{\tbox{ERH}} =  \left[\frac{1}{2}w_c + \frac{1}{2}\int_0^{w_c} w\tilde{f}(w) dw\right]r_0^2
-\end{align}
-%
-In absence of the disorder (i.e.\ all the rates are equal),
-the known result $D = w_0r_0^2$ is restored.
-
-
-For the degenerate hopping model, 
+For the degenerate hopping model we obtained:
 
 \begin{align}
 D_{\tbox{ERH}} &=  \mathrm{EXP}_{d{+}2}\left(\frac{1}{s_c}\right)  \  \eexp{-1/s_c}  \ D_{\tbox{linear}}
 \end{align}
 %
+For infinite dimensions ($d\rightarrow\infty$),  we have $\mathrm{EXP}_{d{+}2}\  \eexp{-1/s_c} = 1$. 
+This means that the ERH expression converges with the linear expression.
+For low dimensionality, the exponent dominant.
 
 
 For the Mott Hopping model,
@@ -82,11 +84,16 @@ D_{\tbox{ERH}} &=\mathrm{EXP}_{d{+}3}\left(\epsilon_c\right)  \  \eexp{-\epsilon
 
 For the flat-profile banded $1d$ model,
 \begin{align}
-D_{\text{ERH}} \ \ = \ \ 
+D_{\text{ERH}} \ \ &= \ \ 
 \ \frac{1}{\sigma}\left[ 
 \left(1+\frac{n_c}{2b}\sigma\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}
-\right] \ \tilde{b} w_0
+\right] \ \tilde{b} w_0 \\ &=\ \ 
+\ \frac{\left(1+\frac{n_c}{2b}\sigma\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}}
+       {1 - \eexp{-2\sigma}}
+   \ D_{\tbox{linear}}
 \end{align}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -108,19 +115,8 @@ in those systems, specifically in sparse configurations.
 
 
 In recent studies \cite{bodyfelt_unpub} an interesting structure of
-PN (participation number) was observed in a similar model. In this model,
-$N$ equal masses are connected by springs up to a bandwidth $b$. In addition to these
-springs, there are "pinning" springs from each mass to its initial position, with
-strength $\epsilon_n$, as described by the classical Hamiltonian:
-\begin{align}
-\mathcal{H} &= \sum_n \left( \frac{p_n^2}{2m} +\epsilon_n\frac{x_n^2}{2}+ \frac{1}{2}\sum_{j} \frac{1}{2}k_{nj} (x_n-x_j)^2 \right) \\
-            &= \sum_{n} \frac{p_n^2}{2m} +  \frac{1}{2}\vec{x}^{\intercal} K \vec{x} \\
-            K_{nm} &= \begin{cases} 
-            \sum_{l\ne n} k_{ln} +\epsilon_n \quad &\textrm{if}\quad n=m \\ 
-            - k_{nm}  \quad &\textrm{if}\quad n\ne m
-            \end{cases}\\
-            \vec{x} &= (x_1,x_2,\ldots,x_N)
-\end{align}
+PN (participation number) was observed in a similar model. 
+
 The disorder is introduced by randomized $k_{ij}$ and $\epsilon_n$.
 
 As can be seen
@@ -131,10 +127,7 @@ Another quantity we calculated is the Thouless conductance (see \autoref{sec:and
 which we expect to correlate with $PN$. Disregarding major numerical issues,
 the correlation seems to hold, see \autoref{fig:PN_g_scatter}.
 
-
-
-
-
+\notbool{showfigure}{\begin{comment}}{}
 
 \begin{figure}[H]
   %\subfloat[Low sparsity]{
@@ -188,35 +181,15 @@ the correlation seems to hold, see \autoref{fig:PN_g_scatter}.
   }
 \end{figure}
 
+\notbool{showfigure}{\end{comment}}{}
 
-
-(\subref{fig:PN_kottos_nopin}\subref{fig:PN_kottos_sparse}\subref{fig:PN_kottos_pinning}) - {\bf PN} as a function of $\lambda$.
-  For all the plots $N=1000$ and $b=5$. 
-  The off diagonal elements are 
-  $w_{ij} = \eexp{-\epsilon} \quad \, \epsilon \in \textrm{uniform} [0,2\sigma]$.
-  For (\subref{fig:PN_kottos_pinning}\subref{fig:PN_kottos_sparse}), the diagonal elements are $w_{ii} = -\sum_j w_{ij}$, while in 
-  the lower plot of (\subref{fig:PN_kottos_pinning}) we added a uniform 
-  disordered parameter $x \quad \in \textrm{uniform} [0,0.3]$ to the diagonal.
-  Comparing the two plots in \subref{fig:PN_kottos_pinning}, our initial numerical analysis 
-  shows that the low-eigenvalue decrease
-  is caused by the diagonal disorder. This disorder removes the one special 
-  $\lambda=0$ eigenmode, and decreases the PN of several other modes.
-  In \subref{fig:PN_kottos_sparse}, we see that once we use a much wider
-distribution of off diagonal elements, i.e. increase the \emph{sparsity}, 
-the two segment structure disappears.
-  (d) - comparing the Thouless conductance $g$ with the participation number. 
-  The presented points do seem to be correlated, but due to numerical issues,
-  many values of $g$ are below the precision limit (seen as a vertical line in the plot), up to $936$ from $1000$ for $\sigma=10$. In our numeric 
-  algorithm, the eigenvalue precision is relative to the highest eigenvalue. For wide distributions
-  of eigenvalues, that means that the numerical precision of the low eigenvalues is poor,
-  and the uncertainty is larger than the phase induced shift.
 
 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The quasi one dimensional Hamiltonian}
+\section{Quantum spreading in the quasi one dimensional Hamiltonian}
 
 In this section the numerical work was done by our collaborators,
 Eli Halperin and Tsampikos Kottos of Wesleyan university.

@@ -62,64 +62,61 @@ are either real or  pairs of complex conjugates.
 %
 %
 %These real matrices span several categories:
-We define the matrices 
+We define several kinds of matrices by their off-diagonal elements:
 \begin{enumerate}
   \item
-       \label{active} 
-       Active network : these matrices have negative and positive off-diagonal values
+       \label{symmetric} Symmetric.
+       %Active network : these matrices have negative and positive off-diagonal values
   \item
-       \label{passive_detailed}
-       Detailed balance network: these have positive off-diaonal elements 
-       that satisfy the specific ratio $w_{nm} = \exp\left({-\frac{E_n-E_m}{T}}\right) w_{mn}$
+       \label{detailed_balance} Detailed balance.
+       %Detailed balance network: these have positive off-diaonal elements 
+       %that satisfy the specific ratio $w_{nm} = \exp\left({-\frac{E_n-E_m}{T}}\right) w_{mn}$
   \item
-       \label{passive_sym} Symmetric network: these matrices have positive 
-       symmetric off-diagonal elements $w_{nm} = w_{mn}$. This can be regarded
-       as the $T\rightarrow \infty$ limit of the previous category.
-  \item\label{passive_general}
-       Assymetric network: these do not obey detailed balance.
+       \label{assymetric} Assymetric.
+       %Assymetric network: these do not obey detailed balance.
+  \item
+       \label{active} Active.
+       %\label{passive_sym} Symmetric network: these matrices have positive 
+       %symmetric off-diagonal elements $w_{nm} = w_{mn}$. This can be regarded
+       %as the $T\rightarrow \infty$ limit of the previous category.
 \end{enumerate}
 %
-The active networks (\ref{active}) are called so because they can 
-not be realized using passive elements such as resistors or capacitors only.
-The detailed balance networks (\ref{passive_detailed}) allow the system
-to reach Boltzmann's equilibrium, while the symmetric matrices (\ref{passive_sym}) 
-have the very useful analogy to a simple resistor network.  
-Another important topic is the diagonal. For some networks, the
+The symmetric matrices (\ref{symmetric}) have $w_{nm}=w_{mn}$. 
+This means that they have the very useful analogy to a simple resistor network. 
+The detailed balance matrices (\ref{detailed_balance}) satisfy
+the ratio
+%
+\begin{align}
+  w_{nm} = \exp\left({-\frac{E_n-E_m}{T}}\right)
+\end{align}
+%
+This allows the system to reach Boltzmann's equilibrium at long times.
+The symmetric matrix formally obey detailed balance with $T\rightarrow\infty$.
+The assymetric matrices (\ref{assymetric}) are those that do not obey detailed balance.
+This kind of system can lead to interesting effects such as Sinai's diffusion.
+The active networks (\ref{active}) have both positive and negative
+off diagonal elements. They are called so because they can 
+not be realized using only passive elements such as resistors or capacitors only.
+
+
+To complete the definition of the matrices, we must define the diagonals.
+For some networks, the
 natural definition of the diagonal is by demanding the sum of each row to 
-be equal to zero (meaning $w_{nn} = -\sum_{m\ne n} w_{mn}$).
+be equal to zero, meaning:
+%
+\begin{align}
+w_{nn} = -\sum_{m\ne n} w_{mn}
+\end{align}
+%
 This represents conservation of charge, probability or momentum
-in the model, and creates a special mode with $\lambda=0$ and
-equal site probabilities, which has important consequences 
-regarding localization (see \ref{sec:anderson}). 
-Another common practice regarding the diagonal is using some random distribution for it.
-
-PT comes now
-
-\rmrk{The old text:}
+in the model, and it has very important aspects, such as creating a totally ergodized mode,
+with $\lambda=0$ and equal probabilities for all the sites. This is divergence 
+of the Anderson localization length, and it might allow diffusion despite 
+disorder in the system.
 
 
-In general, the transition matrices have three symmetry categories:
-\begin{itemize}
-  \item 
-    $w_{nm} = w_{mn}$ \ -\ In the symmetric case the system could reach
-      equilibrium and ergodicity. The transient behavior might be diffusive. 
-      This kind of system has the analog of a Resistor Network, which is often
-      useful both analytically and numerically.
-  \item
-    $w_{nm} = \exp{-\frac{E_n-E_m}{T}} w_{mn}$\ -\ This is called detailed balance,
-      and allows the system to reach Boltzmann's equilibrium. One could make
-      the analogy of a "stochastic field", $\varepsilon(x) = \frac{E_n-E_m}{T}$.
-      Any closed loop integral over such a field must equal zero.
-      Note that any product of a symmetric operator with a diagonal operator
-      can be said to satisfy detailed balance \cite{kolmogoroff_zur_1936}
-  \item
-    $w_{nm} \ne w_{mn}$\ -\ In the assymetric case, a Non Equilibrium Steady
-      State (NESS) might be reached. 
-\end{itemize}
-
-
-
-
+Another way to treat the diagonal is with some disorder, such as in the
+Wigner model.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{TODO VRH}
 

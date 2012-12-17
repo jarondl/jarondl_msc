@@ -1,6 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  pts
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\RequirePackage[l2tabu, orthodox]{nag}
 \documentclass[onecolumn,fleqn,12pt,openany,a4paper,longbibliography,oneside]{book}
 
 
@@ -27,6 +28,10 @@
 \usepackage[font={singlespacing,footnotesize},hang]{caption}
 \usepackage{subcaption}
 \usepackage[numbers,sort&compress,elide]{natbib}
+\usepackage{verbatim}
+\usepackage{etoolbox}
+  \newbool{showfigure}
+  \setbool{showfigure}{true}
 % merge - {feynmann,*salam,*epr} are under one number
 % elide - same as megre, but common parts appear once.
 %
