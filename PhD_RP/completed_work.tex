@@ -138,35 +138,59 @@ the correlation seems to hold, see \autoref{fig:PN_g_scatter}.
 
 \begin{figure}[H]
   %\subfloat[Low sparsity]{
-
   \begin{subfigure}{.45\linewidth}\centering
-    \includegraphics{pta_low_s_nopin}
-    \caption{Low sparsity, without diagonal disorder. $\sigma=0.1$ in blue, $0.2$ in green, $0.3$ in red
-    and $0.4$ in cyan.}\label{fig:PN_kottos_nopin}
+    \includegraphics[width=0.99\linewidth]{pta_nopin}
+    \caption{PN vs $\lambda$}\label{fig:PN_kottos_nopin}
   \end{subfigure}
   %
   \begin{subfigure}{.45\linewidth}\centering
-     \includegraphics{pta_highest_s_nopin}
-  \caption{High sparsity, without diagonal disorder. $\sigma=1$ in blue, $2$ in green, $3$ in red
-    and $4$ in cyan.}\label{fig:PN_kottos_sparse}
-  \end{subfigure}
+     \includegraphics[width=0.99\linewidth]{pta_ev_nopin}
+  \caption{Counting function (CDF) $\mathcal{N}(\lambda)$}\label{fig:ev_dist}
+  \end{subfigure}\\ % end of row
   %
  % \caption{}
  % \end{figure}
  % \begin{figure}[H]
   %
-    \begin{subfigure}{.45\linewidth}
-    \includegraphics{pta_low_s_pin_effect}
-    \caption{Above- without diagonal disorder\\ Below - with diagonal disorder\\$\sigma=0.1$ in blue, $0.2$ in green, $0.3$ in red
-    and $0.4$ in cyan.}\label{fig:PN_kottos_pinning}
+    \begin{subfigure}{.45\linewidth}\centering
+    \includegraphics[width=0.99\linewidth]{pta_pin}
+    \caption{PN vs $\lambda$, with diagonal disorder}\label{fig:PN_kottos_pinning}
   \end{subfigure}     
   %
-  \begin{subfigure}{.45\linewidth}
-     \includegraphics{pta_scatter_g}
-  \caption{PN as a function of $g$. 
-   $\sigma=0.2$ in blue, $1$ in green, $10$ in red.}\label{fig:PN_g_scatter}
+  \begin{subfigure}{.45\linewidth}\centering
+     \includegraphics[width=0.99\linewidth]{pta_ev_pin}
+  \caption{Counting function (CDF) $\mathcal{N}(\lambda)$ with diagonal disorder}\label{fig:ev_dist_pin}
   \end{subfigure}
-  \caption{(\subref{fig:PN_kottos_nopin}\subref{fig:PN_kottos_sparse}\subref{fig:PN_kottos_pinning}) - {\bf PN} as a function of $\lambda$.
+    \begin{subfigure}{.45\linewidth}\centering
+    \includegraphics{pta_scatter_g}
+  \caption{PN vs $g$}\label{fig:PN_g_scatter}
+  \end{subfigure}
+  \caption{For all the plots $N=1000$ and $b=5$. 
+           In blue $\sigma=0.1$, green $\sigma=0.6$ and red $\sigma=10$, where higher
+           $\sigma$ means more sparsity.
+           %%%%
+           In (\subref{fig:PN_kottos_nopin}) with low $\sigma$ (blue) we see two groups of PN values.
+           This distinction is lost for higher $\sigma$ (red).
+           %%
+           In (\subref{fig:ev_dist}) we plot the cumulative distribution of
+           the eigenvalues, presenting clear diffusive behavior, for any $\sigma$.
+           %%%%%% pinning
+           In (\subref{fig:PN_kottos_pinning}) and (\subref{fig:ev_dist})
+           we see the effects of diagonal disorder (pinning)
+           on the spectrum. We see clearly that the lowest eigenvalues 
+           are affected, and their corresponding PN is much lower.
+           %%%g 
+           In (\subref{fig:PN_g_scatter}) we compare the Thouless conductance
+           $g$ with the participation number. 
+           The presented points do seem to be correlated, but due to numerical issues,
+           many values of $g$ are below the precision limit (seen as a vertical line in the plot), 
+           up to $936$ from $1000$ for $\sigma=10$. 
+  }
+\end{figure}
+
+
+
+(\subref{fig:PN_kottos_nopin}\subref{fig:PN_kottos_sparse}\subref{fig:PN_kottos_pinning}) - {\bf PN} as a function of $\lambda$.
   For all the plots $N=1000$ and $b=5$. 
   The off diagonal elements are 
   $w_{ij} = \eexp{-\epsilon} \quad \, \epsilon \in \textrm{uniform} [0,2\sigma]$.
@@ -186,12 +210,6 @@ the two segment structure disappears.
   algorithm, the eigenvalue precision is relative to the highest eigenvalue. For wide distributions
   of eigenvalues, that means that the numerical precision of the low eigenvalues is poor,
   and the uncertainty is larger than the phase induced shift.
-  }
-\end{figure}
-
-
-
-
 
 
 

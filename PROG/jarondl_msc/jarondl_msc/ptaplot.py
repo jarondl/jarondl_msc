@@ -15,7 +15,7 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
 import plotdl
 import sparsedl
-from plotdl import plt, tight_layout
+from plotdl import plt, tight_layout, cummulative_plot
 
 
 import numpy as np
@@ -89,6 +89,15 @@ def plot_banded_pn_bconst(ax,nums):
     ax.set(ylabel='PN', xlabel=r"$\lambda$")
     ax.set_yscale('log')
     ax.yaxis.set_major_locator(get_LogNLocator())
+    
+def plot_banded_ev_bconst(ax,nums):
+    s_values = nums['s']
+    b = nums['b'][0]
+    for n in range(len(nums['s'])):
+        cummulative_plot(ax,-nums['ev'][n,1:])
+    ax.set(ylabel=r'$\mathcal{N}(\lambda)$', xlabel=r"$\lambda$")
+    ax.set_yscale('log')
+    ax.yaxis.set_major_locator(get_LogNLocator())
         
 
 
@@ -151,6 +160,21 @@ def plot_scatter_g(ax):
     ax.set_yscale('log')
     ax.set_xscale('log')
     ax.xaxis.set_major_locator(get_LogNLocator())
+    ax.set_xlabel(r"$g$")
+    ax.set_ylabel(r"PN")
+    
+def plot_scatter_g_new(ax,nums):
+
+    gg = nums['thoules_g']
+    PNN = (nums['PN'])
+    #log_g[np.isinf(log_g[0])].fill(log_g.min())
+    for g,PN in zip(gg,PNN):
+        ax.plot(g,PN,'.')
+    
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
+    ax.yaxis.set_major_locator(get_LogNLocator())
     ax.set_xlabel(r"$g$")
     ax.set_ylabel(r"PN")
 
@@ -230,20 +254,93 @@ def plotf_banded_pn_new():
         
     
     #Pinning effect:
-    fig, (ax1,ax2) = plt.subplots(2, sharex=True)
+    #fig, (ax1,ax2) = plt.subplots(2, sharex=True)
     
 
-    plot_banded_pn_bconst(ax1,nums_nopin[0:4])
-    plot_banded_pn_bconst(ax2,nums_pin[0:4])
-    ax1.set_xscale('log')
-    ax2.set_xscale('log')
-    plt.setp(ax1.get_xticklabels(), visible=False)
-    ax1.set_xlabel("")
-    tight_layout(fig,h_pad=0,w_pad=0)
-    fig.subplots_adjust(hspace=0)
-    fig.savefig('pta_low_s_pin_effect.pdf')
+    #plot_banded_pn_bconst(ax1,nums_nopin[0:4])
+    #plot_banded_pn_bconst(ax2,nums_pin[0:4])
+    #ax1.set_xscale('log')
+    #ax2.set_xscale('log')
+    #plt.setp(ax1.get_xticklabels(), visible=False)
+    #ax1.set_xlabel("")
+    #tight_layout(fig,h_pad=0,w_pad=0)
+    #fig.subplots_adjust(hspace=0)
+    #fig.savefig('pta_low_s_pin_effect.pdf')
     
     fig, ax = plt.subplots()
+    
+    plot_banded_pn_bconst(ax,nums_nopin[[0,3,8]])# 0.1 0.6 10
+    #ax.set_xlim([1e-3,2e1]) ## That is to allow comparison between pin an nopin
+    ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
+    ax.set_xlim([1e-6,20])
+    ############### Tight only here, plots consistent
+    tight_layout(fig)
+    fig.savefig('pta_nopin.pdf')
+    ax.cla()
+    
+    plot_banded_pn_bconst(ax,nums_pin[[0,3,8]])# 0.1 0.6 10
+    ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
+    ax.set_xlim([1e-6,20])
+    #tight_layout(fig)
+    fig.savefig('pta_pin.pdf')
+    ax.cla()
+    
+    #with less xlim
+    plot_banded_pn_bconst(ax,nums_pin[[0,3,8]])# 0.1 0.6 10
+    ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
+    ax.set_xlim([1e-2,20])
+    #tight_layout(fig)
+    fig.savefig('pta_xlim_pin.pdf')
+    ax.cla()
+    
+     
+    ### Plot the cummulative eigenvalues
+    plot_banded_ev_bconst(ax,nums_nopin[[0,3,8]])# 0.1 0.6 10
+    ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
+    ax.set_xlim([1e-6,20])
+    #tight_layout(fig)
+    fig.savefig('pta_ev_nopin.pdf')
+    ax.cla()
+    
+    ### Plot the cummulative eigenvalues PIN
+    plot_banded_ev_bconst(ax,nums_pin[[0,3,8]])# 0.1 0.6 10
+    ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
+    ax.set_xlim([1e-6,20])
+    #tight_layout(fig)
+    fig.savefig('pta_ev_pin.pdf')
+    ax.cla()
+    
+    ### Plot the cummulative eigenvalues PIN with less xlim
+    plot_banded_ev_bconst(ax,nums_pin[[0,3,8]])# 0.1 0.6 10
+    ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
+    ax.set_xlim([1e-2,20])
+    #tight_layout(fig)
+    fig.savefig('pta_ev_xlim_pin.pdf')
+    ax.cla()
+    
+    ## Plot g vs PN scatter:
+    plot_scatter_g_new(ax,nums_nopin[[0,3,8]])# 0.1 0.6 10
+    #tight_layout(fig)
+    fig.savefig('pta_scatter_g.pdf')
+    ax.cla()
+    
+        ## Plot g vs PN scatter: PIN
+    plot_scatter_g_new(ax,nums_pin[[0,3,8]])# 0.1 0.6 10
+    #tight_layout(fig)
+    fig.savefig('pta_scatter_g_pin.pdf')
+    ax.cla()
+       
+       
+       
+       
+       
+       
     
     plot_banded_pn_bconst(ax,nums_nopin[0:4])
     #ax.set_xlim([1e-3,2e1]) ## That is to allow comparison between pin an nopin
@@ -260,6 +357,8 @@ def plotf_banded_pn_new():
     tight_layout(fig)
     fig.savefig('pta_highest_s_nopin.pdf')
     ax.cla()
+    
+    plt.close()
     
 def plotf_banded_pn(pinning=False):
     """  This plots the two relevant files from the `plot_banded_pn_nopinning`
