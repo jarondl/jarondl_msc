@@ -80,9 +80,19 @@ def plot_banded_pn(ax, b, s_values, number_of_sites=1000, pinning=False):
         else:
             model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b)
         model.plot_PN(ax, label=r"$\sigma={0}$".format(s))
+        
+def plot_banded_pn_bconst(ax,nums):
+    s_values = nums['s']
+    b = nums['b'][0]
+    for n in range(len(nums['s'])):
+        ax.plot(-nums['ev'][n,1:],nums['PN'][n,1:],'.')
+    ax.set(ylabel='PN', xlabel=r"$\lambda$")
+    ax.set_yscale('log')
+    ax.yaxis.set_major_locator(get_LogNLocator())
+        
 
 
-def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = pi):
+def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = pi, pinning=False):
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
     win_avg_mtrx = sparsedl.window_avg_mtrx(number_of_sites - 1)
     res_type =  np.dtype([("ev",(np.float64,number_of_sites)),
@@ -99,6 +109,10 @@ def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = pi):
         debug('eigenvals ,PN and thouless for s = {0}, b= {1}, n={2}'.format(s,b,n))
         model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b, rseed=n)
         model_phi = pta_models.ExpModel_Banded_Logbox_phase(sample, epsilon=s, bandwidth1d=b,rseed=n,phi=phi)
+        if pinning is True:
+            model = pta_models.ExpModel_Banded_Logbox_pinning(sample, epsilon=s, bandwidth1d=b, rseed=n,phi=0)
+            model_phi = pta_models.ExpModel_Banded_Logbox_pinning(sample, epsilon=s, bandwidth1d=b,rseed=n,phi=phi)
+        
         g = abs(model.eigvals - model_phi.eigvals) / (phi**2)
         # Approximation of  the minimal precision:
         prec = FLOAT_EPS * max(abs(model.eigvals))* number_of_sites  
@@ -188,6 +202,65 @@ def plotf_scatter_g():
     tight_layout(fig)
     fig.savefig('pta_scatter_g.pdf')
 
+
+#
+def plotf_banded_pn_new():
+    # See if we have numerics nopin:
+    try:
+        f = np.load('g_b5_nopin.npz')
+        nums_nopin = f['nums']
+    except (OSError, IOError):
+        # otherwise, get the data:
+        b = [5]
+        # [:4] [4:8] [8:]
+        s_space = [0.1,0.2,0.4,0.6,1,2,3,4,10,20,30,40]
+        nums_nopin = get_ev_thoules_g(b,s_space,phi=pi,pinning=False)
+        np.savez("g_b5_nopin.npz", nums = nums_nopin)
+    # see if we have numerics pin
+    try:
+        f = np.load('g_b5_pin.npz')
+        nums_pin = f['nums']
+    except (OSError, IOError):
+        # otherwise, get the data:
+        b = [5]
+        # [:4] [4:8] [8:]
+        s_space = [0.1,0.2,0.4,0.6,1,2,3,4,10,20,30,40]
+        nums_pin = get_ev_thoules_g(b,s_space,phi=pi,pinning=True)
+        np.savez("g_b5_pin.npz", nums = nums_pin)
+        
+    
+    #Pinning effect:
+    fig, (ax1,ax2) = plt.subplots(2, sharex=True)
+    
+
+    plot_banded_pn_bconst(ax1,nums_nopin[0:4])
+    plot_banded_pn_bconst(ax2,nums_pin[0:4])
+    ax1.set_xscale('log')
+    ax2.set_xscale('log')
+    plt.setp(ax1.get_xticklabels(), visible=False)
+    ax1.set_xlabel("")
+    tight_layout(fig,h_pad=0,w_pad=0)
+    fig.subplots_adjust(hspace=0)
+    fig.savefig('pta_low_s_pin_effect.pdf')
+    
+    fig, ax = plt.subplots()
+    
+    plot_banded_pn_bconst(ax,nums_nopin[0:4])
+    #ax.set_xlim([1e-3,2e1]) ## That is to allow comparison between pin an nopin
+    tight_layout(fig)
+    fig.savefig('pta_low_s_nopin.pdf')
+    ax.cla()
+    
+    plot_banded_pn_bconst(ax,nums_nopin[4:8])
+    tight_layout(fig)
+    fig.savefig('pta_higher_s_nopin.pdf')
+    ax.cla()
+    
+    plot_banded_pn_bconst(ax,nums_nopin[8:])
+    tight_layout(fig)
+    fig.savefig('pta_highest_s_nopin.pdf')
+    ax.cla()
+    
 def plotf_banded_pn(pinning=False):
     """  This plots the two relevant files from the `plot_banded_pn_nopinning`
          function """

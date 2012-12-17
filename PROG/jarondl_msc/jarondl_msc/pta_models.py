@@ -60,14 +60,16 @@ class ExpModel_Banded_Logbox_phase(ExpModel_Banded_Logbox):
         if self.rseed is not None:
             np.random.seed(self.rseed)
         m = ExpModel_Banded_Logbox.rate_matrix(self)
-        return m * boundary_phasor(self.sample.number_of_points(), self.phi)   
+        if (self.phi != 0):
+            return m * boundary_phasor(self.sample.number_of_points(), self.phi)   
+        else: return m # to keep thing real
 
 
-class ExpModel_Banded_Logbox_pinning(ExpModel_Banded_Logbox):
+class ExpModel_Banded_Logbox_pinning(ExpModel_Banded_Logbox_phase):
     def rate_matrix(self,convention=0):
         if self.rseed is not None:
             np.random.seed(self.rseed)
-        m = ExpModel_Banded_Logbox.rate_matrix(self)
+        m = ExpModel_Banded_Logbox.rate_matrix_phase(self,self.phi)
         m += self.pinning_matrix()
         return m
     
