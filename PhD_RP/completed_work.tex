@@ -109,11 +109,28 @@ in those systems, specifically in sparse configurations.
 
 In recent studies \cite{bodyfelt_unpub} an interesting structure of
 PN (participation number) was observed in a similar model. In this model,
-there is a finite bandwidth $b$ with random uncorrelated off diagonal elements.
-Additionally, diagonal disorder was introduced. As can be seen
+$N$ equal masses are connected by springs up to a bandwidth $b$. In addition to these
+springs, there are "pinning" springs from each mass to its initial position, with
+strength $\epsilon_n$, as described by the classical Hamiltonian:
+\begin{align}
+\mathcal{H} &= \sum_n \left( \frac{p_n^2}{2m} +\epsilon_n\frac{x_n^2}{2}+ \frac{1}{2}\sum_{j} \frac{1}{2}k_{nj} (x_n-x_j)^2 \right) \\
+            &= \sum_{n} \frac{p_n^2}{2m} +  \frac{1}{2}\vec{x}^{\intercal} K \vec{x} \\
+            K_{nm} &= \begin{cases} 
+            \sum_{l\ne n} k_{ln} +\epsilon_n \quad &\textrm{if}\quad n=m \\ 
+            - k_{nm}  \quad &\textrm{if}\quad n\ne m
+            \end{cases}\\
+            \vec{x} &= (x_1,x_2,\ldots,x_N)
+\end{align}
+The disorder is introduced by randomized $k_{ij}$ and $\epsilon_n$.
+
+As can be seen
 in \autoref{fig:PN_kottos}, for the low eigenvalues, instead of the 
 expected large PN, we have some decrease. After that, follows a period
 of large PN, followed by another segment with somewhat smaller PN.
+Another quantity we calculated is the Thouless conductance (see \autoref{sec:anderson}), 
+which we expect to correlate with $PN$. Disregarding major numerical issues,
+the correlation seems to hold, see \autoref{fig:PN_g_scatter}.
+
 
 
 
@@ -121,42 +138,53 @@ of large PN, followed by another segment with somewhat smaller PN.
 
 \begin{figure}[H]
   %\subfloat[Low sparsity]{
-  \begin{subfigure}{.5\linewidth}
+  \begin{subfigure}{.45\linewidth}
+    \centering
     \includegraphics{pta_low_s_pin}
     \caption{Low sparsity, with diagonal disorder}\label{fig:PN_kottos}
-  \end{subfigure}      
-
-  \begin{subfigure}{.5\linewidth}
+  \end{subfigure}     
+  %
+  \begin{subfigure}{.45\linewidth}\centering
     \includegraphics{pta_low_s_nopin}
     \caption{Low sparsity, without diagonal disorder}\label{fig:PN_kottos_nopin}
   \end{subfigure}
-    \begin{subfigure}{.5\linewidth}
-
-\includegraphics{pta_highest_s_log_nopin}
-  \caption{How sparsity, without diagonal disorder}\label{fig:PN_kottos_sparse}
-    
+  %
+  \begin{subfigure}{.45\linewidth}\centering
+     \includegraphics{pta_highest_s_log_nopin}
+  \caption{High sparsity, without diagonal disorder}\label{fig:PN_kottos_sparse}
   \end{subfigure}
-
-  \caption{{\bf PN} as a function of $\lambda$.
+  %
+  \begin{subfigure}{.45\linewidth}\centering
+     \includegraphics{pta_scatter_g}
+  \caption{$(-\log(PN))$ as a function of $(-\log(g))$. 
+  For each $\sigma$, the number in brackets indicates the number of omitted points.}\label{fig:PN_g_scatter}
+  \end{subfigure}
+  \caption{(a-c) - {\bf PN} as a function of $\lambda$.
   For all the plots $N=1000$ and $b=5$. 
   The off diagonal elements are 
   $w_{ij} = \eexp{-\epsilon} \quad \, \epsilon \in \textrm{uniform} [0,2\sigma]$.
   For (b) and (c), the diagonal elements are $w_{ii} = -\sum_j w_{ij}$, while for 
   (a) we added to that a uniform disordered parameter $x \quad \in \textrm{uniform} [0,0.3]$.
+  Comparing \subref{fig:PN_kottos} and \subref{fig:PN_kottos_nopin}, our initial numerical analysis 
+  shows that the low-eigenvalue decrease
+  is caused by the diagonal disorder. This disorder removes the one special 
+  $\lambda=0$ eigenmode, and decreases the PN of several other modes.
+  In \subref{fig:PN_kottos_sparse}, we see that once we use a much wider
+distribution of off diagonal elements, i.e. increase the \emph{sparsity}, 
+the two segment structure disappears.
+  (d) - comparing the Thouless conductance $g$ with the participation number. 
+  The presented points do seem to be correlated, but due to numerical precision limits,
+  many points had to be ignored, up to $936$ from $1000$ for $\sigma=10$. In our numeric 
+  algorithm, the eigenvalue precision is relative to the highest eigenvalue. For wide distributions
+  of eigenvalues, that means that the numerical precision of the low eigenvalues is poor,
+  and the uncertainty is larger than the phase induced shift.
   }
 \end{figure}
 
 
 
-In \autoref{fig:PN_kottos_nopin}, our initial numerical analysis shows that the low-eigenvalue decrease
-is caused by the diagonal disorder. This disorder removes the one special 
-$\lambda=0$ eigenmode, and decreases the PN of several other modes.
 
 
-
-In \autoref{fig:PN_kottos_sparse}, we see that once we use a much wider
-distribution of off diagonal elements, i.e. increase the \emph{sparsity}, 
-the two segment structure disappears.
 
 
 

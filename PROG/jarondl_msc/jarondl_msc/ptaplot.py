@@ -102,11 +102,13 @@ def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = pi):
         g = abs(model.eigvals - model_phi.eigvals) / (phi**2)
         # Approximation of  the minimal precision:
         prec = FLOAT_EPS * max(abs(model.eigvals))* number_of_sites  
-        g = ma.masked_less(g,prec)
+        debug("precision = {0}, minimal g  = {1}".format(prec, min(g)))
+        #g = ma.masked_less(g,prec)
         avg_spacing = win_avg_mtrx.dot(-model.eigvals[1:]+model.eigvals[:-1])
         # avg_spacing is now smaller than eigvals. We duplicate the last value to accomodate (quite  hackish)
         avg_spacing = np.append(avg_spacing,avg_spacing[-1])
-        res[n] = ( model.eigvals, model.PN_N, g/avg_spacing , s, b)
+        ga = ma.masked_less(g/avg_spacing,prec)
+        res[n] = ( model.eigvals, model.PN_N, ma.filled(ga, fill_value=-0) , s, b)
         
     return res
 
@@ -121,6 +123,18 @@ def get_ev_for_phases(b,s,phases,number_of_sites=1000, rseed=1):
                     epsilon=s, bandwidth1d=b,rseed=rseed,phi=phase)
         evs[n] = -model.eigvals
     return evs
+    
+    
+def plot_scatter_g(ax):
+    g = get_ev_thoules_g([5],[0.2,1,10],phi=pi)
+    log_g = -log(g['thoules_g'])
+    log_IPN = -log(g['PN'])
+    ax.plot(log_g[0], log_IPN[0], '.', label=r"$\sigma = 0.2 ({0})$".format(np.isinf(log_g[0]).sum()))
+    ax.plot(log_g[1], log_IPN[1], '.', label=r"$\sigma = 1   ({0})$".format(np.isinf(log_g[1]).sum()))
+    ax.plot(log_g[2], log_IPN[2], '.', label=r"$\sigma = 10  ({0})$".format(np.isinf(log_g[2]).sum()))
+    ax.legend(loc='lower right')
+    ax.set_xlabel(r"$-\log(g)$")
+    ax.set_ylabel(r"$-\log(PN)$")
 
 def plot_thoules_g(ax, b, s_values, number_of_sites=1000,phi=0.1):
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
@@ -164,6 +178,11 @@ def plot_represntive_vectors(fig_vecs, ax_PN, number_of_sites=1000):
 ###################  Plotting to files (using previous funcs) ###
 #################################################################
 
+def plotf_scatter_g():
+    fig, ax = plt.subplots()
+    plot_scatter_g(ax)
+    tight_layout(fig)
+    fig.savefig('pta_scatter_g.pdf')
 
 def plotf_banded_pn(pinning=False):
     """  This plots the two relevant files from the `plot_banded_pn_nopinning`

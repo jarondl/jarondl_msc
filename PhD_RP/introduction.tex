@@ -75,7 +75,7 @@ In general, the transition matrices have three symmetry categories:
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{TODO VRH}
+%\section{TODO VRH}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Motivations for the model}
@@ -99,7 +99,7 @@ might fit a large number of physical situations. Some physical applications incl
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Relationship with Anderson localization}
+\section{The Anderson localization}\label{sec:anderson}
 
 In the Anderson model\cite{anderson_absence_1958}, a nearest neighbor network is formed
 on a lattice. The bonds are all equal, and the on-site energies are random.
@@ -107,13 +107,18 @@ For $d=1$ and $d=2$, all states are localized, while for $d>2$, there exists
 a transition between localized and extended modes. 
 
 
-The expression for conductivity\cite{kubo,greenwood,thouless_electrons_1974} can be written as
+%The expressions for \emph{dc} conductivity and average conductance 
+%\cite{kubo_statistical-mechanical_1957,greenwood,thouless_electrons_1974,braun_level_1997}
+% can be written as
 %
-\begin{align}
-\sigma(\omega) = \frac{\pi e^2}{\Omega} \sum_\alpha \sum_{\beta\ne\alpha} 
-                 \hat{x}_{\alpha\beta}\hat{x}_{\beta\alpha}\delta(E_\alpha-E_\beta - \hbar\omega)(f_\beta-f_\alpha)\omega
-\end{align}
+%\begin{align}
+%\sigma &= \frac{\pi e^2}{m^2 V} \sum_{\alpha,\beta} 
+%                 \left|\bra\alpha |\hat{p}|\beta\ket\right|^2 \delta(E_F-E_\alpha)\delta(E_F-E_\beta) \\
+%\langle G \rangle &= \langle \sigma \rangle L^{d-2}
+%\end{align}
 %
+
+
 
 There are several routines used to distinguish between exponentially localized and delocalized modes.
 The most straight forward one seems to be the participation number (PN) 
@@ -123,24 +128,56 @@ The most straight forward one seems to be the participation number (PN)
 PN^{-1} \ =\ \sum_i p_i^2
 \end{align}
 where $p_i$ is the probability to be in a specific site, equal to $|\psi_i|^2$ 
-for a quantum wave function.
+for a quantum wave function. For a fully extended mode $PN\sim N$, while for a state
+occupying only one site $PN = 1 $.
 
 
-\cite{edwards_numerical_1972}
+Another idea called Thouless curvature or Thouless conductance 
+\cite{edwards_numerical_1972,thouless_electrons_1974,braun_level_1997}, is based
+on the idea that localized eigenmodes are almost not sensitive to boundary conditions. We apply a 
+phase change $\phi$ across the boundary, (due to gauge invariance the specific spot is irrelevant),
+and check the resulting change in the eigenvalues. 
+In an ordered system with extended modes, $\phi=\pi$ will cause an energy
+shift larger than the level spacing. 
+Using perturbation theory on Kubo's equation \cite{kubo_statistical-mechanical_1957},
+Thouless defined a conductance that is proportional to the diffusion: 
+\begin{align}\label{eq:thouless}
+\bra g_T\ket  \equiv \pi \frac{\bra \left|\left. \frac{\partial ^2 E^{(n)}}{\partial \phi^2}\right|_{\phi\rightarrow 0}\right|\ket}{\Delta}
+\end{align}
+where $\Delta$ is the level spacing.
+
+
+
+Because we have defined the diagonal by requiring each row and column to nullify,
+there always exists a special extended $\lambda=0$ mode with all probabilities equal. 
+Actually, in our $d\le 2$ models, the localization length diverges as $\lambda\rightarrow 0$,
+So that while the states are localized by definition, in practice they may be very wide
+compared to the system length.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Modeling quantum diffusion with resistor networks}
 
-In past work \cite{cohen_wave_2000} 
+%In past work \cite{cohen_wave_2000} 
 
-In a model described by a Hamiltonian $\mathcal{H}$,
+In a model described by a Hamiltonian 
+%
+\begin{align}
+\mathcal{H} = \textrm{diag}{E_n} + \epsilon {V_{nm}}
+\end{align}
+%
 according to the first step of perturbation theory,
 for very short time the transition probability is:
 %
 \begin{align}
-WRONG p(n, n_0)\ =\ \left| \epsilon \bra{n} \mathcal{H}\ket{n_0}\right|^2
+ p(n, n_0)\ =\ \left| \epsilon \bra n| V |n_0\ket t\right|^2 \ = \ \epsilon^2 t^2\left| \bra n| V |n_0\ket \right|^2
 \end{align}
 %
+This suggests that for some short time scale, the ballistic behavior
+of the system might relate to the conductivity of the rate equation $G_{nm} = \left| \bra n| V |n_0\ket \right|^2$.
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -172,32 +209,34 @@ j         &\propto L^{\alpha-1}\quad [\alpha>0] \\
 It is debated whether for $d=1$ systems
 with momentum conservation,  $\alpha=1/3$,$\alpha=2/5$ or neither
 \cite{narayan_anomalous_2002,delfini_comment_2008,dhar_dhar_2008,wang_power-law_2011}.
+For several systems it has been shown that $\alpha$ depends on some tunable potential \cite{tong_wave_1999},
+and it also depends on the spectrum of the baths \cite{dhar_heat_2001}.
 
 
 
-The high frequency eigenmodes are strongly localized, hence only the
-first part of the spectrum contributes to the heat flux\cite{lepri_thermal_2001}.
-localization
-
-
-In the harmonic chain model, $N$ equal masses connected by springs are described by a classical Hamiltonian:
+The total heat conductance is defined by
 %
 \begin{align}
-\mathcal{H} &= \sum_n \left( \frac{p_n^2}{2m} + \frac{1}{2}\sum_{j} \frac{1}{2}k_{nj} (x_n-x_j)^2 \right) \\
-            &= \sum_{n} \frac{p_n^2}{2m} +  \frac{1}{2}\vec{x}^{\intercal} K \vec{x} \\
-            K_{ij} &= \begin{cases} 
-            \sum_{n\ne i} k_{in}  \quad &\textrm{if}\quad i=j \\ 
-            - k_{ij}  \quad &\textrm{if}\quad i\ne j 
-            \end{cases}\\
-            \vec{x} &= (x_1,x_2,\ldots,x_N)
+J = \int_0^\infty \rho(\lambda) g(\lambda) d\lambda
 \end{align}
-%
+where $\rho(\omega)$ is the density of states, and $g(\lambda)$ is 
+a transmission coefficient for a phonon at energy $\lambda$.
+$g(\lambda)$ is highly affected by the localization length of this mode, 
+and one way to find it is via Thouless' curvature \autoref{eq:thouless}.
+The high frequency eigenmodes are strongly localized, hence only the
+first part of the spectrum contributes to the heat flux. Based on this idea,
+the heat flux can be estimated \cite{lepri_thermal_2001,bodyfelt_unpub},
+by the number of wide modes.
+
+
+
+
 
  
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{About banded matrices}
+\section{Banded matrices spectrum}
 
 
 For wide bandwidth and uncorrelated matrix elements, the high eigenvalues
@@ -208,30 +247,16 @@ between diffusion and subdiffusion.
 
 
 
-Some facts about banded matrices, with 
-\begin{align}
-  w_{ij} = 
-  \begin{cases}
-    1 \quad &\textrm{  if  } |i-j|\le b   \\
-    -\sum_{k \ne j} w_{kj} &\textrm{  if  } i = j  \\
-    0 \quad &\textrm{  otherwise }
-  \end{cases}
-\end{align}
-
-The analytical eigenvalues are:
-\begin{align}
-  \lambda &= 2\sum_{n=1..b} (\cos(n\cdot k) -1) \\
-  k &= \frac{2\pi m}{N}
-\end{align}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Sinai diffusion}
+%\section{Sinai diffusion}
 
 
 
-For example, by adding spatial correlations, the behavior can be changed 
-from $S(t) \sim (\log t)^4$ to $S(t) \sim (\log t)^y$ with $y \in [4,\inf]$ \cite{stanley_generalisation_1987}.
+
+%For example, by adding spatial correlations, the behavior can be changed 
+%from $S(t) \sim (\log t)^4$ to $S(t) \sim (\log t)^y$ with $y \in [4,\inf]$ \cite{stanley_generalisation_1987}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Organization}
