@@ -47,56 +47,47 @@ parameter $\xi$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Matrices of interest}\label{sec:matrix_categories}
 
-% Three categories:
-% wnm = wmn  - no talk about steady state - equilibrium transient diffusion
-%%            resnet
-% wnm propto wmn - detailed balance - stochastic field
-%           integral over it must be zero  boltzmann equil
-%           should be added to the background
-% wnm \ne wmn - assymetry - frustrated NESS
-Our focus is on real-valued matrices. This ensures that the eigenvalues
-are either real or  pairs of complex conjugates.
-% This reminds us of
-%Hamiltonians that conserve PT (Parity-Time) reversal symmetry. Actually,
-%by change of basis, these Hamiltonians can probably be presented as real valued matrices. 
-%
-%
-%These real matrices span several categories:
-We define several kinds of matrices by their off-diagonal elements:
+
+The matrices we consider can be charactarized by several properties,  
+in order of increasing complexity
 \begin{enumerate}
-  \item
-       \label{symmetric} Symmetric.
-       %Active network : these matrices have negative and positive off-diagonal values
-  \item
-       \label{detailed_balance} Detailed balance.
-       %Detailed balance network: these have positive off-diaonal elements 
-       %that satisfy the specific ratio $w_{nm} = \exp\left({-\frac{E_n-E_m}{T}}\right) w_{mn}$
-  \item
-       \label{assymetric} Assymetric.
-       %Assymetric network: these do not obey detailed balance.
-  \item
-       \label{active} Active.
-       %\label{passive_sym} Symmetric network: these matrices have positive 
-       %symmetric off-diagonal elements $w_{nm} = w_{mn}$. This can be regarded
-       %as the $T\rightarrow \infty$ limit of the previous category.
+    \item
+        \label{symmetric} Symmetry.
+    \item
+        \label{detailed_balance} Detailed balance.
+    \item
+       \label{assymetric} Frustration.
+    \item 
+       \label{diagonal} Diagonal disorder
+    \item
+       \label{active} Passive vs.\ active elements
+    \item
+       \label{relaxation} Relaxation vs.\ oscilation.
 \end{enumerate}
 %
-The symmetric matrices (\ref{symmetric}) have $w_{nm}=w_{mn}$. 
-This means that they have the very useful analogy to a simple resistor network. 
-The detailed balance matrices (\ref{detailed_balance}) satisfy
-the ratio
+Symmetric matrices (\ref{symmetric}) have
 %
 \begin{align}
-  w_{nm} = \exp\left({-\frac{E_n-E_m}{T}}\right)
+w_{nm}=w_{mn}
 \end{align}
 %
-This allows the system to reach Boltzmann's equilibrium at long times.
-The symmetric matrix formally obey detailed balance with $T\rightarrow\infty$.
-The assymetric matrices (\ref{assymetric}) are those that do not obey detailed balance.
-This kind of system can lead to interesting effects such as Sinai's diffusion.
-The active networks (\ref{active}) have both positive and negative
-off diagonal elements. They are called so because they can 
-not be realized using only passive elements such as resistors or capacitors only.
+In the long time dynamics these systems reach ergodicity, where every 
+site has equal occupency. They also have the analogy to a
+simple resistor network, which is useful both numerically and analyticaly. 
+
+
+The detailed balance matrices (\ref{detailed_balance}) have specific 
+requiremnts for the ratio between $w_{nm}$ and $w_{mn}$, see \ref{sec:detailed_balance}.
+Their long term dynamics lead to Bolzmann's equilibrium. 
+
+
+Frustrated matrices (\ref{assymetric}) are assymetric matrices 
+that do not obey the detailed balance requirement.  
+They do not reach equilibrium nor ergodicity, but they can reach
+a non equilibrium steady state (NESS). 
+
+
+
 
 
 To complete the definition of the matrices, we must define the diagonals.
