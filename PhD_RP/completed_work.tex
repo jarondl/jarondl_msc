@@ -24,26 +24,29 @@ of the main results.
 
 %%%%%%%%%%%%%
 %\section{Article abstract}
-\rmrk{This is the article abstract..}
+%\rmrk{This is the article abstract..}
 
 
 We have studied random networks whose dynamics are
 described by a rate equation, with transition rates $w_{nm}$
-that form a symmetric matrix (\autoref{sec:matrices}),
-and with a diagonal  
-
+that form a symmetric matrix (\autoref{sec:matrix_categories}),
+with a diagonal conforming to \autoref{eq:zero_sum}. 
+%
 The long time evolution
 of the system is characterized by a diffusion coefficient~$D$.
 In one dimension it is well known that $D$ can display an abrupt
 percolation-like transition from diffusion (${D>0}$)
-to sub-diffusion (${D=0}$). A question arises whether
+to sub-diffusion (${D=0}$). 
+%
+A question arises whether
 such a transition happens in higher dimensions.
 Numerically $D$ can be evaluated using a resistor network
 calculation, or optionally it can be deduced from 
 the spectral properties of the system. Contrary to a recent 
 expectation that is based on a renormalization-group analysis, 
-we deduce that $D$ is finite; 
-suggest an ``effective-range-hopping" procedure to evaluate it;
+we deduce that $D$ is finite.
+%
+We suggest an ``effective-range-hopping" procedure to evaluate $D$,
 and contrast the results with the linear estimate.
 The same approach is useful for the analysis of 
 networks that are described by quasi-one-dimensional  
@@ -61,6 +64,8 @@ the diffusion coefficient calculation. While the transition to
 these sites is indeed high, the distance covered is not enough
 to form a percolating cluster. Therefore, we use a threshold based
 on percolation theory and flat-down the rates higher then this threshold.
+This produces a smooth crossover between the linear
+estimate and the \emph{VRH} estimate.
 
 
 Using the \emph{ERH} procedure we have calculated the diffusion for several models.
@@ -109,13 +114,16 @@ D_{\text{ERH}} \ \ &= \ \
 %%%%%%%%   I could also add D(g_s) and say that it failed
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A banded classical Hamiltonian}
+\section{A banded classical Hamiltonian}%PTA
 
 
 We have analyzed a model of springs and masses described in \autoref{eq:app_heat}.
-The $K$ matrix defined there 
+The Hamiltonian is quadratic in the $K$ matrix as defined in \autoref{eq:K_matrix},
+which means that the eigenvalues $\lambda$ of $K$ determine the frequencies $\omega^2 = \lambda$.
+The eigenvectors are of course the same.
+
 In recent studies \cite{bodyfelt_unpub} an interesting structure of
-PN (participation number) was observed in a similar model. 
+PN (participation number) was observed in this model. 
 
 As can be seen
 in \autoref{fig:PN_kottos}, for the low eigenvalues, instead of the 

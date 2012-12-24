@@ -209,7 +209,7 @@ strength $\epsilon_n$, as described by the classical Hamiltonian:
 \mathcal{H} &= \sum_n \left( \frac{p_n^2}{2m} +\epsilon_n\frac{x_n^2}{2}+ \frac{1}{2}\sum_{1\le |n-j|\le b} \frac{1}{2}k_{nj} (x_n-x_j)^2 \right) \\
             &= \sum_{n} \frac{p_n^2}{2m} +  \frac{1}{2}\vec{x}^{\intercal} K \vec{x} \\
             K_{nm} &= \begin{cases} 
-            \sum_{l\ne n} k_{ln} +\epsilon_n \quad &\textrm{if}\quad n=m \\ 
+            \sum_{l\ne n} k_{ln} +\epsilon_n \quad &\textrm{if}\quad n=m \label{eq:K_matrix}\\ 
             - k_{nm}  \quad &\textrm{if}\quad n\ne m \\
             0 \quad &\textrm{if}\quad 1\le |n-m|\le b
             \end{cases}\\
