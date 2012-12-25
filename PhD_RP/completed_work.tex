@@ -120,7 +120,7 @@ D_{\text{ERH}} \ \ &= \ \
 We have analyzed a model of springs and masses described in \autoref{eq:app_heat}.
 The Hamiltonian is quadratic in the $K$ matrix as defined in \autoref{eq:K_matrix},
 which means that the eigenvalues $\lambda$ of $K$ determine the frequencies $\omega^2 = \lambda$.
-The eigenvectors are of course the same.
+The eigenmodes are of course the same.
 
 In recent studies \cite{bodyfelt_unpub} an interesting structure of
 PN (participation number) was observed in this model. 
@@ -133,6 +133,30 @@ Another quantity we calculated is the Thouless conductance (see \autoref{sec:and
 which we expect to correlate with $PN$. Disregarding major numerical issues,
 the correlation seems to hold, see \autoref{fig:PN_g_scatter}.
 
+
+
+In this model, the local temperature is naturaly defined as :
+%
+\begin{align}
+T_n &= \langle p_n^2 \rangle
+\end{align}
+
+We define the ($2N\times 2N$) covariance matrix as:
+\begin{align}
+C \ &=\ \langle \vec{x}\otimes \vec{x}\rangle \\
+\vec{x} &= (q_1,\ldots q_N, p_1,\ldots p_N)^\intercal
+\end{align}
+
+
+Sylvester.
+
+
+This relates the incoming and outgoing flux of heat 
+to the local temperatures. This idea is very similar
+to the familiar resistor network calculation, with 
+heat flux replacing current, and local temperature replacing voltage. 
+ 
+ 
 \notbool{showfigure}{\begin{comment}}{}
 
 \begin{figure}[H]

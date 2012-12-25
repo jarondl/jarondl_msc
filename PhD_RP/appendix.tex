@@ -206,14 +206,14 @@ mass to its initial position, with
 strength $\epsilon_n$, as described by the classical Hamiltonian:
 %
 \begin{align}
-\mathcal{H} &= \sum_n \left( \frac{p_n^2}{2m} +\epsilon_n\frac{x_n^2}{2}+ \frac{1}{2}\sum_{1\le |n-j|\le b} \frac{1}{2}k_{nj} (x_n-x_j)^2 \right) \\
-            &= \sum_{n} \frac{p_n^2}{2m} +  \frac{1}{2}\vec{x}^{\intercal} K \vec{x} \\
+\mathcal{H} &= \sum_n \left( \frac{p_n^2}{2m} +\epsilon_n\frac{q_n^2}{2}+ \frac{1}{2}\sum_{1\le |n-j|\le b} \frac{1}{2}k_{nj} (q_n-q_j)^2 \right) \\
+            &= \sum_{n} \frac{p_n^2}{2m} +  \frac{1}{2}\vec{q}^{\intercal} K \vec{q} \\
             K_{nm} &= \begin{cases} 
             \sum_{l\ne n} k_{ln} +\epsilon_n \quad &\textrm{if}\quad n=m \label{eq:K_matrix}\\ 
             - k_{nm}  \quad &\textrm{if}\quad n\ne m \\
             0 \quad &\textrm{if}\quad 1\le |n-m|\le b
             \end{cases}\\
-            \vec{x} &= (x_1,x_2,\ldots,x_N)
+            \vec{q} &= (q_1,q_2,\ldots,q_N)
 \end{align}
 %
 All of the dynamical features are encoded in the real off-diagonaly symmetric matrix $K$.
