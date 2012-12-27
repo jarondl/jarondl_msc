@@ -135,20 +135,34 @@ the correlation seems to hold, see \autoref{fig:PN_g_scatter}.
 
 
 
-In this model, the local temperature is naturaly defined as :
-%
-\begin{align}
-T_n &= \langle p_n^2 \rangle
-\end{align}
 
 We define the ($2N\times 2N$) covariance matrix as:
 \begin{align}
-C \ &=\ \langle \vec{x}\otimes \vec{x}\rangle \\
-\vec{x} &= (q_1,\ldots q_N, p_1,\ldots p_N)^\intercal
+\mathbf{C} \ &=\ \langle \vec{z}\otimes \vec{z}\rangle \\
+\vec{z} &= (q_1,\ldots q_N, p_1,\ldots p_N)^\intercal
 \end{align}
 
 
-Sylvester.
+In the NESS (non equilibrium steady state), $\mathbf{C}$ 
+is the solution of the following Lyapunov equation \cite{bodyfelt_unpub,zheng}:
+%
+\begin{align}
+&\mathbf{Z}\mathbf{C} + \mathbf{C}\mathbf{Z}^\intercal + (T_R\mathbf{Y}^R+T_L\mathbf{Y}^L) \ =\  0\\
+\mathbf{Z} &= 
+              \begin{pmatrix} 
+                \mathbf{0} & \mathbf{1} \\
+                \mathbf{K} & \mathbf{0} 
+              \end{pmatrix} -(\mathbf{Y}^R+\mathbf{Y}^L)
+\end{align}
+%
+Where $\mathbf{Y}^{L,R}$ are diagonal matrices that couple
+the system to heat baths at temperatures $T_R$ and $T_L$ accordingly.
+%
+The local temperature and heat flux are defined as
+\begin{align}
+T_n &= \langle p_n^2 \rangle \ = \ C_{N+n} \\
+G_{\textrm{thermal}} &= 
+\end{align}
 
 
 This relates the incoming and outgoing flux of heat 
