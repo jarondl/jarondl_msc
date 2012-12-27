@@ -3,7 +3,9 @@
 \includepdf[pages=-]{PhysRevE_86_051120}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Spacing Statistics in $d$-dimensions}\label{sec:spacing}
+\chapter{Additional material}
+
+\section{Spacing Statistics in $d$-dimensions}\label{sec:spacing}
 
 Some clarifing points regarding the statistics of uniformly distributed sites 
 will be made in this section.
@@ -81,12 +83,10 @@ Where in the last step we have plugged in $\rho(r)$ from \autoref{eq:rho}
 %
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Resistor Network Computation}\label{sec:resnet}
+
 
 %%%%%%%%%%%%%%%%%%%%%
-\section{Resistor network calculation of transport}
+\section{Resistor network calculation of transport}\label{sec:resnet}
 
 The transmission rates of our model are analogous to
 conductors. The conductance of the entire system can be derived
@@ -178,20 +178,36 @@ The analytical eigenvalues are:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Detailed balance}\label{sec:detailed_balance}
 
-For a matrix $W$, we define $\epsilon_{nm}$ as follows:
+For a matrix $W$, we define $\varepsilon_{nm}$ as follows:
 %
 \begin{align}
-\varepsilon_{nm}\ =\ \log\left(\frac{w_{nm}}{w_{mn}}\right)
+\varepsilon_{nm}\ \equiv\ \log\left(\frac{w_{nm}}{w_{mn}}\right)
 \end{align}
 %
-The detailed balance requirement can be formulated as:
+The detailed balance requirement can be formulated as demanding $\varepsilon_{nm}$ 
+to be a conservative field, i.e.:
 %
 \begin{align}
 \oint \varepsilon dl \ =\ 0
 \end{align}
 %
-If this is true for any closed loop, we can
-arbitrarily choose an energy $E_n$ for one site,
+For any closed loop. This allows us to define
+on-site energies $E_n$, with
+%
+\begin{align}
+ \varepsilon_{nm}\ \equiv\ E_n-E_m
+\end{align}
+%
+A system with obeying detailed balance
+has a steady state solution solving the stochastic rate equation, 
+with zero time evolution:
+%
+\begin{align}
+   \frac{dp_n}{dt} \quad &= \quad \sum_m w_{nm}p_m^0 = 0\\
+   p_m^0 \quad &= \quad \frac{1}{Z}\eexp{-E_m} \\
+   Z     \quad &= \quad \sum_m \eexp{-E_m}
+\end{align}
+%
 
 
 

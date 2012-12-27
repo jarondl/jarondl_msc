@@ -5,13 +5,16 @@ This proposal is about simple dynamical networks, with dynamics
 that are described either by a stochastic rate equation
 %
 \begin{align}
-  \frac{dp_n}{dt} \quad = \quad \sum_m w_{nm}p_m
+  \frac{d}{dt}\mathbf{p} \quad &= \quad -\mathbf{K} \mathbf{p} \\
+  \mathbf{K} \quad &\equiv \quad \textrm{diag}\{ \gamma_n \} \ \ +\ \ \textrm{offdiag}\{ -w_{nm} \} \\
+  \mathbf{p} \quad &\equiv \quad \textrm{vector}\{ p_n \}
 \end{align}
 %
 or by the Schr\"{o}dinger equation:
 %
 \begin{align}
-  \frac{d\psi_n}{dt} \quad = \quad \sum_m \mathcal{H}_{nm}\psi_m
+  \frac{d}{dt}\psi \quad &= \quad -i \mathcal{H}\psi \\
+  \mathbf{\psi} \quad &\equiv \quad \textrm{vector}\{ \psi_n \}
 \end{align}
 %
 
@@ -48,75 +51,117 @@ parameter $\xi$.
 \section{Matrices of interest}\label{sec:matrix_categories}
 
 
-The matrices we consider can be charactarized by several properties,  
-in order of increasing complexity
-\begin{enumerate}
-    \item
-        \label{symmetric} Symmetry.
-    \item
-        \label{detailed_balance} Detailed balance.
-    \item
-       \label{assymetric} Frustration.
-    \item 
-       \label{diagonal} Diagonal disorder
-    \item
-       \label{active} Passive vs.\ active elements
-    \item
-       \label{relaxation} Relaxation vs.\ oscilation.
+
+
+
+
+
+This work concern {\rm real} matrices that describe {\em disordered} 
+one- two- and quasi-one- dimensional structures. Such matrices 
+are of physical interest in various applications including:
+
+\begin{enumerate}[A. ]
+\item Resistor networks / random walk / hopping 
+\item Rate equations / relaxation processes 
+\item Mechanical elastic vibrations ("balls and springs")
+\item Electrical R-L-C circuits
+\item Hermitian quantum dynamics with time-reversal symmetry. 
+\item Non-Hermitian quantum dynamics with any anti-unitary symmetry. 
 \end{enumerate}
-%
-Symmetric matrices (\ref{symmetric}) have
-%
-\begin{align}
-w_{nm}=w_{mn}
-\end{align}
-%
-In the long time dynamics these systems reach ergodicity, where every 
-site has equal occupency. They also have the analogy to a
-simple resistor network, which is useful both numerically and analyticaly. 
-%
-A more general class is the detailed balance matrices (\ref{detailed_balance}), which have specific 
-requiremnts for the ratio between $w_{nm}$ and $w_{mn}$, see \ref{sec:detailed_balance}.
-Their long term dynamics lead to Bolzmann's equilibrium. 
-%
-Frustrated matrices (\ref{assymetric}) are assymetric matrices 
-that do not obey the detailed balance requirement.  
-They do not reach equilibrium nor ergodicity, but they can reach
-a non equilibrium steady state (NESS). 
-% 
-\rmrk{TODO active should be added here}.
-%
-If the matrices have real (positive) eigenvalues, then in the long time 
-limit the system will undergo relaxation to the aforementioned
-states. If, on the other hand, some eigenvalues are complex, then 
-the system will exhibit oscillations. There is recent interest and activity \rmrk{TODO cite some of them}
-in the field of $\mathcal{P}\mathcal{T}$-symmetric matrices, which are matrices
-that do not obey the parity symmetry $\mathcal{P}$ ($\hat{x}\rightarrow -\hat{x} \quad \hat{p}\rightarrow -\hat{p}$) nor
-the Time reflection symmetry $\mathcal{T}$ ($\hat{x}\rightarrow \hat{x} \quad \hat{p}\rightarrow -\hat{p}\quad i\rightarrow -i$)
-but for some parameters do obey the combined symmetry $\mathcal{P}\mathcal{T}$. 
-The manifestation of this symmetry is having real eigenvalues, while 
-the symmetry breaking is having pairs of complex conjugate eigenvalues. 
+
+In particular we note that the Mott impurity hopping problem 
+belongs to category A. The problem of Sinai spreading ("random 
+walk in random environment") belongs to category B. 
+The theory of heat conduction belongs to category C. 
+Studies of wave-packet dynamics belong to E, and 
+in particular the recent interest in systems that are described by 
+a non-Hermitian PT symmetric hamiltonian belongs to category F.
+
+In the present proposal we would like to emphasize the 
+implications of {\em sparsity}, meaning extreme disorder 
+due to log-wide distribution of matrix elements. 
+We note that {\em localization} and {\em percolation} are strongly 
+related aspects in the analysis of transport in such systems. 
 
 
+The real matrices that we consider can be characterized 
+by several properties, which we list here in order of increasing 
+complexity, and further elaborate below:
 
-To complete the definition of the matrices, we must define the diagonals.
-For some networks, the
-natural definition of the diagonal is by demanding the sum of each row to 
-be equal to zero, meaning:
+\begin{enumerate}
+\item Symmetry.
+\item Non-negativity.
+\item Conservation.
+\item Detailed balance.
+\item Frustration.
+\item Diagonal disorder.
+\item Broken reality.
+\end{enumerate}
+
+The eignevalues of a real matrix are the roots of a characteristic 
+polynomial that has real coefficients. Hence the spectrum consists 
+of real eigenvalues, and optionally also pair of complex-conjugate 
+values. 
+
+By "non-negativity" we mean that all eigenvalues are real and 
+non-negative: for example in the context of rate equations it means 
+that all the eigen-modes are decaying except the steady state 
+that has zero eigenvalue. 
+
+By "Broken-reality: we mean that some of the eigenvalues  
+become complex: in particular this might happen 
+as we vary some control parameter. The studies of "PT broken symmetry" 
+provides an example for such scenario. One should realize that  
+a complex eigen-state that is associated with a complex eigenvalue 
+has a {\em lower} symmetry than that of the Hamiltonian.
+
+It is most common to consider a {\em symmetric} matrix. 
+All the eigenvalues of such matrix are real. 
+Such matrices appear in Hamiltonian dynamics 
+if the system has anti-unitary (say time reversal) symmetry.  
+
+A special sub-class of symmetric matrices consists of those 
+that are both non-negative and conserving. Such matrices
+can be regarded as describing a "resistor network".
+They have positive off-diagonal elements that describes 
+the connectors, while their diagonal elements are determined 
+such that the probability (or the charge) is conserved. Namely 
+
+%gamma_n \equiv ... = ... 
 %
 \begin{align}\label{eq:zero_sum}
-w_{nn} = -\sum_{m\ne n} w_{mn}
+\gamma_n \equiv -\sum_{m\ne n} w_{mn}
 \end{align}
 %
-This represents conservation of charge, probability or momentum
-in the model, and it has very important aspects, such as creating a totally ergodized mode,
-with $\lambda=0$ and equal probabilities for all the sites. This is divergence 
-of the Anderson localization length, and it might allow diffusion despite 
-disorder in the system.
+
+The eigenvalues of a non-negative conserving symmetric matrix, 
+are all non-negative and represent decay or diffusion modes of the network. 
+Only the ergodic state is non-decaying with zero eigenvalue.   
+
+More generally rate-equation matrices are non-negative, conserving, 
+but non-symmetric. Hence they have real positive eigenvalues 
+that are associated with the decay modes of the system, 
+and a zero mode that describes the steady state.  
+
+It should be realized that the dynamics that is generated 
+by  a "resistor network" matrix ("infinite temperature") 
+resembles diffusion or percolation process, while that of 
+a ``finite temperature" network (non-symmetric matrix) has to 
+do with Sinai spreading (as discussed in \autoref{sec:anderson}).  
+
+A special sub-class of conserving non-negative matrices 
+are {\em detailed-balanced}. See \autoref{sec:detailed_balance} for precise definition. 
+Hence there is a simple "canonical" expression for their 
+ground state. More generally the system might be frustrated 
+hence the "non-equilibrium" steady state might carry current.
+
+The matrix that describes a system that is composed 
+of balls connected by springs is similar to that of a 
+rate equation, but has diagonal elements that might contain 
+an additional contribution that reflects a pinning potential 
+that attaches each ball to a fixed location.   
 
 
-Another way to treat the diagonal is with some disorder, such as in the
-Wigner model.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{TODO VRH}
 
