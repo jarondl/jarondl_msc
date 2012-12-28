@@ -110,8 +110,8 @@ that has zero eigenvalue.
 
 By "Broken-reality: we mean that some of the eigenvalues  
 become complex: in particular this might happen 
-as we vary some control parameter. The studies of "PT broken symmetry" 
-provides an example for such scenario. One should realize that  
+as we vary some control parameter. The studies of "PT broken symmetry" \cite{ 
+provide an example for such scenario. One should realize that  
 a complex eigen-state that is associated with a complex eigenvalue 
 has a {\em lower} symmetry than that of the Hamiltonian.
 
@@ -147,7 +147,7 @@ It should be realized that the dynamics that is generated
 by  a "resistor network" matrix ("infinite temperature") 
 resembles diffusion or percolation process, while that of 
 a ``finite temperature" network (non-symmetric matrix) has to 
-do with Sinai spreading (as discussed in \autoref{sec:anderson}).  
+do with Sinai spreading (as discussed in \autoref{sec:sinai}).  
 
 A special sub-class of conserving non-negative matrices 
 are {\em detailed-balanced}. See \autoref{sec:detailed_balance} for precise definition. 
@@ -165,52 +165,21 @@ that attaches each ball to a fixed location.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{TODO VRH}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Motivations for the model}
-%% bullets - where does this model appear - balls and springs (leads to heat) - capacitors
-%%             - conductance hopping
-
-We have kept the model abstract and general on purpose, so that it
-might fit a large number of physical situations. Some physical applications include:
-%
-\begin{itemize}
-  \item
-    Balls and Springs\ - \ A simple mechanical system of balls connected to each
-      other by springs. The vibrational modes of the system are phonons, which conduct heat.
-  \item
-    Capacitors and Resistors\ -\ An electrical network of capacitors connected to each other
-      by resistors.
-  \item 
-    Mott impurity hopping\ - \ This kind of conductance arises from hopping 
-      between impurities.
-\end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Anderson localization}\label{sec:anderson}
 
-In the Anderson model\cite{anderson_absence_1958}, a nearest neighbor network is formed
-on a lattice. The bonds are all equal, and the on-site energies are random.
-For $d=1$ and $d=2$, all states are localized, while for $d>2$, there exists
-a transition between localized and extended modes. The common knowledge
-is that every uncorrelated disorder causes localization. However, if the system
-has an ergodic mode, i.e.\ every site has the same occupancy, then the localization length 
-diverges, practically meaning effective delocalization. Moreover, if the energy
-of this mode sits on the lower edge of the spectrum, this effective delocalization 
-causes regular diffusion.
 
-
-%The expressions for \emph{dc} conductivity and average conductance 
-%\cite{kubo_statistical-mechanical_1957,greenwood,thouless_electrons_1974,braun_level_1997}
-% can be written as
-%
-%\begin{align}
-%\sigma &= \frac{\pi e^2}{m^2 V} \sum_{\alpha,\beta} 
-%                 \left|\bra\alpha |\hat{p}|\beta\ket\right|^2 \delta(E_F-E_\alpha)\delta(E_F-E_\beta) \\
-%\langle G \rangle &= \langle \sigma \rangle L^{d-2}
-%\end{align}
-%
-
+Following the seminal work of Anderson \cite{anderson_absence_1958},
+the common knowledge is that every uncorrelated disorder in two or
+less dimensions causes localization, while for more than two dimensions
+a transition between localized and extended modes exists. However, a conserving
+system, as defined earlier, always has one extended ergodic mode with $\lambda=0$,
+practically meaning a diverging localization length,
+or effective delocalization, as $\lambda\rightarrow 0$.
+For a non-negative system, this mode sits on the lower edge of the spectrum, 
+allowing regular diffusion in spite of the disorder.
 
 
 There are several routines used to distinguish between exponentially localized and delocalized modes.
@@ -241,13 +210,6 @@ where $\Delta$ is the level spacing.
 
 
 
-Because we have defined the diagonal by requiring each row and column to nullify,
-there always exists a special extended $\lambda=0$ mode with all probabilities equal. 
-Actually, in our $d\le 2$ models, the localization length diverges as $\lambda\rightarrow 0$,
-So that while the states are localized by definition, in practice they may be very wide
-compared to the system length.
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Modeling quantum diffusion with resistor networks}
@@ -274,21 +236,27 @@ of the system might relate to the conductivity of the rate equation $G_{nm} = \l
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Heat conductance}
+\section{Heat conductance}\label{sec:heat}
 
 One can take one of our suggested models, and couple each end to a different heat bath.
-The total heat conductance of the sample is defined by:
+Assuming white-noise baths at sufficient temperature, the total heat conductance of the sample is defined by:
 \begin{align}
-J = \int_0^\infty \rho(\lambda) g(\lambda) d\lambda
+G = \int_0^\infty \rho(\lambda) g(\lambda) d\lambda
 \end{align}
 where $\rho(\omega)$ is the density of states, and $g(\lambda)$ is 
 a transmission coefficient for a phonon at energy $\lambda$.
+$g(\lambda)$ is highly affected by the localization length of this mode.
+The high frequency eigenmodes are strongly localized, hence only the
+lower part of the spectrum contributes to the heat flux. Based on this idea,
+the heat flux can be estimated \cite{lepri_thermal_2001,lepri_thermal_2003,bodyfelt_unpub},
+by the number of wide modes times their localization length.
+
  
-However, many one-dimensional models 
+Many one-dimensional models 
 \cite{narayan_anomalous_2002,dhar_heat_2001,lepri_anomalous_1998,savin_heat_2002} 
 exhibit sample size scaling of the form
 %
-\begin{align}
+\begin{aligns}
 g(\lambda)    &\propto L^\alpha
 \end{align}
 
@@ -300,14 +268,44 @@ and it also depends on the spectrum of the baths \cite{dhar_heat_2001}.
 
 
 
-$g(\lambda)$ is highly affected by the localization length of this mode, 
-and one way to find it is via Thouless' curvature \autoref{eq:thouless}.
-The high frequency eigenmodes are strongly localized, hence only the
-first part of the spectrum contributes to the heat flux. Based on this idea,
-the heat flux can be estimated \cite{lepri_thermal_2001,bodyfelt_unpub},
-by the number of wide modes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Covariance matrix formalism}
+
+We define the ($2N\times 2N$) covariance matrix as:
+\begin{align}
+\mathbf{C} \ &=\ \langle \vec{z}\otimes \vec{z}\rangle \\
+\vec{z} &= (q_1,\ldots q_N, p_1,\ldots p_N)^\intercal
+\end{align}
 
 
+In the NESS (non equilibrium steady state), $\mathbf{C}$ 
+is the solution of the following Lyapunov equation \cite{bodyfelt_unpub,zheng,zheng_heat_2011}:
+%
+\begin{align}
+&\mathbf{Z}\mathbf{C} + \mathbf{C}\mathbf{Z}^\intercal + (T_R\mathbf{Y}^R+T_L\mathbf{Y}^L) \ =\  0\\
+\mathbf{Z} &= 
+              \begin{pmatrix} 
+                \mathbf{0} & \mathbf{1} \\
+                \mathbf{K} & \mathbf{0} 
+              \end{pmatrix} -(\mathbf{Y}^R+\mathbf{Y}^L)
+\end{align}
+%
+Where $\mathbf{Y}^{L,R}$ are diagonal matrices that couple
+the system to heat baths at temperatures $T_R$ and $T_L$ accordingly.
+%
+The local temperature and conductance are defined as
+\begin{align}
+T_n &= \langle p_n^2 \rangle \ = \ C_{N+n} \\
+G_{\textrm{thermal}} &= 
+\end{align}
+
+
+This relates the incoming and outgoing flux of heat 
+to the local temperatures. This idea is very similar
+to the familiar resistor network calculation based on Kirchoff's equation, with 
+heat flux replacing current, and local temperature replacing voltage. 
+ 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{comment}
@@ -325,7 +323,7 @@ between diffusion and subdiffusion.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{Sinai diffusion}
+\section{Sinai diffusion}
 
 
 

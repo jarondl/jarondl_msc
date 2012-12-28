@@ -109,18 +109,39 @@ D_{\text{ERH}} \ \ &= \ \
 
 
 
-
-%%%%%%%%   I need to add dts.tex here.
-%%%%%%%%   I could also add D(g_s) and say that it failed
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A banded classical Hamiltonian}%PTA
+%%%%   PTA                                    %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Heat transport in sparse banded Hamiltonians}\label{sec:PTA}
 
 
 We have analyzed a model of springs and masses described in \autoref{eq:app_heat}.
 The Hamiltonian is quadratic in the $K$ matrix as defined in \autoref{eq:K_matrix},
 which means that the eigenvalues $\lambda$ of $K$ determine the frequencies $\omega^2 = \lambda$.
-The eigenmodes are of course the same.
+The eigenmodes are of course the same. The analysis of this model in the resistor network perspective
+and the lower-eigenvalues spectral analysis perspective is presented in the article, and we now
+turn to inspect the heat transport angle.
+
+
+As explained earlier, in contrast to the low-eigenvalue-only  
+the total heat conductance is defined by the
+sum over the heat conductances of the participating modes:
+%
+\begin{align}
+G \ =\ \sum_n g(\lambda_n)
+\end{align}
+%
+ It is common to assume
+that the temperature of the baths is high enough for all the modes to
+participate, and for the bath spectrum to be white, meaning that all frequencies
+have the same weight. The heat conductance of an eigenmode can be calculated
+using the Landauer or the Kubo formalism, or, alternatively, can be estimated
+via the participation number, or the Thouless curvature. 
+
+
+
+
+
 
 In recent studies \cite{bodyfelt_unpub} an interesting structure of
 PN (participation number) was observed in this model. 
@@ -134,44 +155,17 @@ which we expect to correlate with $PN$. Disregarding major numerical issues,
 the correlation seems to hold, see \autoref{fig:PN_g_scatter}.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Covariance matrix formalism}
-
-We define the ($2N\times 2N$) covariance matrix as:
-\begin{align}
-\mathbf{C} \ &=\ \langle \vec{z}\otimes \vec{z}\rangle \\
-\vec{z} &= (q_1,\ldots q_N, p_1,\ldots p_N)^\intercal
-\end{align}
+As presented in \autoref{sec:heat}, the thermal conductance depends
+on all the wide modes. The DC conductance, on the other hand,
+depends on the $\lambda\rightarrow 0$ modes only. It seems that
+for sparse systems these definitions coincide, since only 
+the $\lambda\rightarrow 0$ modes are wide.
 
 
-In the NESS (non equilibrium steady state), $\mathbf{C}$ 
-is the solution of the following Lyapunov equation \cite{bodyfelt_unpub,zheng,zheng_heat_2011}:
-%
-\begin{align}
-&\mathbf{Z}\mathbf{C} + \mathbf{C}\mathbf{Z}^\intercal + (T_R\mathbf{Y}^R+T_L\mathbf{Y}^L) \ =\  0\\
-\mathbf{Z} &= 
-              \begin{pmatrix} 
-                \mathbf{0} & \mathbf{1} \\
-                \mathbf{K} & \mathbf{0} 
-              \end{pmatrix} -(\mathbf{Y}^R+\mathbf{Y}^L)
-\end{align}
-%
-Where $\mathbf{Y}^{L,R}$ are diagonal matrices that couple
-the system to heat baths at temperatures $T_R$ and $T_L$ accordingly.
-%
-The local temperature and conductance are defined as
-\begin{align}
-T_n &= \langle p_n^2 \rangle \ = \ C_{N+n} \\
-G_{\textrm{thermal}} &= 
-\end{align}
-
-
-This relates the incoming and outgoing flux of heat 
-to the local temperatures. This idea is very similar
-to the familiar resistor network calculation, with 
-heat flux replacing current, and local temperature replacing voltage. 
- 
- 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  The following figure is displayed on rp.pdf but not on pta_dts_as_notes
+%%     Because of the boolean showfigure.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \notbool{showfigure}{\begin{comment}}{}
 
 \begin{figure}[H]
@@ -231,10 +225,12 @@ heat flux replacing current, and local temperature replacing voltage.
 
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%   DTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Quantum spreading in the quasi one dimensional Hamiltonian}
+\section{Quantum spreading in a sparse banded Hamiltonian}\label{sec:dts}
 
 In this section the numerical work was done by our collaborators,
 Eli Halperin and Tsampikos Kottos of Wesleyan university.
