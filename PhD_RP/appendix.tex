@@ -158,7 +158,7 @@ In order to find $\rho$ we compute $R$ numerically.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 \section{Some analysis of banded matrices}
 
-To "get a feeling" of the expected spectrum of a banded matrix,
+To ``get a feeling'' of the expected spectrum of a banded matrix,
 we have looked at the spectrum of a perfectly ordered matrix.
 \begin{align}
   w_{ij} = 
@@ -180,7 +180,7 @@ The analytical eigenvalues are:
 
 For a matrix $W$, we define $\varepsilon_{nm}$ as follows:
 %
-\begin{align}
+\begin{align}\label{eq:epsilon}
 \varepsilon_{nm}\ \equiv\ \log\left(\frac{w_{nm}}{w_{mn}}\right)
 \end{align}
 %
@@ -198,7 +198,7 @@ on-site energies $E_n$, with
  \varepsilon_{nm}\ \equiv\ E_n-E_m
 \end{align}
 %
-A system with obeying detailed balance
+A system obeying detailed balance
 has a steady state solution solving the stochastic rate equation, 
 with zero time evolution:
 %
@@ -217,7 +217,7 @@ with zero time evolution:
 To study heat transport by phonons, we define a simple harmonic chain.
 In this model, $N$ equal masses are connected by springs 
 up to a bandwidth $b$, i.e.\ $b$ nearest neighbors for each side. 
-In addition to these springs, there are "pinning" springs from each
+In addition to these springs, there are ``pinning'' springs from each
 mass to its initial position, with
 strength $\epsilon_n$, as described by the classical Hamiltonian:
 %
@@ -250,8 +250,8 @@ x\ \ &= \ \ \textrm{uniform } [0,2\sigma]\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Numerical Routines}
 
-For the numerical calculations, we have used python 2.6 \cite{guido_van_rossum_python_????}, together
-with the scipy \cite{jones_scipy:_2001} package for numerics and the matplotlib \cite{hunter_matplotlib:_2007} package
+For the numerical calculations, we have used python 2.6 \cite{guido_van_rossum_python}, together
+with the scipy \cite{jones_scipy} package for numerics and the matplotlib \cite{hunter_matplotlib:_2007} package
 for graphics. The source files are available online at : 
 \url{http://physweb.bgu.ac.il/~jarondl/LINKS/MSc_FILES/}.
 
@@ -260,27 +260,29 @@ The source files are packaged into a standard python package,
 and can be installed as any other package. If a package manager is installed (e.g.\ pip),
 one should use it, as in :
 \begin{verbatim}
-pip install --user http://physweb.bgu.ac.il/~jarondl/LINKS/MSc_FILES/jarondl_msc-1.0.tar.gz
+pip install --user http://physweb.bgu.ac.il/~jarondl/
+                          LINKS/MSc_FILES/jarondl_msc-1.2.tar.gz
 \end{verbatim}
-If not, the package should be extracted, and the "setup.py" script can be used:
+If not, the package should be extracted, and the \texttt{setup.py} script can be used:
 \begin{verbatim}
 python setup.py install --user
 \end{verbatim}
 After this installation, the jarondl\_msc package will be available,
 including the following modules:
 \begin{verbatim}
-ptsplot  geometry  plotdl  sparsedl
+ptsplot ptaplot geometry  plotdl  sparsedl
 \end{verbatim}
 
-The \texttt{ptsplot} module is the main file of the package. The three other files contain
-sub-routines and class defentions used in \texttt{ptsplot}.
+The \texttt{ptsplot} and \texttt{ptaplot} modules are the main files of the package. The three other files contain
+sub-routines and class definitions.
 
 
 To reproduce all of the plots used in this proposal, one can simply run:
 \begin{verbatim}
 python -m jarondl_msc.ptsplot
+python -m jarondl_msc.ptaplot
 \end{verbatim}
-If the files \texttt{D\_banded.npz, D\_banded\_b10.npz } and \texttt{D\_2d.npz} (available online)
+If the files \texttt{D\_banded.npz, D\_banded\_b10.npz, D\_2d.npz, g\_b5\_nopin.npz} and \texttt{g\_b5\_pin.npz} (available online)
 exist in the same directory as where the script is run,
 this data will be used. Otherwise, the numerics will run first, and then the plots will be made. This might take several hours,
 depending on the computer.
