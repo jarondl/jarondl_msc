@@ -29,7 +29,7 @@ of the main results.
 
 We have studied random networks whose dynamics are
 described by a rate equation, with transition rates $w_{nm}$
-that form a symmetric matrix (\autoref{sec:matrix_categories}),
+that form a symmetric matrix (\autoref{sec:matrices}),
 with a diagonal conforming to \autoref{eq:zero_sum}. 
 %
 The long time evolution
@@ -115,7 +115,7 @@ D_{\text{ERH}} \ \ &= \ \
 \section{Heat transport in sparse banded Hamiltonians}\label{sec:PTA}
 
 
-We have analyzed a model of springs and masses described in \autoref{eq:app_heat}.
+We have analyzed a model of springs and masses described in \autoref{sec:app_heat}.
 The Hamiltonian is quadratic in the $K$ matrix as defined in \autoref{eq:K_matrix},
 which means that the eigenvalues $\lambda$ of $K$ determine the frequencies $\omega^2 = \lambda$.
 The eigenmodes are of course the same. The analysis of this model in the resistor network perspective
@@ -123,7 +123,7 @@ and the lower-eigenvalues spectral analysis perspective is presented in the arti
 turn to inspect the heat transport angle.
 
 
-As explained earlier, in contrast to the low-eigenvalue-only  
+As explained earlier, in contrast to the low-eigenvalue-only DC conductance, 
 the total heat conductance is defined by the
 sum over the heat conductances of the participating modes:
 %
@@ -131,26 +131,21 @@ sum over the heat conductances of the participating modes:
 G \ =\ \sum_n g(\lambda_n)
 \end{align}
 %
- It is common to assume
+It is common to assume
 that the temperature of the baths is high enough for all the modes to
 participate, and for the bath spectrum to be white, meaning that all frequencies
 have the same weight. The heat conductance of an eigenmode can be calculated
 using the Landauer or the Kubo formalism, or, alternatively, can be estimated
-via the participation number, or the Thouless curvature. 
+via the PN (participation number), or the Thouless curvature. 
+In recent studies \cite{bodyfelt_unpub} of \emph{pinned} banded matrices,
+two groups of PN values were observed, and by counting the number of modes in the
+higher PN group, the total conductance scaling was found. 
 
 
 
-
-
-
-In recent studies \cite{bodyfelt_unpub} an interesting structure of
-PN (participation number) was observed in this model. 
-
-As can be seen
-in \autoref{fig:PN_kottos}, for the low eigenvalues, instead of the 
-expected large PN, we have some decrease. After that, follows a period
-of large PN, followed by another segment with somewhat smaller PN.
-Another quantity we calculated is the Thouless conductance (see \autoref{sec:anderson}), 
+In \autoref{fig:pta} we have extended this analysis by studying the
+effects of pinning, and by introducing sparsity. Also, we have
+numerically calculated the Thouless conductance,
 which we expect to correlate with $PN$. Disregarding major numerical issues,
 the correlation seems to hold, see \autoref{fig:PN_g_scatter}.
 
@@ -172,12 +167,12 @@ the $\lambda\rightarrow 0$ modes are wide.
   %\subfloat[Low sparsity]{
   \begin{subfigure}{.45\linewidth}\centering
     \includegraphics[width=0.99\linewidth]{pta_nopin}
-    \caption{PN vs $\lambda$}\label{fig:PN_kottos_nopin}
+    \caption{}\label{fig:PN_kottos_nopin}
   \end{subfigure}
   %
   \begin{subfigure}{.45\linewidth}\centering
      \includegraphics[width=0.99\linewidth]{pta_ev_nopin}
-  \caption{Counting function (CDF) $\mathcal{N}(\lambda)$}\label{fig:ev_dist}
+  \caption{}\label{fig:ev_dist}
   \end{subfigure}\\ % end of row
   %
  % \caption{}
@@ -186,16 +181,16 @@ the $\lambda\rightarrow 0$ modes are wide.
   %
     \begin{subfigure}{.45\linewidth}\centering
     \includegraphics[width=0.99\linewidth]{pta_pin}
-    \caption{PN vs $\lambda$, with diagonal disorder}\label{fig:PN_kottos_pinning}
+    \caption{}\label{fig:PN_kottos_pinning}
   \end{subfigure}     
   %
   \begin{subfigure}{.45\linewidth}\centering
      \includegraphics[width=0.99\linewidth]{pta_ev_pin}
-  \caption{Counting function (CDF) $\mathcal{N}(\lambda)$ with diagonal disorder}\label{fig:ev_dist_pin}
+  \caption{}\label{fig:ev_dist_pin}
   \end{subfigure}
     \begin{subfigure}{.45\linewidth}\centering
     \includegraphics{pta_scatter_g}
-  \caption{PN vs $g$}\label{fig:PN_g_scatter}
+  \caption{}\label{fig:PN_g_scatter}
   \end{subfigure}
   \caption{For all the plots $N=1000$ and $b=5$. 
            In blue $\sigma=0.1$, green $\sigma=0.6$ and red $\sigma=10$, where higher
@@ -210,14 +205,15 @@ the $\lambda\rightarrow 0$ modes are wide.
            In (\subref{fig:PN_kottos_pinning}) and (\subref{fig:ev_dist})
            we see the effects of diagonal disorder (pinning)
            on the spectrum. We see clearly that the lowest eigenvalues 
-           are affected, and their corresponding PN is much lower.
+           are affected, and their corresponding PN is much lower. The spectrum
+           reveals sub-diffusive behavior.
            %%%g 
            In (\subref{fig:PN_g_scatter}) we compare the Thouless conductance
            $g$ with the participation number. 
            The presented points do seem to be correlated, but due to numerical issues,
            many values of $g$ are below the precision limit (seen as a vertical line in the plot), 
            up to $936$ from $1000$ for $\sigma=10$. 
-  }
+  }\label{fig:pta}
 \end{figure}
 
 \notbool{showfigure}{\end{comment}}{}
@@ -235,27 +231,61 @@ the $\lambda\rightarrow 0$ modes are wide.
 In this section the numerical work was done by our collaborators,
 Eli Halperin and Tsampikos Kottos of Wesleyan university.
 
-In this model , described in \autoref{sec:quasi_bg}, initial analysis of
-the numerical results reveals that the sparsity affects the diffusion coefficient.
-We see that as the system becomes more sparse, the diffusion coefficient is suppressed. 
-As might be expected, the lower bandwidth ensembles are more
+
+We define a Hamiltonian
+\begin{align}
+\mathcal{H}\ \ &=\ \ \epsilon B_{nm}\\
+B_{nm} \ \ &= \ \ \textrm{random}[\pm]\eexp{-x}\qquad 0<|n-m| \le b \\
+x \ \ &= \ \ \textrm{random} \ \in [0,\sigma]
+\end{align}
+that depends on three parameters, $\epsilon$, $b$ and $\sigma$. The $\sigma$
+parameter controls the sparsity, and $b$ is the bandwidth, and $\epsilon$
+defines the units of frequency.
+In past works \cite{cohen_wave_2000,stotland_random-matrix_2010} it was deduced that the diffusion coefficient 
+in a disordered banded system can be calculated as:
+\begin{align}
+D_0 \ \ &=\ \ \left[b\ \textrm{Var}[B_{nm}]\right]^{1/2}\ b^2\epsilon \\
+\textrm{VAR}(B_{nm}) \ \ &=\ \ \int_0^\sigma \left(\pm \eexp{-x}\right)^2 \frac{dx}{\sigma}\ \ 
+ =\ \  \frac{1-\eexp{-2\sigma}}{2\sigma} \\
+ D_0\ \ &\propto\ \ b^{2.5}\ \sqrt{\frac{1-\eexp{-2\sigma}}{2\sigma}} 
+\end{align}
+
+To question the validity of this result in the case of high sparsity,
+we plot in \autoref{fig:D_of_s} the numerical results for $D$ divided by 
+the speculated $D_0$. The results reveal that the sparsity affects the diffusion coefficient.
+We see that as the system becomes more sparse, the diffusion coefficient is suppressed,
+and as might be expected, the lower bandwidth ensembles are more
 susceptible, as the system is more vulnerable to disconnections.
 
+
+The next speculation is to use the suppression factor for sparse networks 
+obtained in our previous work \autoref{sec:papers}:
+%
+\begin{align}
+g_s(\sigma, b)\ \ &=\ \ \frac{D_{ERH}}{D_{\textrm{linear}}}\ \ =\ \ 
+\frac{  \left(1+\frac{n_c}{b}\sigma\right)\eexp{-\frac{n_c}{b}\sigma}
+                                              - \eexp{-4\sigma}}{1-\eexp{-4\sigma}}\\
+\textrm{With } n_c\ &\approx 2
+\end{align}
+
+In \autoref{fig:d_vs_g} we plot a log-log scale, assuming a relation:
+%
+\begin{align}
+\frac{D}{D_0}\ \ \approx \ \ C\ \ g_s(\sigma,b)^\gamma
+\end{align}
+
+From numerical fitting we see that $C\approx \frac{3}{4}$, 
+and $\gamma$ is difficult to extract from this data set. We assume
+that a wider range of $\sigma$ values will offer more knowledge.
 
 \begin{figure}
 \includegraphics{dts_D2}
 \caption{The transient diffusion coefficient for quantum spreading in
 a banded sparse network. The ratio $D/D_0$ between the numerical diffusion 
 coefficient and the expected value decreases as $\sigma$ increases. The effect
-is stronger for low bandwidth.}
+is stronger for low bandwidth.}\label{fig:D_of_s}
 \end{figure}
 
-
-Our first question was whether our rate equation analysis might
-hold also for the quantum case, because in first order perturbation theory,
-the transition probability $p_{nm}$ is proportional to $\left|\bra n|\mathcal{H} | m \ket\right|^2$.
-Naively using our previously obtained suppression factor $g_s = \frac{D_{ERH}}{D_{\textrm{linear}}}$,
-did not prove to be sufficient, as can be seen in \autoref{fig:d_vs_g}.
 
 \begin{figure}
 \includegraphics{dts_D2_vs_gs_loglog}
