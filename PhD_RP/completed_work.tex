@@ -42,12 +42,15 @@ A question arises whether
 such a transition happens in higher dimensions.
 Numerically $D$ can be evaluated using a resistor network
 calculation, or optionally it can be deduced from 
-the spectral properties of the system. Contrary to a recent 
-expectation that is based on a renormalization-group analysis, 
-we deduce that $D$ is finite.
+the spectral properties of the system. 
 %
-We suggest an ``effective-range-hopping'' procedure to evaluate $D$,
-and contrast the results with the linear estimate.
+Contrary to a recent 
+expectation that is based on a renormalization-group analysis, 
+we deduce that $D$ is finite,
+%
+suggest an ``effective-range-hopping'' procedure to evaluate $D$,
+which describes the crossover between linear behavior and the \emph{VRH}
+estimate.
 The same approach is useful for the analysis of 
 networks that are described by quasi-one-dimensional  
 sparse banded matrices. 
@@ -55,6 +58,10 @@ sparse banded matrices.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The effective range hopping procedure}
+
+This is a refinement of the well established combination
+of the \emph{VRH} method and a percolation threshold
+ \cite{miller_impurity_1960,ambegaokar_hopping_1971,halperin_remarks_1989,pollak_percolation_1972}.
 
 
 The basic idea behind \emph{ERH} (effective range hopping) is that in the linear
@@ -77,9 +84,10 @@ For the degenerate hopping model we obtained:
 D_{\tbox{ERH}} &=  \mathrm{EXP}_{d{+}2}\left(\frac{1}{s_c}\right)  \  \eexp{-1/s_c}  \ D_{\tbox{linear}}
 \end{align}
 %
-For infinite dimensions ($d\rightarrow\infty$),  we have $\mathrm{EXP}_{d{+}2}\  \eexp{-1/s_c} = 1$. 
-This means that the ERH expression converges with the linear expression.
-For low dimensionality, the exponent dominant.
+Where $s_c=\frac{\xi}{r_c}$, with $r_c$ the percolation threshold, and
+\begin{align}
+\mathrm{EXP}_{l}(x) \ \ =\ \ \sum_{k=0}^l \frac{1}{k!}x^k
+\end{align}
 
 
 For the Mott Hopping model,
@@ -88,19 +96,13 @@ For the Mott Hopping model,
 D_{\tbox{ERH}} &=\mathrm{EXP}_{d{+}3}\left(\epsilon_c\right)  \  \eexp{-\epsilon_c}  \ D_{\tbox{linear}}
 \end{align}
 %
-
-
 For the flat-profile banded $1d$ model,
 \begin{align}
-D_{\text{ERH}} \ \ &= \ \ 
-\ \frac{1}{\sigma}\left[ 
-\left(1+\frac{n_c}{2b}\sigma\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}
-\right] \ \tilde{b} w_0 \\ &=\ \ 
-\ \frac{\left(1+\frac{n_c}{2b}\sigma\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}}
+D_{\text{ERH}} \ \ &=\ \ \frac{\left(1+\frac{n_c}{2b}\sigma\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}}
        {1 - \eexp{-2\sigma}}
    \ D_{\tbox{linear}}
 \end{align}
-
+In each of the above equations, there is a control
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -108,6 +110,44 @@ D_{\text{ERH}} \ \ &= \ \
 \chapter{Preliminary analysis}
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%  What we know about real matrices         %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Matrix analysis}
+
+
+Given a real matrix, one can calculate the following
+mathematical properties:
+\begin{enumerate}
+  \item  The spectrum -  we mark by $\mathcal{N}(\lambda)$ 
+         the counting function of the eigenvalues $\lambda$.
+  \item  The PN (participation number) of each mode.
+  \item  The Thouless conductance $g_T$ (sensitivity to boundary conditions)
+        of each mode.
+  \item  The Landauer conductance $g_L$ of each mode.
+\end{enumerate}
+The physical quantities we want to calculate are:
+\begin{enumerate}[   a. ]
+\item  $G_{\textrm{thermal-C-matrix}}$ - The thermal conductivity, based
+       on the Covariance matrix formalism.
+\item  $G_{\textrm{thermal-transmission}}$ - The thermal conductivity. \rmrk{TODO: describe}
+\item  $G_{DC\textrm{-Kirchoff}}$ - The $DC$ conductivity, based 
+       on Kirchoff's equation.
+\item  $G_{DC\textrm{-spectral}}$-  The $DC$ conductivity, based 
+       on spectral analysis.
+\end{enumerate}
+
+We seek a relation between all of these definitions of conductance. 
+%
+In figure \autoref{fig:spectral} we see the correlation 
+between $G_{DC\textrm{-spectral}}$ and $G_{DC\textrm{-Kirchoff}}$, for a banded
+sparse model described in the article. We see that the quantities are
+correlated but not equal, and we have yet to found a satisfying explanation for the difference.
+
+ In the
+following sections we concentrate on two aspects of a sparse banded matrix ensemble,
+first the heat transport, and then quantum spreading.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%   PTA                                    %%%%%
@@ -127,34 +167,56 @@ As explained earlier, in contrast to the low-eigenvalue-only DC conductance,
 the total heat conductance is defined by the
 sum over the heat conductances of the participating modes:
 %
+\rmrk{TODO: ref}
 \begin{align}
-G \ =\ \sum_n g(\lambda_n)
+G_{\textrm{thermal-transmission}} \ =\ \sum_n g(\lambda_n)
 \end{align}
 %
-It is common to assume
-that the temperature of the baths is high enough for all the modes to
+We assume that the temperature of the baths is high enough for all the modes to
 participate, and for the bath spectrum to be white, meaning that all frequencies
 have the same weight. The heat conductance of an eigenmode can be calculated
 using the Landauer or the Kubo formalism, or, alternatively, can be estimated
-via the PN (participation number), or the Thouless curvature. 
-In recent studies \cite{bodyfelt_unpub} of \emph{pinned}\cite{roy_role_2008} banded matrices,
-two groups of PN values were observed, and by counting the number of modes in the
-higher PN group, the total conductance scaling was found. 
+via PN or $g_T$.
+
+
+The PN structure of \emph{pinned}\cite{roy_role_2008} banded matrices,
+forms two groups, one with high PN, and another with lower PN \cite{bodyfelt_unpub},
+as can be seen in \autoref{fig:PN_kottos_pinning}(blue and green dots). Since the mode conductance 
+is strongly dependent on the PN, the total conductance can be estimated
+by the number of modes in the higher PN group. The $DC$ conductance, on the
+other hand, depends on the lower end of the spectrum, which is clearly very localized
+in this model. The spectrum in \autoref{fig:ev_dist_pin}(blue and green dots) has no power law
+at the lower eigenvalues, meaning that from the $DC$ perspective this system is sub-diffusive.
 
 
 
-In \autoref{fig:pta} we have extended this analysis by studying the
-effects of pinning, and by introducing sparsity. Also, we have
+To better understand the role of pinning in this result, we have
+removed it in \autoref{fig:PN_kottos_nopin}(blue and green dots) and 
+\autoref{fig:ev_dist}(blue and green dots). We see that 
+while most of the PN structure and spectrum stay the same, the lower-most eigenvalues
+which are dominant in the $DC$ picture change dramatically, crossing from sub diffusion
+to diffusion. Physically, the pinning potentials break the momentum conservation,
+therefore destroying the diffusion.
+
+
+
+Another aspect we have studied is introducing sparsity. The red dots in figures a-e 
+are of systems with high sparsity. In \autoref{fig:ev_dist} we see that the 
+system remains diffusive, albeit with a lower diffusion coefficient (the vertical
+shift determines this, see paper
+for explanation). In  \autoref{fig:PN_kottos_nopin} and \autoref{fig:PN_kottos_pinning}
+we see that the two group structure disappears, and the only wide modes
+are for $\lambda\rightarrow 0$, probably meaning that the heat conductance 
+and $DC$ conductances coincide.
+
+
+Lastly, in \autoref{fig:PN_g_scatter} we have
 numerically calculated the Thouless conductance,
-which we expect to correlate with $PN$. Disregarding major numerical issues,
-the correlation seems to hold, see \autoref{fig:PN_g_scatter}.
+and compared it with the PN. Due to numerical issues
+with sparse matrices, many points are below the round-off limit,
+presented as a vertical line at the left of the spectrum. For the rest
+of the points, it seems like the higher end of PN and $g_T$ are correlated.
 
-
-As presented in \autoref{sec:heat}, the thermal conductance depends
-on all the wide modes. The DC conductance, on the other hand,
-depends on the $\lambda\rightarrow 0$ modes only. It seems that
-for sparse systems these definitions coincide, since only 
-the $\lambda\rightarrow 0$ modes are wide.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -189,8 +251,12 @@ the $\lambda\rightarrow 0$ modes are wide.
   \caption{}\label{fig:ev_dist_pin}
   \end{subfigure}
     \begin{subfigure}{.45\linewidth}\centering
-    \includegraphics{pta_scatter_g}
+    \includegraphics[width=0.99\linewidth]{pta_scatter_g}
   \caption{}\label{fig:PN_g_scatter}
+  \end{subfigure}
+      \begin{subfigure}{.45\linewidth}\centering
+    \includegraphics[width=0.99\linewidth]{ptsD_banded_scatter}
+  \caption{}\label{fig:spectral}
   \end{subfigure}
   \caption{For all the plots $N=1000$ and $b=5$. 
            In blue $\sigma=0.1$, green $\sigma=0.6$ and red $\sigma=10$, where higher
@@ -213,6 +279,9 @@ the $\lambda\rightarrow 0$ modes are wide.
            The presented points do seem to be correlated, but due to numerical issues,
            many values of $g$ are below the precision limit (seen as a vertical line in the plot), 
            up to $936$ from $1000$ for $\sigma=10$. 
+           %%%%%  RESNET
+           In (\subref{fig:spectral}) we compare $G_{DC\textrm{-spectral}}$ and $G_{DC\textrm{-Kirchoff}}$
+           for a model with $b=10$ and $\sigma\in [0,80]$. They are correlated but unequal.
   }\label{fig:pta}
 \end{figure}
 
@@ -246,8 +315,7 @@ in a disordered banded system can be calculated as:
 \begin{align}
 D_0 \ \ &=\ \ \left[b\ \textrm{Var}[B_{nm}]\right]^{1/2}\ b^2\epsilon \\
 \textrm{VAR}(B_{nm}) \ \ &=\ \ \int_0^\sigma \left(\pm \eexp{-x}\right)^2 \frac{dx}{\sigma}\ \ 
- =\ \  \frac{1-\eexp{-2\sigma}}{2\sigma} \\
- D_0\ \ &\propto\ \ b^{2.5}\ \sqrt{\frac{1-\eexp{-2\sigma}}{2\sigma}} 
+ =\ \  \frac{1-\eexp{-2\sigma}}{2\sigma} 
 \end{align}
 
 To question the validity of this result in the case of high sparsity,
@@ -268,15 +336,13 @@ g_s(\sigma, b)\ \ &=\ \ \frac{D_{ERH}}{D_{\textrm{linear}}}\ \ =\ \
 \textrm{With } n_c\ &\approx 2
 \end{align}
 
-In \autoref{fig:d_vs_g} we plot a log-log scale, assuming a relation:
+In \autoref{fig:d_vs_g} we plot in log-log scale $\frac{D}{D_0}$ vs $g_s$, assuming a relation:
 %
 \begin{align}
 \frac{D}{D_0}\ \ \approx \ \ C\ \ g_s(\sigma,b)^\gamma
 \end{align}
+It seems that this hypothesis failed, as it does not scale properly.
 
-From numerical fitting we see that $C\approx \frac{3}{4}$, 
-and $\gamma$ is difficult to extract from this data set. We assume
-that a wider range of $\sigma$ values will offer more knowledge.
 
 \begin{figure}
 \includegraphics{dts_D2}

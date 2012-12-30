@@ -288,7 +288,12 @@ and it also depends on the spectrum of the baths \cite{dhar_heat_2001}.
 We define the ($2N\times 2N$) covariance matrix as:
 \begin{align}
 \mathbf{C} \ &=\ \langle \vec{z}\otimes \vec{z}\rangle \\
-\vec{z} &= (q_1,\ldots q_N, p_1,\ldots p_N)^\intercal
+\vec{z} &= (q_1,\ldots q_N, p_1,\ldots p_N)^\intercal\\
+\mathbf{C} &= 
+              \begin{pmatrix} 
+                \mathbf{C}^{qq} & \mathbf{C}^{qp} \\
+                \mathbf{C}^{pq} & \mathbf{C}^{pp}
+            \end{pmatrix}
 \end{align}
 
 
@@ -309,12 +314,10 @@ the system to heat baths at temperatures $T_R$ and $T_L$ accordingly.
 %
 The local temperature and conductance are defined as
 \begin{align}
-T_n &= \langle p_n^2 \rangle \ = \ C_{N+n} \\
-G_{\textrm{thermal}} &= 
+T_n &= \langle p_n^2 \rangle \ = \ \mathbf{C}^{pp}_{n} \\
+G_{\textrm{thermal}} &= \frac{1}{T_R-T_L} 
 \end{align}
-\rmrk{ In Zheng's PRE and other sources, there are only two elements in the 
-$G$ expression, but apparently that's because $b=1$. In the
-newer Kottos paper there is a sum over b, with four matrix elements....}
+
 
 This relates the incoming and outgoing flux of heat 
 to the local temperatures. This idea is very similar
