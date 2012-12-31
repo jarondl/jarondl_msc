@@ -194,49 +194,68 @@ where the only de-localized states are those \emph{between} the edges.
 
 The picture in phonon vibrations is somewhat different. In a conserving
 system, as defined earlier, there is always one de-localized ergodic mode with $\lambda=0$.
-If the system is non-negative  such as in rate equations, with $\lambda \in [0,\lambda_c]$, this ergodic mode 
-sits on the lower edge of the spectrum, meaning either that the localization 
+If we are dealing with a non-negative matrix such as in rate equations, 
+then $\lambda \in [0,\lambda_c]$, and the de-localized ergodic mode
+sits on the lower edge of the spectrum. This means that either that the localization 
 length diverges as $\lambda\rightarrow 0$, or that the system is de-localized for
 $\lambda\rightarrow 0$.
 
 
 At first sight those pictures seem incompatible. But the fact 
 of the matter is, that the spectrum of the phonon vibrations
-can be thought of as the upper half of an electron band, as caricatured in \autoref{fig:bands},
-meaning the the ground state is localized, and the states \emph{above} the mobility edge are de-localized.
+can be thought of as the upper half of an electron band, as caricatured in \autoref{fig:bands}.
 
 
 
 \begin{figure}
 \begin{tikzpicture}[x=\textwidth/20,y=0.2cm]
-\draw[black] (-1,10) --(1,10);
-\draw[black] (-1.2,9) --(1.2,9);
-\draw[black] (-1.5,8) --(1.5,8);
-\draw[black] (-1.8,7) --(1.8,7);
-\draw[black,dashed] (-3,6) rectangle (3,2);
-\draw[black] (-1.8,1) --(1.8,1);
-\draw[black] (-1.5,0) --(1.5,0);
-\draw[black] (-1.2,-1) --(1.2,-1);
-\draw[black] (-1,-2) --(1,-2);
-\draw[dotted] (-4,-3) -- (+4,-3) node [pos=0.5, below] {$\lambda=-\lambda_c$};
-\draw[->] (-4,-4) --(-4,11) node [pos=0.5,left] {$\lambda$};
 
-% right side
-\draw[black] (10-1,10) --(10+1,10);
-\draw[black] (10-1.2,9) --(10+1.2,9);
-\draw[black] (10-1.5,8) --(10+1.5,8);
-\draw[black] (10-1.8,7) --(10+1.8,7);
+\draw[black] (-1,6) --(1,6);
+\draw[black] (-1.2,5) --(1.2,5);
+\draw[black] (-1.5,4) --(1.5,4);
+\draw[black] (-1.8,3) --(1.8,3);
+%draw[black,dashed] (-3,6) rectangle (3,2);
 
-\draw[black,dashed] (10-3,6) rectangle (10+3,2) ;
-\fill[white]  (6,4) rectangle (14,0);
-\draw[dotted] (10-4,4) -- (10+4,4) node [pos=0.5, below] {$\lambda=0$};
-\draw[->] (10-4,-4) --(10-4,11) node [pos=0.5,left] {$\lambda$};
+\foreach \y in {-5,...,5}
+        \draw[dashed] (-3.5,\y/2)  -- (3.5,\y/2);
+
+\draw[black] (-1.8,-3) --(1.8,-3);
+\draw[black] (-1.5,-4) --(1.5,-4);
+\draw[black] (-1.2,-5) --(1.2,-5);
+\draw[black] (-1,-6) --(1,-6);
+%axis:
+\draw[->] (-4,-6) --(-4,6) node [pos=0.9,left] {$\lambda$};
+\draw (-4-0.2,0) -- (-4+0.2,0) node[left] {$0\ \ $   };
+
+
+
+%%%%%%%%%%%%%%%
+%% RIGHT SIDE, dirty copy-paste
+
+\draw[black,xshift=8cm] (-1,6) --(1,6);
+\draw[black,xshift=8cm] (-1.2,5) --(1.2,5);
+\draw[black,xshift=8cm] (-1.5,4) --(1.5,4);
+\draw[black,xshift=8cm] (-1.8,3) --(1.8,3);
+%draw[black,dashed] (-3,6) rectangle (3,2);
+
+\foreach \y in {-5,...,5}
+        \draw[dashed,xshift=8cm] (-3.5,\y/2)  -- (3.5,\y/2);
+
+\draw[black,xshift=8cm] (-1.8,-3) --(1.8,-3);
+\draw[black,xshift=8cm] (-1.5,-4) --(1.5,-4);
+\draw[black,xshift=8cm] (-1.2,-5) --(1.2,-5);
+\draw[black,xshift=8cm] (-1,-6) --(1,-6);
+%axis:
+\draw[->,xshift=8cm] (-4,-6) --(-4,6) node [pos=0.9,left] {$\lambda$};
+\draw[xshift=8cm] (-4-0.2,0) -- (-4+0.2,0) node[left] {$0\ \ $   };
+
+
+\fill[white,xshift=8cm]  (-3.9,0) rectangle (4,-6.1);
 \end{tikzpicture}
-\caption{The mobility edge. The full lines represent localized modes,
-  the dashed line the mobility edge, and the dotted line the ground state.
-  On the left, for a banded model, the ground state
-  is localized. On the right,
-  for a non-negative model, the ground state is within the de-localized area. }
+\caption{The eigenstates in a $d=3$ disordered system. The full lines represent localized modes, 
+ their width representing the localization length.
+  The dashed lines are the de-localized modes. On the left for a banded
+  spectrum, on the right for a banded non-negative spectrum  }
      \label{fig:bands}
 \end{figure}
 
@@ -366,9 +385,16 @@ the system to heat baths at temperatures $T_R$ and $T_L$ accordingly.
 The local temperature and conductance are defined as
 \begin{align}
 T_n &= \langle p_n^2 \rangle \ = \ \mathbf{C}^{pp}_{n} \\
-J_n &= \sum_l\frac{1}{m}\left\langle \left(\vec{p}^{\intercal} \mathbf{K} \vec{q}\right)_{nl} \right\rangle
+%J_n &= \sum_l\frac{1}{m}\left\langle \left(\vec{p}^{\intercal} \mathbf{K} \vec{q}\right)_{nl} \right\rangle
+J_n &= \sum_{i\ge n}\sum_{j<n} \frac{1}{m}\left\langle \left(p_i K_{ij} q_j\right) \right\rangle 
+= \sum_{i\ge n}\sum_{j<n}\frac{1}{m}  K_{ij} C^{pq}_{ij}
 \end{align}
-
+\rmrk{ The idea is to "cut" all the heat going from $j<n$ to $i\ge n$. Kottos'
+version is specific for the banded matrix}
+\begin{align}
+J_n &= \frac{1}{2}\sum_{i=n-b+1}^n \sum_{j=n+1}^{i+b} k_{i-n+b,j-n}(C^{qp}_{ii}-C^{qp}_{ji}+C^{qp}_{ij}-C^{qp}_{jj})\\
+&= \frac{1}{2}\sum_{m=1}^b\sum_{l=1}^m k_{lm} (C^{qp}_{l+n-b,l+n-b}-C^{qp}_{n+m,l+n-b}+C^{qp}_{l+n-b,n+m}-C^{qp}_{n+m,n+m})
+\end{align}
 
 This relates the incoming and outgoing flux of heat 
 to the local temperatures. This idea is very similar
