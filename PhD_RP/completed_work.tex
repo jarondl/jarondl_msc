@@ -73,36 +73,66 @@ to form a percolating cluster. Therefore, we use a threshold based
 on percolation theory and flat-down the rates higher then this threshold.
 This produces a smooth crossover between the linear
 estimate and the \emph{VRH} estimate.
+Using the \emph{ERH} procedure we have calculated the diffusion for 
+several models.
 
 
-Using the \emph{ERH} procedure we have calculated the diffusion for several models.
+The first two models have sites randomly scattered 
+in space, with average distance $r_0$, and rates $w_{nm} = w_0\eexp{-\epsilon_{nm}} \exp[-\frac{r_{nm}}{\xi}]$.
 
 
-For the degenerate hopping model we obtained:
+In the degenerate hopping model with $\epsilon_{nm} =0$ the \emph{ERH} result gives:
 
 \begin{align}
-D_{\tbox{ERH}} &=  \mathrm{EXP}_{d{+}2}\left(\frac{1}{s_c}\right)  \  \eexp{-1/s_c}  \ D_{\tbox{linear}}
+D_{\tbox{ERH}} \ \ &=\ \  \mathrm{EXP}_{d{+}2}\left(\frac{1}{s_c}\right)  \  \eexp{-1/s_c}  \ D_{\tbox{linear}}\\
+s_c\ \  &=\ \  \left(\frac{d}{\Omega_c} n_c\right)^{-1/d} \frac{\xi}{r_0}\\
+\mathrm{EXP}_{l}(x) \ \ &=\ \ \sum_{k=0}^l \frac{1}{k!}x^k
+\end{align}
+$s_c$ is a parameter that characterizes the sparsity,
+taking the dimensionality $d$ and the effective coordination number
+$n_c$ into account. Formally $n_c=0$ means that there is no issue of sparsity hence 
+$D=D_{\tbox{linear}}$.
+Even if $n_c$ is not zero we see that for
+$d\rightarrow \infty$ the linear approximation works only if the
+system is not sparse ($s_c\gg 1$). If the network is sparse ($s_c\ll 1$)
+the exponent dominates and we get the familiar VRH-type dependence.
+The effective coordination number $n_c$ can be retrieved from
+known works on percolation, especially in low dimensions.
+
+
+The non-degenerate Mott Hopping model is with random $\epsilon_{nm} = \textrm{uniform} [0,\infty]$.
+In this model the effective value of $s_c$ is determined by the temperature,
+namely
+%
+\begin{align}
+s_c\ \ &=\ \ \left(\frac{d}{\Omega_c} n_c \frac{T}{\Delta_\xi} \right)^{-1/(d+1)} 
 \end{align}
 %
-Where $s_c=\frac{\xi}{r_c}$, with $r_c$ the percolation threshold, and
-\begin{align}
-\mathrm{EXP}_{l}(x) \ \ =\ \ \sum_{k=0}^l \frac{1}{k!}x^k
-\end{align}
-
-
-For the Mott Hopping model,
+Leading to the same expression
+but with $d+2$ replaced by $d+3$. In order to make the connection
+with \emph{VRH} more transparent we can identify the scaled ``effective''
+activation energy as $\epsilon_c=1/s_c$ and write the result as
 %
 \begin{align}
 D_{\tbox{ERH}} &=\mathrm{EXP}_{d{+}3}\left(\epsilon_c\right)  \  \eexp{-\epsilon_c}  \ D_{\tbox{linear}}
 \end{align}
 %
-For the flat-profile banded $1d$ model,
+
+
+The last model we present here is the banded $d=1$ model. Here,
+the sites are ordered on a $d=1$ lattice, and the rates are
+$w_{nm} = w_0\eexp{-\epsilon_{nm}}$,  
+ $\epsilon_{nm} = \textrm{uniform} [0,\sigma]$ within the band $|r|<br_0$, and zero otherwise.
+ The \emph{ERH} result for this model is
 \begin{align}
 D_{\text{ERH}} \ \ &=\ \ \frac{\left(1+\frac{n_c}{2b}\sigma\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}}
        {1 - \eexp{-2\sigma}}
    \ D_{\tbox{linear}}
 \end{align}
-In each of the above equations, there is a control
+Where as expected formally setting $n_c=$ returns us to the linear result. 
+For percolation in $1d$, each site must be connected to at least 2 sites,
+meaning that $n_c=2$.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -120,25 +150,24 @@ In each of the above equations, there is a control
 Given a real matrix, one can calculate the following
 mathematical properties:
 \begin{enumerate}
-  \item  The spectrum -  we mark by $\mathcal{N}(\lambda)$ 
-         the counting function of the eigenvalues $\lambda$.
-  \item  The PN (participation number) of each mode.
-  \item  The Thouless conductance $g_T$ (sensitivity to boundary conditions)
-        of each mode.
-  \item  The Landauer conductance $g_L$ of each mode.
+  \item  $\mathcal{N}(\lambda)$ -
+         the counting function of the eigenvalues $\lambda$, i.e.\ the spectrum.
+  \item  PN($\lambda$) -  the participation number of each mode.
+  \item  $g(\lambda)$  -  the transmission of each mode as determined in the 
+          Thouless-Landauer picture.
 \end{enumerate}
 The physical quantities we want to calculate are:
-\begin{enumerate}[   a. ]
+\begin{enumerate}[label={\Alph*.}]
 \item  $G_{\textrm{thermal-C-matrix}}$ - The thermal conductivity, based
        on the Covariance matrix formalism.
-\item  $G_{\textrm{thermal-transmission}}$ - The thermal conductivity. \rmrk{TODO: describe}
+\item  $G_{\textrm{thermal-transmission}}$ - The thermal conductivity via $g(\lambda)$.
 \item  $G_{DC\textrm{-Kirchoff}}$ - The $DC$ conductivity, based 
        on Kirchoff's equation.
 \item  $G_{DC\textrm{-spectral}}$-  The $DC$ conductivity, based 
        on spectral analysis.
 \end{enumerate}
 
-We seek a relation between all of these definitions of conductance. 
+We wish to study the inter-relation between the different notions of conductance. 
 %
 In figure \autoref{fig:spectral} we see the correlation 
 between $G_{DC\textrm{-spectral}}$ and $G_{DC\textrm{-Kirchoff}}$, for a banded
@@ -165,7 +194,7 @@ turn to inspect the heat transport angle.
 
 As explained earlier, in contrast to the low-eigenvalue-only DC conductance, 
 the total heat conductance is defined by the
-sum over the heat conductances of the participating modes \cite{dhar_heat_2001,lepri_heat_2007}:
+sum over the heat conductances of the participating modes \cite{dhar_heat_2001,lepri_thermal_2003}:
 %
 \begin{align}
 G_{\textrm{thermal-transmission}} \ \sim\ \sum_n g(\lambda_n)
@@ -232,15 +261,12 @@ of the points, it seems like the higher end of PN and $g_T$ are correlated.
   \end{subfigure}
   %
   \begin{subfigure}{.45\linewidth}\centering
-     \includegraphics[width=0.99\linewidth]{pta_ev_nopin}
-  \caption{}\label{fig:ev_dist}
-  \end{subfigure}\\ % end of row
+    \includegraphics[width=0.99\linewidth]{pta_ev_nopin}
+    \caption{}\label{fig:ev_dist}
+  \end{subfigure}
+  %\\ % end of row
   %
- % \caption{}
- % \end{figure}
- % \begin{figure}[H]
-  %
-    \begin{subfigure}{.45\linewidth}\centering
+  \begin{subfigure}{.45\linewidth}\centering
     \includegraphics[width=0.99\linewidth]{pta_pin}
     \caption{}\label{fig:PN_kottos_pinning}
   \end{subfigure}     
@@ -248,15 +274,20 @@ of the points, it seems like the higher end of PN and $g_T$ are correlated.
   \begin{subfigure}{.45\linewidth}\centering
      \includegraphics[width=0.99\linewidth]{pta_ev_pin}
   \caption{}\label{fig:ev_dist_pin}
-  \end{subfigure}
-    \begin{subfigure}{.45\linewidth}\centering
+   \end{subfigure}
+  %
+  \begin{subfigure}{.45\linewidth}\centering
     \includegraphics[width=0.99\linewidth]{pta_scatter_g}
-  \caption{}\label{fig:PN_g_scatter}
+    \caption{}\label{fig:PN_g_scatter}
   \end{subfigure}
-      \begin{subfigure}{.45\linewidth}\centering
+  %
+  \hspace*{\fill}
+  \begin{subfigure}{.45\linewidth}\centering
     \includegraphics[width=0.99\linewidth]{ptsD_banded_scatter}
-  \caption{}\label{fig:spectral}
+    \caption{}\label{fig:spectral}
   \end{subfigure}
+  \\  % line end
+  %
   \caption{For all the plots $N=1000$ and $b=5$. 
            In blue $\sigma=0.1$, green $\sigma=0.6$ and red $\sigma=10$, where higher
            $\sigma$ means more sparsity.
@@ -296,7 +327,7 @@ of the points, it seems like the higher end of PN and $g_T$ are correlated.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Quantum spreading in a sparse banded Hamiltonian}\label{sec:dts}
 
-In this section the numerical work was done by our collaborators,
+In this section the numerical work was done in collaboration with
 Eli Halperin and Tsampikos Kottos of Wesleyan university.
 
 
@@ -340,7 +371,7 @@ In \autoref{fig:d_vs_g} we plot in log-log scale $\frac{D}{D_0}$ vs $g_s$, assum
 \begin{align}
 \frac{D}{D_0}\ \ \approx \ \ C\ \ g_s(\sigma,b)^\gamma
 \end{align}
-It seems that this hypothesis failed, as it does not scale properly.
+It seems that this scaling hypothesis fails, as the 3 lines do not coincide.
 
 
 \begin{figure}
