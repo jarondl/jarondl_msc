@@ -181,16 +181,66 @@ system.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Anderson localization}\label{sec:anderson}
 
+ %following the seminal work of Anderson \cite{anderson_absence_1958,markos_numerical_2006},
+By adding uncorrelated disorder to crystals, some of the electronic eigenstates 
+localize. In  $d=1$ all the states are localized, as well as in $d=2$ real matrices 
+(i.e.\ without magnetic field). In $d=3$ and higher, if the disorder
+is small enough, a mobility edge divides the spectrum to localized states \emph{below} the edge and 
+de-localized states \emph{above} the edge. In the case of an energy band, i.e.\ $\lambda\in [-\lambda_c,\lambda_c]$,
+the states at the end of the band will be localized, while those in the middle
+will be de-localized meaning that there are two mobility edges,
+where the only de-localized states are those \emph{between} the edges.
 
-Following the seminal work of Anderson \cite{anderson_absence_1958,markos_numerical_2006},
-the common knowledge is that every uncorrelated disorder in two or
-less dimensions causes localization, while for more than two dimensions
-a transition between localized and extended modes exists. However, a conserving
-system, as defined earlier, always has one extended ergodic mode with $\lambda=0$,
-practically meaning a diverging localization length,
-or effective delocalization, as $\lambda\rightarrow 0$.
-For a non-negative system, this mode sits on the lower edge of the spectrum, 
-allowing regular diffusion in spite of the disorder.
+
+The picture in phonon vibrations is somewhat different. In a conserving
+system, as defined earlier, there is always one de-localized ergodic mode with $\lambda=0$.
+If the system is non-negative  such as in rate equations, with $\lambda \in [0,\lambda_c]$, this ergodic mode 
+sits on the lower edge of the spectrum, meaning either that the localization 
+length diverges as $\lambda\rightarrow 0$, or that the system is de-localized for
+$\lambda\rightarrow 0$.
+
+
+At first sight those pictures seem incompatible. But the fact 
+of the matter is, that the spectrum of the phonon vibrations
+can be thought of as the upper half of an electron band, as caricatured in \autoref{fig:bands},
+meaning the the ground state is localized, and the states \emph{above} the mobility edge are de-localized.
+
+
+
+\begin{figure}
+\begin{tikzpicture}[x=\textwidth/20,y=0.2cm]
+\draw[black] (-1,10) --(1,10);
+\draw[black] (-1.2,9) --(1.2,9);
+\draw[black] (-1.5,8) --(1.5,8);
+\draw[black] (-1.8,7) --(1.8,7);
+\draw[black,dashed] (-3,6) rectangle (3,2);
+\draw[black] (-1.8,1) --(1.8,1);
+\draw[black] (-1.5,0) --(1.5,0);
+\draw[black] (-1.2,-1) --(1.2,-1);
+\draw[black] (-1,-2) --(1,-2);
+\draw[dotted] (-4,-3) -- (+4,-3) node [pos=0.5, below] {$\lambda=-\lambda_c$};
+\draw[->] (-4,-4) --(-4,11) node [pos=0.5,left] {$\lambda$};
+
+% right side
+\draw[black] (10-1,10) --(10+1,10);
+\draw[black] (10-1.2,9) --(10+1.2,9);
+\draw[black] (10-1.5,8) --(10+1.5,8);
+\draw[black] (10-1.8,7) --(10+1.8,7);
+
+\draw[black,dashed] (10-3,6) rectangle (10+3,2) ;
+\fill[white]  (6,4) rectangle (14,0);
+\draw[dotted] (10-4,4) -- (10+4,4) node [pos=0.5, below] {$\lambda=0$};
+\draw[->] (10-4,-4) --(10-4,11) node [pos=0.5,left] {$\lambda$};
+\end{tikzpicture}
+\caption{The mobility edge. The full lines represent localized modes,
+  the dashed line the mobility edge, and the dotted line the ground state.
+  On the left, for a banded model, the ground state
+  is localized. On the right,
+  for a non-negative model, the ground state is within the de-localized area. }
+     \label{fig:bands}
+\end{figure}
+
+
 
 
 There are several routines used to distinguish between exponentially localized and delocalized modes.
