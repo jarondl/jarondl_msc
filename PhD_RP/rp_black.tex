@@ -1,0 +1,168 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Research proposal but without colored links - for print
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\RequirePackage[l2tabu, orthodox]{nag}
+\documentclass[onecolumn,fleqn,12pt,openany,a4paper,longbibliography,oneside]{scrbook}
+
+
+\renewcommand{\baselinestretch}{1.5} 
+\topmargin -1.5cm      
+\oddsidemargin -0.04cm   
+\evensidemargin -0.04cm  
+\textwidth 16.59cm
+\textheight 24cm 
+\pagestyle{plain}
+
+% special 
+\usepackage{color}
+
+
+% fonts
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{wasysym}
+
+%by jarondl
+\usepackage[font={singlespacing,footnotesize},hang]{caption}
+\usepackage{subcaption}
+\usepackage[numbers,sort&compress,elide]{natbib}
+\usepackage{verbatim}
+\usepackage{etoolbox}
+  \newbool{showfigure}
+  \setbool{showfigure}{true}
+  
+%\usepackage{enumerate}%[itemsep=0pt]
+\usepackage{enumitem}
+\setlist{noitemsep}
+\usepackage{pgfplots}
+\usepackage{float}
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  REMOVE FOR PRODUCTION
+%\usepackage{refcheck}
+% merge - {feynmann,*salam,*epr} are under one number
+% elide - same as megre, but common parts appear once.
+%
+\usepackage{pdfpages}
+% draft or final
+\usepackage[nottoc]{tocbibind}
+% addes the biblio to toc
+
+%%%%%%%%%%%%%
+%%% Hebrew support for hebrew abstract:
+%\usepackage{ucs}
+%\usepackage[utf8x]{inputenc}
+%\usepackage[hebrew,english]{babel}
+
+%\usepackage[pdfencoding=auto,colorlinks=true,pagebackref=true,pdftitle={Research Proposal}]{hyperref}
+\usepackage[pdfencoding=auto,hidelinks=true,pdftitle={Research Proposal}]{hyperref}
+%\usepackage[pdfencoding=auto,colorlinks=true,linkcolor=blue,pdftitle={Research Proposal}]{hyperref}
+% doi mus be loaded after hyperref
+%\usepackage{doi}
+\graphicspath{{figures/}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% NEW 
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\Prob}{\mbox{Prob}\,}
+\newcommand{\erf}{\mbox{erf}\,}
+\newcommand{\df}{{\rm d}}
+
+% math symbols I
+\newcommand{\sinc}{\mbox{sinc}}
+\newcommand{\const}{\mbox{const}}
+\newcommand{\trc}{\mbox{trace}}
+\newcommand{\intt}{\int\!\!\!\!\int }
+\newcommand{\ointt}{\int\!\!\!\!\int\!\!\!\!\!\circ\ }
+\newcommand{\ar}{\mathsf r}
+\newcommand{\im}{\mbox{Im}}
+\newcommand{\re}{\mbox{Re}}
+
+% math symbols II
+\newcommand{\eexp}{\mbox{e}^}
+\newcommand{\bra}{\left\langle}
+\newcommand{\ket}{\right\rangle}
+
+% Mass symbol
+\newcommand{\mass}{\mathsf{m}} 
+\newcommand{\Mass}{\mathsf{M}} 
+
+% more math commands
+\newcommand{\tbox}[1]{\mbox{\tiny #1}}
+\newcommand{\bmsf}[1]{\bm{\mathsf{#1}}} 
+%\newcommand{\amatrix}[1]{\matrix{#1}} 
+\newcommand{\amatrix}[1]{\begin{matrix} #1 \end{matrix}} 
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+
+% equations
+\newcommand{\mylabel}[1]{\label{#1}} 
+%\newcommand{\mylabel}[1]{\textcolor{blue}{[#1]}\label{#1}} 
+\newcommand{\beq}{\begin{eqnarray}}
+\newcommand{\eeq}{\end{eqnarray}} 
+\newcommand{\be}[1]{\begin{eqnarray}\ifthenelse{#1=-1}
+{\nonumber}{\ifthenelse{#1=0}{}{\mylabel{e#1}}}}
+\newcommand{\ee}{\end{eqnarray}} 
+
+% arrangement
+\newcommand{\drawline}{\begin{picture}(500,1)\line(1,0){500}\end{picture}}
+\newcommand{\bitem}{$\bullet$ \ \ \ }
+\newcommand{\Cn}[1]{\begin{center} #1 \end{center}}
+\newcommand{\mpg}[2][1.0\hsize]{\begin{minipage}[b]{#1}{#2}\end{minipage}}
+\newcommand{\mpgt}[2][1.0\hsize]{\begin{minipage}[t]{#1}{#2}\end{minipage}}
+\newcommand{\putgraph}[2][width=0.30\hsize]{\includegraphics[#1]{#2}}
+
+% more
+%\newcommand{\Eq}[1]{Eq.\!\!~(\ref{#1})}
+%\newcommand{\Fig}[1]{Fig.\!\!~\ref{#1}}  
+\newcommand{\Eq}[1]{\textcolor{blue}{Eq.\!\!~(\ref{#1})}} 
+\newcommand{\Fig}[1]{\textcolor{blue}{Fig.}\!\!~\ref{#1}} 
+\newcommand{\hide}[1]{}
+%\newcommand{\hide}[1]{\textcolor{red}{[hidden text]}} %{}
+\newcommand{\rmrk}[1]{\textcolor{red}{#1}}
+%\newcommand{\Rmrk}[1]{\textcolor{blue}{\LARGE\bf #1}}
+
+%\renewcommand{\includegraphics}[2][]{\ \\ \ FIGURE: \ \\ \ }
+%\renewcommand{\cite}[1]{\textcolor{blue}{[\onlinecite{#1}}]} %{[\onlinecite{#1}]} 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\frontmatter
+
+\includepdf[pages=-]{hebstract}
+\include{abstract}
+\newpage
+
+{\footnotesize \tableofcontents}
+
+\mainmatter
+
+\part{Research Proposal}\label{part1}
+
+\include{introduction}
+\include{objectives}
+
+\part{Completed Work and Preliminary Analysis}\label{part2}
+\include{completed_work}
+
+%\part{Preliminary Analysis}
+
+
+\part{Appendix}\label{part3}
+\appendix
+
+\include{appendix}
+\backmatter
+%\bibliographystyle{apsrev_doi}
+\bibliographystyle{apsrev4-1}
+%\nocite{revtex41Control}
+\nocite{apsrev41Control}
+\bibliography{jarondl,custom-longbib,manual_bib}
+%\bibliography{jarondl}  
+
+\end{document} 
+
+

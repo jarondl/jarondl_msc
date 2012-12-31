@@ -252,7 +252,7 @@ can be thought of as the upper half of an electron band, as caricatured in \auto
 \draw[xshift=8cm] (-4-0.2,0) -- (-4+0.2,0) node[left] {$0\ \ $   };
 
 
-\fill[white,xshift=8cm]  (-3.9,0) rectangle (4,-6.1);
+\fill[white,xshift=8cm]  (-3.9,-0.1) rectangle (4,-6.2);
 \end{tikzpicture}
 \caption{The eigenstates in a $d=3$ disordered system. The full lines represent localized modes, 
  their width representing the localization length.
@@ -360,8 +360,8 @@ We define the ($2N\times 2N$) covariance matrix as:
 \begin{align}
 \mathbf{C} \ &=\ \langle \vec{z}\otimes \vec{z}\rangle \ =\ 
               \begin{pmatrix} 
-                \mathbf{C}^{qq} & \mathbf{C}^{qp} \\
-                \mathbf{C}^{pq} & \mathbf{C}^{pp}
+                C^{qq} & C^{qp} \\
+                C^{pq} & C^{pp}
             \end{pmatrix}
 \\
 \vec{z} &= (q_1,\ldots q_N, p_1,\ldots p_N)^\intercal
@@ -386,16 +386,10 @@ the system to heat baths at temperatures $T_R$ and $T_L$ accordingly.
 %
 The local temperature and conductance are defined as
 \begin{align}
-T_n &= \langle p_n^2 \rangle \ = \ \mathbf{C}^{pp}_{n} \\
+T_n &= \langle p_n^2 \rangle \ = \ C^{pp}_{n} \\
 %J_n &= \sum_l\frac{1}{m}\left\langle \left(\vec{p}^{\intercal} \mathbf{K} \vec{q}\right)_{nl} \right\rangle
 J_n &= \sum_{i\ge n}\sum_{j<n} \frac{1}{m}\left\langle \left(p_i K_{ij} q_j\right) \right\rangle 
 = \sum_{i\ge n}\sum_{j<n}\frac{1}{m}  K_{ij} C^{pq}_{ij}
-\end{align}
-\rmrk{ The idea is to "cut" all the heat going from $j<n$ to $i\ge n$. Kottos'
-version is specific for the banded matrix}
-\begin{align}
-J_n &= \frac{1}{2}\sum_{i=n-b+1}^n \sum_{j=n+1}^{i+b} k_{i-n+b,j-n}(C^{qp}_{ii}-C^{qp}_{ji}+C^{qp}_{ij}-C^{qp}_{jj})\\
-&= \frac{1}{2}\sum_{m=1}^b\sum_{l=1}^m k_{lm} (C^{qp}_{l+n-b,l+n-b}-C^{qp}_{n+m,l+n-b}+C^{qp}_{l+n-b,n+m}-C^{qp}_{n+m,n+m})
 \end{align}
 
 This relates the incoming and outgoing flux of heat 
