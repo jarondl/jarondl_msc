@@ -1,0 +1,48 @@
+== Known facts ==
+
+* All Hermitian matrices are real
+* All conserving matrices have a \[\lambda=0\] eigenvalue
+
+== \[(2\times 2)\] ==
+
+All Hermitian matrices can be written as 
+
+\[ \beta ( 1 + \alpha \hat{n}\cdot \vec{\sigma} )\]
+
+With \[\alpha\] and \[\beta\] real. By rotation 
+(which conserves eigenvalues of course), they
+can be transformed to 
+
+\[ \beta( 1 + \alpha \sigma_z) \],
+
+with eigenvalues \[\lambda = \beta \pm \alpha\]
+
+
+In general, real \[(2x2)\] matrices can be written as:
+
+\[ \alpha 1 + \begin{pmatrix} a & b \\ c & -a \end{pmatrix} \]
+
+The eigenvalues will be:
+\[ \lambda = \alpha \pm \sqrt{a^2+bc} \]
+if \[ b=c\] or \[ \sgn{b}=\sgn{c}\] or just  \[ a^2+bc > 0\],
+the eigenvalues are real.
+
+
+== \[ (3\times 3) \] ==
+=== conserving ===
+A conserving matrix *must* be symmetric,
+and therefore Hermitian, with real eigenvalues.
+ 
+This matrix
+\[ M = \begin{pmatrix} 
+  -A-C &  A   &  C   \\
+   A   & -A-B &  B   \\
+   C   &  B   & -B-C
+   \end{pmatrix} \]
+
+Has these eigenvalues:
+\[ \lambda =0 \\
+  \lambda = -(A+B+C) \pm \sqrt{A^2 + B^2 + C^2 - AB - BC - CA } 
+\]
+
+
