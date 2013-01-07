@@ -327,6 +327,11 @@ def boundary_phasor(N,phi):
     M += (np.exp(phi*1j)-1)*np.tri(N,k=-N//2).T
     return M
     
+def symmetric_sign_randomizer(N):
+    """ returns a symmetric matrix with random 1 and -1 values """
+    M = np.tril(np.random.random_integers(0,1,size=(N,N))*2-np.ones((N,N)),k=-1)
+    return M + M.T
+    
     
 def window_avg_mtrx(N, win_size=4):
     """ Create the matrix neccesary for window averaging
