@@ -16,6 +16,7 @@
 
 % extra by jarondl
 \usepackage{array}
+\usepackage{float}%unfloats
 %\usepackage{multicol}
 \usepackage[caption=false]{subfig} %subcaption is not compat with revtex
 \usepackage[pdftitle={PTA},bookmarks]{hyperref}
@@ -228,6 +229,35 @@ but the change is much stronger (note the logarithmic $y$-scale).
   }
   \caption{$g$ as a function of $\lambda$ for sparse systems.
   For all the plots $N=1000$ and $b=5$}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{Non positive matrices}
+
+
+In the RP we have claimed that the positivity of the matrix
+causes the very wide modes to be on the lower edge of the spectrum.
+To see this point, we ran numerics with $N=1000$ $b=5$ and $\sigma=0.1$, where 
+we multiplied elements randomly (albeit symmetrically) by $\pm 1$. 
+It seems that without positivity the left "plateau" disappears, although
+the $\lambda=0$ mode stays. Also notice the arc-like feature on the right,
+it was there previously, but it is more pronounced for $\sigma=0.1$.  
+Also, our numerical calculation of Thouless' conductance seems to
+fail completely for the non positive matrices.
+
+
+\begin{figure}[H]
+  \subfloat[g]{
+    \includegraphics{pta_sym_neg_g}  
+    
+  }\\
+  \subfloat[PN]{
+    \includegraphics{pta_sym_neg_PN}
+    
+  }
+
+  \caption{$g$ and PN as a function of $\lambda$ for sparse systems.
+  For all the plots $N=1000$, $b=5$ and $\sigma=0.1$. The label codes are R-Real S-Symmetric C-Conservative P-Positive}
 \end{figure}
 
 \end{document}

@@ -70,6 +70,7 @@ latex_height_inch = latex_width_inch * (numpy.sqrt(5)-1.0)/2.0 # golden ratio
 #rc('text', usetex=True)
 #rc('font', size=10)
 rc('figure', figsize=[latex_width_inch, latex_height_inch])
+rc('figure.subplot', left=0.2, right=0.9, top=0.9, bottom=0.2)
 rc('legend', fontsize='smaller')
 rc('xtick', labelsize='smaller')
 rc('ytick', labelsize='smaller')
