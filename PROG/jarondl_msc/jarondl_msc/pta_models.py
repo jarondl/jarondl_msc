@@ -10,7 +10,7 @@ import numpy as np
 import scipy as sp
 
 from numpy import exp
-
+from scipy import linalg
 import sparsedl
 from sparsedl import (sorted_eigvalsh, banded_ones, periodic_banded_ones,
            zero_sum, lazyprop, omega_d, pi_phasor,boundary_phasor)
@@ -91,6 +91,7 @@ class ExpModel_Banded_Logbox_negative_pinning(ExpModel_Banded_Logbox_negative):
     def rate_matrix(self,convention=0):
         m = ExpModel_Banded_Logbox_negative.rate_matrix(self)
         m += self.pinning_matrix()
+        #np.fill_diagonal(m,0)
         return m
     def pinning_matrix(self):
         """ This matrix has negative disordered values on the diagonal"""
@@ -99,3 +100,32 @@ class ExpModel_Banded_Logbox_negative_pinning(ExpModel_Banded_Logbox_negative):
         # The pinning is uniform on [0,W]
         pinning =  - np.random.permutation(np.linspace(0,W,self.sample.number_of_points()))
         return np.diagflat(pinning)
+        
+class ExpModel_Banded_Logbox_nosym(ExpModel_1d):
+    """ this model is not Hermitian!!!"""
+    @lazyprop
+    def eigvals(self):
+        ev = -linalg.eigvals(self.ex)
+        ev.sort()
+        return -ev
+
+    @lazyprop
+    def eig_matrix(self):
+        eigvals, eigvecs = linalg.eig(self.ex)
+        sort_indices = np.argsort(eigvals)
+        return eigvecs[:,sort_indices[::-1]]
+
+    def rate_matrix(self, convention=0):
+        # we map epsilon to sigma, and the distribution goes from -2\sigma to 0.
+        if self.rseed is not None:
+            np.random.seed(self.rseed)
+        n = self.sample.number_of_points()
+        x = periodic_banded_ones(n, self.bandwidth1d, self.periodic)
+        m = np.zeros_like(x)
+        ##m[x==1] = np.random.permutation(np.logspace(-2*self.epsilon,0, m[x==1].size)) ###logspace was a bad idea
+        m[x==1] = np.random.permutation(exp(np.linspace(-2*self.epsilon,0, m[x==1].size)))
+        zero_sum(m)
+        if (self.phi != 0):
+            return m * boundary_phasor(self.sample.number_of_points(), self.phi)   
+        else: return m # to keep things real
+        return m

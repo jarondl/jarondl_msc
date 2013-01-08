@@ -353,6 +353,19 @@ def lazyprop(fn):
         setattr(self, attr_name, value)
     return _lazyprop
 
+def cached_get(function, filename, *args, **kwargs):
+    """  try to open filename. If non-existant, will call function with kwargs, and save
+    """
+    try:
+        f = np.load(filename)
+        numerics = f['numerics']
+    except (OSError, IOError):
+        # otherwise, get the data:
+        numerics = function(*args, **kwargs)
+        np.savez(filename, numerics=numerics)
+    return numerics
+
+
 
 ######### Mathematical aux functions
 def omega_d(d):

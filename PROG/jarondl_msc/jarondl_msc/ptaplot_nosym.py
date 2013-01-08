@@ -11,11 +11,13 @@ import os
 #from scipy.sparse import linalg as splinalg
 from numpy import random, pi, log10, sqrt,  exp, expm1, sort, eye, nanmin, nanmax, log, cos, sinc, ma
 from scipy.special import gamma
+from scipy import linalg
 from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
 import plotdl
 import sparsedl
 from plotdl import plt, tight_layout, cummulative_plot
+from sparsedl import cached_get
 
 
 import numpy as np
@@ -67,7 +69,7 @@ def get_LogNLocator(N = 6):
 
 
 def get_ev_thoules_g_1d(number_of_sites = 1000, s=0.1,b=5, 
-                        model_class=pta_models.ExpModel_Banded_Logbox_negative):
+                        models_and_names=((pta_models.ExpModel_Banded_Logbox_negative,"RSC"),)):
     """ This time, the idea is to use versatile models.
     """
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
@@ -76,46 +78,41 @@ def get_ev_thoules_g_1d(number_of_sites = 1000, s=0.1,b=5,
                           ("PN",(np.float64,number_of_sites)),
                           ("thoules_g",(np.float64,number_of_sites)),
                           ("s",np.float64),
-                          ("b",np.float64)
+                          ("b",np.float64),
+                          ("name", (np.unicode_, 16))
                           ])
     
     
     #res = np.zeros(s_grid.size, dtype = res_type) # preallocation is faster..
-    res = np.zeros(1,dtype=res_type)
+    res = np.zeros(len(models_and_names),dtype=res_type)
     n=0
-    debug('eigenvals ,PN and thouless for s = {0}, b= {1}'.format(s,b))
-    model = model_class(sample, epsilon=s, bandwidth1d=b, rseed=n,phi=0)
-    model_phi = model_class(sample, epsilon=s, bandwidth1d=b,rseed=n,phi=pi)
-    g = abs(model.eigvals - model_phi.eigvals) / (pi**2)
-    # Approximation of  the minimal precision:
-    prec = FLOAT_EPS * max(abs(model.eigvals))* number_of_sites  
-    debug("precision = {0}, minimal g  = {1}".format(prec, min(g)))
-    #g = ma.masked_less(g,prec)
-    avg_spacing = win_avg_mtrx.dot(-model.eigvals[1:]+model.eigvals[:-1])
-    # avg_spacing is now smaller than eigvals. We duplicate the last value to accomodate (quite  hackish)
-    avg_spacing = np.append(avg_spacing,avg_spacing[-1])
-    ga = ma.masked_less(g/avg_spacing,prec)
-    res[n] = ( model.eigvals, model.PN_N, ma.filled(ga, fill_value=prec) , s, b)
+    for n,(model_class, model_name) in enumerate( models_and_names):
+        debug(' eigenvals ,PN and thouless for s = {0}, b= {1}, n={2}, name={3}'.format(s,b,n,model_name))
+        model = model_class(sample, epsilon=s, bandwidth1d=b, rseed=n,phi=0)
+        model_phi = model_class(sample, epsilon=s, bandwidth1d=b,rseed=n,phi=pi)
+        g = abs(model.eigvals - model_phi.eigvals) / (pi**2)
+        # Approximation of  the minimal precision:
+        prec = FLOAT_EPS * max(abs(model.eigvals))* number_of_sites  
+        #debug("precision = {0}, minimal g  = {1}".format(prec, min(g)))
+        #g = ma.masked_less(g,prec)
+        avg_spacing = win_avg_mtrx.dot(-model.eigvals[1:]+model.eigvals[:-1])
+        # avg_spacing is now smaller than eigvals. We duplicate the last value to accomodate (quite  hackish)
+        avg_spacing = np.append(avg_spacing,avg_spacing[-1])
+        ga = ma.masked_less(g/avg_spacing,prec)
+        res[n] = ( model.eigvals, model.PN_N, ma.filled(ga, fill_value=prec) , s, b, model_name)
     return res
     
-def get_sym_neg(N=1000):
-    g1 = get_ev_thoules_g_1d(number_of_sites=N,model_class=pta_models.ExpModel_Banded_Logbox_phase)
-    g2 = get_ev_thoules_g_1d(number_of_sites=N,model_class=pta_models.ExpModel_Banded_Logbox_pinning)
-    g3 = get_ev_thoules_g_1d(number_of_sites=N,model_class=pta_models.ExpModel_Banded_Logbox_negative)
-    g4 = get_ev_thoules_g_1d(number_of_sites=N,model_class=pta_models.ExpModel_Banded_Logbox_negative_pinning)
-    return ((g1,"RSCP"),(g2,"RSP"),(g3,"RSC"),(g4,"RS"))
- 
 
 ###################################################################
 ############ Plotting - based on previous get functions  ##########
 ###################################################################
 
-def plot_sym_neg(ax1,ax2,g_list):
+def plot_sym_neg(ax1,ax2,g_models):
 
-    for g, label in g_list:
-        N = len(g['ev'][0])
-        ax1.plot(-g['ev'][0], g['thoules_g'][0],".",label=label)
-        ax2.plot(-g['ev'][0], g['PN'][0]/N, ".",label=label)
+    for g in g_models:
+        N = len(g['ev'])
+        ax1.plot(-g['ev'], g['thoules_g'],".",label=g['name'])
+        ax2.plot(-g['ev'], g['PN']/N, ".",label=g['name'])
     for ax in (ax1,ax2):
         ax.set_yscale('log')
         ax.yaxis.set_major_locator(get_LogNLocator())
@@ -135,7 +132,11 @@ def plotf_sym_neg():
     fig1.subplots_adjust(left=0.1,right=0.95)
     fig2, ax2 = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     fig2.subplots_adjust(left=0.1,right=0.95)
-    gl = get_sym_neg(N=1000)
+    gl = cached_get(get_ev_thoules_g_1d, "g_several_models.npz", number_of_sites=1000, models_and_names = [(pta_models.ExpModel_Banded_Logbox_phase, "RSCP"),
+                                                         (pta_models.ExpModel_Banded_Logbox_pinning, "RSP"),
+                                                         (pta_models.ExpModel_Banded_Logbox_negative, "RSC"),
+                                                         (pta_models.ExpModel_Banded_Logbox_negative_pinning, "RS"),
+                                                         (pta_models.ExpModel_Banded_Logbox_nosym, "RCP")])
     plot_sym_neg(ax1,ax2,gl)
     fig1.savefig("pta_sym_neg_g.pdf")
     fig2.savefig("pta_sym_neg_PN.pdf")
