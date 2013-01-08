@@ -48,15 +48,15 @@ issue analytically.
 
 %% same potentials - is not relevant.
 %% do I mean Steady State?
-% assymetric transitions
+% asymmetric transitions
 % Boltzman - detailed balance
-%% remove assymetric VRH
+%% remove asymmetric VRH
 % models with relaxations
 
-% the point is that I want to deal with assymetry.
-%% "generaly the transition matrices are assymetric,
+% the point is that I want to deal with asymmetry.
+%% "generaly the transition matrices are asymmetric,
 %% but up to now we dealt with symmetric only."
-%% why combine on-site energy with assymetry.
+%% why combine on-site energy with asymmetry.
 
 % Three categories:
 % wnm = wmn  - no talk about steady state - equilibrium transient diffusion
@@ -64,12 +64,12 @@ issue analytically.
 % wnm propto wmn - detailed balance - stochastic field
 %           integral over it must be zero  boltzmann equil
 %           should be added to the background
-% wnm \ne wmn - assymetry - frustrated NESS
+% wnm \ne wmn - asymmetry - frustrated NESS
 
 Up to now we have dealt with symmetric matrices only, but as presented in 
-the introduction \autoref{sec:matrix_categories}, in general the transition 
-rates may be assymetric. We wish to extend the methods used so far to
-develop a better estimation method for the transport in these assymetrical matrices.
+the introduction \autoref{sec:matrices}, in general the transition 
+rates may be asymmetric. We wish to extend the methods used so far to
+develop a better estimation method for the transport in these asymmetrical matrices.
 
 
 % stotland Errata variable activation energy.. 
@@ -109,14 +109,16 @@ between percolative effects and disorder.
 %%%%%%%%%
 \section{The spectral properties of Sinai diffusion in $1d$}
 
-In a symmetric $1d$ random rate system, there is regular diffusion 
+In a symmetric $1d$ random rate system, the question of
+diffusion is equivalent to the question of finite resistivity.
+The total conductivity of serially connected conductors is their 
+harmonic average, meaning that the diffusion is regular
 if the harmonic average is bounded, i.e.\ if
 %
 \begin{align}
  \sum_n \frac{1}{w_n} < \infty 
 \end{align}
 %
-
 On the other hand, for an asymmetric system, an activation energy 
 builds up, and a Sinai diffusion behavior is observed.
 The conductance is exponentially small in the length, and the spreading 
@@ -127,30 +129,32 @@ and the manifestation of this difference in the spectral properties of the model
 %%%%%%%%%
 \section{Sinai diffusion in $2d$}
 
-We shall inspect the spectral properties, and spreading behavior of a
-$2d$ asymmetric system. The $2d$ case is much different than the $1d$ 
-case, because particles can circumvent barriers. Interestingly,
-a nearest neighbor lattice can be constructed to present the same 
-long time spreading as the $1d$ lattice \cite{blumberg_selinger_diffusion_1989}.
-The question is whether having nearest neighbor links only 
-is a necessary condition for this behavior,
-and how does this relate to the spectral properties of the $2d$ system.
+Contrary to random walks in \emph{symmetric} random environments,
+in which much is known in any dimension,
+the general \emph{asymmetric} random walk in random environment is
+largely an open question in more than one dimension. For example, 
+the question of whether large enough fluctuations can allow
+sub diffusion in high dimensions is still open.
+Specifically we ask what is the change
+in the spectrum upon introduction of asymmetry, and 
+if this change allows sub diffusive modes.
+
 
 
 
 %%%%%%%%%%
 \section{Quantum spreading}
 
-Up to now, we have concentrated on Markovian networks, dealing with the probabilities without phases.
-We will try to generalize the work to solve Hamiltonian matrices of the same genre.
-With a coherent Hamiltonian, 
-we expect suppression of the diffusion due to Anderson localization.
-However there may be transient diffusion, which would persist 
-for infinite time in the presence of dephasing.
 
-We intend to examine the applicability of the resistor network picture for 
-the calculation of the diffusion coefficient in these quantum networks, beginning with
-a simple model described by a real symmetric Hamiltonian:
+%%%%
+Past studies in quantum spreading
+\cite{cohen_wave_2000,izrailev_evolution_1997,venegas-andraca_quantum_2012,guarneri_spectral_1989,*guarneri_estimate_1993} concerned disordered systems, but
+without taking strong \emph{sparsity} into account.
+Our question is whether the resistor network picture,
+which is vital in stochastic sparse networks, is also relevant to the quantum picture.
+
+
+We shall begin with a simple model described by a real symmetric Hamiltonian:
 %
 \begin{align}
   \mathcal{H}_{nm} = \textrm{random}[\pm] \eexp{-\textrm{random}[x]} \qquad 0<|n-m|\le b
@@ -170,9 +174,9 @@ realizations of a single particle, leaving the picture intact.
 However, if we have multiple \emph{interacting} particles in the network, 
 additional factors may contribute. For example, a single occupancy rule 
 (i.e.\ each site may have up to one particle) may cause Fermi blocking. 
-Another issue is that the single particle behavior might differ from
-the bulk behavior, e.g.\ it could be sub-diffusive 
-while the bulk spreading is diffusive \cite{richards_theory_1977,hung_diffusion_2012}.
+%Another issue is that the single particle behavior might differ from
+%the bulk behavior, e.g.\ it could be sub-diffusive 
+%while the bulk spreading is diffusive \cite{richards_theory_1977,hung_diffusion_2012}.
 
 
 

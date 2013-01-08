@@ -29,7 +29,7 @@ of the main results.
 
 We have studied random networks whose dynamics are
 described by a rate equation, with transition rates $w_{nm}$
-that form a symmetric matrix (\autoref{sec:matrix_categories}),
+that form a symmetric matrix (\autoref{sec:matrices}),
 with a diagonal conforming to \autoref{eq:zero_sum}. 
 %
 The long time evolution
@@ -42,12 +42,15 @@ A question arises whether
 such a transition happens in higher dimensions.
 Numerically $D$ can be evaluated using a resistor network
 calculation, or optionally it can be deduced from 
-the spectral properties of the system. Contrary to a recent 
-expectation that is based on a renormalization-group analysis, 
-we deduce that $D$ is finite.
+the spectral properties of the system. 
 %
-We suggest an ``effective-range-hopping" procedure to evaluate $D$,
-and contrast the results with the linear estimate.
+Contrary to a recent 
+expectation that is based on a renormalization-group analysis, 
+we deduce that $D$ is finite,
+%
+suggest an ``effective-range-hopping'' procedure to evaluate $D$,
+which describes the crossover between linear behavior and the \emph{VRH}
+estimate.
 The same approach is useful for the analysis of 
 networks that are described by quasi-one-dimensional  
 sparse banded matrices. 
@@ -55,6 +58,10 @@ sparse banded matrices.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The effective range hopping procedure}
+
+This is a refinement of the well established combination
+of the \emph{VRH} method and a percolation threshold
+ \cite{miller_impurity_1960,ambegaokar_hopping_1971,halperin_remarks_1989,pollak_percolation_1972}.
 
 
 The basic idea behind \emph{ERH} (effective range hopping) is that in the linear
@@ -66,23 +73,45 @@ to form a percolating cluster. Therefore, we use a threshold based
 on percolation theory and flat-down the rates higher then this threshold.
 This produces a smooth crossover between the linear
 estimate and the \emph{VRH} estimate.
+Using the \emph{ERH} procedure we have calculated the diffusion for 
+several models.
 
 
-Using the \emph{ERH} procedure we have calculated the diffusion for several models.
+The first two models have sites randomly scattered 
+in space, with average distance $r_0$, and rates $w_{nm} = w_0\eexp{-\epsilon_{nm}} \exp[-\frac{r_{nm}}{\xi}]$.
 
 
-For the degenerate hopping model we obtained:
+In the degenerate hopping model with $\epsilon_{nm} =0$ the \emph{ERH} result gives:
 
 \begin{align}
-D_{\tbox{ERH}} &=  \mathrm{EXP}_{d{+}2}\left(\frac{1}{s_c}\right)  \  \eexp{-1/s_c}  \ D_{\tbox{linear}}
+D_{\tbox{ERH}} \ \ &=\ \  \mathrm{EXP}_{d{+}2}\left(\frac{1}{s_c}\right)  \  \eexp{-1/s_c}  \ D_{\tbox{linear}}\\
+s_c\ \  &=\ \  \left(\frac{d}{\Omega_c} n_c\right)^{-1/d} \frac{\xi}{r_0}\\
+\mathrm{EXP}_{l}(x) \ \ &=\ \ \sum_{k=0}^l \frac{1}{k!}x^k
+\end{align}
+$s_c$ is a parameter that characterizes the sparsity,
+taking the dimensionality $d$ and the effective coordination number
+$n_c$ into account. Formally $n_c=0$ means that there is no issue of sparsity hence 
+$D=D_{\tbox{linear}}$.
+Even if $n_c$ is not zero we see that for
+$d\rightarrow \infty$ the linear approximation works only if the
+system is not sparse ($s_c\gg 1$). If the network is sparse ($s_c\ll 1$)
+the exponent dominates and we get the familiar VRH-type dependence.
+The effective coordination number $n_c$ can be retrieved from
+known works on percolation, especially in low dimensions.
+
+
+The non-degenerate Mott Hopping model is with random $\epsilon_{nm} = \textrm{uniform} [0,\infty]$.
+In this model the effective value of $s_c$ is determined by the temperature,
+namely
+%
+\begin{align}
+s_c\ \ &=\ \ \left(\frac{d}{\Omega_c} n_c \frac{T}{\Delta_\xi} \right)^{-1/(d+1)} 
 \end{align}
 %
-For infinite dimensions ($d\rightarrow\infty$),  we have $\mathrm{EXP}_{d{+}2}\  \eexp{-1/s_c} = 1$. 
-This means that the ERH expression converges with the linear expression.
-For low dimensionality, the exponent dominant.
-
-
-For the Mott Hopping model,
+Leading to the same expression
+but with $d+2$ replaced by $d+3$. In order to make the connection
+with \emph{VRH} more transparent we can identify the scaled ``effective''
+activation energy as $\epsilon_c=1/s_c$ and write the result as
 %
 \begin{align}
 D_{\tbox{ERH}} &=\mathrm{EXP}_{d{+}3}\left(\epsilon_c\right)  \  \eexp{-\epsilon_c}  \ D_{\tbox{linear}}
@@ -90,16 +119,19 @@ D_{\tbox{ERH}} &=\mathrm{EXP}_{d{+}3}\left(\epsilon_c\right)  \  \eexp{-\epsilon
 %
 
 
-For the flat-profile banded $1d$ model,
+The last model we present here is the banded $d=1$ model. Here,
+the sites are ordered on a $d=1$ lattice, and the rates are
+$w_{nm} = w_0\eexp{-\epsilon_{nm}}$,  
+ $\epsilon_{nm} = \textrm{uniform} [0,\sigma]$ within the band $|r|<br_0$, and zero otherwise.
+ The \emph{ERH} result for this model is
 \begin{align}
-D_{\text{ERH}} \ \ &= \ \ 
-\ \frac{1}{\sigma}\left[ 
-\left(1+\frac{n_c}{2b}\sigma\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}
-\right] \ \tilde{b} w_0 \\ &=\ \ 
-\ \frac{\left(1+\frac{n_c}{2b}\sigma\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}}
+D_{\text{ERH}} \ \ &=\ \ \frac{\left(1+\frac{n_c}{2b}\sigma\right)\eexp{-\frac{n_c}{2b}\sigma} - \eexp{-2\sigma}}
        {1 - \eexp{-2\sigma}}
    \ D_{\tbox{linear}}
 \end{align}
+Where as expected formally setting $n_c=$ returns us to the linear result. 
+For percolation in $1d$, each site must be connected to at least 2 sites,
+meaning that $n_c=2$.
 
 
 
@@ -110,12 +142,49 @@ D_{\text{ERH}} \ \ &= \ \
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%  What we know about real matrices         %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Matrix analysis}
+
+
+Given a real matrix, one can calculate the following
+mathematical properties:
+\begin{enumerate}
+  \item  $\mathcal{N}(\lambda)$ -
+         the counting function of the eigenvalues $\lambda$, i.e.\ the spectrum.
+  \item  PN($\lambda$) -  the participation number of each mode.
+  \item  $g(\lambda)$  -  the transmission of each mode as determined in the 
+          Thouless-Landauer picture.
+\end{enumerate}
+The physical quantities we want to calculate are:
+\begin{enumerate}[label={\Alph*.}]
+\item  $G_{\textrm{thermal-C-matrix}}$ - The thermal conductivity, based
+       on the Covariance matrix formalism.
+\item  $G_{\textrm{thermal-transmission}}$ - The thermal conductivity via $g(\lambda)$.
+\item  $G_{DC\textrm{-Kirchoff}}$ - The $DC$ conductivity, based 
+       on Kirchoff's equation.
+\item  $G_{DC\textrm{-spectral}}$-  The $DC$ conductivity, based 
+       on spectral analysis.
+\end{enumerate}
+
+We wish to study the inter-relation between the different notions of conductance. 
+%
+In figure \autoref{fig:spectral} we see the correlation 
+between $G_{DC\textrm{-spectral}}$ and $G_{DC\textrm{-Kirchoff}}$, for a banded
+sparse model described in the article. We see that the quantities are
+correlated but not equal, and we have yet to found a satisfying explanation for the difference.
+
+ In the
+following sections we concentrate on two aspects of a sparse banded matrix ensemble,
+first the heat transport, and then quantum spreading.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%   PTA                                    %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Heat transport in sparse banded Hamiltonians}\label{sec:PTA}
 
 
-We have analyzed a model of springs and masses described in \autoref{eq:app_heat}.
+We have analyzed a model of springs and masses described in \autoref{sec:app_heat}.
 The Hamiltonian is quadratic in the $K$ matrix as defined in \autoref{eq:K_matrix},
 which means that the eigenvalues $\lambda$ of $K$ determine the frequencies $\omega^2 = \lambda$.
 The eigenmodes are of course the same. The analysis of this model in the resistor network perspective
@@ -123,43 +192,59 @@ and the lower-eigenvalues spectral analysis perspective is presented in the arti
 turn to inspect the heat transport angle.
 
 
-As explained earlier, in contrast to the low-eigenvalue-only  
+As explained earlier, in contrast to the low-eigenvalue-only DC conductance, 
 the total heat conductance is defined by the
-sum over the heat conductances of the participating modes:
+sum over the heat conductances of the participating modes \cite{dhar_heat_2001,lepri_thermal_2003}:
 %
 \begin{align}
-G \ =\ \sum_n g(\lambda_n)
+G_{\textrm{thermal-transmission}} \ \sim\ \sum_n g(\lambda_n)
 \end{align}
 %
- It is common to assume
-that the temperature of the baths is high enough for all the modes to
+We assume that the temperature of the baths is high enough for all the modes to
 participate, and for the bath spectrum to be white, meaning that all frequencies
 have the same weight. The heat conductance of an eigenmode can be calculated
 using the Landauer or the Kubo formalism, or, alternatively, can be estimated
-via the participation number, or the Thouless curvature. 
+via PN or $g_T$.
+
+
+The PN structure of \emph{pinned}\cite{roy_role_2008} banded matrices,
+forms two groups, one with high PN, and another with lower PN \cite{bodyfelt_unpub},
+as can be seen in \autoref{fig:PN_kottos_pinning}(blue and green dots). Since the mode conductance 
+is strongly dependent on the PN, the total conductance can be estimated
+by the number of modes in the higher PN group. The $DC$ conductance, on the
+other hand, depends on the lower end of the spectrum, which is clearly very localized
+in this model. The spectrum in \autoref{fig:ev_dist_pin}(blue and green dots) has no power law
+at the lower eigenvalues, meaning that from the $DC$ perspective this system is sub-diffusive.
 
 
 
+To better understand the role of pinning in this result, we have
+removed it in \autoref{fig:PN_kottos_nopin}(blue and green dots) and 
+\autoref{fig:ev_dist}(blue and green dots). We see that 
+while most of the PN structure and spectrum stay the same, the lower-most eigenvalues
+which are dominant in the $DC$ picture change dramatically, crossing from sub diffusion
+to diffusion. Physically, the pinning potentials break the momentum conservation,
+therefore destroying the diffusion.
 
 
 
-In recent studies \cite{bodyfelt_unpub} an interesting structure of
-PN (participation number) was observed in this model. 
-
-As can be seen
-in \autoref{fig:PN_kottos}, for the low eigenvalues, instead of the 
-expected large PN, we have some decrease. After that, follows a period
-of large PN, followed by another segment with somewhat smaller PN.
-Another quantity we calculated is the Thouless conductance (see \autoref{sec:anderson}), 
-which we expect to correlate with $PN$. Disregarding major numerical issues,
-the correlation seems to hold, see \autoref{fig:PN_g_scatter}.
+Another aspect we have studied is introducing sparsity. The red dots in figures a-e 
+are of systems with high sparsity. In \autoref{fig:ev_dist} we see that the 
+system remains diffusive, albeit with a lower diffusion coefficient (the vertical
+shift determines this, see paper
+for explanation). In  \autoref{fig:PN_kottos_nopin} and \autoref{fig:PN_kottos_pinning}
+we see that the two group structure disappears, and the only wide modes
+are for $\lambda\rightarrow 0$, probably meaning that the heat conductance 
+and $DC$ conductances coincide.
 
 
-As presented in \autoref{sec:heat}, the thermal conductance depends
-on all the wide modes. The DC conductance, on the other hand,
-depends on the $\lambda\rightarrow 0$ modes only. It seems that
-for sparse systems these definitions coincide, since only 
-the $\lambda\rightarrow 0$ modes are wide.
+Lastly, in \autoref{fig:PN_g_scatter} we have
+numerically calculated the Thouless conductance,
+and compared it with the PN. Due to numerical issues
+with sparse matrices, many points are below the round-off limit,
+presented as a vertical line at the left of the spectrum. For the rest
+of the points, it seems like the higher end of PN and $g_T$ are correlated.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -172,31 +257,37 @@ the $\lambda\rightarrow 0$ modes are wide.
   %\subfloat[Low sparsity]{
   \begin{subfigure}{.45\linewidth}\centering
     \includegraphics[width=0.99\linewidth]{pta_nopin}
-    \caption{PN vs $\lambda$}\label{fig:PN_kottos_nopin}
+    \caption{}\label{fig:PN_kottos_nopin}
   \end{subfigure}
   %
   \begin{subfigure}{.45\linewidth}\centering
-     \includegraphics[width=0.99\linewidth]{pta_ev_nopin}
-  \caption{Counting function (CDF) $\mathcal{N}(\lambda)$}\label{fig:ev_dist}
-  \end{subfigure}\\ % end of row
+    \includegraphics[width=0.99\linewidth]{pta_ev_nopin}
+    \caption{}\label{fig:ev_dist}
+  \end{subfigure}
+  %\\ % end of row
   %
- % \caption{}
- % \end{figure}
- % \begin{figure}[H]
-  %
-    \begin{subfigure}{.45\linewidth}\centering
+  \begin{subfigure}{.45\linewidth}\centering
     \includegraphics[width=0.99\linewidth]{pta_pin}
-    \caption{PN vs $\lambda$, with diagonal disorder}\label{fig:PN_kottos_pinning}
+    \caption{}\label{fig:PN_kottos_pinning}
   \end{subfigure}     
   %
   \begin{subfigure}{.45\linewidth}\centering
      \includegraphics[width=0.99\linewidth]{pta_ev_pin}
-  \caption{Counting function (CDF) $\mathcal{N}(\lambda)$ with diagonal disorder}\label{fig:ev_dist_pin}
+  \caption{}\label{fig:ev_dist_pin}
+   \end{subfigure}
+  %
+  \begin{subfigure}{.45\linewidth}\centering
+    \includegraphics[width=0.99\linewidth]{pta_scatter_g}
+    \caption{}\label{fig:PN_g_scatter}
   \end{subfigure}
-    \begin{subfigure}{.45\linewidth}\centering
-    \includegraphics{pta_scatter_g}
-  \caption{PN vs $g$}\label{fig:PN_g_scatter}
+  %
+  \hspace*{\fill}
+  \begin{subfigure}{.45\linewidth}\centering
+    \includegraphics[width=0.99\linewidth]{ptsD_banded_scatter}
+    \caption{}\label{fig:spectral}
   \end{subfigure}
+  \\  % line end
+  %
   \caption{For all the plots $N=1000$ and $b=5$. 
            In blue $\sigma=0.1$, green $\sigma=0.6$ and red $\sigma=10$, where higher
            $\sigma$ means more sparsity.
@@ -210,14 +301,18 @@ the $\lambda\rightarrow 0$ modes are wide.
            In (\subref{fig:PN_kottos_pinning}) and (\subref{fig:ev_dist})
            we see the effects of diagonal disorder (pinning)
            on the spectrum. We see clearly that the lowest eigenvalues 
-           are affected, and their corresponding PN is much lower.
+           are affected, and their corresponding PN is much lower. The spectrum
+           reveals sub-diffusive behavior.
            %%%g 
            In (\subref{fig:PN_g_scatter}) we compare the Thouless conductance
            $g$ with the participation number. 
            The presented points do seem to be correlated, but due to numerical issues,
            many values of $g$ are below the precision limit (seen as a vertical line in the plot), 
            up to $936$ from $1000$ for $\sigma=10$. 
-  }
+           %%%%%  RESNET
+           In (\subref{fig:spectral}) we compare $G_{DC\textrm{-spectral}}$ and $G_{DC\textrm{-Kirchoff}}$
+           for a model with $b=10$ and $\sigma\in [0,80]$. They are correlated but unequal.
+  }\label{fig:pta}
 \end{figure}
 
 \notbool{showfigure}{\end{comment}}{}
@@ -232,14 +327,51 @@ the $\lambda\rightarrow 0$ modes are wide.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Quantum spreading in a sparse banded Hamiltonian}\label{sec:dts}
 
-In this section the numerical work was done by our collaborators,
+In this section the numerical work was done in collaboration with
 Eli Halperin and Tsampikos Kottos of Wesleyan university.
 
-In this model , described in \autoref{sec:quasi_bg}, initial analysis of
-the numerical results reveals that the sparsity affects the diffusion coefficient.
-We see that as the system becomes more sparse, the diffusion coefficient is suppressed. 
-As might be expected, the lower bandwidth ensembles are more
+
+We define a Hamiltonian
+\begin{align}
+\mathcal{H}\ \ &=\ \ \epsilon B_{nm}\\
+B_{nm} \ \ &= \ \ \textrm{random}[\pm]\eexp{-x}\qquad 0<|n-m| \le b \\
+x \ \ &= \ \ \textrm{random} \ \in [0,\sigma]
+\end{align}
+that depends on three parameters, $\epsilon$, $b$ and $\sigma$. The $\sigma$
+parameter controls the sparsity, and $b$ is the bandwidth, and $\epsilon$
+defines the units of frequency.
+In past works \cite{cohen_wave_2000,stotland_random-matrix_2010} it was deduced that the diffusion coefficient 
+in a disordered banded system can be calculated as:
+\begin{align}
+D_0 \ \ &=\ \ \left[b\ \textrm{Var}[B_{nm}]\right]^{1/2}\ b^2\epsilon \\
+\textrm{VAR}(B_{nm}) \ \ &=\ \ \int_0^\sigma \left(\pm \eexp{-x}\right)^2 \frac{dx}{\sigma}\ \ 
+ =\ \  \frac{1-\eexp{-2\sigma}}{2\sigma} 
+\end{align}
+
+To question the validity of this result in the case of high sparsity,
+we plot in \autoref{fig:D_of_s} the numerical results for $D$ divided by 
+the speculated $D_0$. The results reveal that the sparsity affects the diffusion coefficient.
+We see that as the system becomes more sparse, the diffusion coefficient is suppressed,
+and as might be expected, the lower bandwidth ensembles are more
 susceptible, as the system is more vulnerable to disconnections.
+
+
+The next speculation is to use the suppression factor for sparse networks 
+obtained in our previous work \autoref{sec:papers}:
+%
+\begin{align}
+g_s(\sigma, b)\ \ &=\ \ \frac{D_{ERH}}{D_{\textrm{linear}}}\ \ =\ \ 
+\frac{  \left(1+\frac{n_c}{b}\sigma\right)\eexp{-\frac{n_c}{b}\sigma}
+                                              - \eexp{-4\sigma}}{1-\eexp{-4\sigma}}\\
+\textrm{With } n_c\ &\approx 2
+\end{align}
+
+In \autoref{fig:d_vs_g} we plot in log-log scale $\frac{D}{D_0}$ vs $g_s$, assuming a relation:
+%
+\begin{align}
+\frac{D}{D_0}\ \ \approx \ \ C\ \ g_s(\sigma,b)^\gamma
+\end{align}
+It seems that this scaling hypothesis fails, as the 3 lines do not coincide.
 
 
 \begin{figure}
@@ -247,15 +379,9 @@ susceptible, as the system is more vulnerable to disconnections.
 \caption{The transient diffusion coefficient for quantum spreading in
 a banded sparse network. The ratio $D/D_0$ between the numerical diffusion 
 coefficient and the expected value decreases as $\sigma$ increases. The effect
-is stronger for low bandwidth.}
+is stronger for low bandwidth.}\label{fig:D_of_s}
 \end{figure}
 
-
-Our first question was whether our rate equation analysis might
-hold also for the quantum case, because in first order perturbation theory,
-the transition probability $p_{nm}$ is proportional to $\left|\bra n|\mathcal{H} | m \ket\right|^2$.
-Naively using our previously obtained suppression factor $g_s = \frac{D_{ERH}}{D_{\textrm{linear}}}$,
-did not prove to be sufficient, as can be seen in \autoref{fig:d_vs_g}.
 
 \begin{figure}
 \includegraphics{dts_D2_vs_gs_loglog}

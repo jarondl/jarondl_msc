@@ -413,10 +413,6 @@ def plotf_thouless_g():
     
 
 if __name__ ==  "__main__":
-
-    #print("Not Implemented")
-    plotf_banded_pn(pinning=False)
-    plotf_banded_pn(pinning=True)
-    plotf_thouless_g()
+    plotf_banded_pn_new()
     
 

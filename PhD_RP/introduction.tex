@@ -1,4 +1,4 @@
-\chapter{Introduction}
+\chapter{Introduction}\label{sec:matrices}
 
 
 This proposal is about simple dynamical networks, with dynamics
@@ -10,76 +10,72 @@ that are described either by a stochastic rate equation
   \mathbf{p} \quad &\equiv \quad \textrm{vector}\{ p_n \}
 \end{align}
 %
-or by the Schr\"{o}dinger equation:
+by the Schr\"{o}dinger equation:
 %
 \begin{align}
   \frac{d}{dt}\psi \quad &= \quad -i \mathcal{H}\psi \\
   \mathbf{\psi} \quad &\equiv \quad \textrm{vector}\{ \psi_n \}
 \end{align}
 %
+or by Newton's second law:
+%
+\begin{align}
+  \frac{d^2}{dt^2}\mathbf{q} \quad &= \quad -\mathbf{K} \mathbf{q} \\
+  \mathbf{q} \quad &\equiv \quad \textrm{vector}\{ q_n \}
+\end{align}
+%
 
-Regardless of the governing equation, the focus is
-on disordered sparse networks, with wide distribution of energies. 
-Two related aspects of these networks will be studied: their energy spectrum,
-and their spreading properties. More specifically, we wish to determine
-whether the networks are diffusive ($S(t)\sim t$), or sub-diffusive, and
-if they are indeed diffusive, what is the diffusion coefficient. 
-
-
-
-
-To simplify the discussion, we concentrate on $d$-dimensional spatial networks,
-in which each node has a defined location $x_n$, and each edge has an associated 
-energy barrier $\epsilon_{nm}$. The transition rates are then defined to be:
+All of these equations 
+involve {\rm real} matrices that describe {\em disordered} 
+one- two- and quasi-one- dimensional structures. The elements of
+the matrices may be randomized directly to simulate disorder, or they
+could depend on a random spatial distribution of sites. For example, in 
+part of the work we use a transition rate matrix defined by
 %
 \begin{align}
 w_{nm} \quad = \quad w_0 \eexp{-\epsilon_{nm}}B(x_n-x_m)
 \end{align}
 %
-Where $B(r)$ describes the dependence of the coupling on the
-distance between sites.
+where $\epsilon_{nm}$ represents activation energies required for transitions,
+and $B(r)$ defines a dependence on the distance between sites. The matrix
+that consists of these distances is called a euclidean distance matrix, 
+a class of matrices that is widely researched both in physics and in mathematics 
+\cite{skipetrov_eigenvalue_2011, goetschy_non-hermitian_2011,mezard_spectra_1999, bogomolny_spectral_2003}.
 
-
-The model we start with has its sites distributed randomly and uniformly throughout
-a $d$-dimensional hypercube, with $B(r) = \exp(-r/\xi)$. The disorder is defined by the location
-of the sites, and its effect on the connectivity of the network can be manipulated through the 
-parameter $\xi$. 
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Matrices of interest}\label{sec:matrix_categories}
-
-
-
-
-
-
-
-This work concern {\rm real} matrices that describe {\em disordered} 
-one- two- and quasi-one- dimensional structures. Such matrices 
+In general, these matrices 
 are of physical interest in various applications including:
 
-\begin{enumerate}[A. ]
+\begin{enumerate}[label={\Alph*.}]
 \item Resistor networks / random walk / hopping 
 \item Rate equations / relaxation processes 
-\item Mechanical elastic vibrations ("balls and springs")
-\item Electrical R-L-C circuits
+\item Mechanical elastic vibrations (``balls and springs'')
+\item Electrical R-L-C circuits.
 \item Hermitian quantum dynamics with time-reversal symmetry. 
 \item Non-Hermitian quantum dynamics with any anti-unitary symmetry. 
 \end{enumerate}
 
 In particular we note that the Mott impurity hopping problem 
-belongs to category A. The problem of Sinai spreading ("random 
-walk in random environment") belongs to category B. 
-The theory of heat conduction belongs to category C. 
-Studies of wave-packet dynamics belong to E, and 
+\cite{miller_impurity_1960,movaghar_theory_1981}
+belongs to category A. The problem of Sinai spreading (``random 
+walk in random environment'')
+\cite{sinai_limiting_1983,bouchaud_anomalous_1990}
+belongs to category B.
+The theory of heat conduction 
+\cite{nagel_normal-mode_1981,schirmacher_analogies_1992,
+amir_localization_2010,amir_mean-field_2008,tong_wave_1999}
+belongs to category C. 
+Studies of wave-packet dynamics\cite{izrailev_evolution_1997,cohen_wave_2000} belong to E, and 
 in particular the recent interest in systems that are described by 
-a non-Hermitian PT symmetric hamiltonian belongs to category F.
+a non-Hermitian PT symmetric hamiltonian
+\cite{bender_exactly_2008,mannheim_astrophysical_2012,jin_physical_2011,zheng_heat_2011}
+ belongs to category F.
 
 In the present proposal we would like to emphasize the 
 implications of {\em sparsity}, meaning extreme disorder 
-due to log-wide distribution of matrix elements. 
+due to log-wide distribution of matrix elements
+\cite{rodgers_density_1988,biroli_single_1999,
+fortin_asymptotic_2005,metz_localization_2010,
+cohen_energy_2012,stotland_semilinear_2009}. 
 We note that {\em localization} and {\em percolation} are strongly 
 related aspects in the analysis of transport in such systems. 
 
@@ -103,14 +99,14 @@ polynomial that has real coefficients. Hence the spectrum consists
 of real eigenvalues, and optionally also pair of complex-conjugate 
 values. 
 
-By "non-negativity" we mean that all eigenvalues are real and 
+By ``non-negativity'' we mean that all eigenvalues are real and 
 non-negative: for example in the context of rate equations it means 
 that all the eigen-modes are decaying except the steady state 
 that has zero eigenvalue. 
 
-By "Broken-reality: we mean that some of the eigenvalues  
+By ``Broken-reality'' we mean that some of the eigenvalues  
 become complex: in particular this might happen 
-as we vary some control parameter. The studies of "PT broken symmetry" \cite{ 
+as we vary some control parameter. The studies of ``PT broken symmetry'' 
 provide an example for such scenario. One should realize that  
 a complex eigen-state that is associated with a complex eigenvalue 
 has a {\em lower} symmetry than that of the Hamiltonian.
@@ -122,7 +118,7 @@ if the system has anti-unitary (say time reversal) symmetry.
 
 A special sub-class of symmetric matrices consists of those 
 that are both non-negative and conserving. Such matrices
-can be regarded as describing a "resistor network".
+can be regarded as describing a ``resistor network''.
 They have positive off-diagonal elements that describes 
 the connectors, while their diagonal elements are determined 
 such that the probability (or the charge) is conserved. Namely 
@@ -130,7 +126,7 @@ such that the probability (or the charge) is conserved. Namely
 %gamma_n \equiv ... = ... 
 %
 \begin{align}\label{eq:zero_sum}
-\gamma_n \equiv -\sum_{m\ne n} w_{mn}
+\gamma_n \ \ \equiv \ \ \sum_{m\ne n} w_{mn}
 \end{align}
 %
 
@@ -144,9 +140,9 @@ that are associated with the decay modes of the system,
 and a zero mode that describes the steady state.  
 
 It should be realized that the dynamics that is generated 
-by  a "resistor network" matrix ("infinite temperature") 
+by  a ``resistor network'' matrix (``infinite temperature'') 
 resembles diffusion or percolation process, while that of 
-a ``finite temperature" network (non-symmetric matrix) has to 
+a ``finite temperature'' network (non-symmetric matrix) has to 
 do with Sinai spreading (as discussed in \autoref{sec:sinai}).  
 
 A special sub-class of conserving non-negative matrices 
@@ -162,24 +158,110 @@ an additional contribution that reflects a pinning potential
 that attaches each ball to a fixed location.   
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{TODO VRH}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Diffusion and sub-diffusion}
+
+
+We define a diffusion coefficient $D$, either by the spreading $S(t)$
+or by the survival probability $\mathcal{P}(t)$:
+%
+\begin{align}
+D\ \ &\sim\ \ \frac{S(t)}{t}  \quad \textrm{as }\ t\rightarrow\infty \\
+\mathcal{P}(t)\ \ &\sim\ \ (Dt)^{-d/2}
+\end{align}
+%
+For a stochastic network, $S(t)$ can be studied via resistor network 
+calculations. $\mathcal{P}(t)$ is the Laplace transform of the 
+eigenvalue density, hence it can be deduced from the spectral properties of the 
+system. 
+%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Anderson localization}\label{sec:anderson}
 
+ %following the seminal work of Anderson \cite{anderson_absence_1958,markos_numerical_2006},
+By adding uncorrelated disorder to crystals, some of the electronic eigenstates 
+localize\cite{anderson_absence_1958,mott_mobility_1987,thouless_electrons_1974}. In  $d=1$ all the states are localized, as well as in $d=2$ real matrices 
+(i.e.\ without magnetic field). In $d=3$ and higher, if the disorder
+is small enough, a mobility edge divides the spectrum to localized states \emph{below} the edge and 
+de-localized states \emph{above} the edge. In the case of an energy band, i.e.\ $\lambda\in [-\lambda_c,\lambda_c]$,
+the states at the end of the band will be localized, while those in the middle
+will be de-localized meaning that there are two mobility edges,
+where the only de-localized states are those \emph{between} the edges.
 
-Following the seminal work of Anderson \cite{anderson_absence_1958},
-the common knowledge is that every uncorrelated disorder in two or
-less dimensions causes localization, while for more than two dimensions
-a transition between localized and extended modes exists. However, a conserving
-system, as defined earlier, always has one extended ergodic mode with $\lambda=0$,
-practically meaning a diverging localization length,
-or effective delocalization, as $\lambda\rightarrow 0$.
-For a non-negative system, this mode sits on the lower edge of the spectrum, 
-allowing regular diffusion in spite of the disorder.
+
+The picture in phonon vibrations is somewhat different
+\cite{tong_wave_1999,reuveni_anomalies_2010,granek_fractons_2005,ishii_localization_1973,lepri_thermal_2001,kantelhardt_extended_1998,amir_localization_2010}. 
+In a conserving
+system, as defined earlier, there is always one de-localized ergodic mode with $\lambda=0$.
+If we are dealing with a non-negative matrix such as in rate equations, 
+then $\lambda \in [0,\lambda_c]$, and the de-localized ergodic mode
+sits on the lower edge of the spectrum. This means that either that the localization 
+length diverges as $\lambda\rightarrow 0$, or that the system is de-localized for
+$\lambda\rightarrow 0$.
+
+
+At first sight those pictures seem incompatible. But the fact 
+of the matter is, that the spectrum of the phonon vibrations
+can be thought of as the upper half of an electron band, as caricatured in \autoref{fig:bands}.
+
+
+
+\begin{figure}
+\begin{tikzpicture}[x=\textwidth/20,y=0.2cm]
+
+\draw[black] (-1,6) --(1,6);
+\draw[black] (-1.2,5) --(1.2,5);
+\draw[black] (-1.5,4) --(1.5,4);
+\draw[black] (-1.8,3) --(1.8,3);
+%draw[black,dashed] (-3,6) rectangle (3,2);
+
+\foreach \y in {-5,...,5}
+        \draw[dashed] (-3.5,\y/2)  -- (3.5,\y/2);
+
+\draw[black] (-1.8,-3) --(1.8,-3);
+\draw[black] (-1.5,-4) --(1.5,-4);
+\draw[black] (-1.2,-5) --(1.2,-5);
+\draw[black] (-1,-6) --(1,-6);
+%axis:
+\draw[->] (-4,-6) --(-4,6) node [pos=0.9,left] {$\lambda$};
+\draw (-4-0.2,0) -- (-4+0.2,0) node[left] {$0\ \ $   };
+
+
+
+%%%%%%%%%%%%%%%
+%% RIGHT SIDE, dirty copy-paste
+
+\draw[black,xshift=8cm] (-1,6) --(1,6);
+\draw[black,xshift=8cm] (-1.2,5) --(1.2,5);
+\draw[black,xshift=8cm] (-1.5,4) --(1.5,4);
+\draw[black,xshift=8cm] (-1.8,3) --(1.8,3);
+%draw[black,dashed] (-3,6) rectangle (3,2);
+
+\foreach \y in {-5,...,5}
+        \draw[dashed,xshift=8cm] (-3.5,\y/2)  -- (3.5,\y/2);
+
+\draw[black,xshift=8cm] (-1.8,-3) --(1.8,-3);
+\draw[black,xshift=8cm] (-1.5,-4) --(1.5,-4);
+\draw[black,xshift=8cm] (-1.2,-5) --(1.2,-5);
+\draw[black,xshift=8cm] (-1,-6) --(1,-6);
+%axis:
+\draw[->,xshift=8cm] (-4,-6) --(-4,6) node [pos=0.9,left] {$\lambda$};
+\draw[xshift=8cm] (-4-0.2,0) -- (-4+0.2,0) node[left] {$0\ \ $   };
+
+
+\fill[white,xshift=8cm]  (-3.9,-0.1) rectangle (4,-6.2);
+\end{tikzpicture}
+\caption{The eigenstates in a $d=3$ disordered system. The full lines represent localized modes, 
+ their width representing the localization length.
+  The dashed lines are the de-localized modes. On the left for a banded
+  spectrum, on the right for a banded non-negative spectrum  }
+     \label{fig:bands}
+\end{figure}
+
+
 
 
 There are several routines used to distinguish between exponentially localized and delocalized modes.
@@ -222,7 +304,7 @@ In a model described by a Hamiltonian
 \mathcal{H} = \textrm{diag}{E_n} + \epsilon {V_{nm}}
 \end{align}
 %
-according to the first step of perturbation theory,
+according to the first step of perturbation theory (Fermi's golden rule),
 for very short time the transition probability is:
 %
 \begin{align}
@@ -230,7 +312,8 @@ for very short time the transition probability is:
 \end{align}
 %
 This suggests that for some short time scale, the ballistic behavior
-of the system might relate to the conductivity of the rate equation $G_{nm} = \left| \bra n| V |n_0\ket \right|^2$.
+of the system is related to the conductivity of the rate equation $G_{nm} = \left| \bra n| V |n_0\ket \right|^2$.
+
 
 
 
@@ -245,7 +328,7 @@ G = \int_0^\infty \rho(\lambda) g(\lambda) d\lambda
 \end{align}
 where $\rho(\omega)$ is the density of states, and $g(\lambda)$ is 
 a transmission coefficient for a phonon at energy $\lambda$.
-$g(\lambda)$ is highly affected by the localization length of this mode.
+$g(\lambda)$ is highly affected by the localization length of this mode\cite{tong_wave_1999}.
 The high frequency eigenmodes are strongly localized, hence only the
 lower part of the spectrum contributes to the heat flux. Based on this idea,
 the heat flux can be estimated \cite{lepri_thermal_2001,lepri_thermal_2003,bodyfelt_unpub},
@@ -256,13 +339,14 @@ Many one-dimensional models
 \cite{narayan_anomalous_2002,dhar_heat_2001,lepri_anomalous_1998,savin_heat_2002} 
 exhibit sample size scaling of the form
 %
-\begin{aligns}
+\begin{align}
 g(\lambda)    &\propto L^\alpha
 \end{align}
 
-It is debated whether for $d=1$ systems
-with momentum conservation,  $\alpha=1/3$,$\alpha=2/5$ or neither
-\cite{narayan_anomalous_2002,delfini_comment_2008,dhar_dhar_2008,wang_power-law_2011}.
+There is an open debate regarding $d=1$ systems,
+with momentum conservation or pinning potentials, 
+with results such as $\alpha=1/3$,$\alpha=2/5$ or neither
+\cite{narayan_anomalous_2002,delfini_comment_2008,dhar_dhar_2008,wang_power-law_2011,basile_momentum_2006}.
 For several systems it has been shown that $\alpha$ depends on some tunable potential \cite{tong_wave_1999},
 and it also depends on the spectrum of the baths \cite{dhar_heat_2001}.
 
@@ -274,13 +358,19 @@ and it also depends on the spectrum of the baths \cite{dhar_heat_2001}.
 
 We define the ($2N\times 2N$) covariance matrix as:
 \begin{align}
-\mathbf{C} \ &=\ \langle \vec{z}\otimes \vec{z}\rangle \\
+\mathbf{C} \ &=\ \langle \vec{z}\otimes \vec{z}\rangle \ =\ 
+              \begin{pmatrix} 
+                C^{qq} & C^{qp} \\
+                C^{pq} & C^{pp}
+            \end{pmatrix}
+\\
 \vec{z} &= (q_1,\ldots q_N, p_1,\ldots p_N)^\intercal
 \end{align}
 
 
 In the NESS (non equilibrium steady state), $\mathbf{C}$ 
-is the solution of the following Lyapunov equation \cite{bodyfelt_unpub,zheng,zheng_heat_2011}:
+is the solution of the following Lyapunov equation 
+\cite{bodyfelt_unpub,zheng,zheng_heat_2011,bhatia_how_1997,dhar_heat_2008,rieder_properties_1967,*nakazawa_energy_1968,*matsuda_localization_1970}:
 %
 \begin{align}
 &\mathbf{Z}\mathbf{C} + \mathbf{C}\mathbf{Z}^\intercal + (T_R\mathbf{Y}^R+T_L\mathbf{Y}^L) \ =\  0\\
@@ -296,10 +386,11 @@ the system to heat baths at temperatures $T_R$ and $T_L$ accordingly.
 %
 The local temperature and conductance are defined as
 \begin{align}
-T_n &= \langle p_n^2 \rangle \ = \ C_{N+n} \\
-G_{\textrm{thermal}} &= 
+T_n &= \langle p_n^2 \rangle \ = \ C^{pp}_{n} \\
+%J_n &= \sum_l\frac{1}{m}\left\langle \left(\vec{p}^{\intercal} \mathbf{K} \vec{q}\right)_{nl} \right\rangle
+J_n &= \sum_{i\ge n}\sum_{j<n} \frac{1}{m}\left\langle \left(p_i K_{ij} q_j\right) \right\rangle 
+= \sum_{i\ge n}\sum_{j<n}\frac{1}{m}  K_{ij} C^{pq}_{ij}
 \end{align}
-
 
 This relates the incoming and outgoing flux of heat 
 to the local temperatures. This idea is very similar
@@ -323,20 +414,66 @@ between diffusion and subdiffusion.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Sinai diffusion}
+\section{Sinai diffusion}\label{sec:sinai}
 
 
+In a one-dimensional asymmetric chain, uncorrelated on-site
+energies in the transition matrix
+can cause a major change in the 
+transport properties \cite{sinai_limiting_1983,bouchaud_anomalous_1990}.
+As an example to understand this picture we use random $[\pm 1]$ $\epsilon_{nm}$ fields,
+as defined in \autoref{eq:epsilon}. 
+On average, the \emph{accumulated} potential difference 
+between two sites at distance $N$ is zero, but as we know 
+from random walk, the width of this difference, or rather 
+the potential \emph{barrier} between the sites is of order $\sqrt{N}$, as 
+caricatured in \autoref{fig:sinai}.
 
 
-%For example, by adding spatial correlations, the behavior can be changed 
-%from $S(t) \sim (\log t)^4$ to $S(t) \sim (\log t)^y$ with $y \in [4,\inf]$ \cite{stanley_generalisation_1987}.
+%%%  To get the numbers in python:
+\begin{comment}
+import numpy as np
+rand_E = (np.random.rand_integers(1,size=100)*2-1).cumsum()
+pairs = [ "({0},{1})".format(n,E) for n,E in enumerate(rand_E)]
+print("{"+ "".join(pairs)+"};")
+print("\n  min,max: {0:.2f},{1:.2f}".format(rand_E.min(), rand_E.max()))
+\end{comment} 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{Organization}
+\begin{figure}
+\begin{tikzpicture}[x=\textwidth/100,y=0.3cm]
+\draw[black] plot coordinates 
+{(0,-1)(1,-2)(2,-1)(3,-2)(4,-1)(5,-2)(6,-3)(7,-4)(8,-5)(9,-4)(10,-5)
+(11,-4)(12,-5)(13,-4)(14,-5)(15,-4)(16,-5)(17,-4)(18,-3)(19,-2)(20,-1)
+(21,0)(22,1)(23,2)(24,1)(25,2)(26,1)(27,2)(28,3)(29,2)(30,3)(31,2)(32,1)
+(33,2)(34,3)(35,4)(36,3)(37,4)(38,3)(39,4)(40,3)(41,2)(42,1)(43,0)(44,1)
+(45,2)(46,1)(47,2)(48,1)(49,2)(50,3)(51,4)(52,5)(53,4)(54,5)(55,4)(56,3)
+(57,2)(58,3)(59,2)(60,1)(61,0)(62,1)(63,0)(64,1)(65,2)(66,1)(67,0)(68,-1)
+(69,0)(70,1)(71,2)(72,1)(73,0)(74,1)(75,0)(76,-1)(77,0)(78,1)(79,0)(80,1)
+(81,0)(82,1)(83,0)(84,-1)(85,0)(86,1)(87,0)(88,-1)(89,-2)(90,-3)(91,-4)(92,-5)
+(93,-6)(94,-7)(95,-6)(96,-7)(97,-6)(98,-7)(99,-8)};
+\draw [<->,red] (50,-8) -- (50,5) node[pos=0.5, left]{$\Delta E$};
+\end{tikzpicture}
+\caption{The accumulated potential barrier for random $\epsilon_n = \textrm{random}[\pm 1]$, with the 
+     emerging barrier $\Delta E$.}
+     \label{fig:sinai}
+\end{figure}
 
-%The organization of this proposal is in parts.
-%\autoref{part1} includes this introduction,
-%the objectives of the proposal and further background. 
-%In \autoref{part2} we present the work accomplished so far.
-%In \autoref{part3} lies the appendix, including some derivations,
-%and an article accepted for publication at PRE, available in the arXiv \cite{de_leeuw_diffusion_2012}.
+
+According to Arrhenius' rule, the time it takes for a particle to cross
+such a barrier is exponential in the barrier height, leading to sub-diffusion
+of the type:
+\begin{align}
+S(t)\ \ &\sim\ \  (\log t)^4
+\end{align}
+By adding certain spatial correlations, the behavior can be tunable, 
+$S(t) \sim (\log t)^y$ with $y \in [4,\inf]$ \cite{stanley_generalisation_1987}.
+
+
+Another kind of ``correlation'' that can destroy this behavior, is
+choosing uncorrelated on-site energies $E_n$ instead of energy differences $\epsilon_n$,
+as defined in \autoref{sec:detailed_balance}. 
+Because of this choice, the energy differences are correlated, and their
+sum is simply the difference between the first and last on-site energies,
+which does not depend on $N$.
+
+
