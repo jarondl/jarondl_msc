@@ -62,21 +62,24 @@ class ExpModel_Banded_Logbox_phase(ExpModel_Banded_Logbox):
         else: return m # to keep things real
 
 
-class ExpModel_Banded_Logbox_pinning(ExpModel_Banded_Logbox_phase):
+class ExpModel_Banded_Logbox_dd(ExpModel_Banded_Logbox_phase):
     def rate_matrix(self,convention=0):
         m = ExpModel_Banded_Logbox_phase.rate_matrix(self,self.phi)
-        m += self.pinning_matrix()
+        m += self.diagonal_disorder()
         return m
     
-    def pinning_matrix(self):
+    def diagonal_disorder(self):
         """ This matrix has negative disordered values on the diagonal"""
-        W = 0.3
-        #pinning =  - np.random.permutation(np.linspace(0.5,1.5,self.sample.number_of_points()))
-        # The pinning is uniform on [0,W]
-        pinning =  - np.random.permutation(np.linspace(0,W,self.sample.number_of_points()))
+        pinning =  - np.random.permutation(exp(np.linspace(-2*self.epsilon,0, self.sample.number_of_points())))
         return np.diagflat(pinning)
         
-        
+class ExpModel_Banded_Logbox_rd(ExpModel_Banded_Logbox_dd):#diagonal is not special...
+    def rate_matrix(self,convention=0):
+        m = ExpModel_Banded_Logbox.rate_matrix(self)
+        np.fill_diagonal(m,0)
+        m -= self.diagonal_disorder()
+        return m
+               
 class ExpModel_Banded_Logbox_negative(ExpModel_Banded_Logbox_phase):
     def rate_matrix(self,convention=0):
         m = ExpModel_Banded_Logbox_phase.rate_matrix(self)
@@ -87,19 +90,19 @@ class ExpModel_Banded_Logbox_negative(ExpModel_Banded_Logbox_phase):
         zero_sum(m2)
         return m2
         
-class ExpModel_Banded_Logbox_negative_pinning(ExpModel_Banded_Logbox_negative):
+class ExpModel_Banded_Logbox_negative_dd(ExpModel_Banded_Logbox_negative, ExpModel_Banded_Logbox_dd):
     def rate_matrix(self,convention=0):
         m = ExpModel_Banded_Logbox_negative.rate_matrix(self)
-        m += self.pinning_matrix()
-        #np.fill_diagonal(m,0)
+        m += self.diagonal_disorder()
         return m
-    def pinning_matrix(self):
-        """ This matrix has negative disordered values on the diagonal"""
-        W = 0.3
-        #pinning =  - np.random.permutation(np.linspace(0.5,1.5,self.sample.number_of_points()))
-        # The pinning is uniform on [0,W]
-        pinning =  - np.random.permutation(np.linspace(0,W,self.sample.number_of_points()))
-        return np.diagflat(pinning)
+        
+class ExpModel_Banded_Logbox_negative_rd(ExpModel_Banded_Logbox_negative, ExpModel_Banded_Logbox_dd):#diagonal is not special...
+    def rate_matrix(self,convention=0):
+        m = ExpModel_Banded_Logbox_negative.rate_matrix(self)
+        np.fill_diagonal(m,0)
+        m -= self.diagonal_disorder()
+        return m
+     
         
 class ExpModel_Banded_Logbox_nosym(ExpModel_1d):
     """ this model is not Hermitian!!!"""

@@ -73,7 +73,7 @@ def get_ev_thoules_g_1d(number_of_sites = 1000, s=0.1,b=5,
     """ This time, the idea is to use versatile models.
     """
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
-    win_avg_mtrx = sparsedl.window_avg_mtrx(number_of_sites - 1)
+    win_avg_mtrx = sparsedl.window_avg_mtrx(number_of_sites - 1,win_size=20)
     res_type =  np.dtype([("ev",(np.float64,number_of_sites)),
                           ("PN",(np.float64,number_of_sites)),
                           ("thoules_g",(np.float64,number_of_sites)),
@@ -98,8 +98,10 @@ def get_ev_thoules_g_1d(number_of_sites = 1000, s=0.1,b=5,
         avg_spacing = win_avg_mtrx.dot(-model.eigvals[1:]+model.eigvals[:-1])
         # avg_spacing is now smaller than eigvals. We duplicate the last value to accomodate (quite  hackish)
         avg_spacing = np.append(avg_spacing,avg_spacing[-1])
-        ga = ma.masked_less(g/avg_spacing,prec)
-        res[n] = ( model.eigvals, model.PN_N, ma.filled(ga, fill_value=prec) , s, b, model_name)
+        #ga = ma.masked_less(g/avg_spacing,prec)
+        ga = g/avg_spacing
+        ga[g<prec] = prec/avg_spacing
+        res[n] = ( model.eigvals, model.PN_N, ga , s, b, model_name)
     return res
     
 
@@ -127,16 +129,21 @@ def plot_sym_neg(ax1,ax2,g_models):
 ###################  Plotting to files (using previous plot funcs) ###
 #################################################################
 
-def plotf_sym_neg():
+def plotf_sym_neg(force_new=False):
     fig1, ax1 = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     fig1.subplots_adjust(left=0.1,right=0.95)
     fig2, ax2 = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     fig2.subplots_adjust(left=0.1,right=0.95)
+    if force_new:
+        os.remove("g_several_models.npz")
     gl = cached_get(get_ev_thoules_g_1d, "g_several_models.npz", number_of_sites=1000, models_and_names = [(pta_models.ExpModel_Banded_Logbox_phase, "RSCP"),
-                                                         (pta_models.ExpModel_Banded_Logbox_pinning, "RSP"),
+                                                         (pta_models.ExpModel_Banded_Logbox_dd, "RSP"),
+                                                         (pta_models.ExpModel_Banded_Logbox_rd, "RSD"),
                                                          (pta_models.ExpModel_Banded_Logbox_negative, "RSC"),
-                                                         (pta_models.ExpModel_Banded_Logbox_negative_pinning, "RS"),
-                                                         (pta_models.ExpModel_Banded_Logbox_nosym, "RCP")])
+
+                                                         (pta_models.ExpModel_Banded_Logbox_negative_dd, "RS"),
+                                                         (pta_models.ExpModel_Banded_Logbox_negative_rd, "RD")])#,
+                                                         #(pta_models.ExpModel_Banded_Logbox_nosym, "RCP")])
     plot_sym_neg(ax1,ax2,gl)
     fig1.savefig("pta_sym_neg_g.pdf")
     fig2.savefig("pta_sym_neg_PN.pdf")

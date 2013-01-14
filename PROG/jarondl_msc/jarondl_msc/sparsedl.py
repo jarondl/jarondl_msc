@@ -338,6 +338,13 @@ def window_avg_mtrx(N, win_size=4):
     """
     M = np.tri(N, k=win_size//2)*(np.tri(N, k=win_size//2).T)
     return ( M / M.sum(axis=0)).T
+    
+    
+def thouless_coef(evs):
+    diff = evs - evs[:,np.newaxis]
+    np.fill_diagonal(diff,1)
+    logsum = np.log(np.abs(diff)).sum(axis=0)#0 or 1 are equal..
+    return (logsum/evs.size)**(-1)
 
 def lazyprop(fn):
     """ based on http://stackoverflow.com/questions/3012421/python-lazy-property-decorator"""
