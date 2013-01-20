@@ -135,19 +135,26 @@ def plotf_sym_neg(force_new=False):
     fig2, ax2 = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     fig2.subplots_adjust(left=0.1,right=0.95)
     if force_new:
-        os.remove("g_several_models.npz")
+        try:
+            os.remove("g_several_models.npz")
+        except OSError:
+            warning(" File does not exist, so the run is new anyway. ")
+        
     gl = cached_get(get_ev_thoules_g_1d, "g_several_models.npz", number_of_sites=1000, models_and_names = [(pta_models.ExpModel_Banded_Logbox_phase, "RSCP"),
                                                          (pta_models.ExpModel_Banded_Logbox_dd, "RSP"),
                                                          (pta_models.ExpModel_Banded_Logbox_rd, "RSD"),
                                                          (pta_models.ExpModel_Banded_Logbox_negative, "RSC"),
-
                                                          (pta_models.ExpModel_Banded_Logbox_negative_dd, "RS"),
                                                          (pta_models.ExpModel_Banded_Logbox_negative_rd, "RD")])#,
                                                          #(pta_models.ExpModel_Banded_Logbox_nosym, "RCP")])
-    plot_sym_neg(ax1,ax2,gl)
+    plot_sym_neg(ax1,ax2,gl[:3])
     fig1.savefig("pta_sym_neg_g.pdf")
     fig2.savefig("pta_sym_neg_PN.pdf")
-    
+    ax1.cla()
+    ax2.cla()
+    plot_sym_neg(ax1,ax2,gl[3:])
+    fig1.savefig("pta_sym_neg_g2.pdf")
+    fig2.savefig("pta_sym_neg_PN2.pdf")
     
     
 
