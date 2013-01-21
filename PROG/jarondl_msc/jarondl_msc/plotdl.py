@@ -26,6 +26,7 @@ import os
 import shutil
 import subprocess
 import logging
+from functools import wraps
 
 from matplotlib import use
 if 'DISPLAY' in os.environ.keys() :
@@ -203,3 +204,12 @@ class DictScalarFormatter(ticker.ScalarFormatter):
         print((val,s))
         self.fix_minus(s)
         return ticker.ScalarFormatter.__call__(self, self.vals_dict.get(x, 0), pos)
+        
+        
+def draw_if(f):
+    """ adds a call to draw_if_interactive after a plotting function """
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        f(*args, **kwargs)
+        draw_if_interactive()
+    return wrapper

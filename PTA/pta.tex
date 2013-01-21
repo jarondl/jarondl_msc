@@ -232,18 +232,43 @@ but the change is much stronger (note the logarithmic $y$-scale).
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Non positive matrices}
+\sect{Diagonal Disorder}
 
 
-In the RP we have claimed that the positivity of the matrix
-causes the very wide modes to be on the lower edge of the spectrum.
-To see this point, we ran numerics with $N=1000$ $b=5$ and $\sigma=0.1$, where 
-we multiplied elements randomly (albeit symmetrically) by $\pm 1$. 
-It seems that without positivity the left "plateau" disappears, although
-the $\lambda=0$ mode stays. Also notice the arc-like feature on the right,
+In the RP we have claimed that the conservation of the matrix
+causes the very wide modes on the lower edge of the spectrum.
+To see this point, we ran numerics with $N=1000$ $b=5$ and $\sigma=0.1$.
+
+ Also notice the arc-like feature on the right,
 it was there previously, but it is more pronounced for $\sigma=0.1$.  
-Also, our numerical calculation of Thouless' conductance seems to
-fail completely for the non positive matrices.
+
+
+Conservation means that the sum of each row is zero, so that the diagonal is minus the
+sum of all other terms. The first way to break conservation is by adding
+random elements to this diagonal.
+\begin{align}
+\gamma_n = -\sum_m w_{nm} + w_0\eexp{-\varepsilon}
+\end{align}
+ In the plot legends we mark this by the removal of $C$.
+ 
+ 
+Another way is by neglecting to do the sum altogether,
+keeping only:
+\begin{align}
+\gamma_n = + w_0\eexp{-\varepsilon}
+\end{align}
+In the plot legends we mark this by adding $D$.
+
+
+
+In \autoref{fig:pta_sym1} we see the resulting $PN$ and $g$. We see
+that the lowest eigenmodes behave differently. To examine this effect,
+we have shifted the $x$ axis by the minimal $\lambda$, and applied log-scale.
+For the conserving matrix, the $PN$ is constant in the low eigenvalues. The
+uncoserving matrix has a small decline, and the one without special diagonal 
+has a larger decline. 
+
+
 
 
 \begin{figure}[H]
@@ -254,10 +279,48 @@ fail completely for the non positive matrices.
   \subfloat[PN]{
     \includegraphics{pta_sym_neg_PN}
     
+  }\\
+  \subfloat[PN around zero]{
+    \includegraphics{pta_sym_neg_PN_zero}
+    
   }
-
   \caption{$g$ and PN as a function of $\lambda$ for sparse systems.
-  For all the plots $N=1000$, $b=5$ and $\sigma=0.1$. The label codes are R-Real S-Symmetric C-Conservative P-Positive}
+  For all the plots $N=1000$, $b=5$ and $\sigma=0.1$. 
+  The label codes are R-Real S-Symmetric P-[Positive Elements] C-Conservative D-[no-special diagonal] }
+  \label{fig:pta_sym1}
 \end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{non positive elements}
+
+Here we check the effects of positivity on the $PN$ structure. We multiply
+the matrix elements by a random sign $[\pm 1]$, keeping it symmetric.
+The change from before is striking, as the plateau vanishes completely.
+
+We examine the conservation aspects here as well, with the same
+too measures of diagonal disorder. We see that when we do not treat the diagonal
+specially, there are no wide modes at all. For the conserving and disorder matrices,
+there are some wide modes. In the conserving case they are around the center, with a $\lambda=0, PN=N$ mode.
+For the non-conserving mode this behavior shifts to the right. To further
+analyze this area, we have shifted the $x$-axis, and plotted only the points to the 
+right of the peak, to allow log-scale. The other half is symmetric. 
+\begin{figure}[H]
+  \subfloat[g]{
+    \includegraphics{pta_sym_neg_g2}  
+    
+  }\\
+  \subfloat[PN]{
+    \includegraphics{pta_sym_neg_PN2}
+    
+  }\\
+  \subfloat[PN around center]{
+    \includegraphics{pta_sym_neg_PN_center}
+    
+  }
+  \caption{$g$ and PN as a function of $\lambda$ for sparse systems.
+  For all the plots $N=1000$, $b=5$ and $\sigma=0.1$. 
+  The label codes are R-Real S-Symmetric P-[Positive Elements] C-Conservative D-[no-special diagonal] . Note
+  that the last plot has only half of the points}
+  \label{fig:pta_sym2}
+\end{figure}
 \end{document}

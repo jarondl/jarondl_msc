@@ -16,7 +16,7 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
 import plotdl
 import sparsedl
-from plotdl import plt, tight_layout, cummulative_plot
+from plotdl import plt, tight_layout, cummulative_plot,draw_if
 from sparsedl import cached_get
 
 
@@ -123,8 +123,35 @@ def plot_sym_neg(ax1,ax2,g_models):
     ax1.set_ylabel('$g_T$')
     ax2.set_ylabel('PN')
     
+def plot_sym_neg_around_zero(ax,g_models):
 
+    for g in g_models:
+        N = len(g['ev'])
+        evmin = g['ev'].max()
+        ax.plot(evmin-g['ev'], g['PN']/N, ".",label=g['name'])
+    ax.set_yscale('log')
+    ax.yaxis.set_major_locator(get_LogNLocator())
+    ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
+    ax.legend(loc='lower left')
+    ax.set_xlabel(r'$\lambda-\lambda_{min}$')
+    ax.set_ylabel('PN')
+    
+@draw_if
+def plot_sym_neg_around_center(ax,g_models):
 
+    for g in g_models:
+        N = len(g['ev'])
+        center = g['PN'].argmax()
+        #center = N//2
+        ax.plot(g['ev'][center]-g['ev'][center:], g['PN'][center:]/N, ".",label=g['name'])
+    ax.set_yscale('log')
+    ax.yaxis.set_major_locator(get_LogNLocator())
+    ax.set_xscale('log')
+    ax.xaxis.set_major_locator(get_LogNLocator())
+    ax.legend(loc='lower left')
+    ax.set_xlabel(r'$\lambda-\lambda_0$')
+    ax.set_ylabel('PN')
 #################################################################
 ###################  Plotting to files (using previous plot funcs) ###
 #################################################################
@@ -140,12 +167,13 @@ def plotf_sym_neg(force_new=False):
         except OSError:
             warning(" File does not exist, so the run is new anyway. ")
         
-    gl = cached_get(get_ev_thoules_g_1d, "g_several_models.npz", number_of_sites=1000, models_and_names = [(pta_models.ExpModel_Banded_Logbox_phase, "RSCP"),
-                                                         (pta_models.ExpModel_Banded_Logbox_dd, "RSP"),
-                                                         (pta_models.ExpModel_Banded_Logbox_rd, "RSD"),
-                                                         (pta_models.ExpModel_Banded_Logbox_negative, "RSC"),
-                                                         (pta_models.ExpModel_Banded_Logbox_negative_dd, "RS"),
-                                                         (pta_models.ExpModel_Banded_Logbox_negative_rd, "RD")])#,
+    gl = cached_get(get_ev_thoules_g_1d, "g_several_models.npz", number_of_sites=1000, models_and_names = [
+                                                        (pta_models.ExpModel_Banded_Logbox_phase, "RSPC"),
+                                                        (pta_models.ExpModel_Banded_Logbox_dd, "RSP"),
+                                                        (pta_models.ExpModel_Banded_Logbox_rd, "RSPD"),
+                                                        (pta_models.ExpModel_Banded_Logbox_negative, "RSC"),
+                                                        (pta_models.ExpModel_Banded_Logbox_negative_dd, "RS"),
+                                                        (pta_models.ExpModel_Banded_Logbox_negative_rd, "RSD")])#,
                                                          #(pta_models.ExpModel_Banded_Logbox_nosym, "RCP")])
     plot_sym_neg(ax1,ax2,gl[:3])
     fig1.savefig("pta_sym_neg_g.pdf")
@@ -155,9 +183,12 @@ def plotf_sym_neg(force_new=False):
     plot_sym_neg(ax1,ax2,gl[3:])
     fig1.savefig("pta_sym_neg_g2.pdf")
     fig2.savefig("pta_sym_neg_PN2.pdf")
-    
-    
-
+    ax1.cla()
+    plot_sym_neg_around_zero(ax1,gl[:3])
+    fig1.savefig("pta_sym_neg_PN_zero.pdf")
+    ax1.cla()
+    plot_sym_neg_around_center(ax1,gl[3:5])
+    fig1.savefig("pta_sym_neg_PN_center.pdf")
 if __name__ ==  "__main__":
     plotf_sym_neg()
 
