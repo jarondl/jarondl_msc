@@ -115,6 +115,7 @@ def plot_sym_neg(ax1,ax2,g_models):
         N = len(g['ev'])
         ax1.plot(-g['ev'], g['thoules_g'],".",label=g['name'])
         ax2.plot(-g['ev'], g['PN']/N, ".",label=g['name'])
+        ax2.axhline(2.0/3, ls='--', color='black')
     for ax in (ax1,ax2):
         ax.set_yscale('log')
         ax.yaxis.set_major_locator(get_LogNLocator())
@@ -129,6 +130,8 @@ def plot_sym_neg_around_zero(ax,g_models):
         N = len(g['ev'])
         evmin = g['ev'].max()
         ax.plot(evmin-g['ev'], g['PN']/N, ".",label=g['name'])
+        ax.axhline(2.0/3, ls='--', color='black')
+
     ax.set_yscale('log')
     ax.yaxis.set_major_locator(get_LogNLocator())
     ax.set_xscale('log')
@@ -145,6 +148,8 @@ def plot_sym_neg_around_center(ax,g_models):
         center = g['PN'].argmax()
         #center = N//2
         ax.plot(g['ev'][center]-g['ev'][center:], g['PN'][center:]/N, ".",label=g['name'])
+        ax.axhline(2.0/3, ls='--', color='black')
+
     ax.set_yscale('log')
     ax.yaxis.set_major_locator(get_LogNLocator())
     ax.set_xscale('log')
@@ -169,11 +174,11 @@ def plotf_sym_neg(force_new=False):
         
     gl = cached_get(get_ev_thoules_g_1d, "g_several_models.npz", number_of_sites=1000, models_and_names = [
                                                         (pta_models.ExpModel_Banded_Logbox_phase, "RSPC"),
-                                                        (pta_models.ExpModel_Banded_Logbox_dd, "RSP"),
-                                                        (pta_models.ExpModel_Banded_Logbox_rd, "RSPD"),
+                                                        (pta_models.ExpModel_Banded_Logbox_dd, "RSPCD"),
+                                                        (pta_models.ExpModel_Banded_Logbox_rd, "RSP"),
                                                         (pta_models.ExpModel_Banded_Logbox_negative, "RSC"),
-                                                        (pta_models.ExpModel_Banded_Logbox_negative_dd, "RS"),
-                                                        (pta_models.ExpModel_Banded_Logbox_negative_rd, "RSD")])#,
+                                                        (pta_models.ExpModel_Banded_Logbox_negative_dd, "RSCD"),
+                                                        (pta_models.ExpModel_Banded_Logbox_negative_rd, "RS")])#,
                                                          #(pta_models.ExpModel_Banded_Logbox_nosym, "RCP")])
     plot_sym_neg(ax1,ax2,gl[:3])
     fig1.savefig("pta_sym_neg_g.pdf")
