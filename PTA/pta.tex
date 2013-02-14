@@ -330,8 +330,8 @@ right of the peak, to allow log-scale. The other half is symmetric.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{Relating mean free path to DOS}
 
-We mark the Local-Density-Of-States by $\varrho_\lambda$, and local velocity
-by $v_\lambda$. According to FGR, the transition rate,
+We mark the Density-Of-States by $\varrho_\lambda$.
+According to FGR, the transition rate,
 or the inverse of mean-free-time is
 \begin{align}
 \frac{1}{t_\ell} = \varrho_\lambda w_{nm}
@@ -340,6 +340,45 @@ the mean-free-path is:
 \begin{align}
 \ell = v_\lambda t_\ell = \frac{v_\lambda}{\varrho_\lambda w_{nm}}
 \end{align}
+For $v_\lambda$ we could probably take the Fermi velocity.
 
 
+Next, we need to connect the mean-free-path with the localization length 
+in 1-3d. Basically, in $1d$ they are the same,
+with 
+\begin{align}
+\xi\sim \ell
+\end{align}
+For banded $1d$ we expect
+\begin{align}
+\xi \sim b^2 \ell
+\end{align}
+
+In $2d$ there is an exponential dependence on $g$ (?),
+\begin{align}
+\xi\sim \eexp{g} \ell
+\end{align}
+While in $3d$ we have the $\beta$-function:
+\begin{align}
+\beta(g) = \frac{\partial g}{\partial \log(L)}
+\end{align}
+If $\beta(g)>0$, then the derivative is positive, and the RG flow
+goes to the right, and vice versa. For $3d$ there is
+a critical $g_c=1$, where to the right of it $\beta(g)>0$, and 
+to the left $\beta(g)<0$. This means that if $g_0>1$, the localization
+length diverges, and if $g_0<1$ the localization length goes to $0$.
+
+
+An interesting question is the relation between the wavelength and
+the localization length. If the localization length is smaller then
+the wavelength it has no meaning.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{Band structure}
+
+We can find the DOS at the ends of the bands,
+and their inverse should be the localization length.
+
+Perhaps, because of a special matrix feature or some symmetry,
+we have extended states with lower energy, similar in idea
+to cooper pairs in super-conductors.
 \end{document}
