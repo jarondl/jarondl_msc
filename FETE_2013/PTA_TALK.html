@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Talk at the Negev physics fete 2013</title>
+        <script type="text/javascript"
+                src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+        </script>
+        <script>
+            MathJax.Hub.Config({
+            jax: ["input/TeX","output/HTML-CSS"],
+            displayAlign: "left"});
+        </script>
+        <style type="text/css">
+            p {width:70em;
+               max-width: 95%;} 
+            figcaption {
+                max-width:95%;
+                width:30em;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Diffusion and localization in sparse networks</h2>
+        <p>
+            We consider d-dimensional networks, with dynamics described
+            by a rate equation
+            \[ \frac{dp_n}{dt} \ \  = \ \ \sum_m w_{nm} p_m \\
+               -w_{nn} \ \  =\ \  \gamma_n \ \ \equiv \ \ \sum_{m\neq n} w_{mn} \]
+            Specifically, in what we call the 
+            <em>random site hopping model</em>, the sites are 
+            randomly distributed in space, and the rates depend on
+            the distance between sites:
+            \[ w_{nm} \ \ =\ \ w_0 \cdot \exp\left(-\frac{\left|r_n-r_m\right|}{\xi} - \varepsilon_{nm}\right)\]
+            Where \(\xi\) is a global parameter defining the sparsity of the system,
+            and \(\varepsilon\) is a random parameter defined per bond.
+        </p>
+        <p>
+        <figure>
+            <img src="pts_points.png" alt="gamma distribution">
+            <figcaption>A visual example: the distribution of \(\gamma\) (arbitrary units),
+        for a \(2d\) system with 300 sites and \(\varepsilon=0\). We see that even though the distribution is translational invariant, 
+        some sites are better connected to others.</figcaption>
+        </figure>
+        </p>
+        <h3>Determining the diffusion coefficient \(D\)</h3>
+        <p> The long term behavior of the system is characterized by
+        a diffusion coefficient \(D\). It is defined by the long term spreading:
+        \[ S(t)\quad = \quad \left\langle r^2(t)\right\rangle \quad \sim \quad D t\]
+        And it is also related to the long time survival probability:
+        \[ \mathcal{P}(t)\quad \sim \quad \frac{1}{(Dt)^{1/2}} \]
+        And to the low eigenvalue distribution (by Laplace transform):
+        \[ \mathcal{N}(\lambda) \quad \sim \quad \left[ \frac{\lambda}{D}\right]^{d/2} \]
+           
+            <figure>
+                <img src="pts_Spectral_PN.png">
+                <figcaption>Spectral counting function \(\mathcal{N}(\lambda)\)
+                and PN, for \(1d\) and \(2d\). For \(1d\) the dashed lines were found analytically.
+                For \(2d\) they based on Resistor-Network calculation.</figcaption>
+            </figure>
+        </p>
+        <h3>Effective range hopping</h3>
+        <p>
+            For a dense system, (large \(\xi\) compared to typical site distance),
+            the diffusion coefficient can be estimated by a linear equation (linear in the rates):
+            \[ D = \frac{1}{2d}\sum_r w(r) r^2 \]
+            For a sparse system, we can estimate the coefficient by the known VRH procedure.
+            We present the ERH procedure, which has a smooth cross-over between those two
+            regimes. For our random hopping models it gives:
+            \[ D_{\textrm{ERH}} \quad =\quad \textrm{EXP}_{d+2}\left(\frac{1}{s_c}\right) \mbox{e}^{-1/s_c} D_{linear} \\
+            s_c\quad=\quad \left(\frac{d}{\Omega_c} n_c\right)^{-1/d}\frac{\xi}{r_0} \\
+            \textrm{EXP}_{l}(x) \quad = \quad \sum_{k=0}^l \frac{1}{k!}x^k\]
+            <figure>
+            <img src="wdiagram.png">
+            <figcaption>Comparing the VRH trade-off with the ERH threshold</figcaption>
+            </figure>
+        </p>
+    </body>
+
+</html>

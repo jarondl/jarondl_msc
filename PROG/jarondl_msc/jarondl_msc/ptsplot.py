@@ -20,7 +20,7 @@ import sparsedl
 import plotdl
 from geometry import Sample
 from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum, lazyprop, omega_d
-from plotdl import cummulative_plot
+from plotdl import cummulative_plot, plt
 
 ### Raise all float errors
 np.seterr(all='warn')
@@ -1173,7 +1173,7 @@ def plot_1d_cummulative_PN(ax1, ax2, eps_range = (2, 0.4, 0.2)):
     plotdl.set_all(ax1, xlabel=r"$\lambda$", ylabel = r"$\mathcal{N}(\lambda)$", legend_loc="upper left") #mathcal had some issues..
 
 def plot_1d_2d_panels(eps_range2d = (0.05,0.1,0.15), eps_range1d=(0.2,0.4,2,5)):
-    f = plotdl.Figure()
+    f = plt.figure()
     ax1 = f.add_subplot(221)
     ax2 = f.add_subplot(222)
     ax3 = f.add_subplot(223, sharex = ax1)
@@ -1320,6 +1320,20 @@ def plot_banded_resnet3(fig, D, s, b):
 def plot_x_exp_x(ax,epsilon=1):
     plot_func(ax, lambda x: x*exp(-x/epsilon), [0,epsilon*5])
     
+
+def plots_for_fete2013():
+    """ specific plots for the negev fete 2013 """
+    fig, ax = plt.subplots()
+    sam = Sample((1,1),400)
+    mod = ExpModel_2d(sam,0.5,periodic=True)
+    gam = -mod.ex.diagonal()
+    sct = ax.scatter(sam.points[:,0], sam.points[:,1], edgecolors='none', 
+        c= gam, vmin=gam.min(), vmax=gam.max())
+    ax.set_xlim((0,1))
+    ax.set_ylim((0,1))
+    fig.colorbar(sct)
+    fig.savefig('pts_points.png')
+
 
 ######## One function to plot them all
 def all_plots(seed= 1, **kwargs):
