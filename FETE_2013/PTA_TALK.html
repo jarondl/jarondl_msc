@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8" />
         <title>Talk at the Negev physics fete 2013</title>
         <script type="text/javascript"
                 src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -21,20 +22,50 @@
     </head>
     <body>
         <h2>Diffusion and localization in sparse networks</h2>
+        <h3> Real symmetric matrices </h3>
         <p>
-            We consider d-dimensional networks, with dynamics described
-            by a rate equation
-            \[ \frac{dp_n}{dt} \ \  = \ \ \sum_m w_{nm} p_m \\
-               -w_{nn} \ \  =\ \  \gamma_n \ \ \equiv \ \ \sum_{m\neq n} w_{mn} \]
-            Specifically, in what we call the 
-            <em>random site hopping model</em>, the sites are 
+            Our interest is in real symmetric conservative matrices.
+            \[ \mathbf{W} = \left(\matrix{ 
+                -\gamma_{1} & w_{12} & w_{13} & \cdots &  \cdots \cr
+                 w_{12} & -\gamma_2 & w_{23} & \cr
+                  w_{13} & w_{23} & -\gamma_3 & \cr
+                   \vdots & & & \ddots\cr
+                    \vdots & &  & & \ddots}\right) \] 
+            The "conservative" means that each row's sum is zero, or:
+            \[\gamma_n \ \ \equiv \ \ \sum_{m\neq n} w_{mn} \]
+        </p>
+        <h3>Motivation</h3>
+        <p>
+            Such matrices appear in rate equations:
+            \[ \frac{d}{dt}{\mathbf p} \ \  = \ \ \mathbf{W}\cdot\mathbf{p} \]
+            in Newtons II law:
+            \[ \frac{d^2}{dt^2}{\mathbf q} \ \  = \ \ -\mathbf{K}\cdot\mathbf{q} \]
+            and in Schrödinger's equation
+            \[ \frac{d}{dt}{\mathbf \psi} \ \  = \ \ -i {\mathcal{H}}\cdot\mathbf{\psi} \] 
+        </p>
+        <h3>Sparsity</h3>
+        <p>
+            We focus on sparse/glassy networks,
+            where by sparse we mean that a small number of elements
+            is larger by orders of magnitude than the rest.
+        </p><p>
+            As two examples we use:
+            <ol>
+            <li><h4>Response of driven weakly chaotic systems</h4></li>
+            <li><h4>Mott random site model</h4>
+            In this model, the sites are 
             randomly distributed in space, and the rates depend on
             the distance between sites:
-            \[ w_{nm} \ \ =\ \ w_0 \cdot \exp\left(-\frac{\left|r_n-r_m\right|}{\xi} - \varepsilon_{nm}\right)\]
-            Where \(\xi\) is a global parameter defining the sparsity of the system,
-            and \(\varepsilon\) is a random parameter defined per bond.
-        </p>
-        <p>
+            \[ w_{nm} \ \ =\ \ w_0 \cdot \exp\left(-\frac{\left|r_n-r_m\right|}{\xi} - \epsilon_{nm}\right)\]
+            Where \(\xi\) and \(w_0\) are system parameters (defining the time and space units),
+            and \(\epsilon\) a bond specific parameter. In the <em>degenerate</em> version, \(\epsilon=0\)
+            for all the bonds, while in the <em>non-degenerate</em> version \(\epsilon_{nm} = \textrm{uniform}[0,\infty]\).
+            <p>
+            The dimensionless parameter defining sparsity in this model is
+            \[ s \ \ =\ \ \frac{\xi}{r_0} \]
+            where \(r_0\) is the typical distance between sites.
+            </p>
+            </li>
         <figure>
             <img src="pts_points.png" alt="gamma distribution">
             <figcaption>A visual example: the distribution of \(\gamma\) (arbitrary units),
@@ -50,7 +81,19 @@
         \[ \mathcal{P}(t)\quad \sim \quad \frac{1}{(Dt)^{1/2}} \]
         And to the low eigenvalue distribution (by Laplace transform):
         \[ \mathcal{N}(\lambda) \quad \sim \quad \left[ \frac{\lambda}{D}\right]^{d/2} \]
-           
+           <figure>
+               <img src="ptsD_1D_long.png"><img src="ptsD_2D_long.png">
+               <figcaption>On the left: exact \(1d\) analytical result,
+               for spreading and \(D\). On the right: \(2d\) numerics, with the linear and ERH estimates. 
+               </figcaption>
+           </figure>
+           The ERH result for the non-degenrate case is:
+           \[ D_{\textrm{ERH}} \quad =\quad \textrm{EXP}_{d+2}\left(\frac{1}{s_{\textrm{eff}}}\right) \mbox{e}^{-1/s_{\textrm{eff}}} D_{linear} \\
+            s_{\textrm{eff}}\quad=\quad \left(\frac{d}{\Omega_d} n_c\right)^{-1/d}\frac{\xi}{r_0} \\
+            \textrm{EXP}_{l}(x) \quad = \quad \sum_{k=0}^l \frac{1}{k!}x^k\]
+<hr>
+Not changes yet below this line.
+<hr>
             <figure>
                 <img src="pts_Spectral_PN.png">
                 <figcaption>Spectral counting function \(\mathcal{N}(\lambda)\)
