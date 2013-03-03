@@ -18,6 +18,9 @@
                 max-width:95%;
                 width:30em;
             }
+            figure {
+                background-color:#F0F0F0;
+            }
         </style>
     </head>
     <body>
@@ -38,7 +41,7 @@
         <p>
             Such matrices appear in rate equations:
             \[ \frac{d}{dt}{\mathbf p} \ \  = \ \ \mathbf{W}\cdot\mathbf{p} \]
-            in Newtons II law:
+            in Newtons II law for systems of masses and springs, which are used as heat transport models:
             \[ \frac{d^2}{dt^2}{\mathbf q} \ \  = \ \ -\mathbf{K}\cdot\mathbf{q} \]
             and in Schrödinger's equation
             \[ \frac{d}{dt}{\mathbf \psi} \ \  = \ \ -i {\mathcal{H}}\cdot\mathbf{\psi} \] 
@@ -87,18 +90,12 @@
                for spreading and \(D\). On the right: \(2d\) numerics, with the linear and ERH estimates. 
                </figcaption>
            </figure>
-           The ERH result for the non-degenrate case is:
-           \[ D_{\textrm{ERH}} \quad =\quad \textrm{EXP}_{d+2}\left(\frac{1}{s_{\textrm{eff}}}\right) \mbox{e}^{-1/s_{\textrm{eff}}} D_{linear} \\
-            s_{\textrm{eff}}\quad=\quad \left(\frac{d}{\Omega_d} n_c\right)^{-1/d}\frac{\xi}{r_0} \\
-            \textrm{EXP}_{l}(x) \quad = \quad \sum_{k=0}^l \frac{1}{k!}x^k\]
-<hr>
-Not changes yet below this line.
-<hr>
+
             <figure>
                 <img src="pts_Spectral_PN.png">
                 <figcaption>Spectral counting function \(\mathcal{N}(\lambda)\)
                 and PN, for \(1d\) and \(2d\). For \(1d\) the dashed lines were found analytically.
-                For \(2d\) they based on Resistor-Network calculation.</figcaption>
+                For \(2d\) they are based on Resistor-Network calculation.</figcaption>
             </figure>
         </p>
         <h3>Effective range hopping</h3>
@@ -109,9 +106,12 @@ Not changes yet below this line.
             For a sparse system, we can estimate the coefficient by the known VRH procedure.
             We present the ERH procedure, which has a smooth cross-over between those two
             regimes. For our random hopping models it gives:
-            \[ D_{\textrm{ERH}} \quad =\quad \textrm{EXP}_{d+2}\left(\frac{1}{s_c}\right) \mbox{e}^{-1/s_c} D_{linear} \\
-            s_c\quad=\quad \left(\frac{d}{\Omega_c} n_c\right)^{-1/d}\frac{\xi}{r_0} \\
+            \[ D \quad =\quad \textrm{EXP}_{d+2}\left(\frac{1}{s_c}\right) \mbox{e}^{-1/s_c} D_{linear} \\
+            s_c\quad=\quad \left(\frac{d}{\Omega_d} n_c\right)^{-1/d}\frac{\xi}{r_0} \\
             \textrm{EXP}_{l}(x) \quad = \quad \sum_{k=0}^l \frac{1}{k!}x^k\]
+            The ERH result for the non-degenrate case is:
+           \[ D \quad =\quad \textrm{EXP}_{\color{red}{d+3}}\left(\frac{1}{s_{\textrm{eff}}}\right) \mbox{e}^{-1/s_{\textrm{eff}}} D_{linear} \\
+            s_{\textrm{eff}}\quad=\quad \left(\frac{d}{\Omega_d} n_c\right)^{-1/d}\frac{\xi}{r_0} \]
             <figure>
             <img src="wdiagram.png">
             <figcaption>Comparing the VRH trade-off with the ERH threshold</figcaption>
