@@ -53,8 +53,7 @@
             is larger by orders of magnitude than the rest.
         </p><p>
             As two examples we use:
-            <ol>
-            <li><h4>Response of driven weakly chaotic systems</h4></li>
+            <ol><li><h4>Response of driven weakly chaotic systems</h4></li>
             <li><h4>Mott random site model</h4>
             In this model, the sites are 
             randomly distributed in space, and the rates depend on
@@ -84,12 +83,7 @@
         \[ \mathcal{P}(t)\quad \sim \quad \frac{1}{(Dt)^{1/2}} \]
         And to the low eigenvalue distribution (by Laplace transform):
         \[ \mathcal{N}(\lambda) \quad \sim \quad \left[ \frac{\lambda}{D}\right]^{d/2} \]
-           <figure>
-               <img src="ptsD_1D_long.png"><img src="ptsD_2D_long.png">
-               <figcaption>On the left: exact \(1d\) analytical result,
-               for spreading and \(D\). On the right: \(2d\) numerics, with the linear and ERH estimates. 
-               </figcaption>
-           </figure>
+
 
             <figure>
                 <img src="pts_Spectral_PN.png">
@@ -98,25 +92,58 @@
                 For \(2d\) they are based on Resistor-Network calculation.</figcaption>
             </figure>
         </p>
-        <h3>Effective range hopping</h3>
+
+                   <figure>
+               <img src="ptsD_1D_long.png"><img src="ptsD_2D_long.png">
+               <figcaption>On the left: exact \(1d\) analytical result,
+               for spreading and \(D\). On the right: \(2d\) numerics, with the linear and ERH estimates. 
+               </figcaption>
+           </figure>
+                   <h3>Effective range hopping</h3>
         <p>
             For a dense system, (large \(\xi\) compared to typical site distance),
             the diffusion coefficient can be estimated by a linear equation (linear in the rates):
             \[ D = \frac{1}{2d}\sum_r w(r) r^2 \]
             For a sparse system, we can estimate the coefficient by the known VRH procedure.
             We present the ERH procedure, which has a smooth cross-over between those two
-            regimes. For our random hopping models it gives:
-            \[ D \quad =\quad \textrm{EXP}_{d+2}\left(\frac{1}{s_c}\right) \mbox{e}^{-1/s_c} D_{linear} \\
-            s_c\quad=\quad \left(\frac{d}{\Omega_d} n_c\right)^{-1/d}\frac{\xi}{r_0} \\
+            regimes. 
+            </p>
+            <h4>Results for the degenerate model</h4>
+            <p>
+            \[ D \quad =\quad \textrm{EXP}_{d+2}\left(\frac{1}{s_\textrm{eff}}\right) \mbox{e}^{-1/s_\textrm{eff}} D_{linear} \\
+            s_\textrm{eff}\quad=\quad \left(\frac{d}{\Omega_d} n_c\right)^{-1/d}\frac{\xi}{r_0} \\
             \textrm{EXP}_{l}(x) \quad = \quad \sum_{k=0}^l \frac{1}{k!}x^k\]
-            The ERH result for the non-degenrate case is:
-           \[ D \quad =\quad \textrm{EXP}_{\color{red}{d+3}}\left(\frac{1}{s_{\textrm{eff}}}\right) \mbox{e}^{-1/s_{\textrm{eff}}} D_{linear} \\
-            s_{\textrm{eff}}\quad=\quad \left(\frac{d}{\Omega_d} n_c\right)^{-1/d}\frac{\xi}{r_0} \]
+            <ul><li> The parameter \(n_c\) is the average number of bonds required 
+            to get percolation. For \(d=1\) \(n_c=2\) and for \(d=2\) \(n_c\approx 4.5\),
+            based on studies of disk-percolation.
+            </li><li> If we disregard the percolative nature (by setting \(n_c=0\)), we 
+                    get the linear estimate back.
+            </li><li> In the limit \(s_\textrm{eff}\ll 1\) we obtain VRH-like behavior:
+            \[ D\sim e^{-1/s_\textrm{eff}} \]
+                    
+            </li></ul>
+            <h4>Results for the non-degenerate "Mott" model</h4>
+            In this case, \(s_\textrm{eff}\) depends explicitly
+            on the temperature, i.e.:
+            \[s_{\textrm{eff}}\quad=\quad \left(\frac{d}{\Omega_d} n_c  \left(\frac{T}{\Delta_\xi}\right)\right)^{-1/(d+1)} \]
+            Where \(\Delta_\xi\) is the mean level spacing. 
+            Apart from that, the only change in \(D\) is the polynomial order:
+           \[ D \quad =\quad \textrm{EXP}_{\color{red}{d+3}}\left(\frac{1}{s_{\textrm{eff}}}\right) \mbox{e}^{-1/s_{\textrm{eff}}} D_{linear} \]
+           In the limit \(s\ll 1\), we again return to the VRH estimate:
+           \[ D \sim \left(\frac{1}{T}\right)^{2/(d+1)} \exp\left[-\left(\frac{T_0}{T}\right)^{1/(d+1)}\right]\]
             <figure>
             <img src="wdiagram.png">
             <figcaption>Comparing the VRH trade-off with the ERH threshold</figcaption>
             </figure>
         </p>
+        <hr>
+        <b>
+Diffusion in sparse networks: linear to semi-linear crossover
+[<a href="http://arXiv.org/abs/1206.2495">arXiv</a>]
+[<a href="http://physics.bgu.ac.il/~dcohen/ARCHIVE/pts_PRE.pdf">pdf</a>],
+</b>
+<br>
+Y. de Leeuw, D. Cohen, Phys. Rev. E 86, 051120 (2012).
     </body>
 
 </html>
