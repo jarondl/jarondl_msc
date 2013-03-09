@@ -166,7 +166,7 @@ class ExpModel(object):
         +---
     """
     def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",
-                 bandwidth1d = None, periodic=True, convention=1, rseed=None, phi=None):
+                 bandwidth1d = None, periodic=True, convention=1, rseed=None, phi=0):
         """ Take sample and epsilon, and calc eigvals and eigmodes"""
         self.epsilon = epsilon
         self.sample = sample
@@ -243,7 +243,7 @@ class ExpModel(object):
         plot_func_logplot(ax, f, self.logxlim, label ="D = {D:.3G}".format(D=D))
 
 
-    def plot_PN(self, ax, convention=1, **kwargs) :
+    def plot_PN(self, ax, convention=0, **kwargs) :
         """ plots Participation number"""
         PN = ((self.eig_matrix**(4)).sum(axis=0)**(-1))[1:]
         ev = -self.eigvals[1:]*exp(-convention/self.epsilon)

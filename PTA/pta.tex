@@ -381,4 +381,51 @@ and their inverse should be the localization length.
 Perhaps, because of a special matrix feature or some symmetry,
 we have extended states with lower energy, similar in idea
 to cooper pairs in super-conductors.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{Anderson Localization Length - numerical}
+
+According to Tal Weiss' summary, the localization length
+for the $1d$ case with $w_{ij}=1$, and $\gamma_i = [-s,s]$, is:
+\begin{align}
+ l = 2 \ \frac{4 - E^2}{\sigma} 
+ \end{align}
+where $\sigma$ is the variance of the $\gamma$ distribution. 
+In our case $\sigma = \frac{s^2}{3}$, leading us to:
+\begin{align}\label{eq:anderson_l}
+ l = 6 \ \frac{4-E^2}{s^2} 
+ \end{align}
+we check this numerically in three simple ($b=1$) cases:
+\begin{enumerate}
+    \item{For the Anderson model with $w_{ij}=1$, and $\gamma_i = [-s,s]$ in \autoref{fig:anderson}.}
+    \item{For the "Anderson-rate" model with$\gamma_i=0$ and $w_{ij}= 1 + \left[-\frac{s}{2}, \frac{s}{2} \right]$
+            in \autoref{fig:anderson_rate}}
+    \item{For the "Anderson-rate" conserving model with the same rates but $\gamma_i = -\sum_j w_{ij}$
+            in \autoref{fig:anderson_rate_conserv}}
+\end{enumerate}
+
+\begin{figure}[H]
+\includegraphics{pta_anderson1}\\
+\includegraphics{pta_anderson2}
+\caption{PN vs. eigenvalues for the plain Anderson model ($w_{ij}=1$, $\gamma_i = [-s,s]$), 2000 sites. 
+The lines are according to \autoref{eq:anderson_l}
+}\label{fig:anderson}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics{pta_anderson_rates1}\\
+\includegraphics{pta_anderson_rates2}
+\caption{PN vs. eigenvalues for the "Anderson-Rate" model ($\gamma_i = 0$, $w_{ij} = 1 + \left[-\frac{s}{2}, \frac{s}{2}\right]$), 2000 sites. 
+The lines are according to \autoref{eq:anderson_l}
+}\label{fig:anderson_rate}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics{pta_anderson_rates_conserv_b1_1}\\
+\includegraphics{pta_anderson_rates_conserv_b1_2}
+\caption{PN vs. eigenvalues for the "Anderson-Rate" conserving model ( $w_{ij} = 1 + \left[-\frac{s}{2}, \frac{s}{2}\right]$), 2000 sites. 
+The lines, which don't fit exactly, are a variation of \autoref{eq:anderson_l}, with $E\rightarrow \frac{1}{2}\ E$.
+}\label{fig:anderson_rate_conserv}
+\end{figure}
 \end{document}
