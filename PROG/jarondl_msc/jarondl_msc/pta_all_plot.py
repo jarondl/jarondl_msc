@@ -16,6 +16,7 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 import plotdl
 import sparsedl
 from plotdl import plt, tight_layout, cummulative_plot
+from ptaplot import theor_banded_ev
 
 
 import numpy as np
@@ -49,8 +50,8 @@ debug = logger.debug
 ###########   code   ###################################################
 ########################################################################
 
-and_theory = (lambda x,sigma : 6*(4-x**2)/(sigma**2))
-and_theory_cons = (lambda x,sigma : 6*(4-(x/2)**2)/(sigma**2))
+and_theory = (lambda x,sigma,b : 6*(4*(b**2)-x**2)/(sigma**2))
+and_theory_cons = (lambda x,sigma,b : 6*(4-(x/2)**2)/(sigma**2))
 
 def get_ev_PN_for_models(models,count,number_of_sites):
     res_type =  np.dtype([("ev",(np.float64,number_of_sites)),
@@ -71,25 +72,28 @@ def get_ev_PN_for_models(models,count,number_of_sites):
 def plot_anderson(ax, ev_pn,color_seq):
     
     for (mod,color) in zip(ev_pn,color_seq):
-        ax.plot(mod['ev'],mod['PN'], '.', color=color, label=r"{0}".format(mod['sigma']))
+        ax.plot(-mod['ev'],mod['PN'], '.', color=color, label=r"{0}".format(mod['sigma']))
     ax.legend(loc='upper right')
     
 def plot_anderson1d_theory(ax, ev_pn, color_seq):
     for (mod,color) in zip(ev_pn,color_seq):
-        xs = np.linspace(-2,-1)
-        ys = and_theory(xs, mod['sigma'])
+        b=mod['b']
+        xs = np.linspace(-2*b,2*b)
+        ys = and_theory(xs, mod['sigma'],b)
         ax.plot(xs,ys,color="b",linewidth=1)# gives a white "border"
         ax.plot(xs,ys,color=color,linewidth=0.8)
         
 def plot_anderson1d_theory_conserv(ax, ev_pn, color_seq):
     for (mod,color) in zip(ev_pn,color_seq):
-        xs = np.linspace(-4,-3)
-        ys = and_theory_cons(xs, mod['sigma'])
-        ax.plot(xs,ys,color="b",linewidth=1)# gives a white "border"
-        ax.plot(xs,ys,color=color,linewidth=0.8)
+        b=mod['b']
+        if b==1:
+            xs = np.linspace(-2*b,2*b)
+            ys = and_theory_cons(xs, mod['sigma'],b)
+            ax.plot(xs,ys,color="b",linewidth=1)# gives a white "border"
+            ax.plot(xs,ys,color=color,linewidth=0.8)
 
 def plotf_anderson(rates=False,b=1):
-    fname_base = 'pta_anderson{0}_b{1}_'.format(("_rates" if rates else ""), b)
+    fname_base = 'pta_anderson{0}_b{1}'.format(("_rates" if rates else ""), b)
     # See if we have numerics:
     try:
         f = np.load(fname_base + '.npz')
@@ -108,23 +112,27 @@ def plotf_anderson(rates=False,b=1):
     fig, ax = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     fig.subplots_adjust(left=0.1,right=0.95)
     
+    ax.axhline((nums_and[0]['ev'].size)*2/3, ls='--', color='black')
+    
     color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     plot_anderson(ax, nums_and,color_seq)
     
     color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     plot_anderson1d_theory(ax, nums_and,color_seq)
     
+    b= nums_and[0]['b']
+    
     ax.set_ylim(0, nums_and[0]['ev'].size)
     
-    ax.set_xlim(-2.5,2.5)
-    fig.savefig(fname_base + "1.pdf")
+    ax.set_xlim(-(2*b+0.5),(2*b+0.5))
+    fig.savefig(fname_base + ".pdf")
     
-    ax.set_xlim(-2.1,-1.5)
-    fig.savefig(fname_base + "2.pdf")
+    ax.set_xlim(-(2*b+0.1),-2*b+1)
+    fig.savefig(fname_base + "_zoom.pdf")
     
     
 def plotf_anderson_rates_conserved(b=1):
-    fname_base = 'pta_anderson_rates_conserv_b{0}_'.format( b)
+    fname_base = 'pta_anderson_rates_conserv_b{0}'.format( b)
     # See if we have numerics:
     try:
         f = np.load(fname_base + '.npz')
@@ -142,6 +150,8 @@ def plotf_anderson_rates_conserved(b=1):
     fig, ax = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     fig.subplots_adjust(left=0.1,right=0.95)
     
+    ax.axhline((nums_and[0]['ev'].size)*2/3, ls='--', color='black')
+    
     color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     plot_anderson(ax, nums_and, color_seq)
     
@@ -151,8 +161,30 @@ def plotf_anderson_rates_conserved(b=1):
     
     ax.set_ylim(0, nums_and[0]['ev'].size)
     
-    ax.set_xlim(-4.5,0.5)
-    fig.savefig(fname_base + "1.pdf")
     
-    ax.set_xlim(-4.2,-3.5)
-    fig.savefig(fname_base + "2.pdf")
+
+    
+    ax.set_xlim(-0.5,3*b+0.5)
+    fig.savefig(fname_base + ".pdf")
+    
+    ax.set_xlim(2*b-0.5,2*b+0.1)
+    fig.savefig(fname_base + "_zoom.pdf")
+    
+    
+def plotf_theor_banded_ev(bs=6,N=2000):
+    
+    fig, ax = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+    fig.subplots_adjust(left=0.1,right=0.95)
+    
+    xs = np.linspace(0,2*pi, N)
+    for b in range(1,bs+1):
+        y = theor_banded_ev(b,N)
+        ax.plot(xs,y,label=str(b))
+    ax.legend(loc='upper right')
+    ax.set_xlabel('k')
+    ax.axvline(pi, color='black')
+    ax.set_xlim(0,2*pi)
+    
+    fig.savefig("pta_theor_banded_ev.pdf")
+    
+    

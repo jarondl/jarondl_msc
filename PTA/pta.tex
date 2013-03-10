@@ -405,27 +405,107 @@ we check this numerically in three simple ($b=1$) cases:
             in \autoref{fig:anderson_rate_conserv}}
 \end{enumerate}
 
+To understand the band structure, it helps to first think of the analytical 
+solution of the ordered state.
+Without disorder, the eigenvectors and eigenvalues are:
+\begin{align}
+k\ \  &=\ \  \frac{\pi m}{N} \ \ \ \ \ m=1..N \\
+\vec{V}_k\ \  &=\ \  \cos(k\cdot x)\\
+\lambda_k\ \  &=\ \  2\cos(k) \ \ \ \ \ \ (+2 \textrm{  for conserving matrix)}
+\end{align}  
+All of these eigenvectors have $PN\ =\ (2/3)N$.
+This is marked in the plots by a horizontal dashed line. 
+The eigenvalues are confined between $-2$ and $2$  (add $2$ for conserving matrix).
+The density of states for the ordered model is:
+%
+\begin{align}
+\textrm{DOS} = \frac{1}{v} = \left(\frac{d\lambda_k}{dk}\right)^{-1} = -\frac{1}{2\sin(k)} = -\frac{1}{\sqrt{4-\lambda^2}}
+\end{align}
+Note that this has two diverging points, at $E=\pm 2$.
+
+
+The localization length for weak disorder is 
+\begin{align}
+\ell = 2\cdot\frac{v^2}{\sigma}= 2\cdot\frac{4-\lambda^2}{\sigma}
+\end{align}
+
+
+
 \begin{figure}[H]
-\includegraphics{pta_anderson1}\\
-\includegraphics{pta_anderson2}
+\includegraphics{pta_anderson_b1}\\
+\includegraphics{pta_anderson_b1_zoom}
 \caption{PN vs. eigenvalues for the plain Anderson model ($w_{ij}=1$, $\gamma_i = [-s,s]$), 2000 sites. 
 The lines are according to \autoref{eq:anderson_l}
 }\label{fig:anderson}
 \end{figure}
 
 \begin{figure}[H]
-\includegraphics{pta_anderson_rates1}\\
-\includegraphics{pta_anderson_rates2}
+\includegraphics{pta_anderson_rates_b1}\\
+\includegraphics{pta_anderson_rates_b1_zoom}
 \caption{PN vs. eigenvalues for the "Anderson-Rate" model ($\gamma_i = 0$, $w_{ij} = 1 + \left[-\frac{s}{2}, \frac{s}{2}\right]$), 2000 sites. 
 The lines are according to \autoref{eq:anderson_l}
 }\label{fig:anderson_rate}
 \end{figure}
 
 \begin{figure}[H]
-\includegraphics{pta_anderson_rates_conserv_b1_1}\\
-\includegraphics{pta_anderson_rates_conserv_b1_2}
+\includegraphics{pta_anderson_rates_conserv_b1}\\
+\includegraphics{pta_anderson_rates_conserv_b1_zoom}
 \caption{PN vs. eigenvalues for the "Anderson-Rate" conserving model ( $w_{ij} = 1 + \left[-\frac{s}{2}, \frac{s}{2}\right]$), 2000 sites. 
 The lines, which don't fit exactly, are a variation of \autoref{eq:anderson_l}, with $E\rightarrow \frac{1}{2}\ E$.
 }\label{fig:anderson_rate_conserv}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{Banded matrices}
+
+Before we move forward with disordered  banded matrices, let
+us start with ordered ones.
+The eigenvectors don't change (Bloch's theorem is still valid), but the eigenvalues do:
+\begin{align}
+k\ \  &=\ \  \frac{\pi m}{N} \ \ \ \ \ m=1..N \\
+\vec{V}_k\ \  &=\ \  \cos(k\cdot x)\\
+\lambda_k\ \  &=\ \  \sum_{n=1..b} 2\cos(n\cdot k) \ \ \ \ \ \ (+2b \textrm{  for conserving matrix)}
+\end{align}  
+The velocity is now:
+\begin{align}
+v \ \ &=\ \ \frac{d\lambda_k}{dk} \ \ =\ \ -\sum_{n=1..b} 2\cdot n\cdot \sin(n\cdot k)
+\end{align}
+There are $b+1$ points where $v=0$. 
+The lowest eigenvalue is when $k=0$, $\lambda = -2b$.
+The highest is tougher to calculate.
+
+Let us analyze the one around $k=0$. 
+In second order in $k$ , we have:
+\begin{align}
+\lambda &= \sum_{n=1..b} 2(\cos(n\cdot k)) \approx \sum_{n=1..b} 2-(n\cdot k)^2 \\
+&=2b-\frac{1}{6} b(b+1)(2b+1) k^2\\
+v\ \ &\approx -\sum_{n=1..b} 2\cdot n\cdot n \cdot k = \left(-\sum_{n=1..b} 2\cdot n\cdot n \right) k \\
+&=-\frac{2}{6} b(b+1)(2b+1) k \\
+v^2 &\approx \frac{2}{3}b(b+1)(2b+1)  (2b-\lambda)
+\end{align}
+
+\begin{figure}[H]
+\includegraphics{pta_theor_banded_ev}
+\caption{Theoretical eigenvalues for banded ordered matrices. Since our 
+models are periodic, only the left half of this picture is relevant.
+We can see that there are $b+1$ points where $v=0$ or the DOS diverges.
+}\label{fig:theor_banded_ev}
+\end{figure}
+
+
+\begin{figure}[H]
+\includegraphics{pta_anderson_rates_b5}\\
+\includegraphics{pta_anderson_rates_b5_zoom}
+\caption{PN vs. eigenvalues for the "Anderson-Rate" model $b=5$.
+We see only $5$ localized areas ($v=0$). The second one from the right
+actually covers two near localized areas.
+}\label{fig:anderson_rate_b5}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics{pta_anderson_rates_conserv_b5}
+\caption{PN vs. eigenvalues for the "Anderson-Rate" conserving model $b=5$.
+The near zero localization is gone.
+}\label{fig:anderson_rate_conserv_b5}
 \end{figure}
 \end{document}

@@ -64,6 +64,12 @@ def theor_banded_ev(b,N):
     n = np.arange(1,b+1)
     km,nm = np.meshgrid(k,n)
     return -2*(np.cos(km*nm)-1).sum(axis=0)
+    
+def theor_banded_dev(b,N):
+    k = 2*pi*np.arange(N)/N
+    n = np.arange(1,b+1)
+    km,nm = np.meshgrid(k,n)
+    return -2*(nm*np.sin(km*nm)).sum(axis=0)
 
 
 
