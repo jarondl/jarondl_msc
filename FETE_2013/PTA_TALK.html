@@ -103,14 +103,15 @@
         <p>
             For a dense system, (large \(\xi\) compared to typical site distance),
             the diffusion coefficient can be estimated by a linear equation (linear in the rates):
-            \[ D = \frac{1}{2d}\sum_r w(r) r^2 \]
-            For a sparse system, we can estimate the coefficient by the known VRH procedure.
-            We present the ERH procedure, which has a smooth cross-over between those two
-            regimes. 
+            \[ D_{\textrm{linear}} = \frac{1}{2d}\sum_r w(r) r^2 \]
+            
+            We present the ERH procedure to estimate \(D\),
+            based on resistor network analysis, with a smooth cross-over between the 
+            dense and sparse regimes.
             </p>
             <h4>Results for the degenerate model</h4>
             <p>
-            \[ D \quad =\quad \textrm{EXP}_{d+2}\left(\frac{1}{s_\textrm{eff}}\right) \mbox{e}^{-1/s_\textrm{eff}} D_{linear} \\
+            \[ D \quad =\quad \textrm{EXP}_{d+2}\left(\frac{1}{s_\textrm{eff}}\right) \mbox{e}^{-1/s_\textrm{eff}} D_{\textrm{linear}} \\
             s_\textrm{eff}\quad=\quad \left(\frac{d}{\Omega_d} n_c\right)^{-1/d}\frac{\xi}{r_0} \\
             \textrm{EXP}_{l}(x) \quad = \quad \sum_{k=0}^l \frac{1}{k!}x^k\]
             <ul><li> The parameter \(n_c\) is the average number of bonds required 
@@ -129,7 +130,8 @@
             Where \(\Delta_\xi\) is the mean level spacing. 
             Apart from that, the only change in \(D\) is the polynomial order:
            \[ D \quad =\quad \textrm{EXP}_{\color{red}{d+3}}\left(\frac{1}{s_{\textrm{eff}}}\right) \mbox{e}^{-1/s_{\textrm{eff}}} D_{linear} \]
-           In the limit \(s\ll 1\), we again return to the VRH estimate:
+           In the limit \(s\ll 1\), we get the familiar VRH estimate that has been
+           presented long ago by Nevill Francis Mott.
            \[ D \sim \left(\frac{1}{T}\right)^{2/(d+1)} \exp\left[-\left(\frac{T_0}{T}\right)^{1/(d+1)}\right]\]
             <figure>
             <img src="wdiagram.png">
