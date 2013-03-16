@@ -79,6 +79,12 @@ class ExpModel_Banded_Logbox_rd(ExpModel_Banded_Logbox_dd):#diagonal is not spec
         np.fill_diagonal(m,0)
         m -= self.diagonal_disorder()
         return m
+        
+class ExpModel_Banded_Logbox_zd(ExpModel_Banded_Logbox_dd):#diagonal is not special -> it's zero!
+    def rate_matrix(self,convention=0):
+        m = ExpModel_Banded_Logbox.rate_matrix(self)
+        np.fill_diagonal(m,0)
+        return m
                
 class ExpModel_Banded_Logbox_negative(ExpModel_Banded_Logbox_phase):
     def rate_matrix(self,convention=0):

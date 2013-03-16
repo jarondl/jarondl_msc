@@ -82,7 +82,7 @@ def plot_banded_pn(ax, b, s_values, number_of_sites=1000, pinning=False):
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
     for s in s_values:
         if pinning:
-            model = pta_models.ExpModel_Banded_Logbox_pinning(sample, epsilon=s, bandwidth1d=b)
+            model = pta_models.ExpModel_Banded_Logbox_dd(sample, epsilon=s, bandwidth1d=b)
         else:
             model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b)
         model.plot_PN(ax, label=r"$\sigma={0}$".format(s))
@@ -107,7 +107,7 @@ def plot_banded_ev_bconst(ax,nums):
         
 
 
-def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = pi, pinning=False):
+def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = pi, pinning=False, zerodiag=False):
     sample = ptsplot.create_bloch_sample_1d(number_of_sites)
     win_avg_mtrx = sparsedl.window_avg_mtrx(number_of_sites - 1)
     res_type =  np.dtype([("ev",(np.float64,number_of_sites)),
@@ -122,11 +122,16 @@ def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = pi, pinning
     res = np.zeros(s_grid.size, dtype = res_type) # preallocation is faster..
     for n,(s,b) in enumerate(zip(s_grid.flat, b_grid.flat)):
         debug('eigenvals ,PN and thouless for s = {0}, b= {1}, n={2}'.format(s,b,n))
-        model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b, rseed=n)
-        model_phi = pta_models.ExpModel_Banded_Logbox_phase(sample, epsilon=s, bandwidth1d=b,rseed=n,phi=phi)
-        if pinning is True:
-            model = pta_models.ExpModel_Banded_Logbox_pinning(sample, epsilon=s, bandwidth1d=b, rseed=n,phi=0)
-            model_phi = pta_models.ExpModel_Banded_Logbox_pinning(sample, epsilon=s, bandwidth1d=b,rseed=n,phi=phi)
+        if zerodiag is True:
+            model = pta_models.ExpModel_Banded_Logbox_zd(sample, epsilon=s, bandwidth1d=b, rseed=n,phi=0)
+            model_phi = pta_models.ExpModel_Banded_Logbox_zd(sample, epsilon=s, bandwidth1d=b,rseed=n,phi=phi)
+        
+        elif pinning is False:
+            model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b, rseed=n)
+            model_phi = pta_models.ExpModel_Banded_Logbox_phase(sample, epsilon=s, bandwidth1d=b,rseed=n,phi=phi)
+        else:
+            model = pta_models.ExpModel_Banded_Logbox_dd(sample, epsilon=s, bandwidth1d=b, rseed=n,phi=0)
+            model_phi = pta_models.ExpModel_Banded_Logbox_dd(sample, epsilon=s, bandwidth1d=b,rseed=n,phi=phi)
         
         g = abs(model.eigvals - model_phi.eigvals) / (phi**2)
         # Approximation of  the minimal precision:
@@ -258,6 +263,18 @@ def plotf_banded_pn_new():
         nums_pin = get_ev_thoules_g(b,s_space,phi=pi,pinning=True)
         np.savez("g_b5_pin.npz", nums = nums_pin)
         
+    # see if we have numerics zerodiag
+    try:
+        f = np.load('g_b5_zerodiag.npz')
+        nums_zerodiag = f['nums']
+    except (OSError, IOError):
+        # otherwise, get the data:
+        b = [5]
+        # [:4] [4:8] [8:]
+        s_space = [0.1,0.2,0.4,0.6,1,2,3,4,10,20,30,40]
+        nums_zerodiag = get_ev_thoules_g(b,s_space,phi=pi,pinning=True,zerodiag=True)
+        np.savez("g_b5_zerodiag.npz", nums = nums_pin)
+        
     
     #Pinning effect:
     #fig, (ax1,ax2) = plt.subplots(2, sharex=True)
@@ -362,6 +379,26 @@ def plotf_banded_pn_new():
     plot_banded_pn_bconst(ax,nums_nopin[8:])
     tight_layout(fig)
     fig.savefig('pta_highest_s_nopin.pdf')
+    ax.cla()
+    
+    
+    
+    ########################### 
+    ## zerodiag
+    plot_banded_pn_bconst(ax,nums_zerodiag[0:4])
+    #ax.set_xlim([1e-3,2e1]) ## That is to allow comparison between pin an nopin
+    tight_layout(fig)
+    fig.savefig('pta_low_s_zerodiag.pdf')
+    ax.cla()
+    
+    plot_banded_pn_bconst(ax,nums_zerodiag[4:8])
+    tight_layout(fig)
+    fig.savefig('pta_higher_s_zerodiag.pdf')
+    ax.cla()
+    
+    plot_banded_pn_bconst(ax,nums_zerodiag[8:])
+    tight_layout(fig)
+    fig.savefig('pta_highest_s_zerodiag.pdf')
     ax.cla()
     
     plt.close()

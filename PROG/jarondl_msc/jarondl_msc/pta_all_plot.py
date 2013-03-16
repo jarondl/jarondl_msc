@@ -16,7 +16,7 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 import plotdl
 import sparsedl
 from plotdl import plt, tight_layout, cummulative_plot
-from ptaplot import theor_banded_ev
+from ptaplot import theor_banded_ev, theor_banded_dev
 
 
 import numpy as np
@@ -187,4 +187,31 @@ def plotf_theor_banded_ev(bs=6,N=2000):
     
     fig.savefig("pta_theor_banded_ev.pdf")
     
+    
+
+def plotf_theor_banded_dos(b=5,N=2000):
+    
+    fig, ax = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+    fig.subplots_adjust(left=0.1,right=0.95)
+    
+    
+    #for b in range(1,bs+1):
+    #    y = theor_banded_dev(b,N)
+    #    ax.plot(xs,y**(-1),label=str(b))
+    lam = theor_banded_ev(b,N)[:N//2] - 2*b ## There it is conserving and (0,2pi)
+    dev = -theor_banded_dev(b,N)[:N//2]
+    #ax.plot(lam,abs(DEV)**(-1))
+    ax.plot(lam,dev)
+    #ax.legend(loc='upper right')
+    ax.set_xlim(-(2*b+0.5),(2*b+0.5))
+
+    ax.set_xlabel('$\lambda$')
+    ax.set_ylabel(r'$\frac{d\lambda}{dN}$')
+    #ax.axvline(pi, color='black')
+    #ax.set_xlim(0,2*pi)
+    #ax.set_ylim(-1,1)
+    
+    
+    
+    fig.savefig("pta_theor_banded_dos.pdf")
     
