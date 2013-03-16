@@ -82,6 +82,19 @@ def plot_anderson1d_theory(ax, ev_pn, color_seq):
         ys = and_theory(xs, mod['sigma'],b)
         ax.plot(xs,ys,color="b",linewidth=1)# gives a white "border"
         ax.plot(xs,ys,color=color,linewidth=0.8)
+
+def plot_anderson1d_theory_vv(ax, ev_pn, color_seq):
+    for (mod,color) in zip(ev_pn,color_seq):
+        b=mod['b']
+        N = 2000
+        xs = np.linspace(-2*b,2*b,N//2)
+        lam = theor_banded_ev(b,N)[:N//2] - 2*b ## There it is conserving and (0,2pi)
+        dev = -theor_banded_dev(b,N)[:N//2]
+        ys = 2 * dev**2 / mod['sigma']
+        #ys = and_theory(xs, mod['sigma'],b)
+        ax.plot(lam,ys,color="b",linewidth=1)# gives a white "border"
+        ax.plot(lam,ys,color=color,linewidth=0.8)
+
         
 def plot_anderson1d_theory_conserv(ax, ev_pn, color_seq):
     for (mod,color) in zip(ev_pn,color_seq):
@@ -118,7 +131,7 @@ def plotf_anderson(rates=False,b=1):
     plot_anderson(ax, nums_and,color_seq)
     
     color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
-    plot_anderson1d_theory(ax, nums_and,color_seq)
+    plot_anderson1d_theory_vv(ax, nums_and,color_seq)
     
     b= nums_and[0]['b']
     
@@ -201,7 +214,7 @@ def plotf_theor_banded_dos(b=5,N=2000):
     lam = theor_banded_ev(b,N)[:N//2] - 2*b ## There it is conserving and (0,2pi)
     dev = -theor_banded_dev(b,N)[:N//2]
     #ax.plot(lam,abs(DEV)**(-1))
-    ax.plot(lam,dev)
+    ax.plot(lam,dev**2)
     #ax.legend(loc='upper right')
     ax.set_xlim(-(2*b+0.5),(2*b+0.5))
 
