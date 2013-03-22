@@ -411,8 +411,8 @@ Without disorder, the eigenvectors and eigenvalues are:
 \begin{align}
 k\ \  &=\ \  \frac{\pi m}{N} \ \ \ \ \ m=1..N \\
 \vec{V}_k\ \  &=\ \  \cos(k\cdot x)\\
-\lambda_k\ \  &=\ \  2\cos(k) \ \ \ \ \ \ (+2 \textrm{  for conserving matrix)}
-\end{align}  
+\lambda_k\ \  &=\ \  2\cos(k) \ \ \ \ \ \ (+2 \textrm{  for conserving matrix)} 
+\end{align}
 All of these eigenvectors have $PN\ =\ (2/3)N$.
 This is marked in the plots by a horizontal dashed line. 
 The eigenvalues are confined between $-2$ and $2$  (add $2$ for conserving matrix).
@@ -464,8 +464,10 @@ The eigenvectors don't change (Bloch's theorem is still valid), but the eigenval
 \begin{align}
 k\ \  &=\ \  \frac{\pi m}{N} \ \ \ \ \ m=1..N \\
 \vec{V}_k\ \  &=\ \  \cos(k\cdot x)\\
-\lambda_k\ \  &=\ \  \sum_{n=1..b} 2\cos(n\cdot k) \ \ \ \ \ \ (+2b \textrm{  for conserving matrix)}
+\lambda_k\ \  &=\ \  \sum_{n=1..b} 2\cos(n\cdot k) \ \ \ \ \ \ (+2b \textrm{  for conserving matrix)}\\
+&= \ \ -1 + \frac{\sin((b+\dfrac{1}{2})k)}{\sin(\dfrac{1}{2}k)}
 \end{align}  
+Where in the last step we have used Lagrange's trigonometric identities.
 The velocity is now:
 \begin{align}
 v \ \ &=\ \ \frac{d\lambda_k}{dk} \ \ =\ \ -\sum_{n=1..b} 2\cdot n\cdot \sin(n\cdot k)
