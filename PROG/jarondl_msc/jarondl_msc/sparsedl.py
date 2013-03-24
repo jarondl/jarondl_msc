@@ -314,13 +314,16 @@ def pi_phasor(N):
            
 def boundary_phasor(N,phi):
     """ returns a matrix with 1 at N/2 diagonals,
-         and -1 at the rest. e.g.:
+         and exp(i*phi) at the rest. e.g.:
          1, 1,-1,-1
          1, 1, 1,-1
         -1, 1, 1, 1
         -1,-1, 1, 1
         For a one dimensional network, it gives a pi phase boundary condition.
         """
+    if phi == 0 :
+        """ Keep things real if possible"""
+        return np.ones((N,N))
     M = np.ones((N,N))*(1+0j)
     #return M - 2 * ( np.tri(N,k=-N//2) + np.tri(N,k=-N//2).T)
     M += (np.exp(-phi*1j)-1)*np.tri(N,k=-N//2)

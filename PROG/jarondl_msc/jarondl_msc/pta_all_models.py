@@ -48,19 +48,24 @@ class Model_Anderson_banded(ExpModel_1d):
      
 class Model_Anderson_rates_banded(ExpModel_1d):
     """ symmetric"""
+    def base_matrix(self):
+        """ this is the ordered version of the matrix, without disorder """
+        n = self.sample.number_of_points()
+        mat = periodic_banded_ones(n, self.bandwidth1d, self.periodic)
+        np.fill_diagonal(mat, 0)
+        return mat
+    def off_diagonal_box_disorder(self):
+        """ this is box disorder added where the original matrix is 1"""
+        x = np.triu(self.base_matrix(),1)
+        m = np.zeros_like(x)
+        m[x==1] = np.random.permutation(np.linspace(-0.5*self.epsilon,0.5*self.epsilon, m[x==1].size))
+        return m + m.T
+
     def rate_matrix(self, convention=0):
-        # we map epsilon to sigma, and the distribution goes from -2\sigma to 0.
         if self.rseed is not None:
             np.random.seed(self.rseed)
-        n = self.sample.number_of_points()
-        x = np.triu(periodic_banded_ones(n, self.bandwidth1d, self.periodic),1)
-        m = np.zeros_like(x)
-        ##m[x==1] = np.random.permutation(np.logspace(-2*self.epsilon,0, m[x==1].size)) ###logspace was a bad idea
-        m[x==1] = 1+np.random.permutation(np.linspace(-0.5*self.epsilon,0.5*self.epsilon, m[x==1].size))
-        m += m.T
-        if (self.phi != 0):
-            return m * boundary_phasor(self.sample.number_of_points(), self.phi)   
-        else: return m # to keep things real
+        m = self.base_matrix() + self.off_diagonal_box_disorder()
+        return m * boundary_phasor(self.sample.number_of_points(), self.phi)   
      
 class Model_Anderson_rates_conserv_banded(ExpModel_1d):
     """ symmetric"""
@@ -75,6 +80,5 @@ class Model_Anderson_rates_conserv_banded(ExpModel_1d):
         m[x==1] = 1+np.random.permutation(np.linspace(-0.5*self.epsilon,0.5*self.epsilon, m[x==1].size))
         m += m.T
         zero_sum(m)####  <---  the change
-        if (self.phi != 0):
-            return m * boundary_phasor(self.sample.number_of_points(), self.phi)   
-        else: return m # to keep things real
+        return m * boundary_phasor(self.sample.number_of_points(), self.phi)   
+
