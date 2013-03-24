@@ -54,7 +54,7 @@ class Model_Anderson_rates_banded(ExpModel_1d):
         mat = periodic_banded_ones(n, self.bandwidth1d, self.periodic)
         np.fill_diagonal(mat, 0)
         return mat
-    def off_diagonal_box_disorder(self):
+    def disorder(self):
         """ this is box disorder added where the original matrix is 1"""
         x = np.triu(self.base_matrix(),1)
         m = np.zeros_like(x)
@@ -64,8 +64,16 @@ class Model_Anderson_rates_banded(ExpModel_1d):
     def rate_matrix(self, convention=0):
         if self.rseed is not None:
             np.random.seed(self.rseed)
-        m = self.base_matrix() + self.off_diagonal_box_disorder()
-        return m * boundary_phasor(self.sample.number_of_points(), self.phi)   
+        m = self.base_matrix() + self.disorder()
+        return m * boundary_phasor(self.sample.number_of_points(), self.phi)
+        
+class Model_Anderson_rates_diagonal_disorder_only(Model_Anderson_rates_banded):
+    def disorder(self):
+        """ this is box disorder only on diagonal"""
+        n = self.sample.number_of_points()
+        dis = np.random.permutation(np.linspace(-0.5*self.epsilon,0.5*self.epsilon, n))
+        m = np.diagflat(dis)
+        return m 
      
 class Model_Anderson_rates_conserv_banded(ExpModel_1d):
     """ symmetric"""

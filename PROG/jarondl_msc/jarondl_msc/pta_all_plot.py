@@ -90,7 +90,8 @@ def plot_anderson1d_theory_vv(ax, ev_pn, color_seq):
         xs = np.linspace(-2*b,2*b,N//2)
         lam = theor_banded_ev(b,N)[:N//2] - 2*b ## There it is conserving and (0,2pi)
         dev = -theor_banded_dev(b,N)[:N//2]
-        ys = 2 * dev**2 / mod['sigma']
+        ### the six only works for b=1 !!
+        ys = 6 * dev**2 / (mod['sigma'])**2
         #ys = and_theory(xs, mod['sigma'],b)
         ax.plot(lam,ys,color="b",linewidth=1)# gives a white "border"
         ax.plot(lam,ys,color=color,linewidth=0.8)
@@ -105,8 +106,8 @@ def plot_anderson1d_theory_conserv(ax, ev_pn, color_seq):
             ax.plot(xs,ys,color="b",linewidth=1)# gives a white "border"
             ax.plot(xs,ys,color=color,linewidth=0.8)
 
-def plotf_anderson(rates=False,b=1):
-    fname_base = 'pta_anderson{0}_b{1}'.format(("_rates" if rates else ""), b)
+def plotf_anderson(rates=False,ddonly=False,b=1):
+    fname_base = 'pta_anderson{0}{1}_b{2}'.format(("_rates" if rates else ""),("_ddonly" if ddonly else "") ,b)
     # See if we have numerics:
     try:
         f = np.load(fname_base + '.npz')
@@ -117,6 +118,8 @@ def plotf_anderson(rates=False,b=1):
         sam = ptsplot.create_bloch_sample_1d(2000)
         if rates:
             models = (pta_all_models.Model_Anderson_rates_banded(sam, sigma, bandwidth1d=b) for sigma in sigmas)
+        elif ddonly:
+            models = (pta_all_models.Model_Anderson_rates_diagonal_disorder_only(sam, sigma, bandwidth1d=b) for sigma in sigmas)
         else:
             models = (pta_all_models.Model_Anderson_banded(sam, sigma, bandwidth1d=b) for sigma in sigmas)
         nums_and = get_ev_PN_for_models(models, len(sigmas), 2000)
