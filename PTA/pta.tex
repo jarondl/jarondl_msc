@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%  dts notes
+%%%  pta notes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass[onecolumn,fleqn]{revtex4}
@@ -113,20 +113,53 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{Model}
 
-A periodic banded logbox model. The band profile is flat ($\Theta(b)$).
-The off diagonal elements are log-box:
+We wish to study a banded model similar to the one presented in \cite{kottos_heat},
+starting with an ordered (and periodic) matrix:
 %
 \begin{align}
-w_{nm} &= w_0 \eexp{-\epsilon} \\
-\epsilon &\in \textrm{uniform  } [0,2\sigma]
+w_{nm} &= \begin{cases}
+  w_0 &\qquad \textrm{ if  } \quad 0<|n-m|\le 1 \\
+  0 &\qquad \textrm{ otherwise}
+\end{cases}
 \end{align}
 %
-The diagonal elements are set so that each row's sum will be zero.
-%
+According to Bloch's theorem, the eigenvectors of translational invariant
+matrices are plane waves, and their eigenvalues can be easily deduced:
 \begin{align}
-w_{nn} = -\sum_{m\ne n} w_{nm}  
+k\ \  &=\ \  \frac{\pi m}{N} \ \ \ \ \ m=1..N \\
+\vec{V}_k\ \  &=\ \  \cos(k\cdot x)\\
+\lambda_k\ \  &=\ \  \sum_{n=1..b} 2\cos(n\cdot k) \\
+&= \ \ -1 + \frac{\sin((b+\dfrac{1}{2})k)}{\sin(\dfrac{1}{2}k)}
+\end{align}  
+Where in the last step we have used one of Lagrange's trigonometric identities. 
+$\lambda_k$ for several values of $b$ is plotted in \autoref{fig:theor_banded_ev}.
+
+%%%%%%%%----------%%%%%%%%
+%%%%%%%%  figure  %%%%%%%%
+%%%%%%%%----------%%%%%%%%
+\begin{figure}[H]
+    \includegraphics{pta_theor_banded_ev}
+    \caption{$\lambda(k)$ for banded ordered matrices. Both plots
+    represent the same curves, but in the left one there is a $+2b$ shift, both for clarity 
+    and for later usage in conservative matrices. Since our 
+    models are periodic, only the left half ($0,\pi$) of each plot is relevant. Since 
+    the tangent is $DOS^{-1}$, the points with tangent zero are $DOS$ divergences.
+    }
+    \label{fig:theor_banded_ev}
+\end{figure}
+
+
+
+All those plane waves have $PN= \frac{2}{3}N$, and we can also compute the mode velocity:
+\begin{align}
+v \ \ &=\ \ \frac{d\lambda_k}{dk} \ \ =\ \ -\sum_{n=1..b} 2\cdot n\cdot \sin(n\cdot k)
 \end{align}
-%
+Note that this expression is not single valued. Meaning that each $lambda$ 
+has more than one associated velocity. 
+
+
+The $DOS$ is defined by summing the inverse velocities of each mode. 
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{PN plots}
 

@@ -16,7 +16,7 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 import plotdl
 import sparsedl
 from plotdl import plt, tight_layout, cummulative_plot
-from ptaplot import theor_banded_ev, theor_banded_dev
+from ptaplot import theor_banded_ev, theor_banded_dev, theor_banded_ev_k, theor_banded_dossum_k, find_ks
 
 
 import numpy as np
@@ -95,6 +95,16 @@ def plot_anderson1d_theory_vv(ax, ev_pn, color_seq):
         #ys = and_theory(xs, mod['sigma'],b)
         ax.plot(lam,ys,color="b",linewidth=1)# gives a white "border"
         ax.plot(lam,ys,color=color,linewidth=0.8)
+        
+        
+def sum_dos(b):
+    k = np.linspace(0,pi,2000)
+    evs = theor_banded_ev_k(k,b,0)
+    lams = np.linspace(evs.min(), evs.max(),2000)
+    k_of_ev = [find_ks(b,ev) for ev in lams]
+    #debug("k_of_ev.shape = {} ".format(k_of_ev.shape))
+    doses = np.array([theor_banded_dossum_k(k_of,b) for k_of in k_of_ev])
+    return (lams, doses )
 
         
 def plot_anderson1d_theory_conserv(ax, ev_pn, color_seq):
@@ -189,17 +199,26 @@ def plotf_anderson_rates_conserved(b=1):
     
 def plotf_theor_banded_ev(bs=6,N=2000):
     
-    fig, ax = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+    fig, (ax1,ax2) = plt.subplots(1,2,figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch+0.2])
     fig.subplots_adjust(left=0.1,right=0.95)
+    pi_labels = ["0",r"$\frac{\pi}{2}$", r"$\pi$", r"$\frac{3\pi}{2}$", r"$2\pi$",]
+    pi_locs = [0,pi/2,pi,3*pi/2,2*pi]
     
     xs = np.linspace(0,2*pi, N)
     for b in range(1,bs+1):
         y = theor_banded_ev(b,N)
-        ax.plot(xs,y,label=str(b))
-    ax.legend(loc='upper right')
-    ax.set_xlabel('k')
-    ax.axvline(pi, color='black')
-    ax.set_xlim(0,2*pi)
+        ax1.plot(xs,y,label=str(b))
+        ax2.plot(xs,y-2*b, label=str(b))
+    for ax in (ax1,ax2):
+        ax.legend(loc='upper right')
+        ax.set_xlabel('k')
+        ax.axvline(pi, color='black')
+        ax.set_xlim(0,2*pi)
+        ax.set_xticks(pi_locs)
+        ax.set_xticklabels(pi_labels)
+        ax.yaxis.set_major_locator(MaxNLocator(5))
+    ax1.set_ylabel(r'$\lambda - 2b$')
+    ax2.set_ylabel(r'$\lambda$')
     
     fig.savefig("pta_theor_banded_ev.pdf")
     
