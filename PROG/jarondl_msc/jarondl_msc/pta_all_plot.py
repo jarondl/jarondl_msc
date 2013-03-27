@@ -87,9 +87,10 @@ def plot_anderson1d_theory_vv(ax, ev_pn, color_seq):
     for (mod,color) in zip(ev_pn,color_seq):
         b=mod['b']
         N = 2000
-        xs = np.linspace(-2*b,2*b,N//2)
-        lam = theor_banded_ev(b,N)[:N//2] - 2*b ## There it is conserving and (0,2pi)
-        dev = -theor_banded_dev(b,N)[:N//2]
+        #xs = np.linspace(-2*b,2*b,N//2)
+        #lam = theor_banded_ev(b,N)[:N//2] - 2*b ## There it is conserving and (0,2pi)
+        #dev = -theor_banded_dev(b,N)[:N//2]
+        lam,dev = sum_dos(b)
         ### the six only works for b=1 !!
         ys = 6 * dev**2 / (mod['sigma'])**2
         #ys = and_theory(xs, mod['sigma'],b)
