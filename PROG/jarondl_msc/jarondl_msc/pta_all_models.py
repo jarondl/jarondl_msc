@@ -67,12 +67,22 @@ class Model_Anderson_rates_banded(ExpModel_1d):
         m = self.base_matrix() + self.disorder()
         return m * boundary_phasor(self.sample.number_of_points(), self.phi)
         
-class Model_Anderson_rates_diagonal_disorder_only(Model_Anderson_rates_banded):
+class Model_Anderson_diagonal_disorder_only(Model_Anderson_rates_banded):
     def disorder(self):
         """ this is box disorder only on diagonal"""
         n = self.sample.number_of_points()
         dis = np.random.permutation(np.linspace(-0.5*self.epsilon,0.5*self.epsilon, n))
         m = np.diagflat(dis)
+        return m 
+        
+class Model_Anderson_semidiagonal_disorder_conserv(Model_Anderson_rates_banded):
+    def disorder(self):
+        """ this is box disorder only on diagonal"""
+        n = self.sample.number_of_points() - 1
+        dis = np.random.permutation(np.linspace(-0.5*self.epsilon,0.5*self.epsilon, n))
+        m = np.diagflat(dis,k=1)
+        m += m.T
+        zero_sum(m)
         return m 
      
 class Model_Anderson_rates_conserv_banded(ExpModel_1d):

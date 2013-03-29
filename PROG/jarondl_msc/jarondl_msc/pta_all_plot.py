@@ -130,7 +130,7 @@ def plotf_anderson(rates=False,ddonly=False,b=1):
         if rates:
             models = (pta_all_models.Model_Anderson_rates_banded(sam, sigma, bandwidth1d=b) for sigma in sigmas)
         elif ddonly:
-            models = (pta_all_models.Model_Anderson_rates_diagonal_disorder_only(sam, sigma, bandwidth1d=b) for sigma in sigmas)
+            models = (pta_all_models.Model_Anderson_diagonal_disorder_only(sam, sigma, bandwidth1d=b) for sigma in sigmas)
         else:
             models = (pta_all_models.Model_Anderson_banded(sam, sigma, bandwidth1d=b) for sigma in sigmas)
         nums_and = get_ev_PN_for_models(models, len(sigmas), 2000)
@@ -148,6 +148,9 @@ def plotf_anderson(rates=False,ddonly=False,b=1):
     plot_anderson1d_theory_vv(ax, nums_and,color_seq)
     
     b= nums_and[0]['b']
+    
+    ax.set_xlabel(r'$\lambda$')
+    ax.set_ylabel("PN")
     
     ax.set_ylim(0, nums_and[0]['ev'].size)
     
@@ -230,24 +233,29 @@ def plotf_theor_banded_dos(b=5,N=2000):
     fig, ax = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     fig.subplots_adjust(left=0.1,right=0.95)
     
+    lam,idos = sum_dos(b)
     
-    #for b in range(1,bs+1):
-    #    y = theor_banded_dev(b,N)
-    #    ax.plot(xs,y**(-1),label=str(b))
-    lam = theor_banded_ev(b,N)[:N//2] - 2*b ## There it is conserving and (0,2pi)
+    lam2 = theor_banded_ev(b,N)[:N//2] - 2*b ## There it is conserving and (0,2pi)
     dev = -theor_banded_dev(b,N)[:N//2]
-    #ax.plot(lam,abs(DEV)**(-1))
-    ax.plot(lam,dev**2)
-    #ax.legend(loc='upper right')
+
+
+    ax.plot(lam,idos, label=r"$DOS^{-1}$")
+    ax.plot(lam2,dev, label=r"$v$")
+
     ax.set_xlim(-(2*b+0.5),(2*b+0.5))
 
+    ax.legend(loc='upper right')
+
     ax.set_xlabel('$\lambda$')
-    ax.set_ylabel(r'$\frac{d\lambda}{dN}$')
-    #ax.axvline(pi, color='black')
-    #ax.set_xlim(0,2*pi)
-    #ax.set_ylim(-1,1)
-    
+    ax.set_ylabel(r'$\frac{d\lambda}{dk}$')
+    ax.yaxis.set_major_locator(MaxNLocator(5))
+
     
     
     fig.savefig("pta_theor_banded_dos.pdf")
     
+def all_plots():
+    plotf_theor_banded_ev(bs=6,N=2000)
+    plotf_theor_banded_dos(b=5,N=2000)
+    plotf_anderson(rates=True,ddonly=True,b=5)
+    plotf_anderson_rates_conserved(b=5)

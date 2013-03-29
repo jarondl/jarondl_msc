@@ -2,7 +2,7 @@
 %%%  pta notes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass[onecolumn,fleqn]{revtex4}
+\documentclass[onecolumn,fleqn,longbibliography]{revtex4}
 
 % fonts
 \usepackage{latexsym}
@@ -15,12 +15,12 @@
 
 
 % extra by jarondl
+
 \usepackage{array}
 \usepackage{float}%unfloats
 %\usepackage{multicol}
 \usepackage[caption=false]{subfig} %subcaption is not compat with revtex
 \usepackage[pdftitle={PTA},bookmarks]{hyperref}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -113,7 +113,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{Model}
 
-We wish to study a banded model similar to the one presented in \cite{kottos_heat},
+We wish to study a banded model similar to the one presented in \cite{bodyfelt_scaling_2013},
 starting with an ordered (and periodic) matrix:
 %
 \begin{align}
@@ -132,6 +132,7 @@ k\ \  &=\ \  \frac{\pi m}{N} \ \ \ \ \ m=1..N \\
 &= \ \ -1 + \frac{\sin((b+\dfrac{1}{2})k)}{\sin(\dfrac{1}{2}k)}
 \end{align}  
 Where in the last step we have used one of Lagrange's trigonometric identities. 
+The lower bound of $lambda_k$ is $-2b$. 
 $\lambda_k$ for several values of $b$ is plotted in \autoref{fig:theor_banded_ev}.
 
 %%%%%%%%----------%%%%%%%%
@@ -150,7 +151,7 @@ $\lambda_k$ for several values of $b$ is plotted in \autoref{fig:theor_banded_ev
 
 
 
-All those plane waves have $PN= \frac{2}{3}N$, and we can also compute the mode velocity:
+A cosine plane wave will have $PN= \frac{2}{3}N$. We can also compute the mode velocity:
 \begin{align}
 v \ \ &=\ \ \frac{d\lambda_k}{dk} \ \ =\ \ -\sum_{n=1..b} 2\cdot n\cdot \sin(n\cdot k)
 \end{align}
@@ -158,23 +159,41 @@ Note that this expression is not single valued. Meaning that each $lambda$
 has more than one associated velocity. 
 
 
-The $DOS$ is defined by summing the inverse velocities of each mode. 
+The $DOS$ is defined by $\frac{dk}{d\lambda_k}$, which is the inverse of the 
+velocity. Since density is additive, for each $lambda$ we add the densities
+of all relevant $k$ modes. For the moment we use a numerical solution to
+find those $k$s. In \autoref{fig:dos} we plot the velocities and inverse 
+$DOS$ as a function of $lambda$.
+%%%%%%%%----------%%%%%%%%
+%%%%%%%%  figure  %%%%%%%%
+%%%%%%%%----------%%%%%%%%
+\begin{figure}[H]
+    \includegraphics{pta_theor_banded_dos}
+    \caption{The velocity and inverse $DOS$ for each eigenvalue $\lambda$, for $b=5$. 
+             The inverse $DOS$ will always be less then the velocity. 
+             We see large $DOS$ (small inverse) at energies where a single
+             mode $DOS$ is diverging, and where we have more than one $k$.}
+    \label{fig:dos}
+\end{figure}
+
+
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{PN plots}
+\sect{Adding disorder - finite localization}
 
-We have produced several plots of PN vs $\lambda$. For low-sparsity, there is an 
-agreement with the two "windows" observation. (For very low sparsity there are even hints
-of three windows). It seems that the effect of sparsity is to shorten the more extended window,
-up to a point where very few modes are extended (remember that the special $\lambda=0$ is always fully extended).
+The ordered lattice had no localization - all the $PN$ where equal to $\frac{2}{3}N$.
+We introduce uniformly distributed diagonal disorder:
+\begin{align}
+\gamma_n  \ = \  w_{nn} \ \in \ \left[-\frac{s}{2},+\frac{s}{2} \right]
+\end{align}
 
 
 \begin{figure}[H]
-  \subfloat[Low sparsity]{
+  \subfloat[Low disorder]{
     \includegraphics{pta_low_s_nopin}
     
   }
-  \subfloat[Sparse]{
+  \subfloat[]{
     \includegraphics{pta_higher_s_nopin}
     
   }
@@ -483,7 +502,7 @@ The lines are according to \autoref{eq:anderson_l}
 \begin{figure}[H]
 \includegraphics{pta_anderson_rates_conserv_b1}\\
 \includegraphics{pta_anderson_rates_conserv_b1_zoom}
-\caption{PN vs. eigenvalues for the "Anderson-Rate" conserving model ( $w_{ij} = 1 + \left[-\frac{s}{2}, \frac{s}{2}\right]$), 2000 sites. 
+\caption{PN vs. eigenvalues for the "Anderson-Rate" colongbibliography,nserving model ( $w_{ij} = 1 + \left[-\frac{s}{2}, \frac{s}{2}\right]$), 2000 sites. 
 The lines, which don't fit exactly, are a variation of \autoref{eq:anderson_l}, with $E\rightarrow \frac{1}{2}\ E$.
 }\label{fig:anderson_rate_conserv}
 \end{figure}
@@ -545,4 +564,17 @@ there is more then one $k$ for each $\lambda$.
 The near zero localization is gone.
 }\label{fig:anderson_rate_conserv_b5}
 \end{figure}
+
+
+
+
+
+
+
+
+
+\bibliographystyle{apsrev4-1}
+\bibliography{../bibliography/jarondl,../bibliography/custom-longbib}
+
+
 \end{document}
