@@ -89,8 +89,6 @@ class Model_Anderson_rates_conserv_banded(ExpModel_1d):
     """ symmetric"""
     def rate_matrix(self, convention=0):
         # we map epsilon to sigma, and the distribution goes from -2\sigma to 0.
-        if self.rseed is not None:
-            np.random.seed(self.rseed)
         n = self.sample.number_of_points()
         x = np.triu(periodic_banded_ones(n, self.bandwidth1d, self.periodic),1)
         m = np.zeros_like(x)

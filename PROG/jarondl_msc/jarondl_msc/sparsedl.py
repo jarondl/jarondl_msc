@@ -99,14 +99,6 @@ def zero_sum(mat, tol=1E-12):
         #    raise Exception("Failed to make sums zero, is the matrix symmetric?")
     return False
 
-def new_zero_sum(mat):
-    """ Same as zero_sum, up to a diagonal constant
-    """
-    N = mat.shape[0] # the matrix is NxN
-    row_sum = mat.sum(axis=1)
-    row_avg = row_sum.sum() / N
-    mat -= (numpy.diagflat(row_sum) - numpy.eye(N)*row_avg)
-    return row_avg
 
 def create_shift_matrix(N):
     """ Creates a N//2 shift matrix. The same as D^{N//2}
@@ -349,7 +341,7 @@ def thouless_coef(evs):
     logsum = np.log(np.abs(diff)).sum(axis=0)#0 or 1 are equal..
     return (logsum/evs.size)**(-1)
 
-def lazyprop(fn):
+def lazyprop_old(fn):
     """ based on http://stackoverflow.com/questions/3012421/python-lazy-property-decorator"""
     attr_name = '_lazy_' + fn.__name__
     @property
@@ -362,6 +354,25 @@ def lazyprop(fn):
     def _lazyprop(self, value):
         setattr(self, attr_name, value)
     return _lazyprop
+    
+class lazyprop(object):
+    '''
+    meant to be used for lazy evaluation of an object attribute.
+    property should represent non-mutable data, as it replaces itself.
+    '''
+
+    def __init__(self,fget):
+        self.fget = fget
+        self.func_name = fget.__name__
+
+    def __get__(self,obj,cls):
+        if obj is None:
+            return None
+        value = self.fget(obj)
+        setattr(obj,self.func_name,value)
+        return value
+    
+
 
 def cached_get(function, filename, *args, **kwargs):
     """  try to open filename. If non-existant, will call function with kwargs, and save

@@ -76,10 +76,9 @@ class Sample(object):
         else:
             return self.non_periodic_distance_matrix()/self.r_0()
     
-    def exponent_minus_r(self, periodic=False, convention = 1):
+    def exponent_minus_r(self, periodic=False):
         N = self.number_of_points()
-        one_matrix = convention*(np.ones([N,N]) - np.eye(N))
-        return np.exp(one_matrix-self.normalized_distance_matrix(periodic)) - np.eye(N)
+        return np.exp(-self.normalized_distance_matrix(periodic)) - np.eye(N)
     
 
 

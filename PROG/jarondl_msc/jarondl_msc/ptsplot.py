@@ -176,7 +176,7 @@ class ExpModel(object):
         self.vals_dict = {"epsilon" : epsilon, "dimensions" : sample.d, "number_of_points" : sample.number_of_points()}
         self.permuted = False
         self.basename = basename.format(**self.vals_dict)
-        self.rseed = rseed
+        self.prng = np.random.RandomState(rseed)
         self.phi = phi
         #self.logxlim = self.logvals[[1,-1]]
 
