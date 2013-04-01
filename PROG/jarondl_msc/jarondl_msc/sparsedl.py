@@ -10,7 +10,8 @@ import numpy as np
 from numpy import sqrt, cos, pi, diagflat, log
 from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
-from scipy.maxentropy import logsumexp
+#from scipy.maxentropy import logsumexp 
+from scipy.misc import logsumexp
 
 
 ### Raise all float errors
@@ -86,19 +87,12 @@ def zero_sum(mat, tol=1E-12):
         :returns: True if matrix was already zero sum, False otherwise.
     """
     row_sum = mat.sum(axis=1)
-    if (numpy.max(numpy.abs(row_sum)) < tol):
-        return True
-    else:
+    if (numpy.max(numpy.abs(row_sum)) > tol):
         mat -= numpy.diagflat(row_sum)
         maxdev  = numpy.max((mat.sum(axis=0), mat.sum(axis=1)))
-        if numpy.max((mat.sum(axis=0), mat.sum(axis=1))) > tol:
-            pass
-            #print(mat)
-            #print(mat-mat.T)
-            #print(numpy.max((mat.sum(axis=0), mat.sum(axis=1))))
-        #    raise Exception("Failed to make sums zero, is the matrix symmetric?")
-    return False
-
+        if maxdev > tol:
+            raise Exception("Failed to make sums zero, is the matrix symmetric?")
+    return mat
 
 def create_shift_matrix(N):
     """ Creates a N//2 shift matrix. The same as D^{N//2}

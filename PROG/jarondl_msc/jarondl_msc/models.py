@@ -42,29 +42,35 @@ class NetModel(object):
         This is different from sample, which holds geometric locations 
         of the dots.
     """
-    def __init__(self, number_of_points, dis_param,rseed=None, periodic=True, phi=0):
+    def __init__(self, number_of_points, dis_param,conserving = True, prng=None, periodic=True, phi=0):
         """ rseed is the random seed to prepare RandomState"""
-        self.prng = np.random.RandomState(rseed)
-        self.number_of_points = number_of_points
+        self.prng = (prng if prng is not None else np.random.RandomState(None))
+        self.number_of_points = self.N = number_of_points
         self.dis_param = dis_param
         self.periodic = periodic
         self.phi = phi
+        self.conserving = conserving
         
-        self.rmatrix = self.rate_matrix()
-
+    @lazyprop
     def rate_matrix(self):
-        """  Return the rate matrix of the model. It is here to be subclassed.
+        """  Return the rate matrix of the model. 
+             This uses the inherited method sub_rate_matrix,
+             and deals with boundary phase and conservativity.
+             if not conserving it leaves diagonal as is
         """
-        raise Exception("Unimplemented")
+        ex = self.sub_rate_matrix()
+        if self.conserving:
+            sparsedl.zero_sum(ex)
+        return ex*boundary_phasor(self.number_of_points, self.phi) 
     
     @lazyprop
     def eig_vals(self):
         """ should be used only if eig_matrix is not needed! """
-        return sparsedl.sorted_eigvalsh(self.rmatrix)
+        return sparsedl.sorted_eigvalsh(self.rate_matrix)
 
     @lazyprop
     def eig_matrix(self):
-        (self.eig_vals, w) = sparsedl.sorted_eigh(self.rmatrix)
+        (self.eig_vals, w) = sparsedl.sorted_eigh(self.rate_matrix)
         return w
 
     @lazyprop
@@ -78,88 +84,37 @@ class GeoModel(NetModel):
     """
     def __init__(self, sample, *args, **kwargs):
         self.sample = sample
-        self._safety1 = 1  ## <<<-- very important
         super(GeoModel,self).__init__(
                 sample.number_of_points(), *args, **kwargs)
     
-    def rate_matrix(self):
-        ex = (exp(self._safety1)*self.sample.exponent_minus_r(self.periodic))**(1/self.dis_param)
-        return ex
+    def sub_rate_matrix(self):
+        """ this is 'safer' because we don't reach very low values"""
+        return (exp(1)*self.sample.exponent_minus_r(self.periodic))**(1/self.dis_param)
+
         
     @lazyprop
     def eig_vals(self):
         """ should be used only if eig_matrix is not needed! """
-        return exp(-self._safety1/self.dis_param)*sparsedl.sorted_eigvalsh(self.rmatrix)
+        return exp(-1/self.dis_param)*sparsedl.sorted_eigvalsh(self.rate_matrix)
 
     @lazyprop
     def eig_matrix(self):
-        (vals, vecs) = sparsedl.sorted_eigh(self.rmatrix)
-        self.eig_vals = exp(-self._safety1/self.dis_param)*vals
+        (vals, vecs) = sparsedl.sorted_eigh(self.rate_matrix)
+        self.eig_vals = exp(-1/self.dis_param)*vals
         return vecs
     
 
 
-
-
-
-
-class ExpModel_1d(GeoModel):
-    """ Subclassing exp model for 1d """
-    def rate_matrix(self, convention):
-        ex1 = (self.sample.exponent_minus_r(self.periodic, convention))**(1/self.epsilon)
-        if self.bandwidth1d is None:
-            ex1 = ex1*periodic_banded_ones(ex1.shape[0], 1)
-        elif self.bandwidth1d != 0: #### Zero means ignore bandwidth
-            ex1 = ex1*periodic_banded_ones(ex1.shape[0], self.bandwidth1d)
-        sparsedl.zero_sum(ex1)
-        return ex1 
-
-
-    def plot_alexander(self, ax, convention=1, **kwargs):
-        """ plots Alexander's solution """
-        epsilon = self.epsilon
-        if epsilon > 1:
-            f = lambda x: sqrt( (x) * exp(-convention/epsilon) *epsilon / (epsilon - 1)) / pi
+class NetModel_1d(NetModel):
+    def __init__(self, *args, **kwargs):
+        self.bandwidth = kwargs.pop("bandwidth", None)
+        super(NetModel_1d,self).__init__(*args, **kwargs)
+    @lazyprop
+    def band_profile(self):
+        if self.bandwidth is None:
+            return 1
         else:
-            f = lambda x: exp(-convention)*sinc(epsilon/(epsilon+1))*(x/2)**(epsilon/(epsilon+1))
-        plot_func(ax, f, self.xlim, **kwargs)
-
-    def plot_eigmatrix(self, ax, **kwargs):
-        em = self.eig_matrix[:,1:]
-        em /= em.max(axis=0)
-        mshow = ax.matshow(em, vmin=-1,vmax=1)
-        ax.figure.colorbar(mshow)
-        
-
-        
-    def diff_coef(self):
-        D = ((self.epsilon-1)/(self.epsilon))
-        if D < 0 :
-            D = sparsedl.resnet(self.ex,1)
-        return D
-    def plot_rate_density(self, ax, label=r"Max. rate / row",convention=1, **kwargs):
-        """ """
-        N = self.sample.number_of_points()
-        brates = nanmax(self.ex, axis=0)
-        logbrates = log10(brates)
-        if (nanmin(logbrates) < self.logxlim[1]) and (nanmax(logbrates) > self.logxlim[0]):
-            #print "len(logbrates)", len(logbrates)
-            cummulative_plot(ax, sort(logbrates), label=label, color='purple')
-            plot_func_logplot(ax, lambda w: exp(-2*(convention-self.epsilon*log(w))),
-                self.logxlim, label= r"$e^{{-2\cdot({0}-\epsilon\ln(w))}}$".format(convention))
-            plot_func_logplot(ax, lambda w: exp(-(convention-self.epsilon*log(w*0.5))),
-                self.logxlim, label=r"$e^{{-\cdot({0}-\epsilon\ln(\frac{{w}}{{2}}))}}$".format(convention))
-    def plot_theoretical_eigvals(self, ax):
-        N = self.sample.number_of_points()
-        qx = 2*pi/N*np.arange(N)
-        z = sort(2*(cos(qx)+1 ).flatten())[1:]  # the 1: is to remove the 0 mode
-        cummulative_plot(ax, z, label="$2+2\cos(q_x)$" ,color="red", marker="x")
-
-    def inverse_resnet(self):
-        if self.bandwidth1d is None:
-            return sparsedl.resnet(self.ex, 1, self.periodic) /2
-        else:
-            return sparsedl.resnet(self.ex, self.bandwidth1d, self.periodic) /2
+            return periodic_banded_ones(self.number_of_points, self.bandwidth, self.periodic)
     @lazyprop
     def new_resnet(self):
         N = self.sample.number_of_points()
@@ -182,22 +137,46 @@ class ExpModel_1d(GeoModel):
         retval = (N//2 -2*b)*(V[0+b] - V[N//2-b])**(-1)/2.0
         return retval
 
+class GeoModel_1d(NetModel_1d,GeoModel):
 
-class ExpModel_Bloch_1d(ExpModel_1d):
-    def diff_coef(self):
-        return 1
-    def plot_rate_density(self, ax, label=r"$\lambda^\epsilon$", **kwargs):
-        """ """
-        #power_law_logplot(ax, self.epsilon, 1, self.logxlim, label=label.format(**self.vals_dict), color="green")
-        N = self.sample.number_of_points()
-        nn, xx = np.meshgrid(np.arange(N), np.arange(N))
-        ev = sort((exp(1-nn/self.epsilon)*cos(2*nn*xx*pi/N)).sum(axis=1))
-        cummulative_plot(ax, sort(ev),color="green")
-    def plot_theoretical_eigvals(self, ax):
-        N = self.sample.number_of_points()
-        qx = 2*pi/N*np.arange(N)
-        z = sort(2*(cos(qx)+1 ).flatten())[1:]  # the 1: is to remove the 0 mode
-        cummulative_plot(ax, z, label="$2+2\cos(q_x)$" ,color="red", marker="x")
+    def sub_rate_matrix(self):
+        return self.band_profile*super(GeoModel_1d,self).sub_rate_matrix()
+    
+     
+class Bloch_Banded_1d(NetModel_1d):
+    """  an ordered 1d model with finite bandwidth """
+         
+    def sub_rate_matrix(self):
+        return self.base_matrix() + self.disorder()
+        
+    def base_matrix(self):
+        if self.bandwidth is None:
+            return np.ones([self.N, self.N]) -1*np.eye(self.N)
+        else:
+            return  ( (-1)*np.eye(self.N) +  periodic_banded_ones(self.N, self.bandwidth, self.periodic))        
+    def disorder(self):
+        return 0
+
+class Model_Anderson_DD_1d(Bloch_Banded_1d):
+    """ diagonal Disorder """
+    def disorder(self):
+        return np.diagflat(self.prng.permutation(np.linspace(-self.dis_param, self.dis_param, self.N)))
+
+class Model_Anderson_ROD_1d(Bloch_Banded_1d):
+    """ random off diagonal (k=\pm1) """
+    def disorder(self):
+        m = np.diagflat(self.prng.permutation(np.linspace(-self.dis_param, self.dis_param, self.N-1)), k=1)
+        return m + m.T
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
 
 class ExpModel_Banded_Logbox(ExpModel_1d):
     def rate_matrix(self, convention=1):
@@ -434,75 +413,4 @@ class ExpModel_2d_zerodiag_randint(GeoModel):
      
      
      
-     
-     
-class Model_Anderson_banded(ExpModel_1d):
-    """  Non conservative, all rates are equal to 1,
-         the energies are from a box sample """
-    def rate_matrix(self, convention=0):
-        # we map epsilon to sigma, and the distribution goes from 0 to sigma.
-        if self.rseed is not None:
-            np.random.seed(self.rseed)
-        n = self.sample.number_of_points()
-        m = periodic_banded_ones(n, self.bandwidth1d, self.periodic)
-        m += (-1)*np.eye(n) + np.diagflat(np.random.permutation(np.linspace(-self.epsilon, self.epsilon, n)))
-        if (self.phi != 0):
-            return m * boundary_phasor(self.sample.number_of_points(), self.phi)   
-        else: return m # to keep things real
-        
-    def anderson_theory(self):
-        return (lambda x: 6*(4-x**2)/(self.epsilon**2))
-
-     
-class Model_Anderson_rates_banded(ExpModel_1d):
-    """ symmetric"""
-    def base_matrix(self):
-        """ this is the ordered version of the matrix, without disorder """
-        n = self.sample.number_of_points()
-        mat = periodic_banded_ones(n, self.bandwidth1d, self.periodic)
-        np.fill_diagonal(mat, 0)
-        return mat
-    def disorder(self):
-        """ this is box disorder added where the original matrix is 1"""
-        x = np.triu(self.base_matrix(),1)
-        m = np.zeros_like(x)
-        m[x==1] = np.random.permutation(np.linspace(-0.5*self.epsilon,0.5*self.epsilon, m[x==1].size))
-        return m + m.T
-
-    def rate_matrix(self, convention=0):
-        if self.rseed is not None:
-            np.random.seed(self.rseed)
-        m = self.base_matrix() + self.disorder()
-        return m * boundary_phasor(self.sample.number_of_points(), self.phi)
-        
-class Model_Anderson_diagonal_disorder_only(Model_Anderson_rates_banded):
-    def disorder(self):
-        """ this is box disorder only on diagonal"""
-        n = self.sample.number_of_points()
-        dis = np.random.permutation(np.linspace(-0.5*self.epsilon,0.5*self.epsilon, n))
-        m = np.diagflat(dis)
-        return m 
-        
-class Model_Anderson_semidiagonal_disorder_conserv(Model_Anderson_rates_banded):
-    def disorder(self):
-        """ this is box disorder only on diagonal"""
-        n = self.sample.number_of_points() - 1
-        dis = np.random.permutation(np.linspace(-0.5*self.epsilon,0.5*self.epsilon, n))
-        m = np.diagflat(dis,k=1)
-        m += m.T
-        zero_sum(m)
-        return m 
-     
-class Model_Anderson_rates_conserv_banded(ExpModel_1d):
-    """ symmetric"""
-    def rate_matrix(self, convention=0):
-        # we map epsilon to sigma, and the distribution goes from -2\sigma to 0.
-        n = self.sample.number_of_points()
-        x = np.triu(periodic_banded_ones(n, self.bandwidth1d, self.periodic),1)
-        m = np.zeros_like(x)
-        ##m[x==1] = np.random.permutation(np.logspace(-2*self.epsilon,0, m[x==1].size)) ###logspace was a bad idea
-        m[x==1] = 1+np.random.permutation(np.linspace(-0.5*self.epsilon,0.5*self.epsilon, m[x==1].size))
-        m += m.T
-        zero_sum(m)####  <---  the change
-        return m * boundary_phasor(self.sample.number_of_points(), self.phi)   
-
+ 

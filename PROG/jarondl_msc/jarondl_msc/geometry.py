@@ -79,6 +79,7 @@ class Sample(object):
     def exponent_minus_r(self, periodic=False):
         N = self.number_of_points()
         return np.exp(-self.normalized_distance_matrix(periodic)) - np.eye(N)
+        #return -np.expm1(-self.normalized_distance_matrix(periodic))
     
 
 
