@@ -12,11 +12,21 @@ from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
 #from scipy.maxentropy import logsumexp 
 from scipy.misc import logsumexp
-
+import logging
 
 ### Raise all float errors
-numpy.seterr(all='warn')
+np.seterr(all='warn')
+EXP_MAX_NEG = np.log(np.finfo( np.float).tiny)
 
+#set up logging:
+logging.basicConfig(format='%(asctime)s %(message)s')
+logger = logging.getLogger(__name__)
+
+info = logger.info
+warning = logger.warning
+debug = logger.debug
+     
+    
 ##############  Create and manipulate matrices
 
 def create_sparse_matrix(N, rates, b=1):
@@ -380,7 +390,28 @@ def cached_get(function, filename, *args, **kwargs):
         np.savez(filename, numerics=numerics)
     return numerics
 
+def cached_get_key(function, filename, key='numerics', *args, **kwargs):
+    """ Cached data getter.
+        The idea is that we have a function producing numpy arrays
+        that can be stored in a npz file. 
+        If the file exists and the key exists, this data is returned.
+        If the file exists but key doesn't, create data, add to file, and return data.
+        If both file doesn't exist it will be created.
+    """
 
+    try:
+        f = np.load(filename)
+        fd = dict(f)
+        f.close()
+        
+    except (OSError, IOError):
+        fd = dict()
+    debug("current keys in {} are {}".format(filename, fd.keys()))
+    debug("We seek {}".format(key))
+    if key not in fd:
+        fd[key]  = function(*args, **kwargs)
+        np.savez(filename, **fd)
+    return fd[key]
 
 ######### Mathematical aux functions
 def omega_d(d):

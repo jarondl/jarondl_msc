@@ -15,6 +15,7 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
 import plotdl
 import sparsedl
+from sparsedl import cached_get_key
 from plotdl import plt, tight_layout, cummulative_plot
 from ptaplot import theor_banded_ev, theor_banded_dev, theor_banded_ev_k, theor_banded_dossum_k, find_ks
 
@@ -27,6 +28,8 @@ import ptsplot
 
 import pta_models
 import pta_all_models
+from models import Model_Anderson_DD_1d
+
 
 
 mpl.rc('figure', autolayout=True)
@@ -62,11 +65,12 @@ def get_ev_PN_for_models(models,count,number_of_sites):
     res = np.zeros(count, dtype = res_type) # preallocation is faster..        
     for n,mod in enumerate(models):
         debug('eigenvals ,PN number {0}'.format(n))
-        res[n] = (  mod.eigvals,
-                    mod.PN_N,
-                    mod.epsilon,
-                    mod.bandwidth1d)
+        res[n] = (  mod.eig_vals,
+                    mod.PN,
+                    mod.dis_param,
+                    mod.bandwidth)
     return res
+    
     
 
 def plot_anderson(ax, ev_pn,color_seq):
@@ -86,7 +90,7 @@ def plot_anderson1d_theory(ax, ev_pn, color_seq):
 def plot_anderson1d_theory_vv(ax, ev_pn, color_seq):
     for (mod,color) in zip(ev_pn,color_seq):
         b=mod['b']
-        N = 2000
+        N = mod['ev'].size
         #xs = np.linspace(-2*b,2*b,N//2)
         #lam = theor_banded_ev(b,N)[:N//2] - 2*b ## There it is conserving and (0,2pi)
         #dev = -theor_banded_dev(b,N)[:N//2]
@@ -117,25 +121,14 @@ def plot_anderson1d_theory_conserv(ax, ev_pn, color_seq):
             ax.plot(xs,ys,color="b",linewidth=1)# gives a white "border"
             ax.plot(xs,ys,color=color,linewidth=0.8)
 
-def plotf_anderson(rates=False,ddonly=False,b=1):
-    fname_base = 'pta_anderson{0}{1}_b{2}'.format(("_rates" if rates else ""),("_ddonly" if ddonly else "") ,b)
-    # See if we have numerics:
-    try:
-        f = np.load(fname_base + '.npz')
-        nums_and = f['nums']
-    except (OSError, IOError):
-        # otherwise, get the data:
-        sigmas=(0.01,0.1,0.2)
-        sam = ptsplot.create_bloch_sample_1d(2000)
-        if rates:
-            models = (pta_all_models.Model_Anderson_rates_banded(sam, sigma, bandwidth1d=b) for sigma in sigmas)
-        elif ddonly:
-            models = (pta_all_models.Model_Anderson_diagonal_disorder_only(sam, sigma, bandwidth1d=b) for sigma in sigmas)
-        else:
-            models = (pta_all_models.Model_Anderson_banded(sam, sigma, bandwidth1d=b) for sigma in sigmas)
-        nums_and = get_ev_PN_for_models(models, len(sigmas), 2000)
-        np.savez(fname_base + ".npz", nums = nums_and)
-        
+def getf_anderson(b=1, N=2000,sigmas=(0.01,0.1,0.2)):
+    fname = 'pta_anderson_b{}.npz'.format(b)
+    
+    models = (Model_Anderson_DD_1d(N, sigma, bandwidth=b, conserving=False) for sigma in sigmas)
+    key = str((N, frozenset(sigmas)))
+    return cached_get_key(get_ev_PN_for_models, fname, key, models, len(sigmas), N)
+    
+def plotf_anderson(nums_and,figfilename="pta_anderson"):
     fig, ax = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     fig.subplots_adjust(left=0.1,right=0.95)
     
@@ -155,10 +148,10 @@ def plotf_anderson(rates=False,ddonly=False,b=1):
     ax.set_ylim(0, nums_and[0]['ev'].size)
     
     ax.set_xlim(-(2*b+0.5),(2*b+0.5))
-    fig.savefig(fname_base + ".pdf")
+    fig.savefig(figfilename + ".pdf")
     
     ax.set_xlim(-(2*b+0.1),-2*b+1)
-    fig.savefig(fname_base + "_zoom.pdf")
+    fig.savefig(figfilename + "_zoom.pdf")
     
     
 def plotf_anderson_rates_conserved(b=1):
