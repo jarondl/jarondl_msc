@@ -28,7 +28,7 @@ import ptsplot
 
 import pta_models
 import pta_all_models
-from models import Model_Anderson_DD_1d
+from models import Model_Anderson_DD_1d, Model_Anderson_ROD_1d
 
 
 
@@ -98,7 +98,7 @@ def plot_anderson1d_theory_vv(ax, ev_pn, color_seq):
         ### the six only works for b=1 !!
         ys = 6 * dev**2 / (mod['sigma'])**2
         #ys = and_theory(xs, mod['sigma'],b)
-        ax.plot(lam,ys,color="b",linewidth=1)# gives a white "border"
+        ax.plot(lam,ys,color="w",linewidth=1.4)# gives a white "border"
         ax.plot(lam,ys,color=color,linewidth=0.8)
         
         
@@ -121,18 +121,22 @@ def plot_anderson1d_theory_conserv(ax, ev_pn, color_seq):
             ax.plot(xs,ys,color="b",linewidth=1)# gives a white "border"
             ax.plot(xs,ys,color=color,linewidth=0.8)
 
-def getf_anderson(b=1, N=2000,sigmas=(0.01,0.1,0.2)):
-    fname = 'pta_anderson_b{}.npz'.format(b)
-    
-    models = (Model_Anderson_DD_1d(N, sigma, bandwidth=b, conserving=False) for sigma in sigmas)
+def getf_anderson(b=1, N=2000,sigmas=(0.01,0.1,0.2), ROD=False, semiconserving=False):
+    fname = 'pta_anderson_b{}{}{}.npz'.format(b, 
+                                            ("_ROD" if ROD else ""), 
+                                            ("_SC" if semiconserving else ""))
+    if ROD:
+        models = (Model_Anderson_ROD_1d(N, sigma, bandwidth=b, conserving=False, semiconserving=semiconserving) for sigma in sigmas)
+    else:
+        models = (Model_Anderson_DD_1d(N, sigma, bandwidth=b, conserving=False) for sigma in sigmas)
     key = str((N, frozenset(sigmas)))
     return cached_get_key(get_ev_PN_for_models, fname, key, models, len(sigmas), N)
     
-def plotf_anderson(nums_and,figfilename="pta_anderson"):
+def plotf_anderson(nums_and,figfilename="pta_anderson", dont_touch_ylim=False):
     fig, ax = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     fig.subplots_adjust(left=0.1,right=0.95)
-    
-    ax.axhline((nums_and[0]['ev'].size)*2/3, ls='--', color='black')
+    if not dont_touch_ylim:
+        ax.axhline((nums_and[0]['ev'].size)*2/3, ls='--', color='black')
     
     color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     plot_anderson(ax, nums_and,color_seq)
@@ -145,7 +149,8 @@ def plotf_anderson(nums_and,figfilename="pta_anderson"):
     ax.set_xlabel(r'$\lambda$')
     ax.set_ylabel("PN")
     
-    ax.set_ylim(0, nums_and[0]['ev'].size)
+    if not dont_touch_ylim:
+        ax.set_ylim(0, nums_and[0]['ev'].size)
     
     ax.set_xlim(-(2*b+0.5),(2*b+0.5))
     fig.savefig(figfilename + ".pdf")
@@ -153,46 +158,63 @@ def plotf_anderson(nums_and,figfilename="pta_anderson"):
     ax.set_xlim(-(2*b+0.1),-2*b+1)
     fig.savefig(figfilename + "_zoom.pdf")
     
-    
-def plotf_anderson_rates_conserved(b=1):
-    fname_base = 'pta_anderson_rates_conserv_b{0}'.format( b)
-    # See if we have numerics:
-    try:
-        f = np.load(fname_base + '.npz')
-        nums_and = f['nums']
-    except (OSError, IOError):
-        # otherwise, get the data:
-        sigmas=(0.01,0.1,0.2)
-        sam = ptsplot.create_bloch_sample_1d(2000)
-
-        models = (pta_all_models.Model_Anderson_rates_conserv_banded(sam, sigma, bandwidth1d=b) for sigma in sigmas)
-
-        nums_and = get_ev_PN_for_models(models, len(sigmas), 2000)
-        np.savez(fname_base + ".npz", nums = nums_and)
-        
+def plotf_anderson_byN(nums_and,figfilename="pta_anderson_byN"):
     fig, ax = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     fig.subplots_adjust(left=0.1,right=0.95)
     
-    ax.axhline((nums_and[0]['ev'].size)*2/3, ls='--', color='black')
     
     color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
-    plot_anderson(ax, nums_and, color_seq)
+    for (mod,color) in zip(nums_and,color_seq):
+        N = (mod['ev'].size)
+        debug("N = {} ".format(N))
+        debug("mod['ev'].shape = {}".format(mod['ev'].shape))
+        ax.plot(-mod['ev'],mod['PN'], '.', color=color, label=r"{0}".format(N))
+        ax.axhline(N*2/3, ls='--', color='black')
+        debug("plot")
+    ax.legend(loc='upper right')
+  
+
+    b= nums_and[0]['b']
+    maxN = max(mod['ev'].size for mod in nums_and)
     
-    color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
-    plot_anderson1d_theory_conserv(ax, nums_and,color_seq)
+    ax.set_xlabel(r'$\lambda$')
+    ax.set_ylabel("PN")
+    
+    ax.set_ylim(0, maxN)
+    
+    ax.set_xlim(-(2*b+0.5),(2*b+0.5))
+    fig.savefig(figfilename + ".pdf")
 
     
-    ax.set_ylim(0, nums_and[0]['ev'].size)
+def plotf_anderson_forptatex():
+    runs1000_low = getf_anderson(b=5, N=1000,sigmas=(0.01,0.1,0.2))
+    run2000 = getf_anderson(b=5, N=2000, sigmas=(0.1,))
+    run3000 = getf_anderson(b=5, N=3000, sigmas=(0.1,))
     
+    plotf_anderson(runs1000_low, figfilename="pta_anderson_b5_low")
+    plotf_anderson_byN([runs1000_low[1], run2000[0], run3000[0]])
     
+    runs1000_ROD = getf_anderson(b=5, N=1000,sigmas=(0.1,), ROD=True)
+    runs1000_ROD_SC = getf_anderson(b=5, N=1000,sigmas=(0.1,), ROD=True, semiconserving=True)
+    plotf_anderson_byN([runs1000_ROD[0],runs1000_ROD_SC[0]], figfilename="pta_anderson_b5_ROD_VS_SC")
+    
+    #stronger
+    runs_ROD_strong = getf_anderson(b=5, N=1000,sigmas=(10,), ROD=True)
+    runs_ROD_strong_SC = getf_anderson(b=5, N=1000,sigmas=(10,), ROD=True, semiconserving=True)
+    plotf_anderson_byN([runs_ROD_strong[0],runs_ROD_strong_SC[0]], figfilename="pta_anderson_b5_s10_ROD_VS_SC")
+
+
+    run_strong = getf_anderson(b=5, N=1000, sigmas=(1,2,3))
+    plotf_anderson(run_strong, figfilename="pta_anderson_strong")
+    
+    run_strong2 = getf_anderson(b=5, N=2000, sigmas=(1,2,3))
+    plotf_anderson(run_strong2, figfilename="pta_anderson_strong2")
+    
+    run_very_strong = getf_anderson(b=5, N=1000, sigmas=(10,20,30))
+    plotf_anderson(run_very_strong, figfilename="pta_anderson_very_strong", dont_touch_ylim=True)
 
     
-    ax.set_xlim(-0.5,3*b+0.5)
-    fig.savefig(fname_base + ".pdf")
-    
-    ax.set_xlim(2*b-0.5,2*b+0.1)
-    fig.savefig(fname_base + "_zoom.pdf")
-    
+
     
 def plotf_theor_banded_ev(bs=6,N=2000):
     

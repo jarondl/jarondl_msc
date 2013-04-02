@@ -116,7 +116,7 @@
 We wish to study a banded model similar to the one presented in \cite{bodyfelt_scaling_2013},
 starting with an ordered (and periodic) matrix:
 %
-\begin{align}
+\begin{align}\label{eq:ordered}
 w_{nm} &= \begin{cases}
   w_0 &\qquad \textrm{ if  } \quad 0<|n-m|\le 1 \\
   0 &\qquad \textrm{ otherwise}
@@ -155,12 +155,12 @@ A cosine plane wave will have $PN= \frac{2}{3}N$. We can also compute the mode v
 \begin{align}
 v \ \ &=\ \ \frac{d\lambda_k}{dk} \ \ =\ \ -\sum_{n=1..b} 2\cdot n\cdot \sin(n\cdot k)
 \end{align}
-Note that this expression is not single valued. Meaning that each $lambda$ 
+Note that this expression is {\bf not single valued}. Meaning that each $\lambda$ 
 has more than one associated velocity. 
 
 
 The $DOS$ is defined by $\frac{dk}{d\lambda_k}$, which is the inverse of the 
-velocity. Since density is additive, for each $lambda$ we add the densities
+velocity. Since density is additive, for each $\lambda$ we add the densities
 of all relevant $k$ modes. For the moment we use a numerical solution to
 find those $k$s. In \autoref{fig:dos} we plot the velocities and inverse 
 $DOS$ as a function of $lambda$.
@@ -190,11 +190,24 @@ We introduce uniformly distributed diagonal disorder:
 This disorder, as small as it may be, will cause finite Anderson localization.
 According to FGR, the transition rate (or the inverse of mean-free-time) is
 \begin{align}
-\frac{1}{t_\ell} = \varrho w_{nm}
+\frac{1}{t_\ell} = \varrho \langle w_{nm}^2\rangle
 \end{align}
 Where $\varrho$ is the Density-Of-States, and $w_{nm}$ is a rate between
 neighboring sites.
-
+To get the mean-free-path, we need to translate this to units of distance:
+\begin{align}
+\ell = v_\lambda t_\ell = \frac{v_\lambda}{\varrho \langle w_{nm}^2\rangle}
+\end{align}
+As mentioned before, the problem is that $v_\lambda$ is not single valued,
+so we do not know yet what should be put there. If we put the inverse of 
+the DOS, we get the expression:
+\begin{align}
+\ell = \frac{\varrho^{-2}}{ \langle w_{nm}^2\rangle}
+\end{align}
+We plot this result as a solid line in the next figures, with $<w^2> = s^2/3$.
+On the eigenvalue axis, it does tell us about eigenvalues with low $PN$,
+and the span (or band) where eigenvlaues exist. This does not scale with $N$, although 
+the numerics seem to do so \autoref{fig:anderson_byN}
 
 %%%%%%%%----------%%%%%%%%
 %%%%%%%%  figure  %%%%%%%%
@@ -202,394 +215,89 @@ neighboring sites.
 \begin{figure}[H]
     \includegraphics{pta_anderson_ddonly_b5}\\
     \includegraphics{pta_anderson_ddonly_b5_zoom}
-    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=2000$.}
-    \label{fig:dos}
+    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=2000$. We see that
+    no $PN$ is higher than the plane waves' $PN =2/3 N$. We can also explain
+    points with low $PN$ by the corresponding $DOS$, and the band of eigenvalues. 
+    Compare this to figure 2 of \cite{bodyfelt_scaling_2013}. The 
+    differences are that there the basic matrix (before disorder) had a 'conserving' diagonal of $-2b$,
+    which corresponds to a horizontal shift, the $x$-axis there is $\sqrt{\lambda}$,
+    the disorder is over the main $2b+1$ diagonal instead of only the main diagonal, 
+    and the disorder is larger, $s=0.5$.}
+    \label{fig:ddonly_b5}
 \end{figure}
 
 
-
-
-
+%%%%%%%%----------%%%%%%%%
+%%%%%%%%  figure  %%%%%%%%
+%%%%%%%%----------%%%%%%%%
 \begin{figure}[H]
-  \subfloat[Low disorder]{
-    \includegraphics{pta_low_s_nopin}
-    
-  }
-  \subfloat[]{
-    \includegraphics{pta_higher_s_nopin}
-    
-  }
-  \\
-  \subfloat[Very sparse]{
-\includegraphics{pta_highest_s_nopin}
-    
-  }
-\subfloat[Very sparse - logscale]{
-\includegraphics{pta_highest_s_log_nopin}
-    
-  }
-  \caption{{\bf PN} as a function of $\lambda$ for sparse systems.
-  For all the plots $N=1000$ and $b=5$}
+    \includegraphics{pta_anderson_byN}
+    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $s=0.1$ ,$N={{1000,2000,3000}}$. 
+    Here we see the scaling in $N$ of the $PN$ values. The $PN$ of the 
+    larger left portion scales as expected by $2/3 N$. In 
+    \cite{bodyfelt_scaling_2013} this appears as the $PN>0.6N$ definition 
+    of "extended modes". For this kind of disorder the other portion
+    also scales in $N$, but less strongly. We assume that for a large enough
+    $N$ the shape will converge to \autoref{fig:dos}, but that our sample
+    size is not enough to show that fact. }
+    \label{fig:anderson_byN}
 \end{figure}
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{The effects of pinning}
+\sect{The effects of conservation}
 
-By pinning we mean adding some elements to the diagonal,
-that represent a spring attaching a ball to a fixed origin.
-
-
-We used a uniform distribution on the range $[-0.3,0]$,
-in order to discern the effect.
+A conserving matrix is one where the sum of each row is $0$.
+Of-course, adding a constant to the energies should not make a different,
+so we can also study the case where the sum is constant.
 
 
-It seems that the only difference is some localization in
-the low-eigenvalues. The lowest modes are replaced with less 
-extended modes with higher eigenvalues. Note that the $\lambda=0$ mode no longer
-exist. To highlight the low eigenvalues,
-we have used log-scale for the $\lambda$ axis.
+The simplest kind of conserving disorder we can add to the above defined model \autoref{eq:ordered},
+is to add a random variable to the $\pm 1$ off-diagonals,
+and subtracting this from the diagonal. (keeping the disorder row sum to zero, and the symmetry).
 
+We test this in \autoref{fig:ROD}
+
+%%%%%%%%----------%%%%%%%%
+%%%%%%%%  figure  %%%%%%%%
+%%%%%%%%----------%%%%%%%%
 \begin{figure}[H]
-\includegraphics{pta_low_s_log_nopin}
-\includegraphics{pta_low_s_log_pin}
-\caption{On the left, without pinning, and on the right with pinning}
+    \includegraphics{pta_anderson_b5_ROD_VS_SC}
+    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $s=0.1$ ,$N=1000$. 
+    The green points are for the conserving model, the blue for the non-conserving.
+    The main (and very important!) difference between the two, is on the lowermost $\lambda$, in which
+    $PN$ does not go to zero although the $DOS$ does go to zero. There is also
+    a solitary green point on $N=1000$, which is the ergodic state.}
+    \label{fig:ROD}
 \end{figure}
 
 
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Thouless conductance}
-
-Extended modes are more sensitive to boundary conditions. To measure
-the effect quantitivly, we've used Thouless' method of adding
-a phase to the boundary condition, and measuring the change in the eigenvalues.
-
-We define $\lambda_0$ as the eigenvalue with regular periodic boundary conditions,
-and $\lambda_\phi$ as the eigenvalue after applying a phase of $\phi$ to the boundary conditions.
-Then $g$ is defined as
-%
-\begin{align}
-  g = \frac{|\lambda_\phi - \lambda_0 |}{\phi^2}\ \times \ \frac{1}{\Delta}
-\end{align}
-%
-Where $\Delta\ =\ \lambda_{n+1}-\lambda_n$ is the level spacing. 
-In practice, we have averaged over five 
-neighboring spacings to avoid artifacts.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{strong disorder}
 
 
-The resulting $g(\lambda)$ is strikingly similar to the $PN(\lambda)$ results,
-but the change is much stronger (note the logarithmic $y$-scale).  
+We now put moderately stronger disorder. We see two effects. On the one hand, the $PN$'s seem closer
+to our theoretical $\ell$ prediction. On the other hand, we can visually see
+broadening of the band on both sides. For very strong disorder the band structure disappears all together.
 
 
+
+
+
+%%%%%%%%----------%%%%%%%%
+%%%%%%%%  figure  %%%%%%%%
+%%%%%%%%----------%%%%%%%%
 \begin{figure}[H]
-  \subfloat[Low sparsity]{
-    \includegraphics{pta_thouless_low_s}
-    
-  }
-  \subfloat[Sparse]{
-    \includegraphics{pta_thouless_higher_s}
-    
-  }
-  \\
-  \subfloat[Very sparse]{
-\includegraphics{pta_thouless_highest_s}
-    
-  }
-\subfloat[Very sparse - logscale]{
-\includegraphics{pta_thouless_highest_s_log}
-    
-  }
-  \caption{$g$ as a function of $\lambda$ for sparse systems.
-  For all the plots $N=1000$ and $b=5$}
+    \includegraphics{pta_anderson_strong}\\
+    \includegraphics{pta_anderson_very_strong}\\
+    \includegraphics{pta_anderson_b5_s10_ROD_VS_SC}
+    \caption{Top two plots: $PN$ vs eigenvalue $\lambda$, for $b=5$, $s={1,2,3,10,20,30}$ ,$N=1000$. 
+    For the medium strength ($s={1,2,3}$), we see better fitting to our prediction (since $\ell \approx N$),
+    but we also see widening of the bands. In the very strong disorder, the band features are lost.
+    In the third plot, $s=10$, and we have off-diagonal disorder, once conserving (green) and once not.
+    Luckily, we do not lose the "extended"- diffusive modes in the conserving disorder.}
+    \label{fig:strong}
 \end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Diagonal Disorder}
-
-
-In the RP we have claimed that the conservation of the matrix
-causes the very wide modes on the lower edge of the spectrum.
-To see this point, we ran numerics with $N=1000$ $b=5$ and $\sigma=0.1$.
-
- Also notice the arc-like feature on the right,
-it was there previously, but it is more pronounced for $\sigma=0.1$.  
-The plateau is for $PN=\frac{2}{3}N$, as is expected for a cosine wave. 
-
-
-Conservation means that the sum of each row is zero, so that the diagonal is minus the
-sum of all other terms. The first way to break conservation is by adding
-random elements to this diagonal.
-\begin{align}
-\gamma_n = -\sum_m w_{nm} + w_0\eexp{-\varepsilon}
-\end{align}
- In the plot legends we mark this by the removal of $C$.
- 
- 
-Another way is by neglecting to do the sum altogether,
-keeping only:
-\begin{align}
-\gamma_n = + w_0\eexp{-\varepsilon}
-\end{align}
-In the plot legends we mark this by adding $D$.
-
-
-
-In \autoref{fig:pta_sym1} we see the resulting $PN$ and $g$. We see
-that the lowest eigenmodes behave differently. To examine this effect,
-we have shifted the $x$ axis by the minimal $\lambda$, and applied log-scale.
-For the conserving matrix, the $PN$ is constant in the low eigenvalues. The
-uncoserving matrix has a small decline, and the one without special diagonal 
-has a larger decline. 
-
-
-
-
-\begin{figure}[H]
-  \subfloat[g]{
-    \includegraphics{pta_sym_neg_g}  
-    
-  }\\
-  \subfloat[PN]{
-    \includegraphics{pta_sym_neg_PN}
-    
-  }\\
-  \subfloat[PN around zero]{
-    \includegraphics{pta_sym_neg_PN_zero}
-    
-  }
-  \caption{$g$ and PN as a function of $\lambda$ for sparse systems.
-  For all the plots $N=1000$, $b=5$ and $\sigma=0.1$. 
-  The label codes are R-Real S-Symmetric P-[Positive Elements] C-Conservative D-[no-special diagonal] .
-  The dashed line is on $y=2/3$, the expected PN for a cosine wave.}
-  \label{fig:pta_sym1}
-\end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{non positive elements}
-
-Here we check the effects of positivity on the $PN$ structure. We multiply
-the matrix elements by a random sign $[\pm 1]$, keeping it symmetric.
-The change from before is striking, as the plateau vanishes completely.
-
-We examine the conservation aspects here as well, with the same
-too measures of diagonal disorder. We see that when we do not treat the diagonal
-specially, there are no wide modes at all. For the conserving and disorder matrices,
-there are some wide modes. In the conserving case they are around the center, with a $\lambda=0, PN=N$ mode.
-For the non-conserving mode this behavior shifts to the right. To further
-analyze this area, we have shifted the $x$-axis, and plotted only the points to the 
-right of the peak, to allow log-scale. The other half is symmetric. 
-\begin{figure}[H]
-  \subfloat[g]{
-    \includegraphics{pta_sym_neg_g2}  
-    
-  }\\
-  \subfloat[PN]{
-    \includegraphics{pta_sym_neg_PN2}
-    
-  }\\
-  \subfloat[PN around center]{
-    \includegraphics{pta_sym_neg_PN_center}
-    
-  }
-  \caption{$g$ and PN as a function of $\lambda$ for sparse systems.
-  For all the plots $N=1000$, $b=5$ and $\sigma=0.1$. 
-  The label codes are R-Real S-Symmetric P-[Positive Elements] C-Conservative D-[no-special diagonal] . Note
-  that the last plot has only half of the points}
-  \label{fig:pta_sym2}
-\end{figure}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Relating mean free path to DOS}
-
-We mark the Density-Of-States by $\varrho_\lambda$.
-According to FGR, the transition rate,
-or the inverse of mean-free-time is
-\begin{align}
-\frac{1}{t_\ell} = \varrho_\lambda w_{nm}
-\end{align}
-the mean-free-path is:
-\begin{align}
-\ell = v_\lambda t_\ell = \frac{v_\lambda}{\varrho_\lambda w_{nm}}
-\end{align}
-For $v_\lambda$ we could probably take the Fermi velocity.
-
-
-Next, we need to connect the mean-free-path with the localization length 
-in 1-3d. Basically, in $1d$ they are the same,
-with 
-\begin{align}
-\xi\sim \ell
-\end{align}
-For banded $1d$ we expect
-\begin{align}
-\xi \sim b^2 \ell
-\end{align}
-
-In $2d$ there is an exponential dependence on $g$ (?),
-\begin{align}
-\xi\sim \eexp{g} \ell
-\end{align}
-While in $3d$ we have the $\beta$-function:
-\begin{align}
-\beta(g) = \frac{\partial g}{\partial \log(L)}
-\end{align}
-If $\beta(g)>0$, then the derivative is positive, and the RG flow
-goes to the right, and vice versa. For $3d$ there is
-a critical $g_c=1$, where to the right of it $\beta(g)>0$, and 
-to the left $\beta(g)<0$. This means that if $g_0>1$, the localization
-length diverges, and if $g_0<1$ the localization length goes to $0$.
-
-
-An interesting question is the relation between the wavelength and
-the localization length. If the localization length is smaller then
-the wavelength it has no meaning.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Band structure}
-
-We can find the DOS at the ends of the bands,
-and their inverse should be the localization length.
-
-Perhaps, because of a special matrix feature or some symmetry,
-we have extended states with lower energy, similar in idea
-to cooper pairs in super-conductors.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Anderson Localization Length - numerical}
-
-According to Tal Weiss' summary, the localization length
-for the $1d$ case with $w_{ij}=1$, and $\gamma_i = [-s,s]$, is:
-\begin{align}
- l = 2 \ \frac{4 - E^2}{\sigma} 
- \end{align}
-where $\sigma$ is the variance of the $\gamma$ distribution. 
-In our case $\sigma = \frac{s^2}{3}$, leading us to:
-\begin{align}\label{eq:anderson_l}
- l = 6 \ \frac{4-E^2}{s^2} 
- \end{align}
-we check this numerically in three simple ($b=1$) cases:
-\begin{enumerate}
-    \item{For the Anderson model with $w_{ij}=1$, and $\gamma_i = [-s,s]$ in \autoref{fig:anderson}.}
-    \item{For the "Anderson-rate" model with$\gamma_i=0$ and $w_{ij}= 1 + \left[-\frac{s}{2}, \frac{s}{2} \right]$
-            in \autoref{fig:anderson_rate}}
-    \item{For the "Anderson-rate" conserving model with the same rates but $\gamma_i = -\sum_j w_{ij}$
-            in \autoref{fig:anderson_rate_conserv}}
-\end{enumerate}
-
-To understand the band structure, it helps to first think of the analytical 
-solution of the ordered state.
-Without disorder, the eigenvectors and eigenvalues are:
-\begin{align}
-k\ \  &=\ \  \frac{\pi m}{N} \ \ \ \ \ m=1..N \\
-\vec{V}_k\ \  &=\ \  \cos(k\cdot x)\\
-\lambda_k\ \  &=\ \  2\cos(k) \ \ \ \ \ \ (+2 \textrm{  for conserving matrix)} 
-\end{align}
-All of these eigenvectors have $PN\ =\ (2/3)N$.
-This is marked in the plots by a horizontal dashed line. 
-The eigenvalues are confined between $-2$ and $2$  (add $2$ for conserving matrix).
-The density of states for the ordered model is:
-%
-\begin{align}
-\textrm{DOS} = \frac{1}{v} = \left(\frac{d\lambda_k}{dk}\right)^{-1} = -\frac{1}{2\sin(k)} = -\frac{1}{\sqrt{4-\lambda^2}}
-\end{align}
-Note that this has two diverging points, at $E=\pm 2$.
-
-
-The localization length for weak disorder is 
-\begin{align}
-\ell = 2\cdot\frac{v^2}{\sigma}= 2\cdot\frac{4-\lambda^2}{\sigma}
-\end{align}
-
-
-
-\begin{figure}[H]
-\includegraphics{pta_anderson_b1}\\
-\includegraphics{pta_anderson_b1_zoom}
-\caption{PN vs. eigenvalues for the plain Anderson model ($w_{ij}=1$, $\gamma_i = [-s,s]$), 2000 sites. 
-The lines are according to \autoref{eq:anderson_l}
-}\label{fig:anderson}
-\end{figure}
-
-\begin{figure}[H]
-\includegraphics{pta_anderson_rates_b1}\\
-\includegraphics{pta_anderson_rates_b1_zoom}
-\caption{PN vs. eigenvalues for the "Anderson-Rate" model ($\gamma_i = 0$, $w_{ij} = 1 + \left[-\frac{s}{2}, \frac{s}{2}\right]$), 2000 sites. 
-The lines are according to \autoref{eq:anderson_l}
-}\label{fig:anderson_rate}
-\end{figure}
-
-\begin{figure}[H]
-\includegraphics{pta_anderson_rates_conserv_b1}\\
-\includegraphics{pta_anderson_rates_conserv_b1_zoom}
-\caption{PN vs. eigenvalues for the "Anderson-Rate" colongbibliography,nserving model ( $w_{ij} = 1 + \left[-\frac{s}{2}, \frac{s}{2}\right]$), 2000 sites. 
-The lines, which don't fit exactly, are a variation of \autoref{eq:anderson_l}, with $E\rightarrow \frac{1}{2}\ E$.
-}\label{fig:anderson_rate_conserv}
-\end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Banded matrices}
-
-Before we move forward with disordered  banded matrices, let
-us start with ordered ones.
-The eigenvectors don't change (Bloch's theorem is still valid), but the eigenvalues do:
-\begin{align}
-k\ \  &=\ \  \frac{\pi m}{N} \ \ \ \ \ m=1..N \\
-\vec{V}_k\ \  &=\ \  \cos(k\cdot x)\\
-\lambda_k\ \  &=\ \  \sum_{n=1..b} 2\cos(n\cdot k) \ \ \ \ \ \ (+2b \textrm{  for conserving matrix)}\\
-&= \ \ -1 + \frac{\sin((b+\dfrac{1}{2})k)}{\sin(\dfrac{1}{2}k)}
-\end{align}  
-Where in the last step we have used Lagrange's trigonometric identities.
-The velocity is now:
-\begin{align}
-v \ \ &=\ \ \frac{d\lambda_k}{dk} \ \ =\ \ -\sum_{n=1..b} 2\cdot n\cdot \sin(n\cdot k)
-\end{align}
-There are $b+1$ points where $v=0$. 
-The lowest eigenvalue is when $k=0$, $\lambda = -2b$.
-The highest is tougher to calculate.
-
-Let us analyze the one around $k=0$. 
-In second order in $k$ , we have:
-\begin{align}
-\lambda &= \sum_{n=1..b} 2(\cos(n\cdot k)) \approx \sum_{n=1..b} 2-(n\cdot k)^2 \\
-&=2b-\frac{1}{6} b(b+1)(2b+1) k^2\\
-v\ \ &\approx -\sum_{n=1..b} 2\cdot n\cdot n \cdot k = \left(-\sum_{n=1..b} 2\cdot n\cdot n \right) k \\
-&=-\frac{2}{6} b(b+1)(2b+1) k \\
-v^2 &\approx \frac{2}{3}b(b+1)(2b+1)  (2b-\lambda)
-\end{align}
-
-\begin{figure}[H]
-\includegraphics{pta_theor_banded_ev}
-\caption{Theoretical eigenvalues for banded ordered matrices. Since our 
-models are periodic, only the left half of this picture is relevant.
-We can see that there are $b+1$ points where $v=0$ or the DOS diverges.
-}\label{fig:theor_banded_ev}
-\end{figure}
-
-
-\begin{figure}[H]
-\includegraphics{pta_theor_banded_dos}
-\includegraphics{pta_anderson_rates_b5}\\
-\includegraphics{pta_anderson_rates_b5_zoom}
-\caption{PN vs. eigenvalues for the "Anderson-Rate" model $b=5$.
- The top plot is of velocity $v=\frac{d\lambda}{dk}$ vs eigenvalues $\lambda$. The DOS is the inverse of this.
-In the other two plots, the lines are simply $\frac{2 v^2}{\sigma}$. Notice that
-there is more then one $k$ for each $\lambda$. 
-}\label{fig:anderson_rate_b5}
-\end{figure}
-
-\begin{figure}[H]
-\includegraphics{pta_anderson_rates_conserv_b5}
-\caption{PN vs. eigenvalues for the "Anderson-Rate" conserving model $b=5$.
-The near zero localization is gone.
-}\label{fig:anderson_rate_conserv_b5}
-\end{figure}
-
-
-
-
 
 
 

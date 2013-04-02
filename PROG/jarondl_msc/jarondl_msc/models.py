@@ -164,9 +164,15 @@ class Model_Anderson_DD_1d(Bloch_Banded_1d):
 
 class Model_Anderson_ROD_1d(Bloch_Banded_1d):
     """ random off diagonal (k=\pm1) """
+    def __init__(self, *args, **kwargs):
+        self.semiconserving = kwargs.pop("semiconserving", None)
+        super(Model_Anderson_ROD_1d,self).__init__(*args, **kwargs)
     def disorder(self):
         m = np.diagflat(self.prng.permutation(np.linspace(-self.dis_param, self.dis_param, self.N-1)), k=1)
-        return m + m.T
+        m += m.T
+        if self.semiconserving:
+            sparsedl.zero_sum(m)
+        return m
 
       
       
