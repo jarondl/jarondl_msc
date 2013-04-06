@@ -44,6 +44,7 @@ from matplotlib.transforms import Bbox
 
 from matplotlib.widgets import Slider
 from matplotlib import ticker
+from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
 import numpy
 
@@ -213,3 +214,14 @@ def draw_if(f):
         f(*args, **kwargs)
         draw_if_interactive()
     return wrapper
+    
+##### Dirty hack, should be fixed by matplotlib 1.2.0
+def get_LogNLocator(N = 6):
+    try:
+        return LogLocator(numticks=N)
+    except TypeError:
+        warning('using undocumented hack for log ticks')
+        LogNLocator = LogLocator()
+        LogNLocator.numticks = N
+        return LogNLocator
+

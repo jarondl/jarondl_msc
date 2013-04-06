@@ -29,6 +29,14 @@ debug = logger.debug
     
 ##############  Create and manipulate matrices
 
+
+def create_bloch_sample_1d(N):
+    """ s
+    """
+    bloch = Sample(1)
+    bloch.points = np.linspace(0,1,N, endpoint=False)
+    return bloch
+
 def create_sparse_matrix(N, rates, b=1):
     """  Creates a sparse matrix out of the rates.
 
@@ -169,29 +177,6 @@ def rho(t, rho0, W, index=None):
         return scipy.dot(linalg.expm2(W * t), rho0)
     else:
         return scipy.dot(linalg.expm2(W * t), rho0)[index]
-
-
-def _general_function(params, xdata, ydata, function):
-    #based on scipy 0.9's minpack
-    return function(xdata, *params) - ydata
-
-def _weighted_function(params, xdata, ydata, function, weights):
-    return weights*(function(xdata, *params) -ydata)
-
-
-def cvfit(f, xdata, ydata, p0, w=None):
-    """  Fit data to a function.
-
-    :param f: A function that accepts 1+len(p0) arguments, first one will be x
-    :param xdata: X values
-    :param ydata: Y values
-    :param p0: The initial guess, put [1, 1, 1, ..] if uncertain.
-
-    """
-    if w is None:
-        w = np.ones_like(xdata)
-    res = optimize.leastsq(_weighted_function, p0, args=(xdata, ydata, f, w))
-    return res[0]
 
 
 def analytic_alter(a, b, m):
@@ -345,73 +330,6 @@ def thouless_coef(evs):
     logsum = np.log(np.abs(diff)).sum(axis=0)#0 or 1 are equal..
     return (logsum/evs.size)**(-1)
 
-def lazyprop_old(fn):
-    """ based on http://stackoverflow.com/questions/3012421/python-lazy-property-decorator"""
-    attr_name = '_lazy_' + fn.__name__
-    @property
-    def _lazyprop(self):
-        if not hasattr(self, attr_name):
-            setattr(self, attr_name, fn(self))
-        return getattr(self, attr_name)
-
-    @_lazyprop.setter
-    def _lazyprop(self, value):
-        setattr(self, attr_name, value)
-    return _lazyprop
-    
-class lazyprop(object):
-    '''
-    meant to be used for lazy evaluation of an object attribute.
-    property should represent non-mutable data, as it replaces itself.
-    '''
-
-    def __init__(self,fget):
-        self.fget = fget
-        self.func_name = fget.__name__
-
-    def __get__(self,obj,cls):
-        if obj is None:
-            return None
-        value = self.fget(obj)
-        setattr(obj,self.func_name,value)
-        return value
-    
-
-
-def cached_get(function, filename, *args, **kwargs):
-    """  try to open filename. If non-existant, will call function with kwargs, and save
-    """
-    try:
-        f = np.load(filename)
-        numerics = f['numerics']
-    except (OSError, IOError):
-        # otherwise, get the data:
-        numerics = function(*args, **kwargs)
-        np.savez(filename, numerics=numerics)
-    return numerics
-
-def cached_get_key(function, filename, key='numerics', *args, **kwargs):
-    """ Cached data getter.
-        The idea is that we have a function producing numpy arrays
-        that can be stored in a npz file. 
-        If the file exists and the key exists, this data is returned.
-        If the file exists but key doesn't, create data, add to file, and return data.
-        If both file doesn't exist it will be created.
-    """
-
-    try:
-        f = np.load(filename)
-        fd = dict(f)
-        f.close()
-        
-    except (OSError, IOError):
-        fd = dict()
-    debug("current keys in {} are {}".format(filename, fd.keys()))
-    debug("We seek {}".format(key))
-    if key not in fd:
-        fd[key]  = function(*args, **kwargs)
-        np.savez(filename, **fd)
-    return fd[key]
 
 ######### Mathematical aux functions
 def omega_d(d):

@@ -42,7 +42,7 @@ class NetModel(object):
         This is different from sample, which holds geometric locations 
         of the dots.
     """
-    def __init__(self, number_of_points, dis_param,conserving = True, prng=None, periodic=True, phi=0):
+    def __init__(self, number_of_points, dis_param,conserving = True, prng=None, periodic=True, phi=0, model_name="net_model"):
         """ rseed is the random seed to prepare RandomState"""
         self.prng = (prng if prng is not None else np.random.RandomState(None))
         self.number_of_points = self.N = number_of_points
@@ -50,6 +50,7 @@ class NetModel(object):
         self.periodic = periodic
         self.phi = phi
         self.conserving = conserving
+        self.model_name = model_name
         
     @lazyprop
     def rate_matrix(self):

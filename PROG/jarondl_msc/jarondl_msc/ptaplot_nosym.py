@@ -49,18 +49,6 @@ debug = logger.debug
 
 
 
-##### Dirty hack, should be fixed by matplotlib 1.2.0
-def get_LogNLocator(N = 6):
-    try:
-        return LogLocator(numticks=N)
-    except TypeError:
-        warning('using undocumented hack for log ticks')
-        Log6Locator = LogLocator()
-        Log6Locator.numticks = N
-        return Log6Locator
-
-
-
 
 ###########################################
 ######  Numerical computations

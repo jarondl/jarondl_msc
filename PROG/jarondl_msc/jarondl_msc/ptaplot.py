@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """ Survival and spreading for log normal distribution.
 """
-from __future__ import division
+# make python2 behave more like python3
+from __future__ import division, print_function
 
 import itertools
 import logging
@@ -14,16 +15,15 @@ from scipy.special import gamma
 from scipy.optimize import brentq
 from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
-import plotdl
-import sparsedl
-from plotdl import plt, tight_layout, cummulative_plot
-
+from .libdl import plotdl
+from .libdl import sparsedl
+from .libdl.plotdl import plt, tight_layout, cummulative_plot
+from .libdl.sparsedl import create_bloch_sample_1d
 
 import numpy as np
 import scipy as sp
 import matplotlib as mpl
 
-import ptsplot
 
 import pta_models
 
@@ -48,15 +48,6 @@ debug = logger.debug
 
 
 
-##### Dirty hack, should be fixed by matplotlib 1.2.0
-def get_LogNLocator(N = 6):
-    try:
-        return LogLocator(numticks=6)
-    except TypeError:
-        warning('using undocumented hack for log ticks')
-        Log6Locator = LogLocator()
-        Log6Locator.numticks = 6
-        return Log6Locator
 
 
 
@@ -106,7 +97,7 @@ def find_ks(b,lam):
 ##########################################################
 def plot_banded_pn(ax, b, s_values, number_of_sites=1000, pinning=False):
     """ Banded 1d """
-    sample = ptsplot.create_bloch_sample_1d(number_of_sites)
+    sample = create_bloch_sample_1d(number_of_sites)
     for s in s_values:
         if pinning:
             model = pta_models.ExpModel_Banded_Logbox_dd(sample, epsilon=s, bandwidth1d=b)
@@ -135,7 +126,7 @@ def plot_banded_ev_bconst(ax,nums):
 
 
 def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = pi, pinning=False, zerodiag=False):
-    sample = ptsplot.create_bloch_sample_1d(number_of_sites)
+    sample = create_bloch_sample_1d(number_of_sites)
     win_avg_mtrx = sparsedl.window_avg_mtrx(number_of_sites - 1)
     res_type =  np.dtype([("ev",(np.float64,number_of_sites)),
                           ("PN",(np.float64,number_of_sites)),
@@ -175,7 +166,7 @@ def get_ev_thoules_g(b_space, s_space, number_of_sites = 1000, phi = pi, pinning
 
 def get_ev_for_phases(b,s,phases,number_of_sites=1000, rseed=1):
     """ return the complete eigenvalue list for every phase """
-    sample = ptsplot.create_bloch_sample_1d(number_of_sites)
+    sample = create_bloch_sample_1d(number_of_sites)
 
     evs = np.zeros([len(phases), number_of_sites], dtype=np.float64)
     for n,phase in enumerate(phases):
@@ -217,7 +208,7 @@ def plot_scatter_g_new(ax,nums):
     ax.set_ylabel(r"PN")
 
 def plot_thoules_g(ax, b, s_values, number_of_sites=1000,phi=0.1):
-    sample = ptsplot.create_bloch_sample_1d(number_of_sites)
+    sample = create_bloch_sample_1d(number_of_sites)
     win_avg_mtrx = sparsedl.window_avg_mtrx(number_of_sites - 2)
     for s in s_values:
         model = pta_models.ExpModel_Banded_Logbox(sample, epsilon=s, bandwidth1d=b, rseed=1)
@@ -232,7 +223,7 @@ def plot_thoules_g(ax, b, s_values, number_of_sites=1000,phi=0.1):
 
 
 def plot_represntive_vectors(fig_vecs, ax_PN, number_of_sites=1000):
-    sample = ptsplot.create_bloch_sample_1d(number_of_sites)
+    sample = create_bloch_sample_1d(number_of_sites)
     b = 5
     s = 0.1
     rseed = 1

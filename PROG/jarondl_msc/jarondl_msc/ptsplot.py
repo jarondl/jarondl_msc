@@ -11,16 +11,18 @@ import os
 #from scipy.sparse import linalg as splinalg
 from numpy import random, pi, log10, sqrt,  exp, expm1, sort, eye, nanmin, nanmax, log, cos, sinc
 from scipy.special import gamma
+from scipy.optimize import curve_fit
 from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
 import numpy as np
 import scipy as sp
 
-import sparsedl
-import plotdl
+from .libdl import sparsedl
+from .libdl import plotdl
 from geometry import Sample
 from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum, lazyprop, omega_d
-from plotdl import cummulative_plot, plt
+from .libdl.plotdl import cummulative_plot, plt
+from .libdl.sparsedl import create_bloch_sample_1d
 
 ### Raise all float errors
 np.seterr(all='warn')
@@ -261,7 +263,7 @@ class ExpModel(object):
         #prefactor  = sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w)
         #D = exp(-prefactor)/(2*pi)
         ## Keep things simple:
-        D = sparsedl.cvfit(self.diff_density(), x, y, [1], w)
+        D = curve_fit(self.diff_density(), x, y, [1], w)
         return D
     def diff_density(self):
         """ The expected eigenvalue cummulative distribution for a diffusive system"""
@@ -728,12 +730,6 @@ def plotf_distance_statistics(N=1000):
         ax.cla()
         
 
-def create_bloch_sample_1d(N):
-    """
-    """
-    bloch = Sample(1)
-    bloch.points = np.linspace(0,1,N, endpoint=False)
-    return bloch
 
 def create_bloch_sample_2d(N):
     """ Create NxN 2d bloch sample.  (matrix size is N^4)
