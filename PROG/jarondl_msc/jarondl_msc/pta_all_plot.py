@@ -3,8 +3,7 @@
 """ Survival and spreading for box distribution.  Anderson localization length focus
 """
 # make python2 behave more like python3
-# still need to worry about absolute import..
-from __future__ import division, print_function
+from __future__ import division, print_function, absolute_import
 
 ###################
 ####  imports  ####
@@ -30,25 +29,23 @@ from .libdl import sparsedl
 from .libdl.tools import cached_get_key, h5_create_if_missing, h5_get_first_rownum_by_args
 from .libdl.tools import Ev_and_PN_1000, Ev_and_PN_2000, Ev_and_PN_3000
 from .libdl.plotdl import plt, tight_layout, cummulative_plot
-from ptaplot import theor_banded_ev, theor_banded_dev, theor_banded_ev_k, theor_banded_dossum_k, find_ks
-import pta_models
-import pta_all_models
-from models import Model_Anderson_DD_1d, Model_Anderson_ROD_1d
+from .banded_bloch_ev import theor_banded_ev, theor_banded_dev
+from .banded_bloch_ev import cached_get_sum_dos
+
+from .models import Model_Anderson_DD_1d, Model_Anderson_ROD_1d, Model_Anderson_BD_1d
+from . import models
 
 
 ### Raise all float errors
 np.seterr(all='warn')
 
 #set up logging:
-logging.basicConfig(format='%(asctime)s - %(name) - %(message)s')
 logger = logging.getLogger(__name__)
-
-# show warnings (remove for production)
-logger.setLevel("DEBUG")
 
 info = logger.info
 warning = logger.warning
 debug = logger.debug
+
 ########################################################################
 ###########   code   ###################################################
 ########################################################################
@@ -60,37 +57,9 @@ and_theory_cons = (lambda x,sigma,b : 6*(4-(x/2)**2)/(sigma**2))
 ########### get functions create data ##################################
 ########################################################################
 
-def get_ev_PN_for_models(models,count,number_of_sites):
-    res_type =  np.dtype([("eig_vals",(np.float64,number_of_sites)),
-                          ("PN",(np.float64,number_of_sites)),
-                          ("dis_param",np.float64),
-                          ("bandwidth",np.float64)
-                          ])
-    res = np.zeros(count, dtype = res_type) # preallocation is faster..        
-    for n,mod in enumerate(models):
-        debug('eigenvals ,PN number {0}'.format(n))
-        res[n] = (  mod.eig_vals,
-                    mod.PN,
-                    mod.dis_param,
-                    mod.bandwidth)
-    return res
-    
-    
-def getf_anderson(b=1, N=2000,sigmas=(0.01,0.1,0.2), ROD=False, semiconserving=False):
-    fname = 'pta_anderson_b{}{}{}.npz'.format(b, 
-                                            ("_ROD" if ROD else ""), 
-                                            ("_SC" if semiconserving else ""))
-    if ROD:
-        models = (Model_Anderson_ROD_1d(N, sigma, bandwidth=b, conserving=False, semiconserving=semiconserving) for sigma in sigmas)
-    else:
-        models = (Model_Anderson_DD_1d(N, sigma, bandwidth=b, conserving=False) for sigma in sigmas)
-    key = str((N, frozenset(sigmas)))
-    return cached_get_key(get_ev_PN_for_models, fname, key, models, len(sigmas), N)
-
-
 def h5_get_anderson(h5file, model_factory, num = 1000,model_args = dict(model_name = "anderson dd")
                                         , bandwidths=(5,), dis_params=(1,)):
-    """ very dirty at the moment, including this num buisness """
+    """ very dirty at the moment, including this hard-coded num buisness """
     try:
         if num == 1000:
             cls = Ev_and_PN_1000
@@ -115,35 +84,34 @@ def h5_get_anderson_by_type(model_type, h5file,  **kwargs):
     if model_type == "DD":
         # Diagonal disorder
         anderson_dd_factory = lambda args : Model_Anderson_DD_1d(conserving=False, **args) 
-        return h5_get_anderson(h5file, anderson_dd_factory, model_args = dict(model_name = "anderson dd"), **kwargs)
+        return  h5_get_anderson(h5file, 
+                                anderson_dd_factory, 
+                                model_args = dict(model_name = "Banded diagonal disorder"), 
+                                **kwargs)
     elif model_type == "ROD":
         anderson_rod_factory = lambda args: Model_Anderson_ROD_1d(conserving =False, semiconserving=False, **args)
-        return h5_get_anderson(h5file, anderson_rod_factory, model_args = dict(model_name = "anderson rod"), **kwargs)
+        return  h5_get_anderson(h5file, 
+                                anderson_rod_factory, 
+                                model_args = dict(model_name = "Banded tri-diagonal disorder"), 
+                                **kwargs)
     elif model_type == "ROD SC":
         anderson_rodsc_factory = lambda args: Model_Anderson_ROD_1d(conserving =False, semiconserving=True, **args)
-        return h5_get_anderson(h5file, anderson_rodsc_factory, model_args = dict(model_name = "anderson rod sc"), **kwargs)
+        return  h5_get_anderson(h5file, 
+                                anderson_rodsc_factory, 
+                                model_args = dict(model_name = "Banded tri-diagonal disorder sc"), 
+                                **kwargs)
+    elif model_type == "RB":
+        anderson_rodsc_factory = lambda args: Model_Anderson_BD_1d(conserving =False, semiconserving=False, **args)
+        return  h5_get_anderson(h5file, 
+                                anderson_rodsc_factory, 
+                                model_args = dict(model_name = "Banded band-disorder"), 
+                                **kwargs)
+
+###################################################################
+#############  plot functions
+###################################################################
 
 
-def get_sum_dos(b):
-    k = np.linspace(0,pi,2000)
-    evs = theor_banded_ev_k(k,b,0)
-    lams = np.linspace(evs.min(), evs.max(),2000)
-    k_of_ev = [find_ks(b,ev) for ev in lams]
-    #debug("k_of_ev.shape = {} ".format(k_of_ev.shape))
-    doses = np.array([theor_banded_dossum_k(k_of,b) for k_of in k_of_ev])
-    return (lams, doses )
-    
-def cached_get_sum_dos(b):
-    with h5py.File('banded_dos.hdf5') as f:
-        if str(b) in f:
-            lams = np.array(f[str(b)]['eig_vals'])
-            dos = np.array(f[str(b)]['dos'])
-        if str(b) not in f:
-            fb = f.create_group(str(b))
-            lams, dos= get_sum_dos(b)
-            f[str(b)].create_dataset('eig_vals', data=lams)
-            f[str(b)].create_dataset('dos', data=dos)
-    return lams, dos
 
 def plot_anderson(ax, ev_pn,color_seq):
     

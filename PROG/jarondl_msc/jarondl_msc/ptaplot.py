@@ -3,7 +3,8 @@
 """ Survival and spreading for log normal distribution.
 """
 # make python2 behave more like python3
-from __future__ import division, print_function
+from __future__ import division, print_function, absolute_import
+
 
 import itertools
 import logging
@@ -25,7 +26,7 @@ import scipy as sp
 import matplotlib as mpl
 
 
-import pta_models
+from . import pta_models
 
 
 mpl.rc('figure', autolayout=True)
@@ -49,45 +50,6 @@ debug = logger.debug
 
 
 
-
-
-def theor_banded_ev(b,N):
-    k = 2*pi*np.arange(N)/N
-    n = np.arange(1,b+1)
-    km,nm = np.meshgrid(k,n)
-    return -2*(np.cos(km*nm)-1).sum(axis=0)
-    
-def theor_banded_dev(b,N):
-    k = 2*pi*np.arange(N)/N
-    n = np.arange(1,b+1)
-    km,nm = np.meshgrid(k,n)
-    return -2*(nm*np.sin(km*nm)).sum(axis=0)
-
-def theor_banded_dossum_k(k,b):
-    #debug("dossum, k.shape ={}, k= {}, b= {}".format(k.shape,k,b))
-    n = np.arange(1,b+1)
-    km,nm = np.meshgrid(k,n)
-    #debug("dossum, km*nm.shape ={}".format((km*nm).shape))
-    return (abs((2*(nm*np.sin(km*nm))).sum(axis=0))**(-1)).sum()**(-1)
-
-def theor_banded_ev_k(k,b,lam):
-    n = np.arange(1,b+1)
-    km,nm = np.meshgrid(k,n)
-    return -2*(np.cos(km*nm)).sum(axis=0) -lam
-    
-def theor_banded_ev_k_1(k,b,lam):
-    bs = np.arange(1,b+1)
-    return -2*(np.cos(bs*k)).sum() - lam
-    
-def find_ks(b,lam):
-    k = np.linspace(0,pi,3000)
-    evs = theor_banded_ev_k(k, b, lam)
-    sign_changes, = np.nonzero(np.diff(np.sign(evs)))
-    intervals = zip(k[sign_changes], k[sign_changes+1])
-    st, en = intervals[0] #for debugging 
-    #debug("{}, {}, {}, {}".format(st,en,theor_banded_ev_k_1(st,b,lam), theor_banded_ev_k_1(en,b,lam)))
-    ks = [brentq(theor_banded_ev_k_1, start,end, args=(b,lam)) for (start,end) in intervals]
-    return np.array(ks)
 
 
 

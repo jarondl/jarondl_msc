@@ -175,8 +175,20 @@ class Model_Anderson_ROD_1d(Bloch_Banded_1d):
             sparsedl.zero_sum(m)
         return m
 
-      
-      
+class Model_Anderson_BD_1d(Model_Anderson_ROD_1d):
+    """ Banded disorder, expcept diagonal """
+    
+    def disorder(self):
+        m = self.base_matrix()
+        dis = np.zeros_like(m)
+        ## where is the band we want to disorder?
+        where_triband = np.triu(m)==1
+        l = where_triband.sum(axis=None)
+        dis[where_triband] = self.prng.permutation(np.linspace(-self.dis_param, self.dis_param, l))
+        dis += dis.T
+        if self.semiconserving:
+            sparsedl.zero_sum(dis)
+        return dis
       
       
       

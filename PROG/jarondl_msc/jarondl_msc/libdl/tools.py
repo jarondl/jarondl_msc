@@ -88,7 +88,7 @@ def cached_get_key(function, filename, key='numerics', *args, **kwargs):
 
 class Ev_and_PN_1000(tables.IsDescription):
     
-    model_name      = tables.StringCol(30)
+    model_name      = tables.StringCol(100)
     date            = tables.StringCol(20)
           
     number_of_points= tables.Int64Col()
@@ -99,7 +99,7 @@ class Ev_and_PN_1000(tables.IsDescription):
 
 class Ev_and_PN_2000(tables.IsDescription):
     
-    model_name      = tables.StringCol(30)
+    model_name      = tables.StringCol(100)
     date            = tables.StringCol(20)
           
     number_of_points= tables.Int64Col()
@@ -110,7 +110,7 @@ class Ev_and_PN_2000(tables.IsDescription):
 
 class Ev_and_PN_3000(tables.IsDescription):
     
-    model_name      = tables.StringCol(30)
+    model_name      = tables.StringCol(100)
     date            = tables.StringCol(20)
           
     number_of_points= tables.Int64Col()
@@ -124,7 +124,9 @@ def check_args_in_row(row, args_dict):
     return all(row[key]==val for (key, val) in args_dict.items())
     
 def h5_get_first_rownum_by_args(h5table, args_dict):
-    return [row.nrow  for row in h5table.iterrows() if check_args_in_row(row,args_dict)][0]
+    for row in h5table.iterrows():
+        if check_args_in_row(row,args_dict):
+            return row.nrow
     
 def fill_args_in_row(row,args_dict):
     for (key,val) in args_dict.items():
