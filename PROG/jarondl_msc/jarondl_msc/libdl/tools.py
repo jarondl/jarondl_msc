@@ -85,40 +85,33 @@ def cached_get_key(function, filename, key='numerics', *args, **kwargs):
         np.savez(filename, **fd)
     return fd[key]
 
+def ev_and_pn_class(_number_of_points):
+    class Ev_and_PN(tables.IsDescription):
+        
+        model_name      = tables.StringCol(100)
+        date            = tables.StringCol(20)
+              
+        number_of_points= tables.Int64Col()
+        bandwidth       = tables.Int64Col()
+        dis_param       = tables.Float64Col()
+        eig_vals        = tables.Float64Col(_number_of_points)
+        PN              = tables.Float64Col(_number_of_points)
+    return Ev_and_PN
 
-class Ev_and_PN_1000(tables.IsDescription):
-    
-    model_name      = tables.StringCol(100)
-    date            = tables.StringCol(20)
-          
-    number_of_points= tables.Int64Col()
-    bandwidth       = tables.Int64Col()
-    dis_param       = tables.Float64Col()
-    eig_vals        = tables.Float64Col(1000)
-    PN              = tables.Float64Col(1000)
-
-class Ev_and_PN_2000(tables.IsDescription):
-    
-    model_name      = tables.StringCol(100)
-    date            = tables.StringCol(20)
-          
-    number_of_points= tables.Int64Col()
-    bandwidth       = tables.Int64Col()
-    dis_param       = tables.Float64Col()
-    eig_vals        = tables.Float64Col(2000)
-    PN              = tables.Float64Col(2000)
-
-class Ev_and_PN_3000(tables.IsDescription):
-    
-    model_name      = tables.StringCol(100)
-    date            = tables.StringCol(20)
-          
-    number_of_points= tables.Int64Col()
-    bandwidth       = tables.Int64Col()
-    dis_param       = tables.Float64Col()
-    eig_vals        = tables.Float64Col(3000)
-    PN              = tables.Float64Col(3000)
-
+def ev_pn_g_class(_number_of_points):
+    class Ev_PN_g(tables.IsDescription):
+        
+        model_name      = tables.StringCol(100)
+        date            = tables.StringCol(20)
+              
+        number_of_points= tables.Int64Col()
+        bandwidth       = tables.Int64Col()
+        dis_param       = tables.Float64Col()
+        eig_vals        = tables.Float64Col(_number_of_points)
+        PN              = tables.Float64Col(_number_of_points)
+        g               = tables.Float64Col(_number_of_points)
+        precision       = tables.Float64Col(_number_of_points)
+    return Ev_PN_g
 
 def check_args_in_row(row, args_dict):
     return all(row[key]==val for (key, val) in args_dict.items())
@@ -133,19 +126,21 @@ def fill_args_in_row(row,args_dict):
         row[key] = val
         
     
-def h5_create_if_missing(h5table, model_factory, model_args):
+def h5_create_if_missing(h5table, data_factory, factory_args):
+    """ data_factory must be a function accepting factory_args,
+    and returning a dictionary of data to fill..
+    factory args are also filled in the table, so the must be compatible 
+    with the table definition
+    """
     t = time.strftime("%Y-%m-%d %H:%M:%S")
-    exists =  any(check_args_in_row(x,model_args) for x in h5table.iterrows())
+    exists =  any(check_args_in_row(x,factory_args) for x in h5table.iterrows())
     if not exists:
-        debug("creating new data for {}".format(model_args))
-        m= model_factory(model_args)
-        ev = m.eig_vals
-        pn= m.PN
+        debug("creating new data for {}".format(factory_args))
+        data = data_factory(**factory_args)
         nr = h5table.row
-        fill_args_in_row(nr, model_args)
+        fill_args_in_row(nr, factory_args)
+        fill_args_in_row(nr, data)
         nr['date'] = t
-        nr['eig_vals'] =ev
-        nr['PN'] = pn
         nr.append()
         h5table.flush()
 

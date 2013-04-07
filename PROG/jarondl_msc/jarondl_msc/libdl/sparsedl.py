@@ -17,9 +17,9 @@ import logging
 ### Raise all float errors
 np.seterr(all='warn')
 EXP_MAX_NEG = np.log(np.finfo( np.float).tiny)
+FLOAT_EPS = np.finfo(np.float).eps
 
 #set up logging:
-logging.basicConfig(format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
 info = logger.info
@@ -329,6 +329,18 @@ def thouless_coef(evs):
     np.fill_diagonal(diff,1)
     logsum = np.log(np.abs(diff)).sum(axis=0)#0 or 1 are equal..
     return (logsum/evs.size)**(-1)
+    
+def thouless_g(ev1, ev2, phi):
+    g = abs(ev1 - ev2) / (phi**2)
+    # Approximation of  the minimal precision:
+    prec = FLOAT_EPS * max(abs(ev1))* len(ev1)
+    debug("precision = {0}, minimal g  = {1}".format(prec, min(g)))
+    #smoothing:
+    avg_spacing = window_avg_mtrx(len(ev1)-1).dot(ev1[:-1]-ev1[1:])
+    # avg_spacing is now smaller than eigvals. We duplicate the last value to accomodate (quite  hackish)
+    avg_spacing = np.append(avg_spacing,avg_spacing[-1])
+    ga = g/avg_spacing
+    return ga, prec
 
 
 ######### Mathematical aux functions

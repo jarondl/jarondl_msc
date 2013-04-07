@@ -109,6 +109,27 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\sect{Introduction}
+
+These are research notes regarding several aspects of random matrix spectrum,
+in particular for banded matrices.
+
+Are questions are what are the implications of several properties on the 
+spectrum, and in particular:
+\begin{itemize}
+\item   If the disorder matrix is conservative (all row sums equal), 
+        we have an ergodic mode , with $PN=N$. What about eigenmodes with
+        eigenvalues close to the ergodic mode? do they have large $PN$?
+\item   If all matrix elements are positive, and the matrix is conservative,
+        the eigenvalues are all positive, and the ergodic mode
+        is at the edge of the spectrum. What if matrix elements are negative?
+        where will the ergodic mode be?
+\item   What is the difference between diagonal disorder and banded disorder?
+\item   How can we estimate the band position and $PN(\lambda)$, perhaps 
+        with Anderson localization?
+\item   
+\end{itemize}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{Model}
@@ -182,6 +203,13 @@ $DOS$ as a function of $lambda$.
 \sect{Adding disorder - finite localization}
 
 The ordered lattice had no localization - all the $PN$ where equal to $\frac{2}{3}N$.
+For presentation purposes, we shall divide the matrix into two parts,
+an ordered $W_0$, and a disordered $V$:
+%
+\begin{align}
+W \ = \ W_0 \ + \ V
+\end{align}
+%
 We introduce uniformly distributed diagonal disorder:
 \begin{align}
 \gamma_n  \ = \  w_{nn} \ \in \ \left[-\frac{s}{2},+\frac{s}{2} \right]

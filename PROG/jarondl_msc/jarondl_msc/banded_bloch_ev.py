@@ -19,7 +19,6 @@ np.seterr(all='warn')
 EXP_MAX_NEG = np.log(np.finfo( np.float).tiny)
 
 #set up logging:
-logging.basicConfig(format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
 info = logger.info
@@ -47,7 +46,7 @@ def theor_banded_dossum_k(k,b):
     n = np.arange(1,b+1)
     km,nm = np.meshgrid(k,n)
     #debug("dossum, km*nm.shape ={}".format((km*nm).shape))
-    return np.reciprocal((abs(np.reciprocal(2*(nm*np.sin(km*nm))).sum(axis=0))).sum())
+    return 2*(np.reciprocal((np.reciprocal(abs((nm*np.sin(km*nm)).sum(axis=0)))).sum()))
 
 
 def find_ks(b, lam):

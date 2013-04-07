@@ -162,6 +162,12 @@ class Model_Anderson_DD_1d(Bloch_Banded_1d):
     """ diagonal Disorder """
     def disorder(self):
         return np.diagflat(self.prng.permutation(np.linspace(-self.dis_param, self.dis_param, self.N)))
+                
+class Model_Anderson_S_DD_1d(Bloch_Banded_1d):
+    """ sparse diagonal Disorder """
+    def disorder(self):
+        dis = np.exp(-np.linspace(0, self.dis_param, self.N))+(exp(-self.dis_param)-1)/self.dis_param
+        return np.diagflat(self.prng.permutation(dis))
 
 class Model_Anderson_ROD_1d(Bloch_Banded_1d):
     """ random off diagonal (k=\pm1) """
@@ -185,6 +191,23 @@ class Model_Anderson_BD_1d(Model_Anderson_ROD_1d):
         where_triband = np.triu(m)==1
         l = where_triband.sum(axis=None)
         dis[where_triband] = self.prng.permutation(np.linspace(-self.dis_param, self.dis_param, l))
+        dis += dis.T
+        if self.semiconserving:
+            sparsedl.zero_sum(dis)
+        return dis
+        
+class Model_Anderson_S_BD_1d(Model_Anderson_ROD_1d):
+    """ sparse Banded disorder, expcept diagonal """
+    
+    def disorder(self):
+        m = self.base_matrix()
+        dis = np.zeros_like(m)
+        ## where is the band we want to disorder?
+        where_triband = np.triu(m)==1
+        l = where_triband.sum(axis=None)
+        #dis1 = np.exp(-np.linspace(0, self.dis_param, l))+(exp(-self.dis_param)-1)/self.dis_param
+        dis1 = np.exp(-np.linspace(0, self.dis_param, l))
+        dis[where_triband] = self.prng.permutation(dis1)
         dis += dis.T
         if self.semiconserving:
             sparsedl.zero_sum(dis)
