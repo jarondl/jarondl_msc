@@ -114,7 +114,7 @@ def ev_pn_g_class(_number_of_points):
     return Ev_PN_g
 
 def check_args_in_row(row, args_dict):
-    return all(row[key]==val for (key, val) in args_dict.items())
+    return all(row[key]==val for (key, val) in args_dict.items() if not key.startswith("_"))
     
 def h5_get_first_rownum_by_args(h5table, args_dict):
     for row in h5table.iterrows():
@@ -123,7 +123,8 @@ def h5_get_first_rownum_by_args(h5table, args_dict):
     
 def fill_args_in_row(row,args_dict):
     for (key,val) in args_dict.items():
-        row[key] = val
+        if not key.startswith("_"):
+            row[key] = val
         
     
 def h5_create_if_missing(h5table, data_factory, factory_args):

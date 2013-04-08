@@ -183,12 +183,18 @@ class Model_Anderson_ROD_1d(Bloch_Banded_1d):
 
 class Model_Anderson_BD_1d(Model_Anderson_ROD_1d):
     """ Banded disorder, expcept diagonal """
-    
+    def __init__(self, *args, **kwargs):
+        self.dis_band = kwargs.pop("dis_band", None)
+        super(Model_Anderson_BD_1d,self).__init__(*args, **kwargs)   
     def disorder(self):
         m = self.base_matrix()
         dis = np.zeros_like(m)
         ## where is the band we want to disorder?
-        where_triband = np.triu(m)==1
+        if self.dis_band is None:
+            where_triband = np.triu(m)==1
+            
+        else:
+            where_triband = np.triu( (-1)*np.eye(self.N) +  periodic_banded_ones(self.N, self.dis_band, self.periodic)) ==1
         l = where_triband.sum(axis=None)
         dis[where_triband] = self.prng.permutation(np.linspace(-self.dis_param, self.dis_param, l))
         dis += dis.T

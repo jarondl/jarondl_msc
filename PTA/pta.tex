@@ -114,7 +114,7 @@
 These are research notes regarding several aspects of random matrix spectrum,
 in particular for banded matrices.
 
-Are questions are what are the implications of several properties on the 
+Our questions are what are the implications of several properties on the 
 spectrum, and in particular:
 \begin{itemize}
 \item   If the disorder matrix is conservative (all row sums equal), 
@@ -139,7 +139,7 @@ starting with an ordered (and periodic) matrix:
 %
 \begin{align}\label{eq:ordered}
 w_{nm} &= \begin{cases}
-  w_0 &\qquad \textrm{ if  } \quad 0<|n-m|\le 1 \\
+  w_0 &\qquad \textrm{ if  } \quad 0<|n-m|\le b \\
   0 &\qquad \textrm{ otherwise}
 \end{cases}
 \end{align}
@@ -203,17 +203,26 @@ $DOS$ as a function of $lambda$.
 \sect{Adding disorder - finite localization}
 
 The ordered lattice had no localization - all the $PN$ where equal to $\frac{2}{3}N$.
-For presentation purposes, we shall divide the matrix into two parts,
-an ordered $W_0$, and a disordered $V$:
+To study localization, we add to the ordered matrix $W_0$ a disordered matrix $V$:
 %
 \begin{align}
 W \ = \ W_0 \ + \ V
 \end{align}
 %
-We introduce uniformly distributed diagonal disorder:
+$W_0$ is the same banded matrix as before, with two parameters: $N$ and $b$.
+
+$V$ is parametrized by a disorder parameter $\eta$, its own bandwidth $\tilde{b}$ 
+(which can be different from $b$), and its conservativity. Later we
+shall want to introduce a sparsity parameter $s$. 
+
+
+The first kind of $V$ we examine has a uniformly distributed diagonal disorder:
 \begin{align}
-\gamma_n  \ = \  w_{nn} \ \in \ \left[-\frac{s}{2},+\frac{s}{2} \right]
+\gamma_n  \ = \  w_{nn} \ \in \ \left[-\frac{\eta}{2},+\frac{\eta}{2} \right]
 \end{align}
+{This disorder is not limited to positive elements},
+which means that the spectrum is not bound.
+
 
 This disorder, as small as it may be, will cause finite Anderson localization.
 According to FGR, the transition rate (or the inverse of mean-free-time) is
@@ -246,6 +255,7 @@ the numerics seem to do so \autoref{fig:anderson_byN}
     \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=2000$. We see that
     no $PN$ is higher than the plane waves' $PN =2/3 N$. We can also explain
     points with low $PN$ by the corresponding $DOS$, and the band of eigenvalues. 
+    Notice that there are eigenvalues below $-2b$.
     Compare this to figure 2 of \cite{bodyfelt_scaling_2013}. The 
     differences are that there the basic matrix (before disorder) had a 'conserving' diagonal of $-2b$,
     which corresponds to a horizontal shift, the $x$-axis there is $\sqrt{\lambda}$,
@@ -273,32 +283,33 @@ the numerics seem to do so \autoref{fig:anderson_byN}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{The effects of conservation}
+\sect{Banded disorder}
 
-A conserving matrix is one where the sum of each row is $0$.
-Of-course, adding a constant to the energies should not make a different,
-so we can also study the case where the sum is constant.
-
-
-The simplest kind of conserving disorder we can add to the above defined model \autoref{eq:ordered},
-is to add a random variable to the $\pm 1$ off-diagonals,
-and subtracting this from the diagonal. (keeping the disorder row sum to zero, and the symmetry).
-
-We test this in \autoref{fig:ROD}
-
+To study conservation we need a different $V$.
+We define it as a random banded matrix similar to the definition of $W_0$:
+\begin{align}
+v_{nm} &= \begin{cases}
+  w_0 \left[-\frac{\eta}{2},+\frac{\eta}{2} \right]&\qquad \textrm{ if  } \quad 0<|n-m|\le \tilde{b} \\
+  0 &\qquad \textrm{ otherwise}
+\end{cases}
+\end{align}
+Again, this is not limited to positive elements. Also, we believe it is 
+important for $V$ to average to $0$, otherwise there is an eigenvalue shift 
+arising from the disorder. It is not clear what the importance of $\tilde{b}$
+is. The usual inclination is to set $\tilde{b}=b$, but one can ask
+whether this is equal to raising $\eta$, or perhaps there is new
+physics arriving from a different scattering matrix.
 %%%%%%%%----------%%%%%%%%
 %%%%%%%%  figure  %%%%%%%%
 %%%%%%%%----------%%%%%%%%
 \begin{figure}[H]
-    \includegraphics{pta_anderson_b5_ROD_VS_SC}
-    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $s=0.1$ ,$N=1000$. 
-    The green points are for the conserving model, the blue for the non-conserving.
-    The main (and very important!) difference between the two, is on the lowermost $\lambda$, in which
-    $PN$ does not go to zero although the $DOS$ does go to zero. There is also
-    a solitary green point on $N=1000$, which is the ergodic state.}
-    \label{fig:ROD}
+    \includegraphics{pta_B_BB_pn}
+    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$. The blue line is
+        for diagonal disorder, the green for $\tilde{b}=1$, red $\tilde{b}=2$, cyan $\tilde{b}=10$.
+        The solid line is the theoretical $PN$ as explained earlier. The
+        blue dots seem closer to the theory.}
+    \label{fig:BB}
 \end{figure}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{strong disorder}
