@@ -73,6 +73,9 @@
 \newcommand{\mpg}[2][1.0\hsize]{\begin{minipage}[b]{#1}{#2}\end{minipage}}
 \newcommand{\mpgt}[2][1.0\hsize]{\begin{minipage}[t]{#1}{#2}\end{minipage}}
 
+
+%footnotemark:
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Sections
 \newcommand{\sect}[1]
@@ -119,15 +122,22 @@ spectrum, and in particular:
 \begin{itemize}
 \item   If the disorder matrix is conservative (all row sums equal), 
         we have an ergodic mode , with $PN=N$. What about eigenmodes with
-        eigenvalues close to the ergodic mode? do they have large $PN$?
+        eigenvalues close to the ergodic mode? can we predict their $PN$?
 \item   If all matrix elements are positive, and the matrix is conservative,
         the eigenvalues are all positive, and the ergodic mode
         is at the edge of the spectrum. What if matrix elements are negative?
-        where will the ergodic mode be?
+        where will the ergodic mode be? What is the meaning of a wide
+        mode not in the minimal $\lambda$?
 \item   What is the difference between diagonal disorder and banded disorder?
 \item   How can we estimate the band position and $PN(\lambda)$, perhaps 
-        with Anderson localization?
-\item   
+        with Anderson localization, and Thouless' formula?
+\item   In the analysis of banded matrices, each $\lambda$ has more than 
+        one or two corresponding velocities. Which velocity should we use?
+\item   What about sparsity? In $1d$, sparsity makes the difference between
+        diffusion and sub diffusion, because of percolative effects.
+        What is the case for banded matrix?
+        One assumption could be that banded disorder is similar
+        to regular disorder with $s = b$.
 \end{itemize}
 
 
@@ -153,7 +163,7 @@ k\ \  &=\ \  \frac{\pi m}{N} \ \ \ \ \ m=1..N \\
 &= \ \ -1 + \frac{\sin((b+\dfrac{1}{2})k)}{\sin(\dfrac{1}{2}k)}
 \end{align}  
 Where in the last step we have used one of Lagrange's trigonometric identities. 
-The lower bound of $lambda_k$ is $-2b$. 
+The lower bound of $\lambda_k$ is $-2b$. 
 $\lambda_k$ for several values of $b$ is plotted in \autoref{fig:theor_banded_ev}.
 
 %%%%%%%%----------%%%%%%%%
@@ -184,7 +194,7 @@ The $DOS$ is defined by $\frac{dk}{d\lambda_k}$, which is the inverse of the
 velocity. Since density is additive, for each $\lambda$ we add the densities
 of all relevant $k$ modes. For the moment we use a numerical solution to
 find those $k$s. In \autoref{fig:dos} we plot the velocities and inverse 
-$DOS$ as a function of $lambda$.
+$DOS$ as a function of $\lambda$.
 %%%%%%%%----------%%%%%%%%
 %%%%%%%%  figure  %%%%%%%%
 %%%%%%%%----------%%%%%%%%
@@ -204,7 +214,7 @@ $DOS$ as a function of $lambda$.
 
 The ordered lattice had no localization - all the $PN$ where equal to $\frac{2}{3}N$.
 To study localization, we add to the ordered matrix $W_0$ a disordered matrix $V$:
-%
+%\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 \begin{align}
 W \ = \ W_0 \ + \ V
 \end{align}
@@ -241,7 +251,7 @@ the DOS, we get the expression:
 \begin{align}
 \ell = \frac{\varrho^{-2}}{ \langle w_{nm}^2\rangle}
 \end{align}
-We plot this result as a solid line in the next figures, with $<w^2> = s^2/3$.
+We plot this result as a solid line in the next figures, with $<w^2> = \eta^2/3$.
 On the eigenvalue axis, it does tell us about eigenvalues with low $PN$,
 and the span (or band) where eigenvlaues exist. This does not scale with $N$, although 
 the numerics seem to do so \autoref{fig:anderson_byN}
@@ -250,27 +260,32 @@ the numerics seem to do so \autoref{fig:anderson_byN}
 %%%%%%%%  figure  %%%%%%%%
 %%%%%%%%----------%%%%%%%%
 \begin{figure}[H]
-    \includegraphics{pta_anderson_ddonly_b5}\\
-    \includegraphics{pta_anderson_ddonly_b5_zoom}
-    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=2000$. We see that
+    \includegraphics{pta_B_DD_low}\\
+    \includegraphics{pta_B_DD_low_zoom}
+    \includegraphics{pta_B_DD_low_ev}
+    \caption{Top and bottom left: $PN$ vs eigenvalue $\lambda$, for $b=5$, $N=2000$. We see that
     no $PN$ is higher than the plane waves' $PN =2/3 N$. We can also explain
     points with low $PN$ by the corresponding $DOS$, and the band of eigenvalues. 
-    Notice that there are eigenvalues below $-2b$.
-    Compare this to figure 2 of \cite{bodyfelt_scaling_2013}. The 
+    Notice that there are eigenvalues below $-2b$. Also, there is a small unexplained bulge around $\lambda=1$.
+    Compare this to figure 2 of \cite{bodyfelt_scaling_2013}.\protect\footnotemark Bottom right: cummulative distribution
+    of the eigenvalues. The dashed black line is the theoretical expectation
+    for an ordered matrix}
+    \label{fig:ddonly_b5}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\footnotetext{The 
     differences are that there the basic matrix (before disorder) had a 'conserving' diagonal of $-2b$,
     which corresponds to a horizontal shift, the $x$-axis there is $\sqrt{\lambda}$,
     the disorder is over the main $2b+1$ diagonal instead of only the main diagonal, 
-    and the disorder is larger, $s=0.5$.}
-    \label{fig:ddonly_b5}
-\end{figure}
-
-
+    and the disorder is larger, $\eta=0.5$.}
+    
+    
 %%%%%%%%----------%%%%%%%%
 %%%%%%%%  figure  %%%%%%%%
 %%%%%%%%----------%%%%%%%%
 \begin{figure}[H]
     \includegraphics{pta_anderson_byN}
-    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $s=0.1$ ,$N={{1000,2000,3000}}$. 
+    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $\eta=0.1$ ,$N={{1000,2000,3000}}$. 
     Here we see the scaling in $N$ of the $PN$ values. The $PN$ of the 
     larger left portion scales as expected by $2/3 N$. In 
     \cite{bodyfelt_scaling_2013} this appears as the $PN>0.6N$ definition 
@@ -304,22 +319,41 @@ physics arriving from a different scattering matrix.
 %%%%%%%%----------%%%%%%%%
 \begin{figure}[H]
     \includegraphics{pta_B_BB_pn}
-    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$. The blue line is
+    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$, $\eta=0.5$. The blue line is
         for diagonal disorder, the green for $\tilde{b}=1$, red $\tilde{b}=2$, cyan $\tilde{b}=10$.
         The solid line is the theoretical $PN$ as explained earlier. The
-        blue dots seem closer to the theory.}
+        blue dots seem closer to the theory, and higher $\tilde{b}$ corresponds 
+        to lower $PN$, the same effect as in higher $\eta$. Also note the horizontal
+        broadening of the bands, particularly for high $\tilde{b}$.}
     \label{fig:BB}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{Conservation}
+
+If the sum of all the rows in $V$ is $0$, we will always have an ergodic mode
+at $\lambda=-2b$, with $PN=N$. Also, several other modes in the close 
+area are also wide, probably with $PN< \frac{2}{3} N$. We do not know yet 
+what is the expected $PN$ for these modes, apart from the weak disorder limit,
+where all the $PN$ for $\lambda$ around $-2b$ have $PN=\frac{2}{3}$.
+
+We have plotted results for regular and conservative models in \autoref{fig:cons}
+%%%%%%%%----------%%%%%%%%
+%%%%%%%%  figure  %%%%%%%%
+%%%%%%%%----------%%%%%%%%
+\begin{figure}[H]
+    \includegraphics{pta_B_T_pn}\\
+    \includegraphics{pta_B_TC_pn}\\
+    \includegraphics{pta_B_T_ev}
+    \includegraphics{pta_B_TC_ev}
+    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$, $\tilde{b}=1$. Top and bottom left are regular,
+    middle and bottom right are conservative. The important difference seems 
+    to be only the lower-$\lambda$ edge. The conservative models exhibit finite $PN$ at $\lambda =-2b$.}
+    \label{fig:cons}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{strong disorder}
-
-
-We now put moderately stronger disorder. We see two effects. On the one hand, the $PN$'s seem closer
-to our theoretical $\ell$ prediction. On the other hand, we can visually see
-broadening of the band on both sides. For very strong disorder the band structure disappears all together.
-
-
 
 
 
@@ -327,15 +361,21 @@ broadening of the band on both sides. For very strong disorder the band structur
 %%%%%%%%  figure  %%%%%%%%
 %%%%%%%%----------%%%%%%%%
 \begin{figure}[H]
-    \includegraphics{pta_anderson_strong}\\
-    \includegraphics{pta_anderson_very_strong}\\
-    \includegraphics{pta_anderson_b5_s10_ROD_VS_SC}
-    \caption{Top two plots: $PN$ vs eigenvalue $\lambda$, for $b=5$, $s={1,2,3,10,20,30}$ ,$N=1000$. 
-    For the medium strength ($s={1,2,3}$), we see better fitting to our prediction (since $\ell \approx N$),
-    but we also see widening of the bands. In the very strong disorder, the band features are lost.
-    In the third plot, $s=10$, and we have off-diagonal disorder, once conserving (green) and once not.
-    Luckily, we do not lose the "extended"- diffusive modes in the conserving disorder.}
-    \label{fig:strong}
+    \includegraphics{pta_B_T_strong_pn}\\
+    \includegraphics{pta_B_TC_strong_pn}\\
+    \includegraphics{pta_B_T_strong_ev}
+    \includegraphics{pta_B_TC_strong_ev}
+    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$, $\tilde{b}=1$, but for very strong disorder,
+    in {\bf log-scale}.
+     Top and bottom left are regular, middle and bottom right are conservative. Note that
+     the disorder is many times stronger than the original ordered matrix,
+     rendering our previous analysis moot. However, the hallmark of
+     conservation, a peak at $\lambda=-2b$, is still very much evident. It seems 
+     that in the conserving model the band is broader, but perhaps this is
+     because another difference. The regular model has 1 random off-diagonal ($+1$),
+     and one that is decided by symmetry ($-1$), the diagonal itself is zero. The conservative model also
+     has the diagonal pre-decided, different from zero. This adds to the matrix magnitude.}
+    \label{fig:cons_strong}
 \end{figure}
 
 
