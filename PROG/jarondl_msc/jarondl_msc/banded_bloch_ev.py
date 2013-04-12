@@ -68,11 +68,11 @@ def get_sum_dos(b):
     return (lams, doses )
     
 def cached_get_sum_dos(b):
-    with h5py.File('banded_dos.hdf5') as f:
+    with h5py.File('banded_dos.hdf5', 'a') as f:
         if str(b) in f:
             lams = np.array(f[str(b)]['eig_vals'])
             dos = np.array(f[str(b)]['dos'])
-        if str(b) not in f:
+        else:
             fb = f.create_group(str(b))
             lams, dos= get_sum_dos(b)
             f[str(b)].create_dataset('eig_vals', data=lams)

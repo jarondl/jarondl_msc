@@ -116,6 +116,17 @@ def thouless_data_factory(model_name, number_of_points, bandwidth, dis_param):
 #############  plot functions, recieve ax to draw on ##############
 ###################################################################
 
+def decide_labels(ev_pn):
+    """ auto decide on labels. If one field changes use it. """
+    if any(ev_pn['dis_param']!=ev_pn['dis_param'][0]): # if dis_param are not all equal
+        return ev_pn['dis_param']
+    elif any(ev_pn['bandwidth']!=ev_pn['bandwidth'][0]):
+        return ev_pn['bandwidth']
+    elif any(ev_pn['number_of_points']!=ev_pn['number_of_points'][0]):
+        return ev_pn['number_of_points']
+    else:
+        debug("Could not decide on labels, please provide your own")
+        return itertools.repeat('')
     
 def plot_ev(ax,nums):
     for num in nums:
@@ -130,21 +141,13 @@ def plot_ev(ax,nums):
 def plot_banded_ev_bconst_theor(ax,bandwidth,N):
     cummulative_plot(ax,sorted(theor_banded_ev(5, np.linspace(0,pi,N))),marker=None, linestyle='--', color='black')
 
-def plot_anderson(ax, ev_pn,color_seq,labels=None):
+def plot_ev_pn(ax, ev_pn,color_seq,labels=None):
     if labels is None:
-        if any(ev_pn['dis_param']!=ev_pn['dis_param'][0]): # if dis_param are not all equal
-            labels = ev_pn['dis_param']
-        elif any(ev_pn['bandwidth']!=ev_pn['bandwidth'][0]):
-            labels = ev_pn['bandwidth']
-        elif any(ev_pn['number_of_points']!=ev_pn['number_of_points'][0]):
-            labels = ev_pn['number_of_points']
-        else:
-            debug("Could not decide on labels, please provide your own")
-            labels = itertools.repeat('')
+        labels = decide_labels(ev_pn)
     for (mod,color,label) in zip(ev_pn,color_seq,labels):
         ax.plot(-mod['eig_vals'],mod['PN'], '.', markersize=2, color=color, label=r"{0}".format(label))
     ax.legend(loc='upper right')
-    
+  
 def plot_anderson1d_theory(ax, ev_pn, color_seq):
     for (mod,color) in zip(ev_pn,color_seq):
         b=mod['bandwidth']
@@ -154,9 +157,12 @@ def plot_anderson1d_theory(ax, ev_pn, color_seq):
         ax.plot(xs,ys,color=color,linewidth=0.8)
 
 def plot_anderson1d_theory_vv(ax, ev_pn, color_seq):
+
     for (mod,color) in zip(ev_pn,color_seq):
         b=mod['bandwidth']
         N = mod['eig_vals'].size
+        debug("dos sum for b = {}".format(b))
+
         #xs = np.linspace(-2*b,2*b,N//2)
         #lam = theor_banded_ev(b,N)[:N//2] - 2*b ## There it is conserving and (0,2pi)
         #dev = -theor_banded_dev(b,N)[:N//2]
@@ -212,7 +218,7 @@ def plotf_anderson(nums_and,figfilename="pta_anderson",
         ax.axhline((nums_and[0]['eig_vals'].size)*2/3, ls='--', color='black')
     
     color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
-    plot_anderson(ax, nums_and,color_seq, labels)
+    plot_ev_pn(ax, nums_and,color_seq, labels)
     
     color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     plot_anderson1d_theory_vv(ax, nums_and,color_seq)
