@@ -136,7 +136,7 @@ def h5_create_if_missing(h5table, data_factory, factory_args):
     t = time.strftime("%Y-%m-%d %H:%M:%S")
     exists =  any(check_args_in_row(x,factory_args) for x in h5table.iterrows())
     if not exists:
-        debug("creating new data for {}".format(factory_args))
+        info("creating new data for {}".format(factory_args))
         data = data_factory(**factory_args)
         nr = h5table.row
         fill_args_in_row(nr, factory_args)

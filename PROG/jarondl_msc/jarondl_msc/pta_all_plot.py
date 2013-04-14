@@ -86,13 +86,16 @@ def anderson_data_factory(model_name, number_of_points, bandwidth, dis_param, _d
     elif model_name == "Banded tri-diagonal disorder sc":
         m = Model_Anderson_ROD_1d(conserving =False, semiconserving=True,  model_name=model_name, number_of_points= number_of_points,
                                     bandwidth=bandwidth, dis_param = dis_param)
-                                    
+
+    elif model_name.startswith("Banded band-disorder sc"):
+        m = Model_Anderson_BD_1d(conserving =False, semiconserving=True,  model_name=model_name, number_of_points= number_of_points,
+                                    bandwidth=bandwidth, dis_band = _dis_band, dis_param = dis_param)                                    
     elif model_name.startswith("Banded band-disorder"): # might have a following number.
         m = Model_Anderson_BD_1d(conserving =False, semiconserving=False,  model_name=model_name, number_of_points= number_of_points,
                                     bandwidth=bandwidth, dis_band = _dis_band, dis_param = dis_param)
-    elif model_name.startswith("Banded band-disorder sc"):
-        m = Model_Anderson_BD_1d(conserving =False, semiconserving=True,  model_name=model_name, number_of_points= number_of_points,
-                                    bandwidth=bandwidth, dis_band = _dis_band, dis_param = dis_param)
+    elif model_name.startswith("Banded exponential"):
+        m = models.Model_Exp_banded_1d(conserving =False,   model_name=model_name, number_of_points= number_of_points,
+                                    bandwidth=bandwidth,  dis_param = dis_param)
     else: raise Exception("unknown model name?")
     return dict( eig_vals = m.eig_vals,
                      PN = m.PN)
@@ -166,12 +169,14 @@ def plot_anderson1d_theory_vv(ax, ev_pn, color_seq):
         #xs = np.linspace(-2*b,2*b,N//2)
         #lam = theor_banded_ev(b,N)[:N//2] - 2*b ## There it is conserving and (0,2pi)
         #dev = -theor_banded_dev(b,N)[:N//2]
-        lam,dev = cached_get_sum_dos(b)
+        
+        cgsd = cached_get_sum_dos(b)
+        lam, dev = cgsd['eig_vals'], cgsd['inverse_dos']
         ### the six only works for b=1 !!
         ys = 6 * dev**2 / (mod['dis_param'])**2
         #ys = and_theory(xs, mod['dis_param'],b)
-        ax.plot(lam,ys,color="w",linewidth=1.4)# gives a white "border"
-        ax.plot(lam,ys,color=color,linewidth=0.8)
+        ax.plot(lam,ys,color="w",linewidth=0.8)# gives a white "border"
+        ax.plot(lam,ys,color=color,linewidth=0.4)
         
 
 
@@ -279,6 +284,22 @@ def all_plots_forptatex():
         We try to read data from the hdf5 file, but create it if needed"""
     with tables.openFile("ev_and_pn.hdf5", mode = "a", title = "Eigenvalues and PN") as h5file:
         
+        #### Diagonal disorder, our faboulus band structure:
+        run  = h5_get_data(h5file, anderson_data_factory, factory_args = dict(number_of_points=1000, model_name="Banded diagonal disorder"),
+                                            bandwidths=(5,), dis_params= (0.1,))
+        plotf_anderson(run, figfilename="pta_B_DD_low")
+        plotf_anderson(run, figfilename="pta_B_DD_low_zoom", zoom=True)
+        plotf_ev(run, figfilename="pta_B_DD_low_ev")
+
+        
+        #### Exponential (potentially sparse)
+        run  = h5_get_data(h5file, anderson_data_factory, factory_args = dict(number_of_points=1000, model_name="Banded exponential"),
+                                            bandwidths=(5,), dis_params= (0.1,0.5,2,10))
+        plotf_anderson(run, figfilename="pta_exp_low")
+        plotf_anderson(run, figfilename="pta_exp_low_zoom", zoom=True)
+        plotf_ev(run, figfilename="pta_exp_low_ev")
+
+        
         # First, generate plots for diagonal disorder, as function of 
         # dis_param and as function of N
         
@@ -291,9 +312,6 @@ def all_plots_forptatex():
         run3000 = h5_get_data(h5file, anderson_data_factory, factory_args = dict(number_of_points=3000, model_name="Banded diagonal disorder"),
                                              bandwidths=(5,), dis_params= (0.1,))
         
-        plotf_anderson(runs1000_low, figfilename="pta_B_DD_low")
-        plotf_anderson(runs1000_low, figfilename="pta_B_DD_low_zoom", zoom=True)
-        plotf_ev(runs1000_low, figfilename="pta_B_DD_low_ev")
         ####  different N disallow hstack..
         plotf_anderson_byN(([runs1000_low[1], run2000[0], run3000[0]]))
 
@@ -380,8 +398,9 @@ def plotf_theor_banded_dos(b=5,N=2000):
     fig, ax = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     fig.subplots_adjust(left=0.1,right=0.95)
     
-    lam,idos = cached_get_sum_dos(b)
-    
+    cgsd = cached_get_sum_dos(b)
+    lam, idos = cgsd['eig_vals'], cgsd['inverse_dos']
+        
     ks = np.linspace(0,pi,N)
     lam2 = theor_banded_ev(b,ks)
     dev = -theor_banded_dev(b,ks)

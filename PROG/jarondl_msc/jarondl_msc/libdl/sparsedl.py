@@ -10,7 +10,7 @@ import numpy as np
 from numpy import sqrt, cos, pi, diagflat, log
 from scipy import optimize, special, linalg
 from scipy.sparse import spdiags
-#from scipy.maxentropy import logsumexp 
+###from scipy.maxentropy import logsumexp 
 from scipy.misc import logsumexp
 import logging
 
