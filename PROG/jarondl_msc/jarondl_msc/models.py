@@ -43,7 +43,7 @@ class NetModel(object):
         This is different from sample, which holds geometric locations 
         of the dots.
     """
-    def __init__(self, number_of_points, dis_param,conserving = True, prng=None, periodic=True, phi=0, model_name="net_model"):
+    def __init__(self, number_of_points, dis_param,conserving = False, prng=None, periodic=True, phi=0, model_name=None):
         """ rseed is the random seed to prepare RandomState"""
         self.prng = (prng if prng is not None else np.random.RandomState(None))
         self.number_of_points = self.N = number_of_points
@@ -51,6 +51,8 @@ class NetModel(object):
         self.periodic = periodic
         self.phi = phi
         self.conserving = conserving
+        if model_name is None:
+            self.model_name = self.__class__.__name__
         self.model_name = model_name
         
     @lazyprop
@@ -78,6 +80,7 @@ class NetModel(object):
     @lazyprop
     def PN(self):
         return ((self.eig_matrix**(4)).sum(axis=0)**(-1))
+
         
         
 class GeoModel(NetModel):
@@ -160,7 +163,7 @@ class Bloch_Banded_1d(NetModel_1d):
         return 0
 
 class Model_homogenous_banded_1d(NetModel_1d):
-    """ m """
+    """ must be subclassed by something with homogenous_disorder function """
     def sub_rate_matrix(self):
         matr = np.zeros([self.N, self.N])
         if self.bandwidth is None:
@@ -173,14 +176,40 @@ class Model_homogenous_banded_1d(NetModel_1d):
         np.fill_diagonal(matr, self.homogenous_disorder(self.N)/2)
         return (matr+matr.T)
         
-class Model_Exp_banded_1d(Model_homogenous_banded_1d):
-    def homogenous_disorder(N):
+class Model_Positive_Exp_banded_1d(Model_homogenous_banded_1d):
+    def homogenous_disorder(self,N):
         return self.prng.permutation(np.exp(np.linspace(-self.dis_param, 0, N)))
+        
+class Model_Symmetric_Exp_banded_1d(Model_homogenous_banded_1d):
+    def homogenous_disorder(self,N):
+        disorder = self.prng.permutation(np.exp(np.linspace(-self.dis_param, 0, N))) 
+        sgn = self.prng.randint(0,2,N)*2-1
+        return disorder*sgn     
+        
+class Model_Positive_Exp_banded_1d_from_zero(Model_homogenous_banded_1d):
+    def homogenous_disorder(self,N):
+        return self.prng.permutation(np.exp(np.linspace(-self.dis_param, 0, N))) - np.exp(-self.dis_param)
 
-class Model_Box_banded_1d(Model_homogenous_banded_1d):
-    def homogenous_disorder(N):
+class Model_Symmetric_Exp_banded_1d_from_zero(Model_homogenous_banded_1d):
+    def homogenous_disorder(self,N):
+        disorder = self.prng.permutation(np.exp(np.linspace(-self.dis_param, 0, N))) - np.exp(-self.dis_param)
+        sgn = self.prng.randint(0,2,N)*2-1
+        return disorder*sgn
+        
+class Model_Positive_Box_banded_1d(Model_homogenous_banded_1d):
+    def homogenous_disorder(self,N):
         return self.prng.permutation(np.linspace(0, self.dis_param, N))
-    
+
+class Model_Symmetric_Box_banded_1d(Model_homogenous_banded_1d):
+    def homogenous_disorder(self,N):
+        return self.prng.permutation(np.linspace(-self.dis_param, self.dis_param, N))
+
+ 
+def Model_Positive_Box_banded_1d_conservative(*args, **kwargs):
+    return Model_Positive_Box_banded_1d(*args, conserving=True, **kwargs)
+ 
+def Model_Symmetric_Box_banded_1d_conservative(*args, **kwargs):
+    return Model_Symmetric_Box_banded_1d(*args, conserving=True, **kwargs)
 
 class Model_Anderson_DD_1d(Bloch_Banded_1d):
     """ diagonal Disorder """

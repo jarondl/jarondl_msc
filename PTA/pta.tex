@@ -300,85 +300,39 @@ the numerics seem to do so \autoref{fig:anderson_byN}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{Banded disorder}
 
-To study conservation we need a different $V$.
-We define it as a random banded matrix similar to the definition of $W_0$:
-\begin{align}
-v_{nm} &= \begin{cases}
-  w_0 \left[-\frac{\eta}{2},+\frac{\eta}{2} \right]&\qquad \textrm{ if  } \quad 0<|n-m|\le \tilde{b} \\
-  0 &\qquad \textrm{ otherwise}
-\end{cases}
-\end{align}
-Again, this is not limited to positive elements. Also, we believe it is 
-important for $V$ to average to $0$, otherwise there is an eigenvalue shift 
-arising from the disorder. It is not clear what the importance of $\tilde{b}$
-is. The usual inclination is to set $\tilde{b}=b$, but one can ask
-whether this is equal to raising $\eta$, or perhaps there is new
-physics arriving from a different scattering matrix.
+Now we consider banded disorder. The $|m-n|\le b$ band has uniform disorder.
+The positive version has uniform elements 
+\begin{align} w_{nm} \in [0,2]\end{align}
+, and the
+symmetric version has 
+\begin{align}w_{nm} \in [-2,2]\end{align}
+
 %%%%%%%%----------%%%%%%%%
 %%%%%%%%  figure  %%%%%%%%
 %%%%%%%%----------%%%%%%%%
 \begin{figure}[H]
-    \includegraphics{pta_B_BB_pn}
-    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$, $\eta=0.5$. The blue line is
-        for diagonal disorder, the green for $\tilde{b}=1$, red $\tilde{b}=2$, cyan $\tilde{b}=10$.
-        The solid line is the theoretical $PN$ as explained earlier. The
-        blue dots seem closer to the theory, and higher $\tilde{b}$ corresponds 
-        to lower $PN$, the same effect as in higher $\eta$. Also note the horizontal
-        broadening of the bands, particularly for high $\tilde{b}$.}
+    \includegraphics{pta_box2_positive}\\
+    \includegraphics{pta_box2_pos_cons}\\
+    \includegraphics{pta_box2_symmetric}\\
+    \includegraphics{pta_box2_sym_cons}
+    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$. From top to bottom:
+    positive, positive and conserving, symmetric, symmetric and conserving. We see
+    that the main effect of conservation is on the $\lambda=0$ modes. Note 
+    that the x-axis is arbitrary, because we chose our limit at $2$ ($w_{nm} \in [0,2]$), but the 
+    eigenvalues scale linearly in this limit without affecting the PN.}
     \label{fig:BB}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{Conservation}
+\sect{Band disorder, around a const}
 
-If the sum of all the rows in $V$ is $0$, we will always have an ergodic mode
-at $\lambda=-2b$, with $PN=N$. Also, several other modes in the close 
-area are also wide, probably with $PN< \frac{2}{3} N$. We do not know yet 
-what is the expected $PN$ for these modes, apart from the weak disorder limit,
-where all the $PN$ for $\lambda$ around $-2b$ have $PN=\frac{2}{3}$.
+In this model, the elements are taken from $w_{nm} \in [\mu - \eta,\mu+\eta]$. 
+The previous section matches $\mu=1, \quad \eta=1$. The model in \cite{bodyfelt_scaling_2013}
+has $\mu=1, \quad \eta=\frac{1}{2}$. This introduces another dimensionaless
+parameter besides $b$, $\frac{\eta}{\mu}$.
 
-We have plotted results for regular and conservative models in \autoref{fig:cons}
-%%%%%%%%----------%%%%%%%%
-%%%%%%%%  figure  %%%%%%%%
-%%%%%%%%----------%%%%%%%%
-\begin{figure}[H]
-    \includegraphics{pta_B_T_pn}\\
-    \includegraphics{pta_B_TC_pn}\\
-    \includegraphics{pta_B_T_ev}
-    \includegraphics{pta_B_TC_ev}
-    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$, $\tilde{b}=1$. Top and bottom left are regular,
-    middle and bottom right are conservative. The important difference seems 
-    to be only the lower-$\lambda$ edge. The conservative models exhibit finite $PN$ at $\lambda =-2b$.}
-    \label{fig:cons}
-\end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\sect{strong disorder}
-
-
-
-%%%%%%%%----------%%%%%%%%
-%%%%%%%%  figure  %%%%%%%%
-%%%%%%%%----------%%%%%%%%
-\begin{figure}[H]
-    \includegraphics{pta_B_T_strong_pn}\\
-    \includegraphics{pta_B_TC_strong_pn}\\
-    \includegraphics{pta_B_T_strong_ev}
-    \includegraphics{pta_B_TC_strong_ev}
-    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$, $\tilde{b}=1$, but for very strong disorder,
-    in {\bf log-scale}.
-     Top and bottom left are regular, middle and bottom right are conservative. Note that
-     the disorder is many times stronger than the original ordered matrix,
-     rendering our previous analysis moot. However, the hallmark of
-     conservation, a peak at $\lambda=-2b$, is still very much evident. It seems 
-     that in the conserving model the band is broader, but perhaps this is
-     because another difference. The regular model has 1 random off-diagonal ($+1$),
-     and one that is decided by symmetry ($-1$), the diagonal itself is zero. The conservative model also
-     has the diagonal pre-decided, different from zero. This adds to the matrix magnitude.}
-    \label{fig:cons_strong}
-\end{figure}
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{Band exponential disorder (possibly sparse)}
 
 
 
