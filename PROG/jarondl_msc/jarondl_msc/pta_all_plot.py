@@ -228,8 +228,8 @@ def plotf_anderson(nums_and,figfilename="pta_anderson",
         ax.set_xlim(-2*b-0.01,-2*b+0.1)
     elif xlim is not None:
         ax.set_xlim(xlim)
-    else:
-        ax.set_xlim(-(2*b+0.5),(2*b+0.5))
+    #else:
+        #ax.set_xlim(-(2*b+0.5),(2*b+0.5))
         
     
     
@@ -307,33 +307,33 @@ def all_plots_forptatex():
         
         #### Box2 -positive
         run  = h5_get_data(h5file, model = models.Model_Positive_Box_banded_1d, factory_args = dict(number_of_points=1000),
-                                            bandwidths=(5,), dis_params= (2,))
-        plotf_anderson(run, figfilename="pta_box2_positive", ylogscale=True, xlim=(-15,5))
+                                            bandwidths=(5,15), dis_params= (2,))
+        plotf_anderson(run, figfilename="pta_box2_positive", ylogscale=True,plot_theory = False)
         plotf_ev(run, figfilename="pta_box2_positive_ev")
         
         #### Box2 - symmetric
         run  = h5_get_data(h5file, model = models.Model_Symmetric_Box_banded_1d, factory_args = dict(number_of_points=1000),
-                                            bandwidths=(5,), dis_params= (2,))
-        plotf_anderson(run, figfilename="pta_box2_symmetric", ylogscale=True, xlim=(-10,10),plot_theory=False)
+                                            bandwidths=(5,15), dis_params= (2,))
+        plotf_anderson(run, figfilename="pta_box2_symmetric", ylogscale=True,plot_theory=False)
         plotf_ev(run, figfilename="pta_box2_symmetric_ev")
         
         #### Box2  -positive cons
         run  = h5_get_data(h5file, model = models.Model_Positive_Box_banded_1d_conservative, factory_args = dict(number_of_points=1000),
-                                            bandwidths=(5,), dis_params= (2,))
-        plotf_anderson(run, figfilename="pta_box2_pos_cons", ylogscale=True, xlim=(-5,20),plot_theory=False)
+                                            bandwidths=(5,15), dis_params= (2,))
+        plotf_anderson(run, figfilename="pta_box2_pos_cons", ylogscale=True,plot_theory=False)
         plotf_ev(run, figfilename="pta_box2_pos_cons_ev")
         
         #### Box2  -symmetric cons
         run  = h5_get_data(h5file, model = models.Model_Symmetric_Box_banded_1d_conservative, factory_args = dict(number_of_points=1000),
-                                            bandwidths=(5,), dis_params= (2,))
-        plotf_anderson(run, figfilename="pta_box2_sym_cons", ylogscale=True, xlim=(-15,15),plot_theory=False)
+                                            bandwidths=(5,15), dis_params= (2,))
+        plotf_anderson(run, figfilename="pta_box2_sym_cons", ylogscale=True, plot_theory=False)
         plotf_ev(run, figfilename="pta_box2_sym_cons_ev")
         
                 
         #### Box2 - around 1
         run  = h5_get_data(h5file, model = models.Model_Positive_Box_around1_banded_1d, factory_args = dict(number_of_points=1000),
-                                            bandwidths=(5,), dis_params= (0.1,0.5,1))
-        plotf_anderson(run, figfilename="pta_box_around1_positive", ylogscale=True, xlim=(-15,10))
+                                            bandwidths=(5,), dis_params= (0.01,0.5,1))
+        plotf_anderson(run, figfilename="pta_box_around1_positive", ylogscale=True)
         plotf_ev(run, figfilename="pta_box_around1_positive_ev")
 
         
