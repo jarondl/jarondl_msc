@@ -289,12 +289,18 @@ def all_plots_forptatex():
         #### Exponential from zero (potentially sparse)
         run  = h5_get_data(h5file, model = models.Model_Positive_Exp_banded_1d_from_zero, factory_args = dict(number_of_points=1000),
                                             bandwidths=(5,), dis_params= (0.1,0.5,2,10))
-        plotf_anderson(run, figfilename="pta_exp_from_zero_low")
+        plotf_anderson(run, figfilename="pta_exp_from_zero_low", ylogscale=True, plot_theory=False)
         plotf_anderson(run, figfilename="pta_exp_from_zero_low_zoom", zoom=True)
         plotf_ev(run, figfilename="pta_exp__from_zero_low_ev")     
+           
+        #### Exponential from zero conserving (potentially sparse)
+        run  = h5_get_data(h5file, model = models.Model_Positive_Exp_banded_1d_from_zero_conservative, factory_args = dict(number_of_points=1000),
+                                            bandwidths=(5,), dis_params= (0.1,0.5,2,10))
+        plotf_anderson(run, figfilename="pta_exp_from_zero_cons", ylogscale=True, plot_theory=False)
+        plotf_ev(run, figfilename="pta_exp__from_zero_cons_ev")     
         #### Box
         run  = h5_get_data(h5file, model = models.Model_Positive_Box_banded_1d, factory_args = dict(number_of_points=1000),
-                                            bandwidths=(5,), dis_params= (0.1,0.5,2,10))
+                                            bandwidths=(5,), dis_params= (0.1,2,10))
         plotf_anderson(run, figfilename="pta_box_low")
         plotf_anderson(run, figfilename="pta_box_low_zoom", zoom=True)
         plotf_ev(run, figfilename="pta_box_low_ev")
@@ -322,7 +328,17 @@ def all_plots_forptatex():
                                             bandwidths=(5,), dis_params= (2,))
         plotf_anderson(run, figfilename="pta_box2_sym_cons", ylogscale=True, xlim=(-15,15),plot_theory=False)
         plotf_ev(run, figfilename="pta_box2_sym_cons_ev")
+        
+                
+        #### Box2 - around 1
+        run  = h5_get_data(h5file, model = models.Model_Positive_Box_around1_banded_1d, factory_args = dict(number_of_points=1000),
+                                            bandwidths=(5,), dis_params= (0.1,0.5,1))
+        plotf_anderson(run, figfilename="pta_box_around1_positive", ylogscale=True, xlim=(-15,10))
+        plotf_ev(run, figfilename="pta_box_around1_positive_ev")
 
+        
+
+        
         
         # First, generate plots for diagonal disorder, as function of 
         # dis_param and as function of N

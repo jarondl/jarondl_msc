@@ -188,7 +188,10 @@ class Model_Symmetric_Exp_banded_1d(Model_homogenous_banded_1d):
         
 class Model_Positive_Exp_banded_1d_from_zero(Model_homogenous_banded_1d):
     def homogenous_disorder(self,N):
-        return self.prng.permutation(np.exp(np.linspace(-self.dis_param, 0, N))) - np.exp(-self.dis_param)
+        return (self.prng.permutation(np.exp(np.linspace(-self.dis_param, 0, N))) - np.exp(-self.dis_param))/(1-np.exp(-self.dis_param))
+        
+def Model_Positive_Exp_banded_1d_from_zero_conservative(*args, **kwargs):
+    return Model_Positive_Exp_banded_1d_from_zero(*args, conserving=True, **kwargs)
 
 class Model_Symmetric_Exp_banded_1d_from_zero(Model_homogenous_banded_1d):
     def homogenous_disorder(self,N):
@@ -199,6 +202,10 @@ class Model_Symmetric_Exp_banded_1d_from_zero(Model_homogenous_banded_1d):
 class Model_Positive_Box_banded_1d(Model_homogenous_banded_1d):
     def homogenous_disorder(self,N):
         return self.prng.permutation(np.linspace(0, self.dis_param, N))
+        
+class Model_Positive_Box_around1_banded_1d(Model_homogenous_banded_1d):
+    def homogenous_disorder(self,N):
+        return 1+ self.prng.permutation(np.linspace(-self.dis_param, +self.dis_param, N))
 
 class Model_Symmetric_Box_banded_1d(Model_homogenous_banded_1d):
     def homogenous_disorder(self,N):

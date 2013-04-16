@@ -319,22 +319,60 @@ symmetric version has
     positive, positive and conserving, symmetric, symmetric and conserving. We see
     that the main effect of conservation is on the $\lambda=0$ modes. Note 
     that the x-axis is arbitrary, because we chose our limit at $2$ ($w_{nm} \in [0,2]$), but the 
-    eigenvalues scale linearly in this limit without affecting the PN.}
+    eigenvalues scale linearly in this limit without affecting the PN.
+    The left branch we see depends only on $b$, and perhaps we can deduce its location
+    from our previous analysis.}
     \label{fig:BB}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{Band disorder, around a const}
 
-In this model, the elements are taken from $w_{nm} \in [\mu - \eta,\mu+\eta]$. 
+In this model, the elements are taken from 
+\begin{align} w_{nm} \in [\mu - \eta,\mu+\eta]\end{align}
 The previous section matches $\mu=1, \quad \eta=1$. The model in \cite{bodyfelt_scaling_2013}
-has $\mu=1, \quad \eta=\frac{1}{2}$. This introduces another dimensionaless
+has $\mu=1, \quad \eta=\frac{1}{2}$. This introduces another dimensional-less
 parameter besides $b$, $\frac{\eta}{\mu}$.
 
+%%%%%%%%----------%%%%%%%%
+%%%%%%%%  figure  %%%%%%%%
+%%%%%%%%----------%%%%%%%%
+\begin{figure}[H]
+    \includegraphics{pta_box_around1_positive}
+    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$, $\mu=1$ and changing $\eta$.
+    We see the gradual shift from the known band structure.}
+    \label{fig:box1}
+\end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{Band exponential disorder (possibly sparse)}
 
+We consider two models. The first has the regular log-box distribution:
+\begin{align} w_{nm} \in \exp\left([- \eta,0]\right)\end{align}
+But this distribution starts from $\exp(-\eta)$ and ends with $1$. Perhaps
+we are adding another element into this model? Besides changing the sparsity,
+we also change the width of the distribution relative to $1$.
+So we also checked a model with almost the same distribution, only starting from $0$:
+\begin{align} w_{nm} \in \frac{\exp\left([- \eta,0]\right) - \exp(-\eta)}{1-\exp{-\eta}}\end{align}
+(The normalization is there only for presentation, it has no influence on the band-structure)
 
+
+%%%%%%%%----------%%%%%%%%
+%%%%%%%%  figure  %%%%%%%%
+%%%%%%%%----------%%%%%%%%
+\begin{figure}[H]
+    \includegraphics{pta_exp_low}\\
+    \includegraphics{pta_exp_from_zero_low}
+    \includegraphics{pta_exp_from_zero_cons}
+    \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$, $\eta$ changing. 
+    The top graph is for the model starting at one, the second one starts from zero,
+    and the third one starts from zero but is conserving.
+    Note that the second and third graphs are in log-scale. We see that the top graph
+    resembles the one from the previous model \autoref{fig:box1}, with 
+    a gradual change from a structure with several branches to a single branch.
+    In the second graph for low sparsity we see a structure 
+    resembling that of \autoref{fig:BB}, but with high sparsity this is gone.}
+    \label{fig:exp}
+\end{figure}
 
 \bibliographystyle{apsrev4-1}
 \bibliography{../bibliography/jarondl,../bibliography/custom-longbib}
