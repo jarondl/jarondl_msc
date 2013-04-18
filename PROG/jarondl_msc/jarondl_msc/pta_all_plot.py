@@ -143,7 +143,7 @@ def plot_anderson1d_theory(ax, ev_pn, color_seq):
         ax.plot(xs,ys,color="b",linewidth=1)# gives a white "border"
         ax.plot(xs,ys,color=color,linewidth=0.8)
 
-def plot_anderson1d_theory_vv(ax, ev_pn, color_seq):
+def plot_anderson1d_theory_vv(ax, ev_pn, color_seq, add_const=0):
 
     for (mod,color) in zip(ev_pn,color_seq):
         b=mod['bandwidth']
@@ -159,8 +159,8 @@ def plot_anderson1d_theory_vv(ax, ev_pn, color_seq):
         ### the six only works for b=1 !!
         ys = 6 * dev**2 / (mod['dis_param'])**2
         #ys = and_theory(xs, mod['dis_param'],b)
-        ax.plot(lam,ys,color="w",linewidth=0.8)# gives a white "border"
-        ax.plot(lam,ys,color=color,linewidth=0.4)
+        ax.plot(lam+add_const,ys,color="w",linewidth=0.8)# gives a white "border"
+        ax.plot(lam+add_const,ys,color=color,linewidth=0.4)
         
 
 
@@ -194,7 +194,7 @@ def plotf_ev(nums, figfilename, xlim=None):
     
 def plotf_anderson(nums_and,figfilename="pta_anderson", 
                    dont_touch_ylim=False, ylogscale=False, zoom=False, 
-                   labels=None,xlim = None, plot_theory=True):
+                   labels=None,xlim = None, plot_theory=True, add_const=-1):
     """  This is a general pn vs ev plotter. 
          Most of the time we keep change one parameter and keep rest constant.
     """
@@ -210,7 +210,7 @@ def plotf_anderson(nums_and,figfilename="pta_anderson",
     plot_ev_pn(ax, nums_and,color_seq, labels)
     if plot_theory:
         color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
-        plot_anderson1d_theory_vv(ax, nums_and,color_seq)
+        plot_anderson1d_theory_vv(ax, nums_and,color_seq, add_const)
     
     b= max(nums_and['bandwidth'])
     
@@ -229,7 +229,7 @@ def plotf_anderson(nums_and,figfilename="pta_anderson",
     elif xlim is not None:
         ax.set_xlim(xlim)
     #else:
-        #ax.set_xlim(-(2*b+0.5),(2*b+0.5))
+    #    ax.set_xlim(-(2*b+0.5),(2*b+0.5))
         
     
     
@@ -274,17 +274,24 @@ def all_plots_forptatex():
         run  = h5_get_data(h5file, model = models.Model_Anderson_DD_1d,
             factory_args = dict(number_of_points=1000),
                                             bandwidths=(5,), dis_params= (0.1,))
-        plotf_anderson(run, figfilename="pta_B_DD_low")
-        plotf_anderson(run, figfilename="pta_B_DD_low_zoom", zoom=True)
+        plotf_anderson(run, figfilename="pta_B_DD_low",add_const=0)
+        plotf_anderson(run, figfilename="pta_B_DD_low_zoom", zoom=True,add_const=0)
         plotf_ev(run, figfilename="pta_B_DD_low_ev")
 
         
         #### Exponential (potentially sparse)
         run  = h5_get_data(h5file, model = models.Model_Positive_Exp_banded_1d, factory_args = dict(number_of_points=1000),
                                             bandwidths=(5,), dis_params= (0.1,0.5,2,10))
-        plotf_anderson(run, figfilename="pta_exp_low")
+        plotf_anderson(run, figfilename="pta_exp_low",ylogscale=True)
         plotf_anderson(run, figfilename="pta_exp_low_zoom", zoom=True)
         plotf_ev(run, figfilename="pta_exp_low_ev")
+
+        
+        #### Exponential conservative (potentially sparse)
+        run  = h5_get_data(h5file, model = models.Model_Positive_Exp_banded_1d_conservative, factory_args = dict(number_of_points=1000),
+                                            bandwidths=(5,), dis_params= (0.1,0.5,2,10))
+        plotf_anderson(run, figfilename="pta_exp_cons",ylogscale=True, plot_theory=False)
+        #plotf_ev(run, figfilename="pta_exp_low_ev")
            
         #### Exponential from zero (potentially sparse)
         run  = h5_get_data(h5file, model = models.Model_Positive_Exp_banded_1d_from_zero, factory_args = dict(number_of_points=1000),
@@ -297,7 +304,8 @@ def all_plots_forptatex():
         run  = h5_get_data(h5file, model = models.Model_Positive_Exp_banded_1d_from_zero_conservative, factory_args = dict(number_of_points=1000),
                                             bandwidths=(5,), dis_params= (0.1,0.5,2,10))
         plotf_anderson(run, figfilename="pta_exp_from_zero_cons", ylogscale=True, plot_theory=False)
-        plotf_ev(run, figfilename="pta_exp__from_zero_cons_ev")     
+        #plotf_ev(run, figfilename="pta_exp__from_zero_cons_ev")     
+        
         #### Box
         run  = h5_get_data(h5file, model = models.Model_Positive_Box_banded_1d, factory_args = dict(number_of_points=1000),
                                             bandwidths=(5,), dis_params= (0.1,2,10))
@@ -308,7 +316,7 @@ def all_plots_forptatex():
         #### Box2 -positive
         run  = h5_get_data(h5file, model = models.Model_Positive_Box_banded_1d, factory_args = dict(number_of_points=1000),
                                             bandwidths=(5,15), dis_params= (2,))
-        plotf_anderson(run, figfilename="pta_box2_positive", ylogscale=True,plot_theory = False)
+        plotf_anderson(run, figfilename="pta_box2_positive", ylogscale=True)
         plotf_ev(run, figfilename="pta_box2_positive_ev")
         
         #### Box2 - symmetric
@@ -326,80 +334,19 @@ def all_plots_forptatex():
         #### Box2  -symmetric cons
         run  = h5_get_data(h5file, model = models.Model_Symmetric_Box_banded_1d_conservative, factory_args = dict(number_of_points=1000),
                                             bandwidths=(5,15), dis_params= (2,))
-        plotf_anderson(run, figfilename="pta_box2_sym_cons", ylogscale=True, plot_theory=False)
+        plotf_anderson(run, figfilename="pta_box2_sym_cons", ylogscale=True,plot_theory=False)
         plotf_ev(run, figfilename="pta_box2_sym_cons_ev")
         
                 
         #### Box2 - around 1
         run  = h5_get_data(h5file, model = models.Model_Positive_Box_around1_banded_1d, factory_args = dict(number_of_points=1000),
-                                            bandwidths=(5,), dis_params= (0.01,0.5,1))
+                                            bandwidths=(5,), dis_params= (0.1,0.5,1))
         plotf_anderson(run, figfilename="pta_box_around1_positive", ylogscale=True)
         plotf_ev(run, figfilename="pta_box_around1_positive_ev")
 
         
 
         
-        
-        # First, generate plots for diagonal disorder, as function of 
-        # dis_param and as function of N
-        
-        runs1000_low = h5_get_data(h5file, anderson_data_factory, factory_args = dict(number_of_points=1000, model_name="Banded diagonal disorder"),
-                                            bandwidths=(5,), dis_params= (0.01,0.1,0.2))
-
-        run2000 = h5_get_data(h5file, anderson_data_factory, factory_args = dict(number_of_points=2000, model_name="Banded diagonal disorder"),
-                                             bandwidths=(5,), dis_params= (0.1,))
-
-        run3000 = h5_get_data(h5file, anderson_data_factory, factory_args = dict(number_of_points=3000, model_name="Banded diagonal disorder"),
-                                             bandwidths=(5,), dis_params= (0.1,))
-        
-        ####  different N disallow hstack..
-        plotf_anderson_byN(([runs1000_low[1], run2000[0], run3000[0]]))
-
-
-        # These plots are for different btildes
-        run1 = h5_get_data(h5file, anderson_data_factory, 
-                            factory_args = dict(number_of_points=1000, _dis_band = 1,model_name="Banded band-disorder 1"),
-                                            bandwidths=(5,), dis_params= (0.5,))
-                                            
-        run2 = h5_get_data(h5file, anderson_data_factory, 
-                            factory_args = dict(number_of_points=1000, _dis_band = 2,model_name="Banded band-disorder 2"),
-                                            bandwidths=(5,), dis_params= (0.5,))
-                                            
-        run3 = h5_get_data(h5file, anderson_data_factory, 
-                            factory_args = dict(number_of_points=1000, _dis_band = 10,model_name="Banded band-disorder 10"),
-                                            bandwidths=(5,), dis_params= (0.5,))
-        runs_dd = h5_get_data(h5file, anderson_data_factory, factory_args = dict(number_of_points=1000, model_name="Banded diagonal disorder"),
-                                            bandwidths=(5,), dis_params= (0.5,))
-        run_by_btilde = np.hstack((runs_dd[0],run1[0],run2[0],run3[0]))
-        plotf_ev(run_by_btilde, figfilename="pta_B_BB_ev", xlim=(-15,10))
-        plotf_anderson(run_by_btilde, figfilename="pta_B_BB_pn", labels=(0,1,2,10)) 
-
-        
-        ######### 
-        #  Now conserving vs non conserving, for low and high s, all with btilde=1
-        # Low s:
-        run = h5_get_data(h5file, anderson_data_factory, factory_args = dict(number_of_points=1000, model_name="Banded tri-diagonal disorder sc"),
-                                            bandwidths=(5,), dis_params= (0.1,1,2,3))
-        plotf_ev(run, figfilename="pta_B_TC_ev", xlim=(-15,10))
-        plotf_anderson(run, figfilename="pta_B_TC_pn")
-    
-        run = h5_get_data(h5file, anderson_data_factory, factory_args = dict(number_of_points=1000, model_name="Banded tri-diagonal disorder"),
-                                            bandwidths=(5,), dis_params= (0.1,1,2,3))
-        plotf_ev(run, figfilename="pta_B_T_ev", xlim=(-15,10))
-        plotf_anderson(run, figfilename="pta_B_T_pn")
-        
-        # High s
-        run = h5_get_data(h5file, anderson_data_factory, factory_args = dict(number_of_points=1000, model_name="Banded tri-diagonal disorder sc"),
-                                            bandwidths=(5,), dis_params= (5,10,20))
-        plotf_ev(run, figfilename="pta_B_TC_strong_ev", xlim=(-65,65))
-        plotf_anderson(run, figfilename="pta_B_TC_strong_pn",ylogscale=True, xlim=(-65,65))
-
-        run = h5_get_data(h5file, anderson_data_factory, factory_args = dict(number_of_points=1000, model_name="Banded tri-diagonal disorder"),
-                                            bandwidths=(5,), dis_params= (5,10,20))
-        plotf_ev(run, figfilename="pta_B_T_strong_ev", xlim=(-65,65))
-        plotf_anderson(run, figfilename="pta_B_T_strong_pn", ylogscale=True, xlim=(-65,65))
-        
-           
         
         plotf_theor_banded_ev()
         plotf_theor_banded_dos()

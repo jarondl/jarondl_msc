@@ -192,6 +192,9 @@ class Model_Positive_Exp_banded_1d_from_zero(Model_homogenous_banded_1d):
         
 def Model_Positive_Exp_banded_1d_from_zero_conservative(*args, **kwargs):
     return Model_Positive_Exp_banded_1d_from_zero(*args, conserving=True, **kwargs)
+        
+def Model_Positive_Exp_banded_1d_conservative(*args, **kwargs):
+    return Model_Positive_Exp_banded_1d(*args, conserving=True, **kwargs)
 
 class Model_Symmetric_Exp_banded_1d_from_zero(Model_homogenous_banded_1d):
     def homogenous_disorder(self,N):
