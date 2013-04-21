@@ -345,30 +345,23 @@ parameter besides $b$, $\frac{\eta}{\mu}$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \sect{Band exponential disorder (possibly sparse)}
 
-We consider two models. The first has the regular log-box distribution:
+We now consider a log-box model. 
 \begin{align} w_{nm} \in \exp\left([- \eta,0]\right)\end{align}
-But this distribution starts from $\exp(-\eta)$ and ends with $1$. Perhaps
-we are adding another element into this model? Besides changing the sparsity,
-we also change the width of the distribution relative to $1$.
-So we also checked a model with almost the same distribution, only starting from $0$:
-\begin{align} w_{nm} \in \frac{\exp\left([- \eta,0]\right) - \exp(-\eta)}{1-\exp{-\eta}}\end{align}
-(The normalization is there only for presentation, it has no influence on the band-structure)
-
+%
+For small $\eta$, this would be similar to the "Anderson" model,
+while for large $\eta$ we have sparsity.
 
 %%%%%%%%----------%%%%%%%%
 %%%%%%%%  figure  %%%%%%%%
 %%%%%%%%----------%%%%%%%%
 \begin{figure}[H]
     \includegraphics{pta_exp_regular}\\
-    \includegraphics{pta_exp_cons}\\
+    \includegraphics{pta_exp_shift}\\
+    \includegraphics{pta_exp_cons}
     \caption{$PN$ vs eigenvalue $\lambda$, for $b=5$, $N=1000$, $\eta$ changing. 
-    The top graph is for the model starting at one, the second one starts from zero,
-    and the third one starts from zero but is conserving.
-    Note that the second and third graphs are in log-scale. We see that the top graph
-    resembles the one from the previous model \autoref{fig:box1}, with 
-    a gradual change from a structure with several branches to a single branch.
-    In the second graph for low sparsity we see a structure 
-    resembling that of \autoref{fig:BB}, but with high sparsity this is gone.}
+    All three plots are for log-box distribution. The first is regular banded 
+    log-box disorder. The second one contains shifts of the average row sum,
+    $(2b+1)(1-e^{-\eta})/\eta$. The third one is conservative. }
     \label{fig:exp}
 \end{figure}
 
