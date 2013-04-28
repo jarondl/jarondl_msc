@@ -36,7 +36,7 @@
 
 \renewcommand\mathfamilydefault{\rmdefault}
 
-\graphicspath{{MSc_figures/},{../}}
+\graphicspath{{MSc_figures/},{../}, {PTA_figures/}}
 
 %\usetheme{Madrid}
 \usetheme{Boadilla}
@@ -214,133 +214,123 @@ s_{\textit{eff}} \ &= \ \left(\frac{d}{\Omega_d}n_c \right)^{-1/d} \frac{\xi}{r_
 \end{columns}
 
 \end{frame}
-
-%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Spectral comparison $1d$ vs $2d$}
 
 \includegraphics[width=0.90\hsize]{pts_Spectral_PN}
 
-
 Solid lines - RG theory prediction [{\bf Amir, Oreg, Imry (2010)}].
 
 Dashed lines  - Resistor network theory prediction [{\bf YdL, DC (2012)}].
 \end{frame}
-
-%%%%%%
-\begin{frame}
-\frametitle{RG predicition for $2D$}
-RG analysis was carried out by Amir et al (Weizmann) based on the assumption that the modes are localized dimers.
-The result reflects the distribution of distances between the sites.
-\[ \mathcal{N}(\lambda) \ \ = \ \ \exp\left[ -\frac{\Omega_d}{2d} \Big(-\frac{\xi}{r_0} \ln(\lambda/2)\Big)^d \right]\]
-\end{frame}
-
-%%%%%%
-\begin{frame}
-\frametitle{Outline: diffusion coefficient}
-We can estimate $D$ using several approches.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} \frametitle{Several views over localization in this model}
+{ \fontfamily{lmr}\fontsize{8}{7.2}\selectfont
+Localization in a disordered elastic medium near two dimensions\newline
+Sajeev John, H. Sompolinsky, M.J. Stephen, Phys. Rev. B 27, 55925603 (1983)
 \begin{itemize}
-\item Linear-Response : D is linear in the rates.
-  \[D_{\textrm{LRT}} \quad = \quad \frac{1}{2d}\iint w(r,\epsilon)r^2\rho(r,\epsilon)d\epsilon dr\]
-\item Effective-Range-Hopping: cutting off the non-percolative transitions.
-%
+\item All states are localized
+\item Localization length diverges for $\lambda \rightarrow 0$
+\item Debye law holds (diffusion)
+\end{itemize}
+Localization, Anomalous Diffusion, and Slow Relaxations\newline
+A. Amir, Y. Oreg, Y. Imry, Phys. Rev. Lett. 105, 070601 (2010)
+\begin{itemize}
+\item All states are localized
+\item There is sub-diffusion rather than difussion
+\end{itemize}
+Diffusion in sparse networks: Linear to semilinear crossover \newline
+Y. de Leeuw, D. Cohen, Phys. Rev. E 86, 051120 (2012)
+\begin{itemize}
+\item All states are localized
+\item There is a percolation crossover at finite $\lambda$
+\item Localization length diverges for $\lambda \rightarrow 0$
+\item Debye law holds (diffusion)
+\end{itemize}
+Emergent percolation length and localization in random elastic networks \newline
+A. Amir, J. J. Krich, V. Vitelli, Y. Oreg, Y. Imry, arXiv:1209.2169 (2012)
+\begin{itemize}
+\item There is an Anderson mobility edge at finite $\lambda$
+\item The low lying states become de-localized
+\item Debye law holds (diffusion)
+\end{itemize}
+
+}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}\frametitle{Work plan}
+
+
+\begin{itemize}
+    \item Current goal:  find the relation between resistor network calculation and
+    Fourier law, or between mesoscopic transport and heat transport.
+    \begin{itemize}
+        \item  Study and explain the band structure of banded-sparse models.
+        \item  Calculate heat transport and resistor network transport 
+               for these models, and look for similarities (e.g. VRH and percolation)
+        \item  In the weak banded model, each energy $\lambda$ has
+               more than one $k$: check the effects on scattering and 
+               localization length calculations.
+        \item  Check $N$ and $b$ scaling.
+    \end{itemize}
+    \item  Models with relaxation
+    \item  Sinai spectrum in $1d$
+    \item  Sinai diffusion in $2d$
+    \item  Quantum spreading
+    \item  Discrete particles (many-body physics)
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}\frametitle{Band structure for banded weak disorder}
+We can analytically compute the spectrum for a banded matrix of ones (Bloch).
+
+\includegraphics[width=0.9\textwidth]{pta_theor_banded_ev}\newline
+\includegraphics[width=0.9\textwidth]{pta_theor_banded_dos}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}\frametitle{Band structure for banded weak disorder}
+
+For weak disorder, $PN$ goes like $\textrm{DOS}^{-2}$ with the Bloch $\textrm{DOS}$
+
+\includegraphics[width=0.9\textwidth]{pta_B_DD_low}
+
+and $\mathcal{N}(\lambda)$ is very similar to the Bloch $\mathcal{N}(\lambda)$ (the dashed line)
+
+\includegraphics[width=0.45\textwidth]{pta_B_DD_low_ev}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}\frametitle{$PN$ structure for random band}
+\begin{center}
+%\vspace{-20pt}\includegraphics[width=0.60\textwidth]{pta_box2_positive}\newline
+\vspace{-10pt}\includegraphics[width=0.60\textwidth]{pta_box2_pos_cons}\vspace{+5pt}\newline
+\includegraphics[width=0.60\textwidth]{pta_box2_symmetric}\newline
+\vspace{-0pt}\includegraphics[width=0.60\textwidth]{pta_box2_sym_cons}\newline
+\end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}\frametitle{$PN$ structure for banded - sparse model}
+\begin{center}
+%\vspace{-20pt}\includegraphics[width=0.60\textwidth]{pta_box2_positive}\newline
+\vspace{-20pt}
+
 \begin{align*}
-\iint_{w(r,\epsilon)>w_c} \rho(r,\epsilon)drd\epsilon \ \ = \ \ n_c, 
-\ \ \ \ \ \ \ \ \ \mbox{with $n_c$ of order unity }
+w_{nm} =
+\exp([-\eta, 0]) 
 \end{align*}
-%
-Then we calculate $D$ as follows:
-%
-\[
-D \ \ = \ \ D_{\tbox{ERH}}[{w}]  \ \ = \ \ \frac{1}{4}\iint \min\{w(r,\epsilon),w_c\} \ r^2  \ \rho(r,\epsilon) \ d\epsilon dr
-\]
-%
-\end{itemize}
-
+\includegraphics[width=0.60\textwidth]{pta_exp_regular}\newline
+\includegraphics[width=0.60\textwidth]{pta_exp_shift}\newline
+\includegraphics[width=0.60\textwidth]{pta_exp_cons}\newline
+\end{center}
 \end{frame}
-
-%%%%%%
-\begin{frame}
-\frametitle{Variable Range Hopping}
-
-%
-\[
-D_{\tbox{VRH}}[\bm{w}]  
-\ \ < \ \ D_{\tbox{ERH}}[\bm{w}]
-\ \ < \ \ D[\bm{w}]
-\ \ < \ \ D_{\tbox{LRT}}[\bm{w}]
-\]
-%
-VRH associates the range of the jump $r$ with its typical 
-energy cost $\epsilon(r)$. 
-%
-
-\begin{columns}
-\begin{column}{0.6\textwidth}
-ERH threshold $w_c$ is defined via 
-
-\[
-\int\!\!\int_{w(r,\epsilon)>w_c} \rho(r,\epsilon)drd\epsilon \ \ = \ \ n_c
-\]
-
-
-
-
-VRH trade-off is along 
-
-\[
-\int_0^{\epsilon} \int_0^{r} \rho(r',\epsilon')  dr'd\epsilon' \ \ = \ \ n_c 
-\]
-
-
-
-
-VRH optimum is the $(r^*,\epsilon^*)$ point \\
-where $w(r,\epsilon)$ is maximal along this curve. 
-
-
-
-{VRH estimate} is \ \ $D \ \sim \ w(r^*,\epsilon^*) \times (r^*)^2$
-
-\end{column}
-\begin{column}{0.4\textwidth}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\includegraphics[width=1\hsize]{wdiagrm}
-\end{column}
-\end{columns}
-\end{frame}
-
-%%%%%%
-\begin{frame}
-\frametitle{Outline: Quasi-1D}
-In the banded lattice model, the rates are:
-\[  w_{nm} \ \ = \ \ w_0 \ \eexp{-\epsilon_{nm}} \ B\left(E_n-E_m\right)\]
-\includegraphics[width=0.48\hsize]{ptsD_banded_Image}
-\includegraphics[width=0.48\hsize]{ptsD_banded}\\
-\includegraphics[width=0.7\hsize]{scatter_log}
-\end{frame}
-
-%%%%%%%%
-\begin{frame}
-\frametitle{Discussion}
-%\begin{itemize}
-%\item 
-\begin{itemize}
-  \item The localization length diverges as $\lambda$ goes to zero
-  \item The density of states near $\lambda=0$ is diffusive
-  \item The survival probability decays as in diffusion
-  \item The spreading is diffusive
-\end{itemize}
-%\item  
-\vspace{20pt}
-Can we obtain the diffusion coefficient from the spectral properties?
-%\item  
-
-\vspace{20pt}
-What should the percolation cutoff $n_c$ be?
-%\end{itemize}
-\end{frame}
-
 \end{document}
 
 
