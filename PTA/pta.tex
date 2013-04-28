@@ -117,9 +117,26 @@
 These are research notes regarding several aspects of random matrix spectrum,
 in particular for banded matrices.
 
-Our questions are what are the implications of several properties on the 
-spectrum, and in particular:
+
+Long term goal: find the relation between resistor network calculation and Fourier law,
+specifically extend resistor network to heat transport.
+
 \begin{itemize}
+\item   We have good understanding of DC diffusion - the resistor network calculation, VRH, 
+        percolation (in sparsity).
+\item   In heat transport, we combine the transmission of the modes.
+        If we find VRH-like or  percolation-like behavior, it means 
+        that we can connect those two notions.
+\item   In the weak coupling limit, with white noise, we have Leibowitz's formalism,
+        depending on the first component of the mode, and last component connected in parallel.
+\item   Transport in $1d$ - is known. In heat, we have only positive
+        elements and diverging localization length, which changes the picture.
+\item   YdL  WORK ITEM I - Learn about heat transport in $1d$ - how is it calculated,
+        which distributions did they consider (regular / log-wide). Later
+        we can compare this to the known theory for $D$. Later we'll go to more dimensions.
+\item   YdL  WORK ITEM II - For the banded Bloch band-structure, each $\lambda$
+        had more than one $k$, meaning we have backscattering from several modes.
+        See how this affects the scattering Anderson calculations.
 \item   If the disorder matrix is conservative (all row sums equal), 
         we have an ergodic mode , with $PN=N$. What about eigenmodes with
         eigenvalues close to the ergodic mode? can we predict their $PN$?

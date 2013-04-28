@@ -399,7 +399,7 @@ class ExpModel_Band_profile_Logbox(ExpModel_1d):
 class ExpModel_1d_zerodiag(ExpModel_1d):
     """ Subclassing exp model for 1d """
     def rate_matrix(self, convention):
-        ex1 = (self.sample.exponent_minus_r(self.periodic, convention))**(1/self.epsilon)
+        ex1 = (self.sample.exponent_minus_r(self.periodic))**(1/self.epsilon)
         if self.bandwidth1d is None:
             ex1 = ex1*periodic_banded_ones(ex1.shape[0], 1)
         elif self.bandwidth1d != 0: #### Zero means ignore bandwidth
@@ -410,7 +410,7 @@ class ExpModel_1d_zerodiag(ExpModel_1d):
 class ExpModel_2d(ExpModel):
     """ Subclassing exp model for 2d """
     def rate_matrix(self, convention):
-        ex1 = (self.sample.exponent_minus_r(self.periodic, convention))**(1/self.epsilon)
+        ex1 = (self.sample.exponent_minus_r(self.periodic))**(1/self.epsilon)
         sparsedl.zero_sum(ex1)
         return ex1 
 
@@ -1329,6 +1329,7 @@ def plots_for_fete2013():
     ax.set_ylim((0,1))
     fig.colorbar(sct)
     fig.savefig('pts_points.png')
+    fig.savefig('pts_points.pdf')
 
 
 ######## One function to plot them all
