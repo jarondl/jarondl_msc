@@ -1,0 +1,152 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  pta notes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[onecolumn,fleqn,longbibliography]{revtex4}
+
+% fonts
+\usepackage{latexsym}
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{bm}
+\usepackage{wasysym}
+
+\usepackage{graphicx}
+
+
+% extra by jarondl
+
+\usepackage{array}
+\usepackage{float}%unfloats
+%\usepackage{multicol}
+\usepackage[caption=false]{subfig} %subcaption is not compat with revtex
+\usepackage[pdftitle={PTA},bookmarks]{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% NEW 
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\varphiJ}{\bm{\varphi}}
+\newcommand{\thetaJ}{\bm{\theta}}
+%\renewcommand{\includegraphics}[2][0]{FIGURE}
+\newcommand{\rmrk}[1]{\textcolor{red}{#1}}
+\newcommand{\Eq}[1]{\textcolor{blue}{Eq.\!\!~(\ref{#1})}} 
+\newcommand{\Fig}[1]{\textcolor{blue}{Fig.}\!\!~\ref{#1}}
+
+% math symbols I
+\newcommand{\sinc}{\mbox{sinc}}
+\newcommand{\const}{\mbox{const}}
+\newcommand{\trc}{\mbox{trace}}
+\newcommand{\intt}{\int\!\!\!\!\int }
+\newcommand{\ointt}{\int\!\!\!\!\int\!\!\!\!\!\circ\ }
+\newcommand{\ar}{\mathsf r}
+\newcommand{\im}{\mbox{Im}}
+\newcommand{\re}{\mbox{Re}}
+
+% math symbols II
+\newcommand{\eexp}{\mbox{e}^}
+\newcommand{\bra}{\left\langle}
+\newcommand{\ket}{\right\rangle}
+
+% Mass symbol
+\newcommand{\mass}{\mathsf{m}} 
+\newcommand{\rdisc}{\epsilon} 
+
+% more math commands
+\newcommand{\tbox}[1]{\mbox{\tiny #1}}
+\newcommand{\bmsf}[1]{\bm{\mathsf{#1}}} 
+\newcommand{\amatrix}[1]{\begin{matrix} #1 \end{matrix}} 
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+
+% equations
+\newcommand{\mylabel}[1]{\label{#1}} 
+\newcommand{\beq}{\begin{eqnarray}}
+\newcommand{\eeq}{\end{eqnarray}} 
+\newcommand{\be}[1]{\begin{eqnarray}\ifthenelse{#1=-1}{\nonumber}{\ifthenelse{#1=0}{}{\mylabel{e#1}}}}
+\newcommand{\ee}{\end{eqnarray}} 
+
+% arrangement
+\newcommand{\hide}[1]{}
+\newcommand{\drawline}{\begin{picture}(500,1)\line(1,0){500}\end{picture}}
+\newcommand{\bitem}{$\bullet$ \ \ \ }
+\newcommand{\Cn}[1]{\begin{center} #1 \end{center}}
+\newcommand{\mpg}[2][1.0\hsize]{\begin{minipage}[b]{#1}{#2}\end{minipage}}
+\newcommand{\mpgt}[2][1.0\hsize]{\begin{minipage}[t]{#1}{#2}\end{minipage}}
+
+
+%footnotemark:
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sections
+\newcommand{\sect}[1]
+{
+\addtocounter{section}{1} 
+\setcounter{subsection}{0}
+\ \\ 
+\pdfbookmark[2]{\thesection. \ #1}{sect.\thesection}
+{\Large\bf $=\!=\!=\!=\!=\!=\;$ [\thesection] \ #1}  
+\nopagebreak
+}
+
+% subections
+\newcommand{\subsect}[1]
+{
+\addtocounter{subsection}{1} 
+\ \\ 
+\pdfbookmark[2]{\ \ \ \ \thesection.\thesubsection. \ #1}{subsect.\thesection.\thesubsection}
+{\bf $=\!=\!=\!=\!=\!=\;$ [\thesection.\thesubsection] \ #1}  
+\nopagebreak
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\graphicspath{{figures/}}
+\begin{document}
+
+\title{PhD resubmission}
+
+\author{YdL}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sect{Targets}
+
+\begin{itemize}
+\item
+Better summarize the background in heat transport, according to wiki subjects.
+\item
+We have two matrices. One 
+\end{itemize}
+
+\sect{Ohm's law}
+
+According to Datta, the "new" Ohm law is:
+\begin{align*}
+G = \frac{\sigma}{L+\lambda}{1,W,A} \quad \textrm{ for }1d,2d,3d
+\end{align*}
+
+\sect{Matrices as applied for conduction}
+
+This is the current question.
+
+As we wrote in the proposal, we have matrices, they can have many 
+differing physical meanings. Let's say I can diagonalize the matrix.
+How do I find $G$, $\kappa$ and $D$?
+
+It seems that for $G$ we need the spectrum around $\varepsilon_F$,
+for $D$ we need the spectrum around $0$, and for $\kappa$ we need 
+the entire spectrum.
+
+% Leibowitz, maybe their complexity arises
+% from different masses.
+
+%% compare Landauer and widen miller to the langevin result.
+%% why sometimes it is ohmic and sometimes not. Is our model even ohmic?
+
+
+%For an ordered potential with no disorder, we have no Ohm's law, 
+% just transmission 1
+\end{document}
