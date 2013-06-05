@@ -13,7 +13,7 @@ import logging
 from numpy import pi
 from scipy.optimize import brentq
 
-from .libdl.tools import cached_get_key
+#from .libdl.tools import cached_get_key
 
 
 ### Raise all float errors

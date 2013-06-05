@@ -324,6 +324,8 @@ def window_avg_mtrx(N, win_size=4):
     return ( M / M.sum(axis=0)).T
     
     
+#########  "Physical" functions
+
 def thouless_coef(evs):
     diff = evs - evs[:,np.newaxis]
     np.fill_diagonal(diff,1)
@@ -341,6 +343,10 @@ def thouless_g(ev1, ev2, phi):
     avg_spacing = np.append(avg_spacing,avg_spacing[-1])
     ga = g/avg_spacing
     return ga, prec
+    
+def chain_g(eig_matrix):
+    g = ((eig_matrix[0,:]**2)*(eig_matrix[-1,:]**2))/((eig_matrix[0,:]**2)+(eig_matrix[-1,:]**2))
+    return np.nansum(g)
 
 
 ######### Mathematical aux functions
