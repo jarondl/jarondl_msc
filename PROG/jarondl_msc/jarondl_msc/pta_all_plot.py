@@ -84,19 +84,19 @@ def h5_get_data(h5file, model, factory_args, bandwidths,
 
     
 
-def thouless_data_factory(model_name, number_of_points, bandwidth, dis_param):
+def thouless_data_factory(model_name, number_of_points, bandwidth, dis_param, periodic=True):
     if model_name == "Banded band-disorder":
         m1 = Model_Anderson_BD_1d(conserving =False, semiconserving=False,  model_name=model_name, number_of_points= number_of_points,
-                                    bandwidth=bandwidth, dis_param = dis_param)
+                                    bandwidth=bandwidth, dis_param = dis_param, periodic=periodic)
         
         m2 = Model_Anderson_BD_1d(conserving =False, semiconserving=False,  model_name=model_name, number_of_points= number_of_points,
-                                    bandwidth=bandwidth, dis_param = dis_param, phi=pi)
+                                    bandwidth=bandwidth, dis_param = dis_param, periodic=periodic, phi=pi)
         
     else: raise Exception("unknown model name?")
     res = dict()
     res['eig_vals'] = m1.eig_vals
     res['PN']       = m1.PN
-    res['g'], res['precision'] = sparsedl.thouless_g(m1.eig_vals, m2.eig_vals, 0.01)
+    res['g'], res['precision'] = sparsedl.thouless_g(m1.eig_vals, m2.eig_vals, pi)
     return res
 
 ###################################################################
