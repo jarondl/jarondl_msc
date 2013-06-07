@@ -323,6 +323,11 @@ def window_avg_mtrx(N, win_size=4):
     M = np.tri(N, k=win_size//2)*(np.tri(N, k=win_size//2).T)
     return ( M / M.sum(axis=0)).T
     
+### "Physical functions"
+
+def chain_g(eig_matrix, b=1):
+    g = ((eig_matrix[b-1,:]**2)*(eig_matrix[-b,:]**2))/((eig_matrix[b-1,:]**2)+(eig_matrix[-b,:]**2))
+    return g
     
 #########  "Physical" functions
 
@@ -344,10 +349,6 @@ def thouless_g(ev1, ev2, phi):
     ga = g/avg_spacing
     return ga, prec
     
-def chain_g(eig_matrix):
-    g = ((eig_matrix[0,:]**2)*(eig_matrix[-1,:]**2))/((eig_matrix[0,:]**2)+(eig_matrix[-1,:]**2))
-    return np.nansum(g)
-
 
 ######### Mathematical aux functions
 def omega_d(d):

@@ -30,7 +30,7 @@ from functools import wraps
 
 from matplotlib import use
 if 'DISPLAY' in os.environ.keys() :
-    use('gtk')
+    #use('gtk')
     X_AVAILABLE = True
 else:
     X_AVAILABLE = False

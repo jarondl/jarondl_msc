@@ -453,6 +453,24 @@ def plotf_theor_banded_dos(b=5,N=2000):
     fig.savefig("pta_theor_banded_dos.pdf")
     plt.close()
     
+def plot_1d_chain(N=2000, b=1, dis_param=0.):
+    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+    
+    m1 = models.Model_Anderson_BD_1d(N, dis_param=dis_param, bandwidth=b, periodic=False)
+    ax.plot(-m1.eig_vals, m1.PN)
+    fig.savefig("pta_ver2_chain_PN.pdf")
+    ax.cla()
+    
+    g = sparsedl.chain_g(m1.eig_matrix, b=b)
+    
+    ax.plot(-m1.eig_vals, g)
+    ax.text(x=0, y=0, s = "sum of g : {} ".format(np.nansum(g)))
+    
+    fig.savefig("pta_ver2_chain_g.pdf")
+    plt.close()
+
+
+    
 if __name__== "__main__":
     all_plots_forptatex()
     
