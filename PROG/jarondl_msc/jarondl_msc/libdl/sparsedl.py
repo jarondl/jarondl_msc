@@ -323,6 +323,11 @@ def window_avg_mtrx(N, win_size=4):
     M = np.tri(N, k=win_size//2)*(np.tri(N, k=win_size//2).T)
     return ( M / M.sum(axis=0)).T
     
+### "Physical functions"
+
+def chain_g(eig_matrix, b=1):
+    g = ((eig_matrix[b-1,:]**2)*(eig_matrix[-b,:]**2))/((eig_matrix[b-1,:]**2)+(eig_matrix[-b,:]**2))
+    return g
     
 def thouless_coef(evs):
     diff = evs - evs[:,np.newaxis]
