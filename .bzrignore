@@ -5,3 +5,9 @@
 *.out
 *.pdf
 *.mpg
+*.nav
+*.snm
+*.toc
+*.bak
+*.fdb_latexmk
+*.ris
