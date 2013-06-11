@@ -112,6 +112,7 @@ def ev_pn_g_class(_number_of_points):
         g               = tables.Float64Col(_number_of_points)
         precision       = tables.Float64Col(_number_of_points)
     return Ev_PN_g
+
     
 
 def ev_pn_gggg_class(_number_of_points):
@@ -129,6 +130,21 @@ def ev_pn_gggg_class(_number_of_points):
         dcg             = tables.Float64Col(_number_of_points)
         precision       = tables.Float64Col(_number_of_points)
     return Ev_PN_g
+
+def c_k_g_class():
+    class CKG(tables.IsDescription):
+        model_name      = tables.StringCol(100)
+        date            = tables.StringCol(20)
+              
+        number_of_points= tables.Int64Col()
+        bandwidth       = tables.Int64Col()
+        dis_param       = tables.Float64Col()
+        c               = tables.Float64Col()
+        k               = tables.Float64Col()
+        g               = tables.ComplexCol(16)
+        
+    return CKG
+        
 
 def check_args_in_row(row, args_dict):
     return all(row[key]==val for (key, val) in args_dict.items() if not key.startswith("_"))

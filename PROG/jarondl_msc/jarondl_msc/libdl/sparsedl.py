@@ -338,6 +338,7 @@ def thouless_coef(evs):
     return (logsum/evs.size)**(-1)
     
 def thouless_g(ev1, ev2, phi):
+    """ This is divided by the spacing"""
     g = abs(ev1 - ev2) / (phi**2)
     # Approximation of  the minimal precision:
     prec = FLOAT_EPS * max(abs(ev1))* len(ev1)
@@ -349,6 +350,43 @@ def thouless_g(ev1, ev2, phi):
     ga = g/avg_spacing
     return ga, prec
     
+def pure_thouless_g(ev1, ev2, phi):
+    """ without dividing by nothing """
+    g = abs(ev1 - ev2) / (phi)
+    #g = abs(ev1 - ev2) 
+    # Approximation of  the minimal precision:
+    prec = FLOAT_EPS * max(abs(ev1))* len(ev1)
+    debug("precision = {0}, minimal g  = {1}".format(prec, min(g)))
+    #smoothing:
+    #avg_spacing = window_avg_mtrx(len(ev1)-1).dot(ev1[:-1]-ev1[1:])
+    # avg_spacing is now smaller than eigvals. We duplicate the last value to accomodate (quite  hackish)
+    #avg_spacing = np.append(avg_spacing,avg_spacing[-1])
+    #ga = g/avg_spacing
+    return g, prec
+    
+
+def A_matrix (hamiltonian,energy, velocity,gamma=1):
+
+    qq = np.zeros_like(hamiltonian)
+    qq[0,0] = qq[-1,-1] = 1
+    return  energy - hamiltonian -(gamma/2)*(energy- 1j*velocity)*qq
+
+def A_matrix_inv(hamiltonian, c, k,gamma=1):
+    energy, velocity = -2*c*np.cos(k), 2*c*np.sin(k)
+    A = A_matrix(hamiltonian,energy, velocity, gamma)
+    return gamma*velocity*linalg.inv(A)[0,-1]
+    
+def S_matrix_sol(hamiltonian,c=1):
+    ## debug:
+    #import pdb; pdb.set_trace()
+    #
+    A_matrix(hamiltonian, c)
+    ev, em = linalg.eig(tot)
+    Tab = np.zeros([2,2], dtype=np.complex128)
+    for a,b in ((0,0),(0,-1),(-1,0), (-1,-1)):
+        Tab[a,b] = sum((-2*c/ev[alpha])*(em[a,alpha].conjugate())*em[b,alpha] for alpha in np.arange(qq.shape[0]))
+    #return sum(ele)
+    return Tab
 
 ######### Mathematical aux functions
 def omega_d(d):
