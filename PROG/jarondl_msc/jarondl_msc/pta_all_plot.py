@@ -22,6 +22,7 @@ import tables
 
 # relative (intra-package) imports
 from .libdl import plotdl
+from .libdl import h5_dl
 from .libdl import sparsedl
 from .libdl.tools import h5_create_if_missing, h5_get_first_rownum_by_args
 from .libdl.tools import ev_and_pn_class, ev_pn_g_class, c_k_g_class
@@ -486,8 +487,8 @@ def g_data_factory(model_name, number_of_points, bandwidth,dis_param, c,k):
     g = sparsedl.A_matrix_inv(m.rate_matrix,c,k)
     return {'g': g}
     
-def calc_g_to_h5(h5file, const_args, var_args, tbl_grp ='/transmission_g', tbl_cls = None):
-    """ h"""
+def calculate_and_store(h5file, table_group, table_class, data_factory_class):
+    """ This """
     if tbl_cls is None:
         tbl_cls = c_k_g_class()
     try:
@@ -565,6 +566,33 @@ def calc_and_plot_g_over_N(dis_param=0.1, kr= pi/2, cr = 1, N_range=np.arange(10
         var_args = {'number_of_points':N_range}
                     
         ckg = calc_g_to_h5(h5file, args, var_args)
+        g = abs(ckg['g'])
+        ax.plot(N_range, g)
+        ax.set_xlabel('N')
+        ax.set_ylabel('g')
+        ax.set_ylim([0,1])
+        #ax.set_yscale('log')
+        #ax.yaxis.set_major_locator(get_LogNLocator())
+        
+        fig.savefig('pta_disorder_byN_s{}.png'.format(dis_param))
+        return ckg
+        
+def new_calc_over_N(dis_param=0.1, kr= pi/2, cr = 1, N_range=np.arange(100,101)):
+    """ calculate and plot (should be separated)
+    g for all kind of matrices """
+    # ordered stuff:
+    with tables.openFile("trans_g.hdf5", mode = "a", title = "Transmission g") as h5file:
+        fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+
+        #debug
+        #import pdb; pdb.set_trace()
+        args = dict(model_name = ('Anderson',),  
+                    bandwidth=(1,), k = (kr,), c = (cr,) , dis_param=(dis_param,),
+                    number_of_points = N_range)
+                    
+        r = h5_dl.Factory_Transmission_g(h5file)
+                    
+        ckg = r.create_if_missing(args)
         g = abs(ckg['g'])
         ax.plot(N_range, g)
         ax.set_xlabel('N')
