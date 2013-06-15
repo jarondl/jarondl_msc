@@ -567,7 +567,7 @@ def calc_and_plot_g_over_N(dis_param=0.1, kr= pi/2, cr = 1, N_range=np.arange(10
                     
         ckg = calc_g_to_h5(h5file, args, var_args)
         g = abs(ckg['g'])
-        ax.plot(N_range, g)
+        ax.plot(N_range, g,'.')
         ax.set_xlabel('N')
         ax.set_ylabel('g')
         ax.set_ylim([0,1])
@@ -600,9 +600,17 @@ def new_calc_over_N(dis_param=0.1, kr= pi/2, cr = 1, N_range=np.arange(100,101))
         ax.set_ylim([0,1])
         #ax.set_yscale('log')
         #ax.yaxis.set_major_locator(get_LogNLocator())
-        
         fig.savefig('pta_disorder_byN_s{}.png'.format(dis_param))
         return ckg
+        
+def plot_all_g_plots():
+    calc_and_plot_g_over_N(dis_param=0.4, N_range=np.arange(2,500))
+    calc_and_plot_g_over_N(dis_param=0.1, N_range=np.arange(2,500))
+    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.4, N=400)
+    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.4, N=100)
+    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.1, N=400)
+    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.1, N=100)
+
 
     
 if __name__== "__main__":
