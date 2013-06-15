@@ -566,7 +566,7 @@ def calc_and_plot_g_over_N(dis_param=0.1, kr= pi/2, cr = 1, N_range=np.arange(10
                     
         ckg = calc_g_to_h5(h5file, args, var_args)
         g = abs(ckg['g'])
-        ax.plot(N_range, g)
+        ax.plot(N_range, g,'.')
         ax.set_xlabel('N')
         ax.set_ylabel('g')
         ax.set_ylim([0,1])
@@ -575,6 +575,41 @@ def calc_and_plot_g_over_N(dis_param=0.1, kr= pi/2, cr = 1, N_range=np.arange(10
         
         fig.savefig('pta_disorder_byN_s{}.png'.format(dis_param))
         return ckg
+        
+
+def calc_and_plot_g_over_k(dis_param=0.1, kr= (pi/2,), cr = 1, N=100):
+    """ calculate and plot (should be separated)
+    g for all kind of matrices """
+    # ordered stuff:
+    with tables.openFile("trans_g.hdf5", mode = "a", title = "Transmission g") as h5file:
+        fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+
+        #debug
+        #import pdb; pdb.set_trace()
+        args = dict(model_name = 'Anderson',  
+                    bandwidth=1, c = cr , dis_param=dis_param,
+                    number_of_points = N)
+        var_args = {'k':kr}
+                    
+        ckg = calc_g_to_h5(h5file, args, var_args)
+        g = abs(ckg['g'])
+        ax.plot(kr, g, '.')
+        ax.set_xlabel('k')
+        ax.set_ylabel('g')
+        ax.set_ylim([0,1])
+        #ax.set_yscale('log')
+        #ax.yaxis.set_major_locator(get_LogNLocator())
+        
+        fig.savefig('pta_disorder_by_k_s{}_N{}.png'.format(dis_param, N))
+        return ckg
+        
+def plot_all_g_plots():
+    calc_and_plot_g_over_N(dis_param=0.4, N_range=np.arange(2,500))
+    calc_and_plot_g_over_N(dis_param=0.1, N_range=np.arange(2,500))
+    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.4, N=400)
+    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.4, N=100)
+    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.1, N=400)
+    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.1, N=100)
 
     
 if __name__== "__main__":
