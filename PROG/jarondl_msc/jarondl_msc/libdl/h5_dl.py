@@ -59,7 +59,7 @@ class Factory_Transmission_g(DataFactory):
     table_name = 'ckg'
     table_class = c_k_g_class()
     table_description = ' ckg ' 
-    def calculate(model_name, number_of_points, bandwidth,dis_param, c,k):
+    def calculate(self, model_name, number_of_points, bandwidth,dis_param, c,k):
         if model_name != "Anderson":
             raise Error("NotImpelmented")
         m = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
@@ -132,35 +132,4 @@ def c_k_g_class():
     return CKG
         
 
-def check_args_in_row(row, args_dict):
-    return all(row[key]==val for (key, val) in args_dict.items() if not key.startswith("_"))
-    
-def h5_get_first_rownum_by_args(h5table, args_dict):
-    for row in h5table.iterrows():
-        if check_args_in_row(row,args_dict):
-            return row.nrow
-    
-def fill_args_in_row(row,args_dict):
-    for (key,val) in args_dict.items():
-        if not key.startswith("_"):
-            row[key] = val
-        
-    
-def h5_create_if_missing(h5table, data_factory, factory_args):
-    """ data_factory must be a function accepting factory_args,
-    and returning a dictionary of data to fill..
-    factory args are also filled in the table, so the must be compatible 
-    with the table definition
-    """
-    t = time.strftime("%Y-%m-%d %H:%M:%S")
-    exists =  any(check_args_in_row(x,factory_args) for x in h5table.iterrows())
-    if not exists:
-        info("creating new data for {}".format(factory_args))
-        data = data_factory(**factory_args)
-        nr = h5table.row
-        fill_args_in_row(nr, factory_args)
-        fill_args_in_row(nr, data)
-        nr['date'] = t
-        nr.append()
-        h5table.flush()
 
