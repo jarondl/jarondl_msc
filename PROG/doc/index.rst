@@ -28,6 +28,6 @@ Modules:
 
 Making plots:
 =============
-* :mod:`ptsplot`
+* :mod:`jarondl_msc.ptsplot`
 
 

@@ -142,6 +142,7 @@ def c_k_g_class():
         c               = tables.Float64Col()
         k               = tables.Float64Col()
         g               = tables.ComplexCol(16)
+        seed            = tables.Int64Col()
         
     return CKG
         

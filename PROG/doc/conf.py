@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'PTS'
+project = u'jarondl_msc'
 copyright = u'2011, JDL'
 
 # The version info for the project you're documenting, acts as replacement for

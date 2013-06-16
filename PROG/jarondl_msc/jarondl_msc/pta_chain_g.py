@@ -49,49 +49,21 @@ debug = logger.debug
 ###########   code   ###################################################
 ########################################################################
 
-    
-def plot_1d_chain(N=2000, b=1, dis_param=0.):
-    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
-    
-    m1 = models.Model_Anderson_BD_1d(N, dis_param=dis_param, bandwidth=b, periodic=False)
-    ax.plot(-m1.eig_vals, m1.PN)
-    fig.savefig("pta_ver2_chain_PN.pdf")
-    ax.cla()
-    
-    g = sparsedl.chain_g(m1.eig_matrix, b=b)
-    
-    ax.plot(-m1.eig_vals, g)
-    ax.text(x=0, y=0, s = "sum of g : {} ".format(np.nansum(g)))
-    
-    fig.savefig("pta_ver2_chain_g.pdf")
-    plt.close()
-
-def g_data_factory(model_name, number_of_points, bandwidth,dis_param, c,k):
-    if model_name != "Anderson":
-        raise Error("NotImpelmented")
-    m = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
-             bandwidth=bandwidth, dis_param=dis_param, periodic=False)
-    g = sparsedl.A_matrix_inv(m.rate_matrix,c,k)
-    return {'g': g}
-    
-def calculate_and_store(h5file, table_group, table_class, data_factory_class):
-    """ This """
-    if tbl_cls is None:
-        tbl_cls = c_k_g_class()
-    try:
-        h5table = h5file.getNode(tbl_grp + '/ckg')
-    except tables.exceptions.NoSuchNodeError:
-        h5table = h5file.createTable(tbl_grp, 'ckg', tbl_cls, "c k g", createparents=True)
         
-    factory_args = dict(const_args)
-    ovar_args = OrderedDict(var_args)
-    nrows = []
-    for val_set in itertools.product(*ovar_args.values()):
-        factory_args.update( zip(ovar_args.keys(), val_set))
-        h5_create_if_missing(h5table, g_data_factory, factory_args)
-        nrows.append(h5_get_first_rownum_by_args(h5table, factory_args))
-    return h5table[nrows]        
-    
+class Factory_Transmission_g(h5_dl.DataFactory):
+    table_group   = '/ckg'
+    table_name = 'ckg'
+    table_class = c_k_g_class()
+    table_description = ' ckg ' 
+    def calculate(self, model_name, number_of_points, bandwidth,dis_param, c,k, seed):
+        if model_name != "Anderson":
+            raise Error("NotImpelmented")
+        prng = np.random.RandomState((None if seed == 0  else seed))
+        m = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
+                 bandwidth=bandwidth, dis_param=dis_param, periodic=False, prng = prng)
+        g = sparsedl.A_matrix_inv(m.rate_matrix,c,k)
+        return {'g': g}
+        
     
 def parse_and_calc(yaml_file):
     f = yaml.load_all(open(yaml_file,"r"))
@@ -100,34 +72,59 @@ def parse_and_calc(yaml_file):
     for run in f:
         ax.cla()
         ckg = calc_g(run['fig_name'], run['args'])
-        g = abs(ckg['g'])
-        ax.plot(run['args'][run['variable']], g)
+        
+        ### each run is a plot, but it could have multiple lines.
+        # this requires some magic, in seperating our data by the second var.
+        if 'second_variable' in run.keys():
+            second_vars = run['args'][run['second_variable']]
+            for s_var in second_vars:
+                relevant_idxs = (ckg[run['second_variable']] == s_var)
+                g  = abs(ckg['g'][relevant_idxs])
+                ax.plot(ckg[run['variable']][relevant_idxs], g, '.')
+        else:
+            g = abs(ckg['g'])
+            ax.plot(run['args'][run['variable']], g, '.')
         ax.set_xlabel(run['variable'])
         ax.set_ylabel('g')
-        #ax.set_yscale('log')
-        #ax.yaxis.set_major_locator(get_LogNLocator())
-        
+           
         fig.savefig(run['fig_name'].format(**run['args']))
-        return ckg
+        plt.close(fig)
+        
+        #return ckg
+        
+def plot_psi1_psi2(seed=0):
+    fig, axes  = plt.subplots(3,2,figsize=[2*plotdl.latex_width_inch, 3*plotdl.latex_height_inch],
+                    sharex=True, sharey=True)
+    for seed, ax in enumerate(itertools.chain(*axes)):
+        prng = np.random.RandomState(seed)
+        m = models.Model_Anderson_DD_1d(number_of_points=400, bandwidth=1, dis_param=0.3, periodic=False, prng=prng)
+        g = sparsedl.A_matrix_inv(m.rate_matrix,1,pi/2)
+        ax.plot((m.eig_matrix[0,:]), (m.eig_matrix[-1,:]),'.', label=str(abs(g)))
+        #ax.legend()
+        ax.set_title(str(abs(g)))
+    fig.savefig("psi1_psi2_0.3.png")
+        
+def plot_psi1_psi2_abs(seed=0):
+    fig, axes  = plt.subplots(3,2,figsize=[2*plotdl.latex_width_inch, 3*plotdl.latex_height_inch],
+                    sharex=True, sharey=True)
+    for seed, ax in enumerate(itertools.chain(*axes)):
+        prng = np.random.RandomState(seed)
+        m = models.Model_Anderson_DD_1d(number_of_points=400, bandwidth=1, dis_param=0.3, periodic=False, prng=prng)
+        g = sparsedl.A_matrix_inv(m.rate_matrix,1,pi/2)
+        ax.plot(abs(m.eig_matrix[0,:]), abs(m.eig_matrix[-1,:]),'.', label=str(abs(g)))
+        #ax.legend()
+        ax.set_title(str(abs(g)))
+    fig.savefig("psi1_psi2abs_0.3.png")
     
 def calc_g(fig_name, args = dict(model_name = ('Anderson',), number_of_points=(100,), bandwidth=(1,),
             dis_param=(0,), k= np.linspace(0,pi,10), c = np.arange(1,10))):
     with tables.openFile("trans_g.hdf5", mode = "a", title = "Transmission g") as h5file:
         fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
 
-        r = h5_dl.Factory_Transmission_g(h5file)
+        r = Factory_Transmission_g(h5file)
         ckg = r.create_if_missing(args)
     return ckg
 
-    g = ckg['g'].reshape([cr.size,-1])
-    im = ax.imshow(abs(g), interpolation='nearest',origin='lower',aspect='auto', extent=[kr.min(),kr.max(),cr.min(),cr.max()])
-    fig.colorbar(im,ax=ax)
-    ax.set_xlabel('k')
-    ax.set_ylabel('c')
-    fig.savefig(fig_name.format(**args))
-    return ckg
-
-    r = h5_dl.Factory_Transmission_g(h5file)
 
 def calc_and_plot_g(dis_param=0, kr= np.linspace(0,pi,10), cr = np.arange(1,10)):
     """ calculate and plot (should be separated)
@@ -149,92 +146,7 @@ def calc_and_plot_g(dis_param=0, kr= np.linspace(0,pi,10), cr = np.arange(1,10))
         fig.savefig('pta_ordered_s{0}.png'.format(dis_param))
         return ckg
 
-
-def calc_and_plot_g_over_s(dis_range=np.linspace(0,1,20), kr= pi/2, cr = 1):
-    """ calculate and plot (should be separated)
-    g for all kind of matrices """
-    # ordered stuff:
-    with tables.openFile("trans_g.hdf5", mode = "a", title = "Transmission g") as h5file:
-        fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
-
-        #debug
-        #import pdb; pdb.set_trace()
-        args = dict(model_name = 'Anderson', number_of_points=1000, 
-                    bandwidth=1, k = kr, c = cr)
-        var_args = {'dis_param':dis_range}
-                    
-        ckg = calc_g_to_h5(h5file, args, var_args)
-        g = abs(ckg['g'])
-        ax.plot(dis_range, g)
-        ax.set_xlabel('s')
-        ax.set_ylabel('g')
-        #ax.set_yscale('log')
-        #ax.yaxis.set_major_locator(get_LogNLocator())
-        
-        fig.savefig('pta_disorder.png')
-        return ckg
-
-def calc_and_plot_g_over_N(dis_param=0.1, kr= pi/2, cr = 1, N_range=np.arange(100,101)):
-    """ calculate and plot (should be separated)
-    g for all kind of matrices """
-    # ordered stuff:
-    with tables.openFile("trans_g.hdf5", mode = "a", title = "Transmission g") as h5file:
-        fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
-
-        #debug
-        #import pdb; pdb.set_trace()
-        args = dict(model_name = 'Anderson',  
-                    bandwidth=1, k = kr, c = cr , dis_param=dis_param)
-        var_args = {'number_of_points':N_range}
-                    
-        ckg = calc_g_to_h5(h5file, args, var_args)
-        g = abs(ckg['g'])
-        ax.plot(N_range, g,'.')
-        ax.set_xlabel('N')
-        ax.set_ylabel('g')
-        ax.set_ylim([0,1])
-        #ax.set_yscale('log')
-        #ax.yaxis.set_major_locator(get_LogNLocator())
-        
-        fig.savefig('pta_disorder_byN_s{}.png'.format(dis_param))
-        return ckg
-        
-def new_calc_over_N(dis_param=0.1, kr= pi/2, cr = 1, N_range=np.arange(100,101)):
-    """ calculate and plot (should be separated)
-    g for all kind of matrices """
-    # ordered stuff:
-    with tables.openFile("trans_g.hdf5", mode = "a", title = "Transmission g") as h5file:
-        fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
-
-        #debug
-        #import pdb; pdb.set_trace()
-        args = dict(model_name = ('Anderson',),  
-                    bandwidth=(1,), k = (kr,), c = (cr,) , dis_param=(dis_param,),
-                    number_of_points = N_range)
-                    
-        r = h5_dl.Factory_Transmission_g(h5file)
-                    
-        ckg = r.create_if_missing(args)
-        g = abs(ckg['g'])
-        ax.plot(N_range, g)
-        ax.set_xlabel('N')
-        ax.set_ylabel('g')
-        ax.set_ylim([0,1])
-        #ax.set_yscale('log')
-        #ax.yaxis.set_major_locator(get_LogNLocator())
-        fig.savefig('pta_disorder_byN_s{}.png'.format(dis_param))
-        return ckg
-        
-def plot_all_g_plots():
-    calc_and_plot_g_over_N(dis_param=0.4, N_range=np.arange(2,500))
-    calc_and_plot_g_over_N(dis_param=0.1, N_range=np.arange(2,500))
-    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.4, N=400)
-    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.4, N=100)
-    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.1, N=400)
-    calc_and_plot_g_over_k(kr=linspace(0,pi,1000), dis_param=0.1, N=100)
-
-
     
 if __name__== "__main__":
-    all_plots_forptatex()
+    parse_and_calc(yaml_file)
     
