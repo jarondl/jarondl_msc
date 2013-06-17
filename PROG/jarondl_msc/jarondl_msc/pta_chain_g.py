@@ -66,7 +66,7 @@ class Factory_Transmission_g(h5_dl.DataFactory):
         
     
 def parse_and_calc(yaml_file):
-    f = yaml.load_all(open(yaml_file,"r"))
+    f = yaml.load(open(yaml_file,"r"))
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
 
     for run in f:
@@ -75,12 +75,30 @@ def parse_and_calc(yaml_file):
         
         ### each run is a plot, but it could have multiple lines.
         # this requires some magic, in seperating our data by the second var.
-        if 'second_variable' in run.keys():
+        if 'second_variable' in run:
             second_vars = run['args'][run['second_variable']]
             for s_var in second_vars:
                 relevant_idxs = (ckg[run['second_variable']] == s_var)
                 g  = abs(ckg['g'][relevant_idxs])
                 ax.plot(ckg[run['variable']][relevant_idxs], g, '.')
+        elif 'average_over' in run:
+            avgg=0
+            avglng = 0
+            for a_var in run['args'][run['average_over']]:
+                relevant_idxs = (ckg[run['average_over']] == a_var)
+                #debug(len(relevant_idxs)
+                g = abs(ckg['g'][relevant_idxs])
+                avgg += g
+                avglng += np.log(g)
+                #ax.plot(ckg[run['variable']][relevant_idxs], g, '.')
+            avgg /= len(run['args'][run['average_over']])
+            avglng /= len(run['args'][run['average_over']])
+            
+            ## accidentaly use last relevant_idxs. hope this works.
+            ax.plot(ckg[run['variable']][relevant_idxs], avgg)
+            ax.plot(ckg[run['variable']][relevant_idxs], np.exp(avglng))
+            n =ckg[run['variable']][relevant_idxs]
+            ax.plot(n, np.exp(-0.004*n))
         else:
             g = abs(ckg['g'])
             ax.plot(run['args'][run['variable']], g, '.')
@@ -92,35 +110,44 @@ def parse_and_calc(yaml_file):
         
         #return ckg
         
-def plot_psi1_psi2(seed=0):
-    fig, axes  = plt.subplots(3,2,figsize=[2*plotdl.latex_width_inch, 3*plotdl.latex_height_inch],
+def plot_psi1_psi2(seed=0, abs_value=False):
+    fig1, axes1  = plt.subplots(3,2,figsize=[2*plotdl.latex_width_inch, 3*plotdl.latex_height_inch],
                     sharex=True, sharey=True)
-    for seed, ax in enumerate(itertools.chain(*axes)):
+    fig2, axes2  = plt.subplots(3,2,figsize=[2*plotdl.latex_width_inch-2, 3*plotdl.latex_height_inch],
+                    sharex=True, sharey=True)
+    fig3, axes3  = plt.subplots(3,2,figsize=[2*plotdl.latex_width_inch-2, 3*plotdl.latex_height_inch],
+                    sharex=True, sharey=True)
+
+
+    for seed, (ax1,ax2,ax3) in enumerate(zip(axes1.flat, axes2.flat, axes3.flat)):
         prng = np.random.RandomState(seed)
         m = models.Model_Anderson_DD_1d(number_of_points=400, bandwidth=1, dis_param=0.3, periodic=False, prng=prng)
         g = sparsedl.A_matrix_inv(m.rate_matrix,1,pi/2)
-        ax.plot((m.eig_matrix[0,:]), (m.eig_matrix[-1,:]),'.', label=str(abs(g)))
+        psi_1, psi_N = (m.eig_matrix[0,:]), (m.eig_matrix[-1,:])
+        if abs_value: 
+            psi_1, psi_N = abs(psi_1), abs(psi_N)
+        ax1.plot(psi_1, psi_N,'.', label=str(abs(g)))
         #ax.legend()
-        ax.set_title(str(abs(g)))
-    fig.savefig("psi1_psi2_0.3.png")
-        
-def plot_psi1_psi2_abs(seed=0):
-    fig, axes  = plt.subplots(3,2,figsize=[2*plotdl.latex_width_inch, 3*plotdl.latex_height_inch],
-                    sharex=True, sharey=True)
-    for seed, ax in enumerate(itertools.chain(*axes)):
-        prng = np.random.RandomState(seed)
-        m = models.Model_Anderson_DD_1d(number_of_points=400, bandwidth=1, dis_param=0.3, periodic=False, prng=prng)
-        g = sparsedl.A_matrix_inv(m.rate_matrix,1,pi/2)
-        ax.plot(abs(m.eig_matrix[0,:]), abs(m.eig_matrix[-1,:]),'.', label=str(abs(g)))
-        #ax.legend()
-        ax.set_title(str(abs(g)))
-    fig.savefig("psi1_psi2abs_0.3.png")
+        ax1.set_title(str(abs(g)))
+        psi_times_psi = abs(psi_1*psi_N)
+        ax2.plot(psi_times_psi,'.')
+        ax2.set_title((sum(psi_times_psi)))
+        psi_heat = (abs(psi_1)**2)*(abs(psi_N)**2) / ((abs(psi_1)**2) + (abs(psi_N)**2))
+        ax3.plot(psi_heat,'.')
+        ax3.set_title((np.nansum(psi_heat)))
+    fig1.suptitle(r"$\psi_1, \psi_N$")
+    fig2.suptitle(r"$ |\psi_1\psi_N|$")
+    fig3.suptitle(r"$ \frac{{|\psi_1|^2\psi_N|^2}}{{|\psi_1|^2+\psi_N|^2}}$")
+    fig1.savefig("psi1_psi2{}_0.3.png".format('_abs' if abs else ''))
+    fig2.savefig("psi_times_psi2{}_0.3.png".format('_abs' if abs else ''))
+    fig3.savefig("psi_heat_psi2{}_0.3.png".format('_abs' if abs else ''))
+
+
     
 def calc_g(fig_name, args = dict(model_name = ('Anderson',), number_of_points=(100,), bandwidth=(1,),
             dis_param=(0,), k= np.linspace(0,pi,10), c = np.arange(1,10))):
     with tables.openFile("trans_g.hdf5", mode = "a", title = "Transmission g") as h5file:
-        fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
-
+        
         r = Factory_Transmission_g(h5file)
         ckg = r.create_if_missing(args)
     return ckg

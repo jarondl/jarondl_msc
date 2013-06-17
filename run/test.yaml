@@ -1,58 +1,30 @@
-#test1:  !!python/object/apply:numpy.arange
-#           [1,10]
-
+###  Configuration file for jarondl_msc.pta_chain_g.
+###  Each item in the list is a plot "run". It calculates the data
+###  and plots it accordingly.
+###  
+---
 ### first run:
----
-    fig_name : 'pta_of_c_{dis_param}.png'
-    variable: 'c'
+-
+    fig_name : pta_of_c_{dis_param}.png
+    variable: c
     args : 
-      model_name       : ['Anderson',]
-      number_of_points : [100,]
-      bandwidth        : [1,]
-      dis_param        : [0,]
+      model_name       : [Anderson, ]
+      number_of_points : [100, ]
+      bandwidth        : [1, ]
+      dis_param        : [0, ]
       #k : !!python/object/apply:numpy.linspace  [0,3.14,10]
-      k                : [1.57,]
-      c : !!python/object/apply:numpy.arange    [0,10]
-      seed             : [1,]
+      k                : [1.57, ]
+      c : !!python/object/apply:numpy.arange    [0, 10]
+      seed             : [1, ]
 
-### second run:
----
-    fig_name : 'pta_of_k_{dis_param[0]}.png'
-    variable: 'k'
-    args : 
-      model_name       : ['Anderson',]
-      number_of_points : [400,]
-      bandwidth        : [1,]
-      dis_param        : [0.4,]
-      k : !!python/object/apply:numpy.linspace  [0,3.14,100]
-      #c : !!python/object/apply:numpy.arange    [0,10]
-      c                : [1,]
-      seed             : [7,]
-      
-...
-### thirdrun:
----
-    fig_name : 'pta_of_k_rand_{dis_param[0]}.png'
-    variable: 'k'
-    args : 
-      model_name       : ['Anderson',]
-      number_of_points : [400,]
-      bandwidth        : [1,]
-      dis_param        : [0.4,]
-      k : !!python/object/apply:numpy.linspace  [0,3.14,100]
-      #c : !!python/object/apply:numpy.arange    [0,10]
-      c                : [1,]
-      ##### zero seed means no seed !!!
-      seed             :       [ 0,]
-      
-...
-### fourth run:
----
-    fig_name : 'pta_of_k_multiseed_{dis_param[0]}.png'
-    variable: 'k'
-    second_variable: 'seed'
-    args : 
-      model_name       : ['Anderson',]
+## run multiple realizations. In either case plot pta_of_k,
+##  just with changing dis_param
+-
+    fig_name : pta_of_k_multiseed_{dis_param[0]}.png
+    variable: k
+    second_variable: seed
+    args : &multiseed
+      model_name       : [Anderson,]
       number_of_points : [400,]
       bandwidth        : [1,]
       dis_param        : [0.4,]
@@ -62,21 +34,29 @@
       ##### zero seed means no seed !!!
       seed             :       [ 1,2,3,4]
       
-...
+
 ### fifth run:
----
+-
     fig_name : 'pta_of_k_multiseed_{dis_param[0]}.png'
     variable: 'k'
     second_variable: 'seed'
-    args : 
-      model_name       : ['Anderson',]
-      number_of_points : [400,]
-      bandwidth        : [1,]
+    args : ## Here we merge the previous args with the new dis_param
+      <<               : *multiseed
       dis_param        : [0.1,]
-      k : !!python/object/apply:numpy.linspace  [0,3.14,100]
+
+### run over n
+-
+    fig_name : pta_of_N_multiseed_{dis_param[0]}.png
+    variable: number_of_points
+    average_over: seed
+    args : 
+      model_name       : [Anderson,]
+      number_of_points : !!python/object/apply:numpy.arange    [2,501]
+      bandwidth        : [1,]
+      dis_param        : [0.4,]
+      k                : [1.57, ]
       #c : !!python/object/apply:numpy.arange    [0,10]
       c                : [1,]
       ##### zero seed means no seed !!!
-      seed             :       [ 1,2,3,4]
+      seed             :  !!python/object/apply:numpy.arange    [1,20]
       
-...
