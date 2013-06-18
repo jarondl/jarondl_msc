@@ -21,9 +21,9 @@
 -
     fig_name : pta_of_s_N{number_of_points[0]}.png
     npz_fname : pta_of_s_N{number_of_points[0]}.npz
-
+    average_over: seed
     variable: dis_param
-    args : 
+    args : &multiseed_s
       model_name       : [Anderson, ]
       number_of_points : [100, ]
       bandwidth        : [1, ]
@@ -31,7 +31,18 @@
       #k : !!python/object/apply:numpy.linspace  [0,3.14,10]
       k                : [1.57, ]
       c                 : [1, ]
-      seed             : [1, ]
+      seed             : !!python/object/apply:numpy.arange    [1,20]
+      
+### fifth run:
+-
+    fig_name : pta_of_s_N{number_of_points[0]}.png
+    npz_fname : pta_of_s_N{number_of_points[0]}.npz
+    average_over: seed
+    variable: dis_param
+    args : ## Here we merge the previous args with the new dis_param
+      <<               : *multiseed_s
+      number_of_points : [400, ]
+
 
 ## run multiple realizations. In either case plot pta_of_k,
 ##  just with changing dis_param

@@ -7,6 +7,8 @@ from __future__ import division  # makes true division instead of integer divisi
 
 import numpy as np
 import logging
+import hashlib
+import pdb
 
 from collections import OrderedDict
 import itertools
@@ -43,23 +45,52 @@ def input_iterator(args):
     for val_set in itertools.product(*ovar_args.values()):
         yield dict( zip(ovar_args.keys(), val_set))
 
-class DataFactory(object):
-    def __init__(self, h5file):
-        try:
-            self.h5table = h5file.getNode(self.table_group + "/" + self.table_name)
-        except tables.exceptions.NoSuchNodeError:
-            self.h5table = h5file.createTable(self.table_group, 
-                           self.table_name, self.table_class, 
-                           self.table_description, createparents=True)
+def input_iterator_size(args):
+    """  Return the expected size of the input iterator without running
+            the entire iteration """
+    return np.prod([len(vals) for vals in args.values()])
     
+def args_hash(args):
+    """ create a hash of args """
+    fset = frozenset((key, frozenset(val)) for key,val in args.items())
+    #return fset
+    md = hashlib.md5()
+    md.update(str(fset))
+    return md.hexdigest()
 
-
+class DataFactory(object):
+    dtype = None
+    def __init__(self, npz_fname):
+        self.npz_fname = npz_fname
+        try:
+            self.npz = np.load(npz_fname)
+            self.data = self.npz['nums']
+            self.prev_hash = self.npz['args_hash']
+        except (OSError, IOError, KeyError):
+            self.data = None
+    def write_npz(self, args):
+        new_hash = args_hash(args)
+        self.npz = np.savez(self.npz_fname, nums=self.data, args_hash=new_hash)
+        
     def create_if_missing(self, args):
-        nrows = []
-        for val_set in input_iterator(args):
-            h5_create_if_missing(self.h5table, self.calculate, val_set)
-            nrows.append(h5_get_first_rownum_by_args(self.h5table, val_set))
-        return self.h5table[nrows]    
+        if (self.data is not None) and (self.prev_hash == args_hash(args)):
+            return self.data
+        self.data = np.zeros(input_iterator_size(args), self.dtype)
+        for n, val_set in enumerate(input_iterator(args)):
+            info("creating new data for {}, {}".format(n, val_set))
+            res = self.calculate(**val_set)
+            newdata =dict(**val_set)
+            newdata.update(**res)
+            #temp and ugly
+            for key, val in newdata.items():
+                #pdb.set_trace()
+                # weird but works. settle this later
+                if isinstance(val, np.ndarray):
+                    self.data[n][key][:] = val
+                else:
+                    self.data[n][key] = val
+        self.write_npz(args)
+        return self.data 
         
 
             

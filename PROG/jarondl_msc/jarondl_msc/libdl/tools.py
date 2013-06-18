@@ -145,6 +145,31 @@ def c_k_g_class():
         seed            = tables.Int64Col()
         
     return CKG
+    
+ckg_dtype = np.dtype([
+                            ("model_name", (np.unicode_, 100)),
+                            ("date", (np.unicode_, 20)),
+                            ("number_of_points", (np.int64)),
+                            ("bandwidth", (np.int64)),
+                            ("dis_param", (np.float64)),
+                            ("c", (np.float64)),
+                            ("k", (np.float64)),
+                            ("g", (np.complex128)),
+                            ("seed", (np.int64))])
+
+def ckg_psis_dtyper(N):
+    return  np.dtype([
+                            ("model_name", (np.unicode_, 100)),
+                            ("date", (np.unicode_, 20)),
+                            ("number_of_points", (np.int64)),
+                            ("bandwidth", (np.int64)),
+                            ("dis_param", (np.float64)),
+                            ("c", (np.float64)),
+                            ("k", (np.float64)),
+                            ("g", (np.complex128)),
+                            ("psi_1", (np.float64, N)),
+                            ("psi_N", (np.float64, N)),
+                            ("seed", (np.int64))])
         
 
 def check_args_in_row(row, args_dict):
