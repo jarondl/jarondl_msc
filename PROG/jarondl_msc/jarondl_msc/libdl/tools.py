@@ -8,7 +8,7 @@ from __future__ import division  # makes true division instead of integer divisi
 import numpy as np
 import logging
 import time
-
+import decimal
 
 import tables
 
@@ -150,10 +150,34 @@ def c_k_g_class():
 def check_args_in_row(row, args_dict):
     return all(row[key]==val for (key, val) in args_dict.items() if not key.startswith("_"))
     
-def h5_get_first_rownum_by_args(h5table, args_dict):
+def old_h5_get_first_rownum_by_args(h5table, args_dict):
     for row in h5table.iterrows():
         if check_args_in_row(row,args_dict):
             return row.nrow
+
+def h5_get_all_rownums_by_args(h5table, args_dict):
+    #return h5table.get_where_list(build_silly_condition(args_dict))
+    return h5table.getWhereList(build_silly_condition(args_dict))
+
+
+def h5_get_first_rownum_by_args(h5table, args_dict):
+    return h5_get_all_rownums_by_args(h5table, args_dict)[0]
+
+
+def build_silly_condition(args_dict):
+    cond = []
+    for (key, val) in args_dict.items():
+        if not key.startswith("_"):
+            if isinstance(val, str):
+                pval = '"{}"'.format(val)
+            elif isinstance(val,np.float64) :
+                pval = repr(val)
+            else:
+                pval = val
+            cond.append('( {} == {} ) '.format(key,pval))
+    #print("&".join(cond))
+    #debug("&".join(cond))
+    return "&".join(cond)
     
 def fill_args_in_row(row,args_dict):
     for (key,val) in args_dict.items():
@@ -168,7 +192,7 @@ def h5_create_if_missing(h5table, data_factory, factory_args):
     with the table definition
     """
     t = time.strftime("%Y-%m-%d %H:%M:%S")
-    exists =  any(check_args_in_row(x,factory_args) for x in h5table.iterrows())
+    exists =  (len(h5_get_all_rownums_by_args(h5table, factory_args)) != 0)
     if not exists:
         info("creating new data for {}".format(factory_args))
         data = data_factory(**factory_args)

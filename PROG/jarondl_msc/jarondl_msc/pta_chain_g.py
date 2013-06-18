@@ -98,7 +98,12 @@ def parse_and_calc(yaml_file):
             ax.plot(ckg[run['variable']][relevant_idxs], avgg)
             ax.plot(ckg[run['variable']][relevant_idxs], np.exp(avglng))
             n =ckg[run['variable']][relevant_idxs]
-            ax.plot(n, np.exp(-0.004*n))
+            debug("NOTICE - taking first c and dis_param")
+            lloc = 104*run['args']['c'][0]**2 / (3*((run['args']['dis_param'][0])**2))
+            
+            
+            #ax.plot(n, 2*(1+np.exp(n/lloc))**(-1))
+            ax.plot(n, 2*(1+np.exp(n/100.0))**(-1))
         else:
             g = abs(ckg['g'])
             ax.plot(run['args'][run['variable']], g, '.')
@@ -141,6 +146,24 @@ def plot_psi1_psi2(seed=0, abs_value=False):
     fig1.savefig("psi1_psi2{}_0.3.png".format('_abs' if abs else ''))
     fig2.savefig("psi_times_psi2{}_0.3.png".format('_abs' if abs else ''))
     fig3.savefig("psi_heat_psi2{}_0.3.png".format('_abs' if abs else ''))
+    
+def disperssion_g(fig_name='pta_disperse_s_{dis_param[0]}{log}.png', args = dict(model_name = ('Anderson',), number_of_points=(100,), bandwidth=(1,),
+            dis_param=(0.8,), k= (1.57,) , c = (1,), seed=np.arange(1000))):
+    
+    with tables.openFile("trans_g.hdf5", mode = "a", title = "Transmission g") as h5file:
+        
+        r = Factory_Transmission_g(h5file)
+        ckg = r.create_if_missing(args)
+        
+        
+    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+    ax.hist(abs(ckg['g']),bins=np.sqrt(len(ckg['g'])))
+    fig.savefig(fig_name.format(log="", **args))
+    ax.cla()
+    ax.hist(np.log(abs(ckg['g'])),bins=np.sqrt(len(ckg['g'])))
+    ax.set_xlabel('log(g)')
+    fig.savefig(fig_name.format(log="log", **args))
+    plt.close(fig)
 
 
     

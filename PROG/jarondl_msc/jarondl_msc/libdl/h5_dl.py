@@ -13,6 +13,7 @@ import itertools
 
 import tables
 
+from . import tools
 from .tools import (h5_create_if_missing, h5_get_first_rownum_by_args)
 
 
