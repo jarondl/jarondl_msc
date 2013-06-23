@@ -352,7 +352,8 @@ def thouless_g(ev1, ev2, phi):
     
 def pure_thouless_g(ev1, ev2, phi):
     """ without dividing by nothing """
-    g = abs(ev1 - ev2) / (phi)
+    g = 2*abs(ev1 - ev2) / (phi)**2
+    #g = 2*abs(ev1 - ev2) / (phi)
     #g = abs(ev1 - ev2) 
     # Approximation of  the minimal precision:
     prec = FLOAT_EPS * max(abs(ev1))* len(ev1)

@@ -85,7 +85,7 @@ class DataFactory(object):
             for key, val in newdata.items():
                 #pdb.set_trace()
                 # weird but works. settle this later
-                if isinstance(val, np.ndarray):
+                if isinstance(val, np.ndarray) and (val.size>1):
                     self.data[n][key][:] = val
                 else:
                     self.data[n][key] = val

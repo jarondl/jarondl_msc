@@ -82,6 +82,51 @@ class Factory_psi1_psiN(h5_dl.DataFactory):
         psi_1, psi_N = (m.eig_matrix[0,:]), (m.eig_matrix[-1,:])
         return {'g': g, 'psi_1': psi_1, 'psi_N': psi_N}
         
+        
+class Factory_thouless_psi(Factory_psi1_psiN):
+    def __init__(self, *args, **kwargs):
+        self._phase = kwargs.pop("phase", 0.001)
+    
+        super(Factory_thouless_psi, self).__init__(*args, **kwargs)
+
+    def calculate(self, model_name, number_of_points, bandwidth,dis_param, c,k, seed, phi=0):
+        """ Notice the periodicity !!!!! only works with anderson! """
+        if model_name != "Anderson":
+            raise Error("NotImpelmented")
+        prng = np.random.RandomState((None if seed == 0  else seed))
+        
+        m = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
+                 bandwidth=bandwidth, dis_param=dis_param, periodic=False, prng = prng)
+        prng = np.random.RandomState((None if seed == 0  else seed))
+        
+        m1 = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
+                 bandwidth=bandwidth, dis_param=dis_param, periodic=True, prng = prng)
+        prng = np.random.RandomState((None if seed == 0  else seed))
+        
+        m2 = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
+                 bandwidth=bandwidth, dis_param=dis_param, periodic=True, prng = prng, phi=phi)
+    
+        g = sparsedl.A_matrix_inv(m.rate_matrix, c, k)
+        psi_1, psi_N = (m1.eig_matrix[0,:]), (m1.eig_matrix[-1,:])
+        thouless, prec = sparsedl.pure_thouless_g(m1.eig_vals, m2.eig_vals, phi)
+        print (prec*number_of_points, np.nansum(thouless))
+        return {'g': g, 'psi_1': psi_1, 'psi_N': psi_N, 'thouless_g' : thouless, 'thouless_sum': np.nansum(thouless), 'phi':phi }
+        
+        
+class Factory_evs_phi(Factory_psi1_psiN):
+    def calculate(self, model_name, number_of_points, bandwidth,dis_param, c,k, seed, phi=0):
+        """ Notice the periodicity !!!!! only works with anderson! """
+        if model_name != "Anderson":
+            raise Error("NotImpelmented")
+
+        prng = np.random.RandomState((None if seed == 0  else seed))
+        
+        m1 = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
+                 bandwidth=bandwidth, dis_param=dis_param, periodic=True, prng = prng, phi =phi)
+
+
+        return {'phi':phi , 'eig_vals': m1.eig_vals}
+        
 def loc_length(c,s):
     return 20*(np.array(c)/np.array(s))**2
 def parse_and_calc(yaml_file = 'pta_chain_def.yaml'):
@@ -91,7 +136,14 @@ def parse_and_calc(yaml_file = 'pta_chain_def.yaml'):
     for run in f:
         ax.cla()
         #ckg = calc_g(run['fig_name'], run['npz_fname'].format(**run['args']), run['args'])
-        r = Factory_Transmission_g(run['npz_fname'].format(**run['args']))
+        
+        # temp:
+
+        if (len(run['args']['number_of_points'])==1 ): # if all N are equal
+            r = Factory_thouless_psi(run['npz_fname'].format(**run['args']), N= run['args']['number_of_points'][0])
+        else:
+            r = Factory_Transmission_g(run['npz_fname'].format(**run['args']))
+        
         ckg = r.create_if_missing(run['args'])
         ### each run is a plot, but it could have multiple lines.
         # this requires some magic, in seperating our data by the second var.
@@ -100,7 +152,9 @@ def parse_and_calc(yaml_file = 'pta_chain_def.yaml'):
             for s_var in second_vars:
                 relevant_idxs = (ckg[run['second_variable']] == s_var)
                 g  = abs(ckg['g'][relevant_idxs])
-                ax.plot(ckg[run['variable']][relevant_idxs], g, '.')
+                y_var = run.get('y_variable', 'g')
+                y = ckg[y_var]
+                ax.plot(ckg[run['variable']][relevant_idxs],y[relevant_idxs] , '.')
         elif 'average_over' in run:
             avgg=0
             avglng = 0
@@ -131,10 +185,13 @@ def parse_and_calc(yaml_file = 'pta_chain_def.yaml'):
             lloc = loc_length(run['args']['c'],run['args']['dis_param'])
 
             n = run['args']['number_of_points']
-            print((len(x), len(n), len(lloc),len(run['args']['dis_param'])))
-            
-            ax.plot(x, 2*(1+np.exp(n/lloc))**(-1))
-            ax.plot(run['args'][run['variable']], g, '.')
+            #print((len(x), len(n), len(lloc),len(run['args']['dis_param'])))
+            if x.size == (n/lloc).size:
+                ax.plot(x, 2*(1+np.exp(n/lloc))**(-1))
+
+            y_var = run.get('y_variable', 'g')
+            y = ckg[y_var]
+            ax.plot(run['args'][run['variable']], abs(y), '.')
         ax.set_xlabel(run['variable'])
         ax.set_ylabel('g')
            
@@ -143,6 +200,47 @@ def parse_and_calc(yaml_file = 'pta_chain_def.yaml'):
         
         #return ckg
         
+
+def plot_gheat_g(seed=1):
+    fig, ax = plt.subplots(figsize=[2.5*plotdl.latex_width_inch, 3*plotdl.latex_height_inch])
+    
+    r = Factory_psi1_psiN( "aapta_of_s_N{number_of_points[0]}.npz", N=400)
+    ckg = r.create_if_missing(dict(model_name= ["Anderson",], 
+                        number_of_points=[400,], bandwidth=[1,],
+                         dis_param=np.linspace(0,1,100),c=[1,], k=[1.57,], seed=np.arange(1,6)))    
+    color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
+    for seed in np.arange(1,6):
+        ck = ckg[ckg['seed']==seed]
+        g, psi_1, psi_N = ck['g'], ck['psi_N'], ck['psi_1']
+
+        psi_heat = 2*(abs(psi_1)**2)*(abs(psi_N)**2) / ((abs(psi_1)**2) + (abs(psi_N)**2))
+        phs = np.nansum(psi_heat,axis=1)
+        #print(ckg['dis_param'], phs)
+        ax.plot(ck['dis_param'], phs,'.')
+        ax.plot(ck['dis_param'], abs(g),'+')
+    ax.set_xlabel('dis_param')
+    fig.savefig('pta_heat_of_s_N400.png')
+
+def plot_g_of_phi(seed=1):
+    fig, ax = plt.subplots(figsize=[2.5*plotdl.latex_width_inch, 3*plotdl.latex_height_inch])
+    ckgphi = []
+    phis = 10**(np.linspace(-6, 1, 100))
+    
+    r = Factory_evs_phi( "pta_g_of_phi2.npz", N=400)
+    ckg = r.create_if_missing(dict(model_name= ["Anderson",], 
+                    number_of_points=[400,], bandwidth=[1,],
+                     dis_param=[0.1,], c=[1,], k=[1.57,], seed=[1,], phi=phis))    
+    for n in [1,2,100,200,300,399]:
+        ax.plot(ckg['phi'], abs(ckg['eig_vals'][:,n]-ckg['eig_vals'][0,n])) 
+    return ckg
+    color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
+    ax.plot(phis, np.nansum(ckg['thouless_g'],axis=1), '.')
+    ax.set_xscale('log')
+    ax.set_xlabel('phi')
+    fig.savefig('pta_g_of_phi.png')
+
+                         
+
 def plot_psi1_psi2(seed=0, abs_value=False):
     fig1, axes1  = plt.subplots(3,2,figsize=[2*plotdl.latex_width_inch, 3*plotdl.latex_height_inch],
                     sharex=True, sharey=True)

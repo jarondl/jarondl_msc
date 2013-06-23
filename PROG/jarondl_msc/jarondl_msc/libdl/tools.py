@@ -157,20 +157,16 @@ ckg_dtype = np.dtype([
                             ("g", (np.complex128)),
                             ("seed", (np.int64))])
 
-def ckg_psis_dtyper(N):
-    return  np.dtype([
-                            ("model_name", (np.unicode_, 100)),
-                            ("date", (np.unicode_, 20)),
-                            ("number_of_points", (np.int64)),
-                            ("bandwidth", (np.int64)),
-                            ("dis_param", (np.float64)),
-                            ("c", (np.float64)),
-                            ("k", (np.float64)),
-                            ("g", (np.complex128)),
+def ckg_psis_dtyper(N): 
+    """ extend the dtype to have psi's, by length N """
+    return  np.dtype(  ckg_dtype.descr + [
                             ("psi_1", (np.float64, N)),
                             ("psi_N", (np.float64, N)),
-                            ("seed", (np.int64))])
-        
+                            ("thouless_g", (np.float64, N)),
+                            ("thouless_sum", np.float64),
+                            ("eig_vals", (np.float64,N)),
+                            ("phi", np.float64)])
+
 
 def check_args_in_row(row, args_dict):
     return all(row[key]==val for (key, val) in args_dict.items() if not key.startswith("_"))
