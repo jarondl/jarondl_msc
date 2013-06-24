@@ -110,7 +110,8 @@ class Factory_thouless_psi(Factory_psi1_psiN):
         psi_1, psi_N = (m1.eig_matrix[0,:]), (m1.eig_matrix[-1,:])
         thouless, prec = sparsedl.pure_thouless_g(m1.eig_vals, m2.eig_vals, phi)
         print (prec*number_of_points, np.nansum(thouless))
-        return {'g': g, 'psi_1': psi_1, 'psi_N': psi_N, 'thouless_g' : thouless, 'thouless_sum': np.nansum(thouless), 'phi':phi }
+        return {'g': g, 'psi_1': psi_1, 'psi_N': psi_N, 'thouless_g' : abs(thouless),
+                 'thouless_sum': abs(np.nansum(abs(thouless))), 'phi':phi }
         
         
 class Factory_evs_phi(Factory_psi1_psiN):
@@ -145,6 +146,9 @@ def parse_and_calc(yaml_file = 'pta_chain_def.yaml'):
             r = Factory_Transmission_g(run['npz_fname'].format(**run['args']))
         
         ckg = r.create_if_missing(run['args'])
+        y_var = run.get('y_variable', 'g')
+        y = ckg[y_var]
+
         ### each run is a plot, but it could have multiple lines.
         # this requires some magic, in seperating our data by the second var.
         if 'second_variable' in run:
@@ -152,8 +156,6 @@ def parse_and_calc(yaml_file = 'pta_chain_def.yaml'):
             for s_var in second_vars:
                 relevant_idxs = (ckg[run['second_variable']] == s_var)
                 g  = abs(ckg['g'][relevant_idxs])
-                y_var = run.get('y_variable', 'g')
-                y = ckg[y_var]
                 ax.plot(ckg[run['variable']][relevant_idxs],y[relevant_idxs] , '.')
         elif 'average_over' in run:
             avgg=0
@@ -189,11 +191,9 @@ def parse_and_calc(yaml_file = 'pta_chain_def.yaml'):
             if x.size == (n/lloc).size:
                 ax.plot(x, 2*(1+np.exp(n/lloc))**(-1))
 
-            y_var = run.get('y_variable', 'g')
-            y = ckg[y_var]
             ax.plot(run['args'][run['variable']], abs(y), '.')
         ax.set_xlabel(run['variable'])
-        ax.set_ylabel('g')
+        ax.set_ylabel(y_var)
            
         fig.savefig(run['fig_name'].format(**run['args']))
         plt.close(fig)

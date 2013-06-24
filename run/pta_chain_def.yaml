@@ -5,20 +5,20 @@
 ---
 ### phases:
 -
-    fig_name : pta_thouless_{dis_param}.png
-    npz_fname : pta_thouless_{dis_param}.npz
+    fig_name : pta_thouless_{dis_param[0]}.png
+    npz_fname : pta_thouless_{dis_param[0]}.npz
     variable: phi
-    y_variable: thouless_g 
+    y_variable: thouless_sum
     args : 
       model_name       : [Anderson, ]
-      number_of_points : [100, ]
+      number_of_points : [400, ]
       bandwidth        : [1, ]
-      dis_param        : [0, ]
+      dis_param        : [0.4, ]
       #k : !!python/object/apply:numpy.linspace  [0,3.14,10]
       k                : [1.57, ]
       c                : [1,]
       seed             : [1, ]
-      phi               :[0.001,0.002,0.003]
+      phi              : !!python/object/apply:numpy.linspace  [0.0001, 0.0010,100]
 ### first run:
 -
     fig_name : pta_of_c_{dis_param}.png
