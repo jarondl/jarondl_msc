@@ -155,6 +155,7 @@ ckg_dtype = np.dtype([
                             ("c", (np.float64)),
                             ("k", (np.float64)),
                             ("g", (np.complex128)),
+                            ("heat_g", (np.complex128)),
                             ("seed", (np.int64))])
 
 def ckg_psis_dtyper(N): 

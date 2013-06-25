@@ -25,6 +25,8 @@ import yaml
 from .libdl import plotdl
 from .libdl import h5_dl
 from .libdl import sparsedl
+from .libdl import phys_functions
+
 from .libdl.tools import h5_create_if_missing, h5_get_first_rownum_by_args
 from .libdl.tools import ev_and_pn_class, ev_pn_g_class, c_k_g_class, ckg_dtype, ckg_psis_dtyper
 from .libdl.plotdl import plt, cummulative_plot, get_LogNLocator
@@ -62,7 +64,7 @@ class Factory_Transmission_g(h5_dl.DataFactory):
         prng = np.random.RandomState((None if seed == 0  else seed))
         m = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
                  bandwidth=bandwidth, dis_param=dis_param, periodic=False, prng = prng)
-        g = sparsedl.A_matrix_inv(m.rate_matrix,c,k)
+        g = phys_functions.A_matrix_inv(m.rate_matrix,c,k)
         return {'g': g}
         
 class Factory_psi1_psiN(h5_dl.DataFactory):
@@ -78,7 +80,7 @@ class Factory_psi1_psiN(h5_dl.DataFactory):
         m = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
                  bandwidth=bandwidth, dis_param=dis_param, periodic=False, prng = prng)
     
-        g = sparsedl.A_matrix_inv(m.rate_matrix, c, k)
+        g = phys_functions.A_matrix_inv(m.rate_matrix, c, k)
         psi_1, psi_N = (m.eig_matrix[0,:]), (m.eig_matrix[-1,:])
         return {'g': g, 'psi_1': psi_1, 'psi_N': psi_N}
         
@@ -100,18 +102,20 @@ class Factory_thouless_psi(Factory_psi1_psiN):
         prng = np.random.RandomState((None if seed == 0  else seed))
         
         m1 = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
-                 bandwidth=bandwidth, dis_param=dis_param, periodic=True, prng = prng)
+                 bandwidth=bandwidth, dis_param=dis_param, periodic=True, prng = prng, phi=0)
         prng = np.random.RandomState((None if seed == 0  else seed))
         
         m2 = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
                  bandwidth=bandwidth, dis_param=dis_param, periodic=True, prng = prng, phi=phi)
     
-        g = sparsedl.A_matrix_inv(m.rate_matrix, c, k)
+        g = phys_functions.A_matrix_inv(m.rate_matrix, c, k)
         psi_1, psi_N = (m1.eig_matrix[0,:]), (m1.eig_matrix[-1,:])
-        thouless, prec = sparsedl.pure_thouless_g(m1.eig_vals, m2.eig_vals, phi)
+        thouless, prec = phys_functions.pure_thouless_g(m1.eig_vals, m2.eig_vals, phi)
+        heat_g = phys_functions.heat_g(psi_1, psi_N)
+        
         print (prec*number_of_points, np.nansum(thouless))
         return {'g': g, 'psi_1': psi_1, 'psi_N': psi_N, 'thouless_g' : abs(thouless),
-                 'thouless_sum': abs(np.nansum(abs(thouless))), 'phi':phi }
+                 'thouless_sum': abs(np.nansum(abs(thouless))), 'phi':phi, 'heat_g': heat_g }
         
         
 class Factory_evs_phi(Factory_psi1_psiN):
@@ -130,96 +134,76 @@ class Factory_evs_phi(Factory_psi1_psiN):
         
 def loc_length(c,s):
     return 20*(np.array(c)/np.array(s))**2
+
 def parse_and_calc(yaml_file = 'pta_chain_def.yaml'):
     f = yaml.load(open(yaml_file,"r"))
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
 
     for run in f:
         ax.cla()
-        #ckg = calc_g(run['fig_name'], run['npz_fname'].format(**run['args']), run['args'])
-        
-        # temp:
+        plot_a_run(run, ax)
+        fig.savefig(run['fig_name'].format(**run['args']))
+    plt.close(fig)
 
-        if (len(run['args']['number_of_points'])==1 ): # if all N are equal
-            r = Factory_thouless_psi(run['npz_fname'].format(**run['args']), N= run['args']['number_of_points'][0])
-        else:
-            r = Factory_Transmission_g(run['npz_fname'].format(**run['args']))
-        
-        ckg = r.create_if_missing(run['args'])
-        y_var = run.get('y_variable', 'g')
-        y = ckg[y_var]
 
-        ### each run is a plot, but it could have multiple lines.
-        # this requires some magic, in seperating our data by the second var.
-        if 'second_variable' in run:
-            second_vars = run['args'][run['second_variable']]
-            for s_var in second_vars:
-                relevant_idxs = (ckg[run['second_variable']] == s_var)
-                g  = abs(ckg['g'][relevant_idxs])
-                ax.plot(ckg[run['variable']][relevant_idxs],y[relevant_idxs] , '.')
-        elif 'average_over' in run:
-            avgg=0
-            avglng = 0
-            for a_var in run['args'][run['average_over']]:
-                relevant_idxs = (ckg[run['average_over']] == a_var)
-                #debug(len(relevant_idxs)
-                g = abs(ckg['g'][relevant_idxs])
-                avgg += g
-                avglng += np.log(g)
-                #ax.plot(ckg[run['variable']][relevant_idxs], g, '.')
-            avgg /= len(run['args'][run['average_over']])
-            avglng /= len(run['args'][run['average_over']])
-            
-            ## accidentaly use last relevant_idxs. hope this works.
-            ax.plot(ckg[run['variable']][relevant_idxs], avgg)
-            ax.plot(ckg[run['variable']][relevant_idxs], np.exp(avglng))
-            x =ckg[run['variable']][relevant_idxs]
-            lloc = loc_length(run['args']['c'],run['args']['dis_param'])
-            n = (run['args']['number_of_points'])
-            
+def plot_a_run(run, ax):
+    """ plot a single run in my yaml format 
+    """
+
+    if (len(run['args']['number_of_points'])==1 ): # if all N are equal
+        r = Factory_thouless_psi(run['npz_fname'].format(**run['args']), N= run['args']['number_of_points'][0])
+    else:
+        r = Factory_Transmission_g(run['npz_fname'].format(**run['args']))
+    
+    ckg = r.create_if_missing(run['args'])
+    y_var = run.get('y_variable', 'g')
+    y = ckg[y_var]
+
+    ### each run is a plot, but it could have multiple lines.
+    # this requires some magic, in seperating our data by the second var.
+    if 'second_variable' in run:
+        second_vars = run['args'][run['second_variable']]
+        for s_var in second_vars:
+            relevant_idxs = (ckg[run['second_variable']] == s_var)
+            ax.plot(ckg[run['variable']][relevant_idxs],y[relevant_idxs] , '.')
+    elif 'average_over' in run:
+        avgy=0
+        avglny = 0
+        for a_var in run['args'][run['average_over']]:
+            relevant_idxs = (ckg[run['average_over']] == a_var)
+            #debug(len(relevant_idxs)
+            this_y = abs(y[relevant_idxs])
+            avgy += this_y
+            avglny += np.log(this_y)
+            #ax.plot(ckg[run['variable']][relevant_idxs], g, '.')
+        avgy /= len(run['args'][run['average_over']])
+        avglny /= len(run['args'][run['average_over']])
+        
+        ## accidentaly use last relevant_idxs. hope this works.
+        ax.plot(ckg[run['variable']][relevant_idxs], avgy)
+        ax.plot(ckg[run['variable']][relevant_idxs], np.exp(avglny))
+        x =ckg[run['variable']][relevant_idxs]
+        lloc = loc_length(run['args']['c'],run['args']['dis_param'])
+        n = (run['args']['number_of_points'])
+        if y_var == 'g':
             #ax.plot(n, 2*(1+np.exp(n/lloc))**(-1))
             ax.plot(x, 2*(1+np.exp(n/lloc))**(-1))
-        else:
-            g = abs(ckg['g'])
-            x =ckg[run['variable']]
-            debug("NOTICE - taking first c and dis_param")
-            #lloc = 104*run['args']['c'][0]**2 / (3*((run['args']['dis_param'][0])**2))
-            lloc = loc_length(run['args']['c'],run['args']['dis_param'])
+    else:
+        g = abs(ckg['g'])
+        x =ckg[run['variable']]
+        debug("NOTICE - taking first c and dis_param")
+        #lloc = 104*run['args']['c'][0]**2 / (3*((run['args']['dis_param'][0])**2))
+        lloc = loc_length(run['args']['c'],run['args']['dis_param'])
 
-            n = run['args']['number_of_points']
-            #print((len(x), len(n), len(lloc),len(run['args']['dis_param'])))
-            if x.size == (n/lloc).size:
-                ax.plot(x, 2*(1+np.exp(n/lloc))**(-1))
+        n = run['args']['number_of_points']
+        #print((len(x), len(n), len(lloc),len(run['args']['dis_param'])))
+        if x.size == (n/lloc).size:
+            ax.plot(x, 2*(1+np.exp(n/lloc))**(-1))
 
-            ax.plot(run['args'][run['variable']], abs(y), '.')
-        ax.set_xlabel(run['variable'])
-        ax.set_ylabel(y_var)
-           
-        fig.savefig(run['fig_name'].format(**run['args']))
-        plt.close(fig)
-        
-        #return ckg
-        
-
-def plot_gheat_g(seed=1):
-    fig, ax = plt.subplots(figsize=[2.5*plotdl.latex_width_inch, 3*plotdl.latex_height_inch])
-    
-    r = Factory_psi1_psiN( "aapta_of_s_N{number_of_points[0]}.npz", N=400)
-    ckg = r.create_if_missing(dict(model_name= ["Anderson",], 
-                        number_of_points=[400,], bandwidth=[1,],
-                         dis_param=np.linspace(0,1,100),c=[1,], k=[1.57,], seed=np.arange(1,6)))    
-    color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
-    for seed in np.arange(1,6):
-        ck = ckg[ckg['seed']==seed]
-        g, psi_1, psi_N = ck['g'], ck['psi_N'], ck['psi_1']
-
-        psi_heat = 2*(abs(psi_1)**2)*(abs(psi_N)**2) / ((abs(psi_1)**2) + (abs(psi_N)**2))
-        phs = np.nansum(psi_heat,axis=1)
-        #print(ckg['dis_param'], phs)
-        ax.plot(ck['dis_param'], phs,'.')
-        ax.plot(ck['dis_param'], abs(g),'+')
-    ax.set_xlabel('dis_param')
-    fig.savefig('pta_heat_of_s_N400.png')
+        ax.plot(run['args'][run['variable']], abs(y), '.')
+    ax.set_xlabel(run['variable'])
+    ax.set_ylabel(y_var)
+       
 
 def plot_g_of_phi(seed=1):
     fig, ax = plt.subplots(figsize=[2.5*plotdl.latex_width_inch, 3*plotdl.latex_height_inch])
@@ -231,7 +215,8 @@ def plot_g_of_phi(seed=1):
                     number_of_points=[400,], bandwidth=[1,],
                      dis_param=[0.1,], c=[1,], k=[1.57,], seed=[1,], phi=phis))    
     for n in [1,2,100,200,300,399]:
-        ax.plot(ckg['phi'], abs(ckg['eig_vals'][:,n]-ckg['eig_vals'][0,n])) 
+        ax.plot(ckg['phi'], abs(ckg['eig_vals'][:,n]-ckg['eig_vals'][0,n]), label=n)
+        ax.set_xscale('log') 
     return ckg
     color_seq = itertools.cycle(['b', 'g', 'r', 'c', 'm', 'y', 'k'])
     ax.plot(phis, np.nansum(ckg['thouless_g'],axis=1), '.')
@@ -293,36 +278,7 @@ def disperssion_g(fig_name='pta_disperse_s_{dis_param[0]}{log}.png', args = dict
     plt.close(fig)
 
 
-    
-def calc_g(fig_name,npz_fname, args = dict(model_name = ('Anderson',), number_of_points=(100,), bandwidth=(1,),
-            dis_param=(0,), k= np.linspace(0,pi,10), c = np.arange(1,10))):
-    with tables.openFile("trans_g.hdf5", mode = "a", title = "Transmission g") as h5file:
-        
-        #r = Factory_Transmission_g(h5file)
-        r = Factory_Transmission_g(npz_fname)
-        ckg = r.create_if_missing(args)
-    return ckg
 
-
-def calc_and_plot_g(dis_param=0, kr= np.linspace(0,pi,10), cr = np.arange(1,10)):
-    """ calculate and plot (should be separated)
-    g for all kind of matrices """
-    # ordered stuff:
-    with tables.openFile("trans_g.hdf5", mode = "a", title = "Transmission g") as h5file:
-        fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
-
-
-        args = dict(model_name = 'Anderson', number_of_points=1000, 
-                    bandwidth=1, dis_param=dis_param)
-        var_args = {'k' : kr, 'c' : cr}
-        ckg = calc_g_to_h5(h5file, args, var_args)
-        g = ckg['g'].reshape([cr.size,-1])
-        im = ax.imshow(abs(g), interpolation='nearest',origin='lower',aspect='auto', extent=[kr.min(),kr.max(),cr.min(),cr.max()])
-        fig.colorbar(im,ax=ax)
-        ax.set_xlabel('k')
-        ax.set_ylabel('c')
-        fig.savefig('pta_ordered_s{0}.png'.format(dis_param))
-        return ckg
 
     
 if __name__== "__main__":
