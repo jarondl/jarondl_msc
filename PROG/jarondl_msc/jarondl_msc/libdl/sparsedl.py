@@ -276,7 +276,9 @@ def periodic_banded_ones(N, bandwidth, periodic=True):
     """
     if not periodic:
         return banded_ones(N, bandwidth)
-    assert N > bandwidth*2
+    if (N <= bandwidth*2):
+        warning("Bandwidth more than N!")
+        return numpy.ones([N,N])
     return (numpy.tri(N, k=bandwidth)*numpy.tri(N,k=bandwidth).T +
            numpy.tri(N, k=(bandwidth-N)) + numpy.tri(N,k=(bandwidth-N)).T)
            

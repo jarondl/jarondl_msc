@@ -72,6 +72,8 @@ class DataFactory(object):
         new_hash = args_hash(args)
         self.npz = np.savez(self.npz_fname, nums=self.data, args_hash=new_hash)
         
+    def read_existing(self):
+        return self.data
     def create_if_missing(self, args):
         if (self.data is not None) and (self.prev_hash == args_hash(args)):
             return self.data

@@ -156,7 +156,10 @@ ckg_dtype = np.dtype([
                             ("k", (np.float64)),
                             ("g", (np.complex128)),
                             ("heat_g", (np.complex128)),
-                            ("seed", (np.int64))])
+                            ("seed", (np.int64)),
+                            ("thouless_sum", np.float64),
+                            ("psi1psiN", np.float64),
+                            ("phi", np.float64)])
 
 def ckg_psis_dtyper(N): 
     """ extend the dtype to have psi's, by length N """
@@ -164,9 +167,7 @@ def ckg_psis_dtyper(N):
                             ("psi_1", (np.float64, N)),
                             ("psi_N", (np.float64, N)),
                             ("thouless_g", (np.float64, N)),
-                            ("thouless_sum", np.float64),
-                            ("eig_vals", (np.float64,N)),
-                            ("phi", np.float64)])
+                            ("eig_vals", (np.float64,N))])
 
 
 def check_args_in_row(row, args_dict):

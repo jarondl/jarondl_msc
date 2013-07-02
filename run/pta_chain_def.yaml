@@ -5,9 +5,10 @@
 ---
 ### phases:
 -
-    fig_name : pta_thouless2_{dis_param[0]}.png
-    npz_fname : pta_thouless2_{dis_param[0]}.npz
+    fig_name : plots/pta_thouless2_{dis_param[0]}.png
+    npz_fname : data/pta_thouless2_{dis_param[0]}.npz
     variable: phi
+    N_dependance: True
     y_variable: thouless_sum
     args : 
       model_name       : [Anderson, ]
@@ -21,8 +22,8 @@
       phi              : !!python/object/apply:numpy.linspace  [0.00001, 0.00010, 100]
 ### first run:
 -
-    fig_name : pta_of_c_{dis_param}.png
-    npz_fname : pta_of_c_{dis_param}.npz
+    fig_name : plots/pta_of_c_{dis_param}.png
+    npz_fname : data/pta_of_c_{dis_param}.npz
     variable: c
     args : 
       model_name       : [Anderson, ]
@@ -35,8 +36,8 @@
       seed             : [1, ]
 ### first run:
 -
-    fig_name : pta_of_s_N{number_of_points[0]}.png
-    npz_fname : pta_of_s_N{number_of_points[0]}.npz
+    fig_name : plots/pta_of_s_N{number_of_points[0]}.png
+    npz_fname : data/pta_of_s_N{number_of_points[0]}.npz
     average_over: seed
     variable: dis_param
     args : &multiseed_s
@@ -51,8 +52,8 @@
       
 ### fifth run:
 -
-    fig_name : pta_of_s_N{number_of_points[0]}.png
-    npz_fname : pta_of_s_N{number_of_points[0]}.npz
+    fig_name : plots/pta_of_s_N{number_of_points[0]}.png
+    npz_fname : data/pta_of_s_N{number_of_points[0]}.npz
     average_over: seed
     variable: dis_param
     args : ## Here we merge the previous args with the new dis_param
@@ -61,11 +62,21 @@
       
 ### fifth run:
 -
-    fig_name : pta_heat_of_s_N{number_of_points[0]}.png
-    npz_fname : pta_of_s_N{number_of_points[0]}.npz
+    fig_name : plots/pta_heat_of_s_N{number_of_points[0]}.png
+    npz_fname : data/pta_of_s_N{number_of_points[0]}.npz
     average_over: seed
     variable: dis_param
     y_variable: heat_g
+    args : ## Here we merge the previous args with the new dis_param
+      <<               : *multiseed_s
+      number_of_points : [400, ]
+### plot psi1psiN
+-
+    fig_name : plots/pta_psi1psiN_of_s_N{number_of_points[0]}.png
+    npz_fname : data/pta_of_s_N{number_of_points[0]}.npz
+    average_over: seed
+    variable: dis_param
+    y_variable: psi1psiN
     args : ## Here we merge the previous args with the new dis_param
       <<               : *multiseed_s
       number_of_points : [400, ]
@@ -73,8 +84,8 @@
 ## run multiple realizations. In either case plot pta_of_k,
 ##  just with changing dis_param
 -
-    fig_name : pta_of_k_multiseed_{dis_param[0]}.png
-    npz_fname : pta_of_k_multiseed_{dis_param[0]}.npz
+    fig_name : plots/pta_of_k_multiseed_{dis_param[0]}.png
+    npz_fname : data/pta_of_k_multiseed_{dis_param[0]}.npz
     variable: k
     second_variable: seed
     args : &multiseed
@@ -91,17 +102,26 @@
 
 ### fifth run:
 -
-    fig_name : 'pta_of_k_multiseed_{dis_param[0]}.png'
-    npz_fname : 'pta_of_k_multiseed_{dis_param[0]}.npz'
+    fig_name : 'plots/pta_of_k_multiseed_{dis_param[0]}.png'
+    npz_fname : 'data/pta_of_k_multiseed_{dis_param[0]}.npz'
     variable: 'k'
     second_variable: 'seed'
     args : ## Here we merge the previous args with the new dis_param
       <<               : *multiseed
       dis_param        : [0.1,]
+### fifth run:
+-
+    fig_name : 'plots/pta_of_k_multiseed_{dis_param[0]}.png'
+    npz_fname : 'data/pta_of_k_multiseed_{dis_param[0]}.npz'
+    variable: 'k'
+    second_variable: 'seed'
+    args : ## Here we merge the previous args with the new dis_param
+      <<               : *multiseed
+      dis_param        : [0.3,]
 ### fifth run: gheat
 -
-    fig_name : 'pta_heat_of_k_multiseed_{dis_param[0]}.png'
-    npz_fname : 'pta_of_k_multiseed_{dis_param[0]}.npz'
+    fig_name : 'plots/pta_heat_of_k_multiseed_{dis_param[0]}.png'
+    npz_fname : 'data/pta_of_k_multiseed_{dis_param[0]}.npz'
     variable: 'k'
     y_variable: 'heat_g'
     second_variable: 'seed'
@@ -111,8 +131,8 @@
 
 ### run over n
 -
-    fig_name : pta_of_N_averaged_{dis_param[0]}.png
-    npz_fname : pta_of_N_averaged_{dis_param[0]}.npz
+    fig_name : plots/pta_of_N_averaged_{dis_param[0]}.png
+    npz_fname : data/pta_of_N_averaged_{dis_param[0]}.npz
     variable: number_of_points
     average_over: seed
     args :   &multiseed_N
@@ -127,11 +147,39 @@
       seed             :  !!python/object/apply:numpy.arange    [1,20]
      ### fifth run:
 -
-    fig_name : 'pta_of_N_averaged_{dis_param[0]}.png'
-    npz_fname : 'pta_of_N_averaged_{dis_param[0]}.npz'
+    fig_name : 'plots/pta_of_N_averaged_{dis_param[0]}.png'
+    npz_fname : 'data/pta_of_N_averaged_{dis_param[0]}.npz'
     variable: 'number_of_points'
     average_over: 'seed'
     args : ## Here we merge the previous args with the new dis_param
       <<               : *multiseed_N
       dis_param        : [0.1,]
+      
+-
+    fig_name : 'plots/pta_heat_of_N_averaged_{dis_param[0]}.png'
+    npz_fname : 'data/pta_of_N_averaged_{dis_param[0]}.npz'
+    variable: 'number_of_points'
+    y_variable: 'heat_g'
+    average_over: 'seed'
+    args : ## Here we merge the previous args with the new dis_param
+      <<               : *multiseed_N
+      dis_param        : [0.4,]
  
+-
+    fig_name : 'plots/pta_psi1psiN_of_N_averaged_{dis_param[0]}.png'
+    npz_fname : 'data/pta_of_N_averaged_{dis_param[0]}.npz'
+    variable: 'number_of_points'
+    y_variable: 'psi1psiN'
+    average_over: 'seed'
+    args : ## Here we merge the previous args with the new dis_param
+      <<               : *multiseed_N
+      dis_param        : [0.4,]
+-
+    fig_name : 'plots/pta_psi1psiN_of_N_averaged_{dis_param[0]}.png'
+    npz_fname : 'data/pta_of_N_averaged_{dis_param[0]}.npz'
+    variable: 'number_of_points'
+    y_variable: 'psi1psiN'
+    average_over: 'seed'
+    args : ## Here we merge the previous args with the new dis_param
+      <<               : *multiseed_N
+      dis_param        : [0.1,]
