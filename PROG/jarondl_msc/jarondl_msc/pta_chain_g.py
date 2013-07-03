@@ -66,6 +66,8 @@ class Factory_Transmission_g(h5_dl.DataFactory):
         m = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
                  bandwidth=bandwidth, dis_param=dis_param, periodic=False, prng = prng)
         g = phys_functions.A_matrix_inv(m.rate_matrix,c,k)
+        ######################### TEMP #######################
+        #g = phys_functions.alternative_A_matrix_inv(m.rate_matrix,c,k)
         psi_1, psi_N = (m.eig_matrix[0,:]), (m.eig_matrix[-1,:])
         heat_g = phys_functions.heat_g(psi_1, psi_N)
 

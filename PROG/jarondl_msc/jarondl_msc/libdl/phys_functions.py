@@ -82,6 +82,13 @@ def alternative_A_matrix_inv(hamiltonian, c, k, gamma=1):
     Aev, Aem = linalg.eig(A)
     return gamma*velocity*np.sum(np.conj(Aem[0,:])*(Aem[-1,:])*Aev**(-1))
 
+def diag_approx_A_matrix_inv(hamiltonian, c, k,eig_matrix, gamma=1):
+    """ Takes longer """
+    energy, velocity = -2*c*np.cos(k), 2*c*np.sin(k)
+    A = A_matrix(hamiltonian,energy, velocity, gamma)
+    Aev, Aem = linalg.eig(A)
+    return gamma*velocity*np.sum(np.conj(Aem[0,:])*(Aem[-1,:])*Aev**(-1))
+
 def heat_g(psi_1, psi_N):
     return np.nansum(2*(abs(psi_1)**2)*(abs(psi_N)**2) / ((abs(psi_1)**2) + (abs(psi_N)**2)))
 
