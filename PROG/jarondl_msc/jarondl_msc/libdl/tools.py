@@ -155,6 +155,8 @@ ckg_dtype = np.dtype([
                             ("c", (np.float64)),
                             ("k", (np.float64)),
                             ("g", (np.complex128)),
+                            ("g_diag_approx", (np.complex128)),
+                            ("abs_g_diag_approx", (np.complex128)),
                             ("heat_g", (np.complex128)),
                             ("seed", (np.int64)),
                             ("thouless_sum", np.float64),

@@ -82,12 +82,26 @@ def alternative_A_matrix_inv(hamiltonian, c, k, gamma=1):
     Aev, Aem = linalg.eig(A)
     return gamma*velocity*np.sum(np.conj(Aem[0,:])*(Aem[-1,:])*Aev**(-1))
 
-def diag_approx_A_matrix_inv(hamiltonian, c, k,eig_matrix, gamma=1):
+def diag_approx_A_matrix_inv(hamiltonian, c, k, eig_matrix, gamma=1):
     """ Takes longer """
     energy, velocity = -2*c*np.cos(k), 2*c*np.sin(k)
     A = A_matrix(hamiltonian,energy, velocity, gamma)
-    Aev, Aem = linalg.eig(A)
-    return gamma*velocity*np.sum(np.conj(Aem[0,:])*(Aem[-1,:])*Aev**(-1))
+    A_in_psi = (np.dot(np.dot(np.transpose(eig_matrix),A), eig_matrix)).diagonal()
+    return gamma*velocity*np.sum(np.conj(eig_matrix[0,:])*(eig_matrix[-1,:])*A_in_psi**(-1))
+
+def alter_diag_approx(eig_vals, c, k, eig_matrix, gamma=1):
+    psi_1, psi_N = eig_matrix[0,:], eig_matrix[-1,:]
+    energy, velocity = -2*c*np.cos(k), 2*c*np.sin(k)
+    a_inv = energy - eig_vals - (gamma/2)*(energy - 1j*velocity)*(abs(psi_1)**2 + abs(psi_N)**2)
+    #return np.sum(np.conj(psi_1)*psi_N*gamma*velocity/a_inv)
+    return np.sum((psi_1)*psi_N*gamma*velocity/a_inv)
+    
+def diag_approx_abs(eig_vals, c, k, eig_matrix, gamma=1):
+    psi_1, psi_N = eig_matrix[0,:], eig_matrix[-1,:]
+    energy, velocity = -2*c*np.cos(k), 2*c*np.sin(k)
+    a_inv = energy - eig_vals - (gamma/2)*(energy - 1j*velocity)*(abs(psi_1)**2 + abs(psi_N)**2)
+    #return np.sum(np.conj(psi_1)*psi_N*gamma*velocity/a_inv)
+    return np.sum(abs((psi_1)*psi_N*gamma*velocity/a_inv)**2)
 
 def heat_g(psi_1, psi_N):
     return np.nansum(2*(abs(psi_1)**2)*(abs(psi_N)**2) / ((abs(psi_1)**2) + (abs(psi_N)**2)))
@@ -95,5 +109,9 @@ def heat_g(psi_1, psi_N):
 
 
         
-
+def lyap_gamma(c,s,E=0):
+    """ Gamma for L-> \infty """
+    c,s = np.asarray(c), np.asarray(s)
+    return (s)**2/(24*(4*c**2-E**2))
+    
 

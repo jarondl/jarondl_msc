@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" Survival and spreading for box distribution.  Anderson localization length focus
+""" PTA chain conductance.
+
+Mainly calculating and plotting all kinds of conductances,
+for 1d Anderson models. The definitions for the data
+creation and plotting are hosted on separate yaml files for
+easy configuration. 
 """
 # make python2 behave more like python3
 from __future__ import division, print_function, absolute_import
@@ -14,6 +19,7 @@ import logging
 import os
 from collections import OrderedDict
 import pdb 
+import argparse
 
 # global packages
 from numpy import pi
@@ -28,6 +34,7 @@ from .libdl import h5_dl
 from .libdl import sparsedl
 from .libdl import phys_functions
 
+from .libdl.phys_functions import lyap_gamma
 from .libdl.tools import h5_create_if_missing, h5_get_first_rownum_by_args
 from .libdl.tools import ev_and_pn_class, ev_pn_g_class, c_k_g_class, ckg_dtype, ckg_psis_dtyper
 from .libdl.plotdl import plt, cummulative_plot, get_LogNLocator
@@ -65,14 +72,18 @@ class Factory_Transmission_g(h5_dl.DataFactory):
         prng = np.random.RandomState((None if seed == 0  else seed))
         m = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
                  bandwidth=bandwidth, dis_param=dis_param, periodic=False, prng = prng)
-        g = phys_functions.A_matrix_inv(m.rate_matrix,c,k)
+        g = abs(phys_functions.A_matrix_inv(m.rate_matrix,c,k))**2
         ######################### TEMP #######################
         #g = phys_functions.alternative_A_matrix_inv(m.rate_matrix,c,k)
+        #g = phys_functions.diag_approx_A_matrix_inv(m.rate_matrix,c,k, m.eig_matrix)
+        #g_diag_approx = abs(phys_functions.alter_diag_approx(m.eig_vals,c,k, m.eig_matrix))
+        abs_g_diag_approx = phys_functions.diag_approx_abs(m.eig_vals,c,k, m.eig_matrix)
+        g_diag_approx = abs(phys_functions.alter_diag_approx(m.eig_vals,c,k, m.eig_matrix))**2
         psi_1, psi_N = (m.eig_matrix[0,:]), (m.eig_matrix[-1,:])
         heat_g = phys_functions.heat_g(psi_1, psi_N)
 
         psi1psiN = np.nansum(abs(psi_1*psi_N))
-        return {'g': g, 'psi1psiN':psi1psiN, 'heat_g': heat_g }
+        return {'g': g, 'psi1psiN':psi1psiN, 'heat_g': heat_g , 'g_diag_approx': g_diag_approx, 'abs_g_diag_approx': abs_g_diag_approx}
         
 class Factory_psi1_psiN(h5_dl.DataFactory):
     def __init__(self, *args, **kwargs):
@@ -87,7 +98,7 @@ class Factory_psi1_psiN(h5_dl.DataFactory):
         m = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
                  bandwidth=bandwidth, dis_param=dis_param, periodic=False, prng = prng)
     
-        g = phys_functions.A_matrix_inv(m.rate_matrix, c, k)
+        g = abs(phys_functions.A_matrix_inv(m.rate_matrix, c, k))**2
         psi_1, psi_N = (m.eig_matrix[0,:]), (m.eig_matrix[-1,:])
         return {'g': g, 'psi_1': psi_1, 'psi_N': psi_N}
         
@@ -115,7 +126,7 @@ class Factory_thouless_psi(Factory_psi1_psiN):
         m2 = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
                  bandwidth=bandwidth, dis_param=dis_param, periodic=True, prng = prng, phi=phi)
     
-        g = phys_functions.A_matrix_inv(m.rate_matrix, c, k)
+        g = abs(phys_functions.A_matrix_inv(m.rate_matrix, c, k))**2
         psi_1, psi_N = (m1.eig_matrix[0,:]), (m1.eig_matrix[-1,:])
         thouless, prec = phys_functions.pure_thouless_g(m1.eig_vals, m2.eig_vals, phi)
         heat_g = phys_functions.heat_g(psi_1, psi_N)
@@ -149,28 +160,24 @@ class Factory_evs_phi(Factory_psi1_psiN):
 
         return {'phi':phi , 'eig_vals': m1.eig_vals}
         
-def lyap_gamma(c,s,E=0):
-    c,s = np.asarray(c), np.asarray(s)
-    return 2*(s)**2/(24*(4*c**2-E**2))
-    
+
     #return 20*(np.array(c)/np.array(s))**2
 
-def parse_and_calc(yaml_file = 'pta_chain_def.yaml'):
-    f = yaml.load(open(yaml_file,"r"))
-    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
 
-    for run in f:
-        ax.cla()
-        plot_a_run(run, ax)
-        fig.savefig(run['fig_name'].format(**run['args']))
-    plt.close(fig)
+def plot_localization_length(ax, c, k, dis_param, n, x):
+    """ Add the theoretical expected line for localization length"""
+    E = 2*np.asarray(c)*np.cos(k)
+    gamma_inf = lyap_gamma(c,dis_param, E)
+    loc_length1 = 1/((np.cosh(n*gamma_inf))**2)
+    loc_length2 = 1/(np.exp(2*n*gamma_inf)+1)
+    loc_length3 = 1/(np.exp(2*n*gamma_inf))
+    if x.size == loc_length1.size :
+        ax.plot(x, loc_length1,color='black', ls='--')
+        ax.plot(x, loc_length2,color='purple', ls='--')
+        ax.plot(x, loc_length3,color='cyan', ls='--')
 
-
-def plot_a_run(run, ax):
-    """ plot a single run in my yaml format 
-    """
-
-    
+def calc_a_run(run):
+    """ create data for a run ( a'run' is a yaml configuration segment)"""
     if run.get('N_dependance',False): ## light version's size is independent of N.
         #pdb.set_trace()
         # if all N are equal, we should use N, otherwise use largest.
@@ -180,66 +187,37 @@ def plot_a_run(run, ax):
         #pdb.set_trace()
         r = Factory_Transmission_g(run['npz_fname'].format(**run['args']))
     
-    ckg = r.create_if_missing(run['args'])
-    y_var = run.get('y_variable', 'g')
-    y = ckg[y_var]
+    return r.create_if_missing(run['args'])
 
+def plot_a_run(run, ax):
+    """ plot a single run in my yaml format 
+    """
+    npz = np.load(run['npz_fname'])
+    ckg = npz['nums']
+    y_var = run['y_variable']
+    full_y = ckg[y_var]
+    x_var = run['x_variable']
+    full_x = ckg[x_var]
     ### each run is a plot, but it could have multiple lines.
     # this requires some magic, in seperating our data by the second var.
-    if 'second_variable' in run:
-        second_vars = run['args'][run['second_variable']]
-        for s_var in second_vars:
-            relevant_idxs = (ckg[run['second_variable']] == s_var)
-            ax.plot(ckg[run['variable']][relevant_idxs],y[relevant_idxs] , '.')
-        ## Plot red line - THIS should be consolidated soon
-        x =ckg[run['variable']][relevant_idxs]
-        E = 2*np.asarray(run['args']['c'])*np.cos(run['args']['k'])
-        lloc = lyap_gamma(run['args']['c'],run['args']['dis_param'], E)
-        n = np.asarray(run['args']['number_of_points'])
-        if x.size == (n/lloc).size :
-            #pdb.set_trace()
-            #ax.plot(n, 2*(1+np.exp(n/lloc))**(-1))
-            ax.plot(x, (np.exp(-2*n*lloc)),color='red', ls='--')
-
-    elif 'average_over' in run:
-        avgy=0
-        avglny = 0
-        for a_var in run['args'][run['average_over']]:
-            relevant_idxs = (ckg[run['average_over']] == a_var)
-            #debug(len(relevant_idxs)
-            this_y = abs(y[relevant_idxs])
-            avgy += this_y
-            avglny += np.log(this_y)
-            #ax.plot(ckg[run['variable']][relevant_idxs], g, '.')
-        avgy /= len(run['args'][run['average_over']])
-        avglny /= len(run['args'][run['average_over']])
+    ## I ASSUME, and this is important, that only two variables change
+    x_to_plot = full_x
+    x_to_calc = full_x
+    y_to_plot = full_y
+    ckg_fc = ckg
+    if 'second_var' in run:     
+        ckg_fc = ckg[:,0]
+        x_to_calc = full_x[:,0]
+    elif ('average_over' in run):#### always do log average
+        #y_to_plot = np.average(full_y, axis=1)
+        y_to_plot = np.exp(np.average(np.log(full_y), axis=1))
         
-        ## accidentaly use last relevant_idxs. hope this works..
-        
-        x =ckg[run['variable']][relevant_idxs]
-
-        
-        ax.plot(x, avgy)
-        ax.plot(x, np.exp(avglny))
-        lloc = lyap_gamma(run['args']['c'],run['args']['dis_param'])
-        n = np.asarray(run['args']['number_of_points'])
-        if x.size == (n/lloc).size :
-            #pdb.set_trace()
-            #ax.plot(n, 2*(1+np.exp(n/lloc))**(-1))
-            ax.plot(x, (np.exp(-2*n*lloc)),color='red', ls='--')
-    else:
-        x =ckg[run['variable']]
-        debug("NOTICE - taking first c and dis_param")
-        #lloc = 104*run['args']['c'][0]**2 / (3*((run['args']['dis_param'][0])**2))
-        lloc = lyap_gamma(run['args']['c'],run['args']['dis_param'])
-
-        n = np.asarray(run['args']['number_of_points'])
-        #print((len(x), len(n), len(lloc),len(run['args']['dis_param'])))
-        if x.size == (n/lloc).size:
-            ax.plot(x, (np.exp(-2*n*lloc)),color='red', ls='--')
-
-        ax.plot(x, abs(y), '.')
-    ax.set_xlabel(run['variable'])
+        ckg_fc = ckg[:,0]
+        x_to_plot = x_to_calc = full_x[:,0]
+        #pdb.set_trace()
+    ax.plot(x_to_plot, y_to_plot,".")
+    plot_localization_length(ax, ckg_fc['c'],ckg_fc['k'], ckg_fc['dis_param'], ckg_fc['number_of_points'] , x_to_calc)
+    ax.set_xlabel(x_var)
     ax.set_ylabel(y_var)
        
        
@@ -324,62 +302,115 @@ def plot_psi1_psi2(seed=0, abs_value=False):
     fig2.savefig("psi_times_psi2{}_0.3.png".format('_abs' if abs else ''))
     fig3.savefig("psi_heat_psi2{}_0.3.png".format('_abs' if abs else ''))
     
-def disperssion_g(fig_name='pta_disperse_s_{dis_param[0]}{log}.png', args = dict(model_name = ('Anderson',), number_of_points=(200,), bandwidth=(1,),
-            dis_param=(0.4,), k= (1.57,) , c = (1,), seed=np.arange(10000))):
+def plot_dispersion_g(run):
     
-        
-    r = Factory_Transmission_g("pta_dispersion{}.npz".format(args['dis_param'][0]))
-    ckg = r.create_if_missing(args)
-    lloc = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0]
+    npz = np.load(run['npz_fname'])
+    ckg = npz['nums']
     N = ckg['number_of_points'][0]
-    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
-    ax.hist(abs(ckg['g']),bins=np.sqrt(len(ckg['g'])))
-    fig.savefig(fig_name.format(log="", **args))
-    ax.cla()
-    
-    gamma =  -np.log(abs(ckg['g']))/(2*N)
-    lloc = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0]
-    sig = lloc/(2*N)
-    ax.hist(gamma,bins=np.sqrt(len(ckg['g'])), normed=True)
-    
-    g_space = np.linspace(min(gamma), max(gamma))
-    gauss = np.exp(-(g_space-lloc)**2/(2*sig))/(np.sqrt(2*pi*sig))
-    gaussf = np.exp(-(g_space-lloc)**2/(2*sig))/(np.sqrt(2*pi*sig)) + np.exp(-(-g_space-lloc)**2/(2*sig))/(np.sqrt(2*pi*sig))
-    ax.plot(g_space, gaussf, '-.' , color='red')
-    ax.set_xlabel(r'$\gamma$')
-    fig.savefig(fig_name.format(log="log", **args))
-    return ckg
-    #plt.close(fig)
-    
-def plot_dispression_of_N(fig_name='pta_disperse_s_of_N_{dis_param[0]}.png', 
-            args = dict(model_name = ('Anderson',), number_of_points=np.arange(2,500), 
-            bandwidth=(1,), dis_param=(0.8,), k= (1.57,) , c = (1,), seed=np.arange(30))):
-    
-    r = Factory_Transmission_g("pta_dispersion_of_N_{}.npz".format(args['dis_param'][0]))
-    ckg = r.create_if_missing(args)
-    N = ckg['number_of_points'].reshape([len(args['number_of_points']), len(args['seed'])])
-    g = ckg['g'].reshape([len(args['number_of_points']), len(args['seed'])])
-    #gamma = np.log(1+1.0/abs(g))/(2*N)
-    gamma = -np.log(abs(g))/(2*N)
-    lloc = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0]
+    g = ckg['g']
 
+    gamma = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0]
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
-    ax.plot(N[:,0], np.average(gamma,axis=1),'.', color='blue')
-    ax.axhline(lloc, ls="--", color='red')
+    gamma2N = gamma*2*N
+    x = 2*np.arccosh(1/np.sqrt(g))
+    #sig = lloc/(2*N)
+    ax.hist(x,bins=np.sqrt(len(ckg['g'])), normed=True, edgecolor='none')
+    sig = gamma2N
+    g_space = np.linspace(min(x), max(x))
+    #gauss = np.exp(-(g_space-gamma)**2/(2*sig))/(np.sqrt(2*pi*sig))
+    gauss = lambda y: np.exp(-(y-gamma2N)**2/(2*sig))/(np.sqrt(2*pi*sig))
+    gaussf = gauss(g_space) + gauss(-g_space)
+    gaussx = g_space * gauss(g_space)
+    ax.autoscale(False)
+    ax.plot(g_space, gauss(g_space), ':' , color='red')
+    ax.plot(g_space, gaussx, '--' , color='red')
+    ax.set_xlabel(r'$x$')
+    fig.savefig(run['fig_name'])
+
+    
+def plot_dispersion_of_N(run):
+    npz = np.load(run['npz_fname'])
+    ckg = npz['nums']
+    N = ckg['number_of_points']
+    g = ckg['g']
+    #gamma = np.log(abs(g))/(N)
+    #gamma = np.cosh(abs(g))**2/(N)
+    #x = 2*np.arccosh(1/np.sqrt(g))
+    x = 2*np.arccosh(1/np.sqrt(g))
+    #x = np.log(g)
+    gamma = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0,0]
+    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+    ax.plot(N[:,0], np.average(x,axis=1),'.', color='blue')
+    #ax.axhline(lloc, ls="--", color='red')
     ax.set_xlabel('N')
-    ax.set_ylabel(r'$\gamma , 2N\langle\gamma^2\rangle$')
+    ax.set_ylabel(r'$x$, $\langle x^2 \rangle$')
     #ax.plot(N[:,0], np.average(abs(g),axis=1),'.', color='cyan')
     #ax2 = ax.twinx()
     ax2=ax
-    ax2.plot(N[:,0], np.var(gamma,axis=1)*2*N[:,0],'.', color='green')
+    ax2.plot(N[:,0], np.var(x,axis=1),'.', color='green')
+    ax2.plot(N[:,0], 2*gamma*N[:,0],'--')
+    #ax2.plot(N[:,0], gamma*N[:,0],'--')
     #ax2.axhline(lloc, ls="--", color='red')
     #ax2.set_ylabel(r'$2N\langle\gamma^2\rangle$')
     #ax2.plot(N[:,0], np.var(abs(g),axis=1),'.', color='magenta')
-    fig.savefig(fig_name.format(**args))
+    fig.savefig(run['fig_name'])
+    
+def plot_compare_g_of_N(run):
+    npz = np.load(run['npz_fname'])
+    ckg = npz['nums']
+    N = ckg['number_of_points'][:,0]
+    avg = np.average(ckg['g'], axis=1)
+    lanavg = np.exp(np.average(np.log(ckg['g']), axis=1))
+    heat_g = np.average(ckg['heat_g'], axis=1)
+    psi1psiN = np.average(ckg['psi1psiN'], axis=1)
+    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, 1.5*plotdl.latex_height_inch])
+    ax.plot(N, avg, label="$g$")
+    ax.plot(N, lanavg, label=r"$g_{TYP}$")
+    ax.plot(N, heat_g, label=r"$g_H$")
+    ax.plot(N, psi1psiN, label=r"$\psi_1\psi_N$")
+    ckg0 = ckg[:,0]
+    ax.set_yscale('log')
+    ax.set_xlabel('N')
+    ax.autoscale(False)
+    plot_localization_length(ax,ckg0['c'],ckg0['k'],ckg0['dis_param'],N,N)
 
+    ax.legend(loc='lower left')
+    fig.savefig(run['fig_name'])
+    ax.autoscale(True)
+    
+    
 
+def plot_special_plot(run):
+    options =  {'dispersion_of_N': plot_dispersion_of_N,
+                'dispersion_g'   : plot_dispersion_g,
+                'compare_g_of_N' : plot_compare_g_of_N}
+    options.get(run['special_plot'])(run)
 
+    
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--data_yaml','-d', type=file)
+    parser.add_argument('--plots_yaml','-p', type=file)
+    args = parser.parse_args()
+    
+    if args.data_yaml is not None:
+        f = yaml.load(args.data_yaml)
+        for run in f:
+            calc_a_run(run)
+    
+    if args.plots_yaml is not None:
+        f = yaml.load(args.plots_yaml)
+        
+        fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+        for run in f:
+            if 'special_plot' in run:
+                # special plot means any non regular one.
+                plot_special_plot(run)
+            else:
+                plot_a_run(run, ax)
+                fig.savefig(run['fig_name'])
+                ax.cla()
+        plt.close()
     
 if __name__== "__main__":
-    parse_and_calc()
-    
+    main()

@@ -50,6 +50,10 @@ def input_iterator_size(args):
             the entire iteration """
     return np.prod([len(vals) for vals in args.values()])
     
+def args_shape(args):
+    """ return the flattened shape of args.  """
+    return [ len(vals) for vals in args.values() if len(vals) > 1]
+    
 def args_hash(args):
     """ create a hash of args """
     fset = frozenset((key, frozenset(val)) for key,val in args.items())
@@ -74,12 +78,19 @@ class DataFactory(object):
         
     def read_existing(self):
         return self.data
-    def create_if_missing(self, args):
-        if (self.data is not None) and (self.prev_hash == args_hash(args)):
-            return self.data
-        self.data = np.zeros(input_iterator_size(args), self.dtype)
-        for n, val_set in enumerate(input_iterator(args)):
-            info("creating new data for {}, {}".format(n, val_set))
+        
+    def create_if_missing(self,args):
+        o_args =  OrderedDict(args)
+        if (self.data is not None) and (self.prev_hash == args_hash(o_args)):
+            return self.read_existing()
+        else: return self.create_new(o_args)
+        
+    def create_new(self, args):
+        o_args =  OrderedDict(args)
+        number_of_computations = input_iterator_size(o_args)
+        data = np.zeros(number_of_computations, self.dtype)
+        for n, val_set in enumerate(input_iterator(o_args)):
+            info("calculation {} of {}, {}".format(n, number_of_computations ,val_set))
             res = self.calculate(**val_set)
             newdata =dict(**val_set)
             newdata.update(**res)
@@ -88,9 +99,10 @@ class DataFactory(object):
                 #pdb.set_trace()
                 # weird but works. settle this later
                 if isinstance(val, np.ndarray) and (val.size>1):
-                    self.data[n][key][:] = val
+                    data[n][key][:] = val
                 else:
-                    self.data[n][key] = val
+                    data[n][key] = val
+        self.data = data.reshape(args_shape(o_args))
         self.write_npz(args)
         return self.data 
         

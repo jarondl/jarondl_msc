@@ -1,5 +1,4 @@
 ###  Configuration file for jarondl_msc.pta_chain_g.
-###  It has two sections, one for data runs, and the other for plot creating.
 
 ########################################################################
 ####### DATA runs ######################################################
@@ -94,119 +93,58 @@
     npz_fname : data/pta_of_N_averaged_{dis_param[0]}.npz
     args :   &multiseed_N
       model_name       : [Anderson,]
-      number_of_points : !!python/object/apply:numpy.arange    [2,501]
+      number_of_points : !!python/object/apply:numpy.arange    [2,801]
       bandwidth        : [1,]
       dis_param        : [0.4,]
       k                : [1.57, ]
       c                : [1,]
-      seed             :  !!python/object/apply:numpy.arange    [1,20]
+      #seed             :  !!python/object/apply:numpy.arange    [1,30]
+      seed             :  !!python/object/apply:numpy.arange    [1,3]
 -
 ### PTA of N (s=0.1)
     npz_fname : 'data/pta_of_N_averaged_{dis_param[0]}.npz'
     args : ## Here we merge the previous args with the new dis_param
       <<               : *multiseed_N
       dis_param        : [0.1,]
-
-
-########################################################################
-#########   PLOTS       ################################################
-########################################################################
-### These are plot runs. Each receives a npz files (created by the "data
-##  runs"  above, and the x axis, y axis and other options if needed.
----
-
 -
-    npz_fname : data/pta_thouless2_0.001.npz
-    fig_name : plots/pta_thouless2_0.001.png
-    x_variable: phi
-    y_variable: thouless_sum
-    N_dependance: True
+### PTA of N wide (s=2.0)
+    npz_fname : data/pta_of_N_wide_{dis_param[0]}.npz
+    args :   
+      <<               : *multiseed_N
+      seed             :  !!python/object/apply:numpy.arange    [1,40]
+      dis_param        : [2.0,]
+      number_of_points : !!python/object/apply:numpy.arange    [2,401]
+      
 -
-    npz_fname : data/pta_of_c_0.npz
-    fig_name : plots/pta_of_c_0.png
-    x_variable: c
-    y_variable: g
+### PTA of N wide (s=0.4)
+    npz_fname : 'data/pta_of_N_wide_{dis_param[0]}.npz'
+    args : ## Here we merge the previous args with the new dis_param
+      <<               : *multiseed_N
+      seed             :  !!python/object/apply:numpy.arange    [1,40]
+      dis_param        : [0.4,]
+      number_of_points : !!python/object/apply:numpy.arange    [2,401]
+      
 -
-    npz_fname : data/pta_of_s_N100.npz
-    fig_name : plots/pta_of_s_N100.png
-    x_variable: dis_param
-    y_variable: g
-    average_over: seed
+### PTA dispersion (many realizations)
+    npz_fname : 'data/pta_disperse_s_{dis_param[0]}.npz'
+    args :  &many_realizations
+      model_name       : [Anderson, ]
+      number_of_points : [200, ]
+      bandwidth        : [1, ]
+      dis_param        : [0.4, ]
+      k                : [1.57, ]
+      c                : [1, ]
+      seed             : !!python/object/apply:numpy.arange    [1,10001]
 -
-    npz_fname : data/pta_of_s_N400.npz
-    fig_name : plots/pta_of_s_N400.png
-    x_variable: dis_param
-    y_variable : g
-    average_over: seed
+    npz_fname : 'data/pta_disperse_s_{dis_param[0]}.npz'
+    args :   
+      <<                : *many_realizations
+      dis_param         : [1.6]
 -
-    npz_fname : data/pta_of_s_N400.npz
-    fig_name : plots/pta_heat_of_s_N400.png
-    x_variable: dis_param
-    y_variable: heat_g
-    average_over: seed
--
-    npz_fname : data/pta_of_s_N400.npz
-    fig_name : plots/pta_psi1psiN_of_s_N400.png
-    x_variable: dis_param
-    y_variable: psi1psiN
-    average_over: seed
--
-    npz_fname : data/pta_of_k_multiseed_0.4.npz
-    fig_name : plots/pta_of_k_multiseed_0.4.png
-    x_variable: k
-    y_variable: g
-    second_variable: seed
--
-    npz_fname : 'data/pta_of_k_multiseed_0.1.npz'
-    fig_name : 'plots/pta_of_k_multiseed_0.1.png'
-    x_variable: 'k'
-    y_variable: 'g'
-    second_variable: 'seed'
--
-    npz_fname : 'data/pta_of_k_averaged_0.1.npz'
-    fig_name : 'plots/pta_of_k_averaged_{dis_param[0]}.png'
-    x_variable: 'k'
-    y_variable: 'g'
-    average_over: 'seed'
--
-    npz_fname : 'data/pta_of_k_multiseed_0.3.npz'
-    fig_name : 'plots/pta_of_k_multiseed_0.3.png'
-    x_variable: 'k'
-    y_variable: 'g'
-    second_variable: 'seed'
--
-    npz_fname : 'data/pta_of_k_multiseed_0.1.npz'
-    fig_name : 'plots/pta_heat_of_k_multiseed_0.1.png'
-    x_variable: 'k'
-    y_variable: 'heat_g'
-    second_variable: 'seed'
--
-    npz_fname : data/pta_of_N_averaged_0.4.npz
-    fig_name : plots/pta_of_N_averaged_0.4.png
-    x_variable: number_of_points
-    y_variable: g
-    average_over: seed
--
-    npz_fname : 'data/pta_of_N_averaged_0.1.npz'
-    fig_name : 'plots/pta_of_N_averaged_0.1.png'
-    x_variable: 'number_of_points'
-    y_variable: 'g'
-    average_over: 'seed'
--
-    npz_fname : 'data/pta_of_N_averaged_0.4.npz'
-    fig_name : 'plots/pta_heat_of_N_averaged_0.4.png'
-    x_variable: 'number_of_points'
-    y_variable: 'heat_g'
-    average_over: 'seed'
--
-    npz_fname : 'data/pta_of_N_averaged_0.4.npz'
-    fig_name : 'plots/pta_psi1psiN_of_N_averaged_0.4.png'
-    x_variable: 'number_of_points'
-    y_variable: 'psi1psiN'
-    average_over: 'seed'
--
-    npz_fname : 'data/pta_of_N_averaged_0.1.npz'
-    fig_name : 'plots/pta_psi1psiN_of_N_averaged_0.1.png'
-    x_variable: 'number_of_points'
-    y_variable: 'psi1psiN'
-    average_over: 'seed'
+### PTA of k (s=0.4) dense
+    npz_fname : 'data/pta_of_k_dense_{dis_param[0]}.npz'
+    args : ## Here we merge the previous args with the new dis_param
+      <<               : *multiseed_k
+      k : !!python/object/apply:numpy.linspace  [1,1.8,400]
+      dis_param        : [0.4,]
+      seed              : [1,]

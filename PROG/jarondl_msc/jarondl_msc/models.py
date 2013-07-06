@@ -224,7 +224,7 @@ def Model_Symmetric_Box_banded_1d_conservative(*args, **kwargs):
 class Model_Anderson_DD_1d(Bloch_Banded_1d):
     """ diagonal Disorder """
     def disorder(self):
-        return np.diagflat(self.prng.permutation(np.linspace(-self.dis_param, self.dis_param, self.N)))
+        return np.diagflat(self.prng.permutation(np.linspace(-0.5*self.dis_param, 0.5*self.dis_param, self.N)))
                 
 class Model_Anderson_S_DD_1d(Bloch_Banded_1d):
     """ sparse diagonal Disorder """

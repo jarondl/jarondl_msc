@@ -188,7 +188,7 @@ def autoscale_based_on(ax, lines):
     for line in lines[1:]:
         xy = numpy.vstack(line.get_data()).T
         ax.dataLim.update_from_data_xy(xy, ignore=False)
-    print ("limits changed to ", ax.dataLim)
+    #print ("limits changed to ", ax.dataLim)
     ax.autoscale_view()
 
 class DictScalarFormatter(ticker.ScalarFormatter):
