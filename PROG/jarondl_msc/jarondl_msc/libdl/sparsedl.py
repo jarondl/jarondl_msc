@@ -213,6 +213,8 @@ def var(x, y):
     return mean(xarr ** 2, yarr) - mean(xarr, yarr) ** 2
 
 
+def logavg(X, **kwargs):
+    return np.exp(np.average(np.log(X), **kwargs))
 
 def sparsity(mat):
     """  Calculate the sparsity parameters of a matrix

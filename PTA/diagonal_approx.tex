@@ -1,0 +1,19 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\begin{document}
+
+Let us denote ${a_L = |\psi_1^{\alpha}|^2 }$ and ${a_R = |\psi_N^{\alpha}|^2 }$.
+The diagonal approximation is:
+\begin{align*} 
+g(E)&= \sum_\alpha g_\alpha \\
+g_\alpha(E) &= \left|\frac{\psi_1^\alpha\psi_N^\alpha\gamma v}{E-\varepsilon_\alpha - \frac{\gamma}{2}(E-iv)\left(|\psi_1^\alpha|^2+|\psi_N^\alpha|^2\right)}\right|^2\\
+&= \frac{a_La_R\gamma^2 v^2}{\left(E-\varepsilon_\alpha - \frac{\gamma}{2}E(a_L+a_R)\right)^2 + \left(\frac{\gamma v}{2}(a_L+a_R)\right)^2}\\
+&= \frac{a_La_R\gamma^2 v^2}{\left(1-\frac{\gamma}{2}(a_L+a_R)\right)^2\left(E-\frac{\varepsilon_\alpha}{\left(1-\frac{\gamma}{2}(a_L+a_R)\right)}\right)^2 + \left(\frac{\gamma v}{2}(a_L+a_R)\right)^2}\\
+&= \frac{a_La_R\gamma^2 v^2}{\left(1-\frac{\gamma}{2}(a_L+a_R)\right)^2}\frac{1}{\left(E-\frac{\varepsilon_\alpha}{1-\frac{\gamma}{2}(a_L+a_R)}\right)^2 + \left(\frac{\frac{\gamma v}{2}(a_L+a_R)}{1-\frac{\gamma}{2}(a_L+a_R)}\right)^2}\\
+&= \frac{a_La_R\gamma^2 v^2}{\left(1-\frac{\gamma}{2}(a_L+a_R)\right)^2}\frac{\pi}{\left(\frac{\frac{\gamma v}{2}(a_L+a_R)}{1-\frac{\gamma}{2}(a_L+a_R)}\right)}\left[\frac{\frac{1}{\pi}\left(\frac{\frac{\gamma v}{2}(a_L+a_R)}{1-\frac{\gamma}{2}(a_L+a_R)}\right)}{\left(E-\frac{\varepsilon_\alpha}{1-\frac{\gamma}{2}(a_L+a_R)}\right)^2 + \left(\frac{\frac{\gamma v}{2}(a_L+a_R)}{1-\frac{\gamma}{2}(a_L+a_R)}\right)^2}\right]\\
+&= \frac{a_La_R\gamma^2 v^2\pi}{\left(1-\frac{\gamma}{2}(a_L+a_R)\right)\left(\frac{\gamma v}{2}(a_L+a_R)\right)}
+\left[\frac{\frac{1}{\pi}\left(\frac{\frac{\gamma v}{2}(a_L+a_R)}{1-\frac{\gamma}{2}(a_L+a_R)}\right)}{\left(E-\frac{\varepsilon_\alpha}{1-\frac{\gamma}{2}(a_L+a_R)}\right)^2 + \left(\frac{\frac{\gamma v}{2}(a_L+a_R)}{1-\frac{\gamma}{2}(a_L+a_R)}\right)^2}\right]\\
+\end{align*}
+
+
+\end{document}

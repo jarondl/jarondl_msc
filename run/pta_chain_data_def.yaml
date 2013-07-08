@@ -145,6 +145,14 @@
     npz_fname : 'data/pta_of_k_dense_{dis_param[0]}.npz'
     args : ## Here we merge the previous args with the new dis_param
       <<               : *multiseed_k
-      k : !!python/object/apply:numpy.linspace  [1,1.8,400]
+      k : !!python/object/apply:numpy.linspace  [1,1.8,2000]
       dis_param        : [0.4,]
+      seed              : [1,]
+-
+### PTA of k (s=0.4) dense
+    npz_fname : 'data/pta_of_k_dense_changing_W.npz'
+    args : ## Here we merge the previous args with the new dis_param
+      <<               : *multiseed_k
+      k : !!python/object/apply:numpy.linspace  [1,1.8,400]
+      dis_param        : [0.1, 0.2, 0.4, 0.8]
       seed              : [1,]

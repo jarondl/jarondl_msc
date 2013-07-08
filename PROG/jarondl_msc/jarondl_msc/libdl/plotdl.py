@@ -224,4 +224,8 @@ def get_LogNLocator(N = 6):
         LogNLocator = LogLocator()
         LogNLocator.numticks = N
         return LogNLocator
+        
+def close10():
+    for n in range(10):
+        plt.close()
 

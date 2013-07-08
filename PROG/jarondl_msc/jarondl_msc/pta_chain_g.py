@@ -35,6 +35,7 @@ from .libdl import sparsedl
 from .libdl import phys_functions
 
 from .libdl.phys_functions import lyap_gamma
+from .libdl.sparsedl import logavg
 from .libdl.tools import h5_create_if_missing, h5_get_first_rownum_by_args
 from .libdl.tools import ev_and_pn_class, ev_pn_g_class, c_k_g_class, ckg_dtype, ckg_psis_dtyper
 from .libdl.plotdl import plt, cummulative_plot, get_LogNLocator
@@ -168,13 +169,15 @@ def plot_localization_length(ax, c, k, dis_param, n, x):
     """ Add the theoretical expected line for localization length"""
     E = 2*np.asarray(c)*np.cos(k)
     gamma_inf = lyap_gamma(c,dis_param, E)
-    loc_length1 = 1/((np.cosh(n*gamma_inf))**2)
-    loc_length2 = 1/(np.exp(2*n*gamma_inf)+1)
-    loc_length3 = 1/(np.exp(2*n*gamma_inf))
-    if x.size == loc_length1.size :
-        ax.plot(x, loc_length1,color='black', ls='--')
-        ax.plot(x, loc_length2,color='purple', ls='--')
-        ax.plot(x, loc_length3,color='cyan', ls='--')
+    #loc_length1 = 1/((np.cosh(n*gamma_inf))**2)
+    #loc_length2 = 1/(np.exp(n*gamma_inf)+1)
+    loc_length3 = np.exp(-2*n*gamma_inf)
+    if x.size == loc_length3.size :
+        ax.autoscale(False)
+        ax.plot(x, loc_length3,color='black', ls='--')
+        #ax.plot(x, loc_length2,color='purple', ls='--')
+        #ax.plot(x, loc_length3,color='cyan', ls='--')
+        #ax.autoscale(True)
 
 def calc_a_run(run):
     """ create data for a run ( a'run' is a yaml configuration segment)"""
@@ -302,7 +305,7 @@ def plot_psi1_psi2(seed=0, abs_value=False):
     fig2.savefig("psi_times_psi2{}_0.3.png".format('_abs' if abs else ''))
     fig3.savefig("psi_heat_psi2{}_0.3.png".format('_abs' if abs else ''))
     
-def plot_dispersion_g(run):
+def plot_dispersion_g(run): ##(histograms)
     
     npz = np.load(run['npz_fname'])
     ckg = npz['nums']
@@ -312,21 +315,21 @@ def plot_dispersion_g(run):
     gamma = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0]
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     gamma2N = gamma*2*N
-    x = 2*np.arccosh(1/np.sqrt(g))
+    lng = -np.log(g)
     #sig = lloc/(2*N)
-    ax.hist(x,bins=np.sqrt(len(ckg['g'])), normed=True, edgecolor='none')
+    ax.hist(lng, bins=np.sqrt(len(ckg['g'])), normed=True, edgecolor='none')
     sig = gamma2N
-    g_space = np.linspace(min(x), max(x))
+    g_space = np.linspace(min(lng), max(lng))
     #gauss = np.exp(-(g_space-gamma)**2/(2*sig))/(np.sqrt(2*pi*sig))
     gauss = lambda y: np.exp(-(y-gamma2N)**2/(2*sig))/(np.sqrt(2*pi*sig))
     gaussf = gauss(g_space) + gauss(-g_space)
     gaussx = g_space * gauss(g_space)
     ax.autoscale(False)
     ax.plot(g_space, gauss(g_space), ':' , color='red')
-    ax.plot(g_space, gaussx, '--' , color='red')
+    ax.plot(g_space, gaussf, '--' , color='red')
     ax.set_xlabel(r'$x$')
     fig.savefig(run['fig_name'])
-
+    plt.close()
     
 def plot_dispersion_of_N(run):
     npz = np.load(run['npz_fname'])
@@ -336,35 +339,36 @@ def plot_dispersion_of_N(run):
     #gamma = np.log(abs(g))/(N)
     #gamma = np.cosh(abs(g))**2/(N)
     #x = 2*np.arccosh(1/np.sqrt(g))
-    x = 2*np.arccosh(1/np.sqrt(g))
+    x = -np.log(g)
     #x = np.log(g)
     gamma = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0,0]
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     ax.plot(N[:,0], np.average(x,axis=1),'.', color='blue')
     #ax.axhline(lloc, ls="--", color='red')
     ax.set_xlabel('N')
-    ax.set_ylabel(r'$x$, $\langle x^2 \rangle$')
+    ax.set_ylabel(r'$\langle \ln(g) \rangle$, var$(\ln(g))$')
     #ax.plot(N[:,0], np.average(abs(g),axis=1),'.', color='cyan')
     #ax2 = ax.twinx()
     ax2=ax
     ax2.plot(N[:,0], np.var(x,axis=1),'.', color='green')
-    ax2.plot(N[:,0], 2*gamma*N[:,0],'--')
+    ax2.plot(N[:,0], 2*gamma*N[:,0],'--', color='black')
     #ax2.plot(N[:,0], gamma*N[:,0],'--')
     #ax2.axhline(lloc, ls="--", color='red')
     #ax2.set_ylabel(r'$2N\langle\gamma^2\rangle$')
     #ax2.plot(N[:,0], np.var(abs(g),axis=1),'.', color='magenta')
     fig.savefig(run['fig_name'])
+    plt.close()
     
 def plot_compare_g_of_N(run):
     npz = np.load(run['npz_fname'])
     ckg = npz['nums']
     N = ckg['number_of_points'][:,0]
-    avg = np.average(ckg['g'], axis=1)
-    lanavg = np.exp(np.average(np.log(ckg['g']), axis=1))
-    heat_g = np.average(ckg['heat_g'], axis=1)
-    psi1psiN = np.average(ckg['psi1psiN'], axis=1)
+    #avg = np.average(ckg['g'], axis=1)
+    lanavg = logavg(ckg['g'], axis=1)
+    heat_g = logavg(ckg['heat_g'], axis=1)
+    psi1psiN = logavg(ckg['psi1psiN'], axis=1)
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, 1.5*plotdl.latex_height_inch])
-    ax.plot(N, avg, label="$g$")
+    #ax.plot(N, avg, label="$g$")
     ax.plot(N, lanavg, label=r"$g_{TYP}$")
     ax.plot(N, heat_g, label=r"$g_H$")
     ax.plot(N, psi1psiN, label=r"$\psi_1\psi_N$")
@@ -376,9 +380,22 @@ def plot_compare_g_of_N(run):
 
     ax.legend(loc='lower left')
     fig.savefig(run['fig_name'])
-    ax.autoscale(True)
+    #ax.autoscale(True)
+    plt.close()
+
+def plot_da():
+    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     
+    mw = lambda w : models.Model_Anderson_DD_1d(number_of_points=400, bandwidth=1, periodic=False,
+                        prng  = np.random.RandomState(1), dis_param=w)
+    k_space = np.linspace(0.1,pi, 2000)
+    w_space = [0.1,0.4,0.8]
+    for w in w_space:
+        m = mw(w)
+        ada = [phys_functions.diag_approx_abs(m.eig_vals, 1, k, m.eig_matrix) for k in k_space]
+        print (ax.plot(k_space, ada))
     
+    fig.savefig('plots/pta_da400.png')
 
 def plot_special_plot(run):
     options =  {'dispersion_of_N': plot_dispersion_of_N,
@@ -386,31 +403,35 @@ def plot_special_plot(run):
                 'compare_g_of_N' : plot_compare_g_of_N}
     options.get(run['special_plot'])(run)
 
+
+def calc_all(open_file):
+    f = yaml.load(open_file)
+    for run in f:
+        calc_a_run(run)
+
+def plot_all(open_file):
+    f = yaml.load(open_file)
     
+    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+    for run in f:
+        if 'special_plot' in run:
+            # special plot means any non regular one.
+            plot_special_plot(run)
+        else:
+            plot_a_run(run, ax)
+            fig.savefig(run['fig_name'])
+            ax.cla()
+    plt.close()
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data_yaml','-d', type=file)
     parser.add_argument('--plots_yaml','-p', type=file)
     args = parser.parse_args()
-    
     if args.data_yaml is not None:
-        f = yaml.load(args.data_yaml)
-        for run in f:
-            calc_a_run(run)
-    
+        calc_all(args.data_yaml)
     if args.plots_yaml is not None:
-        f = yaml.load(args.plots_yaml)
-        
-        fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
-        for run in f:
-            if 'special_plot' in run:
-                # special plot means any non regular one.
-                plot_special_plot(run)
-            else:
-                plot_a_run(run, ax)
-                fig.savefig(run['fig_name'])
-                ax.cla()
-        plt.close()
+        plot_all(args.plots_yaml)
     
 if __name__== "__main__":
     main()

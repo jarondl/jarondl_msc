@@ -8,53 +8,62 @@
 ---
 ##
 -
+#### Plot sum over thouless curvature as function of phi, for debugging
     npz_fname : data/pta_thouless2_0.001.npz
     fig_name : plots/pta_thouless2_0.001.png
     x_variable: phi
     y_variable: thouless_sum
     N_dependance: True
 -
+#### Change c, the hopping constant.
     npz_fname : data/pta_of_c_0.npz
     fig_name : plots/pta_of_c_0.png
     x_variable: c
     y_variable: g
 -
+#### change W with N = 100
     npz_fname : data/pta_of_s_N100.npz
     fig_name : plots/pta_of_s_N100.png
     x_variable: dis_param
     y_variable: g
     average_over: seed
 -
+#### change W with N = 400
     npz_fname : data/pta_of_s_N400.npz
     fig_name : plots/pta_of_s_N400.png
     x_variable: dis_param
     y_variable : g
     average_over: seed
 -
+#### change W with N = 400, and plot g_heat
     npz_fname : data/pta_of_s_N400.npz
     fig_name : plots/pta_heat_of_s_N400.png
     x_variable: dis_param
     y_variable: heat_g
     average_over: seed
 -
+#### change W with N = 400, and plot psi1psiN
     npz_fname : data/pta_of_s_N400.npz
     fig_name : plots/pta_psi1psiN_of_s_N400.png
     x_variable: dis_param
     y_variable: psi1psiN
     average_over: seed
 -
+#### change k , several realizations, with W = 0.4
     npz_fname : data/pta_of_k_multiseed_0.4.npz
     fig_name : plots/pta_of_k_multiseed_0.4.png
     x_variable: k
     y_variable: g
     second_variable: seed
 -
+#### change k , several realizations, with W = 0.1
     npz_fname : 'data/pta_of_k_multiseed_0.1.npz'
     fig_name : 'plots/pta_of_k_multiseed_0.1.png'
     x_variable: 'k'
     y_variable: 'g'
     second_variable: 'seed'
 -
+#### change k , average over realizations, with W = 0.1
     npz_fname : 'data/pta_of_k_averaged_0.1.npz'
     fig_name : 'plots/pta_of_k_averaged_0.1.png'
     x_variable: 'k'
