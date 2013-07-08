@@ -116,12 +116,16 @@
     fig_name : 'plots/pta_gamma_of_N_0.4.png'
     special_plot : dispersion_of_N
 -
-    npz_fname : 'data/pta_of_N_wide_0.4.npz'
-    fig_name : 'plots/pta_gamma_wide_of_N_0.4.png'
-    special_plot : dispersion_of_N
--
     npz_fname : 'data/pta_of_N_wide_2.0.npz'
     fig_name : 'plots/pta_gamma_wide_of_N_2.0.png'
+    special_plot : dispersion_of_N
+-
+    npz_fname : 'data/pta_of_N_wide_1.0.npz'
+    fig_name : 'plots/pta_gamma_wide_of_N_1.0.png'
+    special_plot : dispersion_of_N
+-
+    npz_fname : 'data/pta_of_N_wide_0.4.npz'
+    fig_name : 'plots/pta_gamma_wide_of_N_0.4.png'
     special_plot : dispersion_of_N
 -
     npz_fname : 'data/pta_of_N_averaged_0.1.npz'
@@ -147,6 +151,10 @@
 -
     npz_fname : 'data/pta_of_N_wide_2.0.npz'
     fig_name  : 'plots/pta_widecompare_g_of_N2.0.png'
+    special_plot : compare_g_of_N
+-
+    npz_fname : 'data/pta_of_N_wide_1.0.npz'
+    fig_name  : 'plots/pta_widecompare_g_of_N1.0.png'
     special_plot : compare_g_of_N
 
 #####  alternative g calculations

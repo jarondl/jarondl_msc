@@ -106,7 +106,7 @@
     args : ## Here we merge the previous args with the new dis_param
       <<               : *multiseed_N
       dis_param        : [0.1,]
--
+- 
 ### PTA of N wide (s=2.0)
     npz_fname : data/pta_of_N_wide_{dis_param[0]}.npz
     args :   
@@ -114,6 +114,22 @@
       seed             :  !!python/object/apply:numpy.arange    [1,40]
       dis_param        : [2.0,]
       number_of_points : !!python/object/apply:numpy.arange    [2,401]
+- 
+### PTA of N wide (s=1.0)
+    npz_fname : data/pta_of_N_wide_{dis_param[0]}.npz
+    args :   
+      <<               : *multiseed_N
+      seed             :  !!python/object/apply:numpy.arange    [1,40]
+      dis_param        : [1.0,]
+      number_of_points : !!python/object/apply:numpy.arange    [2,401]
+- 
+### PTA of N wide and long (s=1.0)
+    npz_fname : data/pta_of_N_wide_long_{dis_param[0]}.npz
+    args :   
+      <<               : *multiseed_N
+      seed             :  !!python/object/apply:numpy.arange    [1,40]
+      dis_param        : [1.0,]
+      number_of_points : !!python/object/apply:numpy.arange    [2,1000]
       
 -
 ### PTA of N wide (s=0.4)
