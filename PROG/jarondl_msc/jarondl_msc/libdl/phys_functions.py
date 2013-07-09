@@ -106,7 +106,10 @@ def diag_approx_abs(eig_vals, c, k, eig_matrix, gamma=1):
 def heat_g(psi_1, psi_N):
     return np.nansum(2*(abs(psi_1)**2)*(abs(psi_N)**2) / ((abs(psi_1)**2) + (abs(psi_N)**2)))
 
-
+def ga(eig_matrix):
+    al, ar = (eig_matrix[0,:])**2, (eig_matrix[-1,:])**2
+    return 2*al*ar*(al+ar)
+    
 
         
 def lyap_gamma(c,s,E=0):
