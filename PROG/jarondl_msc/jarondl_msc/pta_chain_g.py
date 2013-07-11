@@ -38,7 +38,7 @@ from .libdl.phys_functions import lyap_gamma
 from .libdl.sparsedl import logavg
 from .libdl.tools import h5_create_if_missing, h5_get_first_rownum_by_args
 from .libdl.tools import ev_and_pn_class, ev_pn_g_class, c_k_g_class, ckg_dtype, ckg_psis_dtyper
-from .libdl.plotdl import plt, cummulative_plot, get_LogNLocator
+from .libdl.plotdl import plt, cummulative_plot, get_LogNLocator, s_cummulative_plot
 from .banded_bloch_ev import theor_banded_ev, theor_banded_dev
 from .banded_bloch_ev import cached_get_sum_dos
 
@@ -400,6 +400,26 @@ def plot_special_plot(run):
                 'dispersion_g'   : plot_dispersion_g,
                 'compare_g_of_N' : plot_compare_g_of_N}
     options.get(run['special_plot'])(run)
+
+
+
+
+
+
+##
+def relevant_alm(mode, dis_param):
+    N = mode.size
+    x0 = np.abs(mode).argmax()-N/2.0+0.5
+    return anderson_localized_mode(N, dis_param, x0)
+    
+def anderson_localized_mode(N, dis_param, x0):
+    gamma = lyap_gamma(1,dis_param)
+    
+    x = np.linspace(-N/2, N/2)
+    y = np.sqrt(gamma)*np.exp(-gamma*np.abs(x-x0))
+    return y
+
+
 
 
 def calc_all(open_file):

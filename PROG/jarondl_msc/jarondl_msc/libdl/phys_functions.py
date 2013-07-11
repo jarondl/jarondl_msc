@@ -110,6 +110,10 @@ def ga(eig_matrix):
     al, ar = (eig_matrix[0,:])**2, (eig_matrix[-1,:])**2
     return 2*al*ar*(al+ar)
     
+def ander_ga(N, gamma, x):
+    """ Anderson expected ga"""
+    return gamma*np.exp(-gamma*N)/np.cosh(2*gamma*x)
+    
 
         
 def lyap_gamma(c,s,E=0):

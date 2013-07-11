@@ -152,6 +152,10 @@ def cummulative_plot(ax, values, label=None, **kwargs):
     line_return = ax.plot(values, numpy.linspace(1/N, 1, N), label=label, **kwargs)
     draw_if_interactive()
     return line_return
+    
+def s_cummulative_plot(ax, values, **kwargs):
+    """ sorted cummulative plot """
+    return cummulative_plot(ax, sorted(values), **kwargs)
 
 def matshow_cb(ax, matrix, vmin=10**(-10), colorbar=True):
     """
