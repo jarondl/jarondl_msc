@@ -23,7 +23,7 @@ import argparse
 
 # global packages
 from numpy import pi
-from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import MaxNLocator, LogLocator
 import numpy as np
 import tables
 import yaml
@@ -339,6 +339,7 @@ def plot_dispersion_of_N(run):
     g = ckg['g']
     da = -np.log(ckg['abs_g_diag_approx'])
     gh = -np.log(ckg['heat_g'])
+    #gh = -np.log(ckg['heat_g'])
     x = -np.log(g)
     x2 = -2*np.log(ckg['psi1psiN'])
     gamma = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0,0]
@@ -361,6 +362,7 @@ def plot_compare_g_of_N(run):
     N = ckg['number_of_points'][:,0]
     #avg = np.average(ckg['g'], axis=1)
     lanavg = logavg(ckg['g'], axis=1)
+    #heat_g = N*logavg(lyap_gamma(ckg['c'],ckg['dis_param'])*ckg['heat_g'], axis=1)
     heat_g = logavg(ckg['heat_g'], axis=1)
     psi1psiN = logavg(ckg['psi1psiN'], axis=1)
     #varlang = np.exp(np.var(np.log(ckg['g']), axis=1))
@@ -403,7 +405,40 @@ def plot_special_plot(run):
 
 
 
+def plot_gh_distribution(N=100, dp = 2.0, sds = np.arange(1000)):
+    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+    tga = np.zeros([len(sds), N])
+    for sd, tg in zip(sds, tga):
+        m = models.Model_Anderson_DD_1d(number_of_points=N, dis_param=dp, 
+                    periodic=False, bandwidth=1, prng=np.random.RandomState(sd))
+        ga = N*phys_functions.ga(m.eig_matrix)
+        tg[:] = ga
+        #p = s_cummulative_plot(ax, ga)
 
+    mi, ma, theo = phys_functions.ga_cdf(lyap_gamma(1,dp), N)
+    ghs = np.logspace(np.log10(mi),np.log10(ma)+1, 1000)
+    logg = logavg(tga,axis=0)
+    s_cummulative_plot(ax, logg)
+    debug((logg.shape, tga.shape))
+    p = s_cummulative_plot(ax, tga)
+    ax.plot(ghs, theo(ghs) , color='black')    
+    #return ghs, theo
+    #tga_sum = np.nansum(tga,axis=1)
+    tga_avg = np.average(tga, axis=1)
+    
+    ax.axvline(logavg(tga_avg), ls='-', color='red')
+    ax.axvline(np.average(tga), ls='-', color='magenta')
+    ax.axvline(logavg(tga[tga>1e-100]), ls=':', color='red')
+    ax.axvline(np.exp(-2*N*lyap_gamma(1,dp)), ls='--', color='green')
+    #ax.axvline(4*(lyap_gamma(1,dp)**2)*N*np.exp(-2*N*lyap_gamma(1,dp)), ls='--', color='green')
+    print(2*N*lyap_gamma(1,dp))
+    ax.set_xscale('log')
+    ax.set_xlim(1e-10, 10)
+    ax.set_ylim(1e-20, 1)
+    ax.set_title("W = {}, $\gamma$ = {:.2}, N = {}".format(dp, lyap_gamma(1,dp), N))
+    ax.xaxis.set_major_locator(LogLocator(numdecs=10))
+    fig.savefig('plots/pta_gh_dist.png')
+    #return ghs, theo
 
 
 ##

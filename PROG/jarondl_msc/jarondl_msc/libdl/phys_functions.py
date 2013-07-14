@@ -107,14 +107,17 @@ def heat_g(psi_1, psi_N):
     return np.nansum(2*(abs(psi_1)**2)*(abs(psi_N)**2) / ((abs(psi_1)**2) + (abs(psi_N)**2)))
 
 def ga(eig_matrix):
-    al, ar = (eig_matrix[0,:])**2, (eig_matrix[-1,:])**2
-    return 2*al*ar*(al+ar)
+    al, ar = abs(eig_matrix[0,:])**2, abs(eig_matrix[-1,:])**2
+    return 2*al*ar/(al+ar)
     
 def ander_ga(N, gamma, x):
     """ Anderson expected ga"""
-    return gamma*np.exp(-gamma*N)/np.cosh(2*gamma*x)
+    return 2*gamma*N*np.exp(-2*gamma*N)/np.cosh(4*gamma*x)
     
-
+def ga_cdf(gamma, N):
+    ming = 2*gamma*N*np.exp(-2*gamma*N)/np.cosh(4*gamma*N)
+    maxg = 2*gamma*N*np.exp(-2*gamma*N)
+    return (ming, maxg, lambda gh: 1- (1/(2*gamma*N))*np.arccosh(2*(gamma)*N*np.exp(-2*gamma*N)*(gh**(-1))))
         
 def lyap_gamma(c,s,E=0):
     """ Gamma for L-> \infty """

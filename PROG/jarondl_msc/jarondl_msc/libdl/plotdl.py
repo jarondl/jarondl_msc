@@ -47,6 +47,7 @@ from matplotlib import ticker
 from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
 import numpy
+import numpy as np
 
 from handle_tight import tight_layout
 
@@ -155,7 +156,8 @@ def cummulative_plot(ax, values, label=None, **kwargs):
     
 def s_cummulative_plot(ax, values, **kwargs):
     """ sorted cummulative plot """
-    return cummulative_plot(ax, sorted(values), **kwargs)
+    svalues = np.sort(values.flat)
+    return cummulative_plot(ax, (svalues), **kwargs)
 
 def matshow_cb(ax, matrix, vmin=10**(-10), colorbar=True):
     """
