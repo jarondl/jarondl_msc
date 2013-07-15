@@ -23,6 +23,7 @@ import argparse
 
 # global packages
 from numpy import pi
+from scipy.stats import norm, lognorm
 from matplotlib.ticker import MaxNLocator, LogLocator
 import numpy as np
 import tables
@@ -407,12 +408,19 @@ def plot_special_plot(run):
 
 def plot_gh_distribution(N=100, dp = 2.0, sds = np.arange(1000)):
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
-    tga = np.zeros([len(sds), N])
-    for sd, tg in zip(sds, tga):
+    cbandwidth = 20 #N #20
+    tga = np.zeros([len(sds), cbandwidth])
+    gg = np.zeros([len(sds)])
+    for n, (sd, tg) in enumerate(zip(sds, tga)):
         m = models.Model_Anderson_DD_1d(number_of_points=N, dis_param=dp, 
                     periodic=False, bandwidth=1, prng=np.random.RandomState(sd))
-        ga = N*phys_functions.ga(m.eig_matrix)
+        ## TAKE ONLY CENTER OF BAND:
+        crange = np.arange(N//2 -cbandwidth//2, N//2 + cbandwidth//2)
+        #crange = (abs(m.eig_vals).copy().argsort())[:4]
+        #debug((crange, np.arange(N//2 -cbandwidth//2, N//2 + cbandwidth//2)))
+        ga = N*phys_functions.ga(m.eig_matrix[:,[crange]])
         tg[:] = ga
+        gg[n] = abs(phys_functions.A_matrix_inv(m.rate_matrix,1,1.57))**2
         #p = s_cummulative_plot(ax, ga)
 
     mi, ma, theo = phys_functions.ga_cdf(lyap_gamma(1,dp), N)
@@ -421,11 +429,18 @@ def plot_gh_distribution(N=100, dp = 2.0, sds = np.arange(1000)):
     s_cummulative_plot(ax, logg)
     debug((logg.shape, tga.shape))
     p = s_cummulative_plot(ax, tga)
+    sh, lo, sc = lognorm.fit(tga.flat)
+    mu = np.log(sc)
+    stdv = sh
+    debug((sh,lo,sc))
+    #lg = lognorm()
+    xspace = np.logspace(np.log10(tga.min()), np.log10(tga.max()))
+    ax.plot(xspace, norm.cdf(np.log(xspace), [stdv],loc=mu, scale=stdv), '-.', color='cyan')
     ax.plot(ghs, theo(ghs) , color='black')    
     #return ghs, theo
     #tga_sum = np.nansum(tga,axis=1)
     tga_avg = np.average(tga, axis=1)
-    
+    ax.axvline(logavg(gg))
     ax.axvline(logavg(tga_avg), ls='-', color='red')
     ax.axvline(np.average(tga), ls='-', color='magenta')
     ax.axvline(logavg(tga[tga>1e-100]), ls=':', color='red')
@@ -433,15 +448,41 @@ def plot_gh_distribution(N=100, dp = 2.0, sds = np.arange(1000)):
     #ax.axvline(4*(lyap_gamma(1,dp)**2)*N*np.exp(-2*N*lyap_gamma(1,dp)), ls='--', color='green')
     print(2*N*lyap_gamma(1,dp))
     ax.set_xscale('log')
-    ax.set_xlim(1e-10, 10)
+    #ax.set_xlim(1e-10, 10)
     ax.set_ylim(1e-20, 1)
     ax.set_title("W = {}, $\gamma$ = {:.2}, N = {}".format(dp, lyap_gamma(1,dp), N))
     ax.xaxis.set_major_locator(LogLocator(numdecs=10))
     fig.savefig('plots/pta_gh_dist.png')
     #return ghs, theo
 
+def plot_gh_of_x(N=100, dp = 2.0, sds = np.arange(1000)):
+    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
+    cbandwidth = 20 #N #20
+    tga = np.zeros([len(sds), cbandwidth])
+    locs = np.zeros([len(sds), cbandwidth])
+    energies = np.zeros([len(sds), cbandwidth])
+    for n, (sd, tg, loc, ene) in enumerate(zip(sds, tga, locs, energies)):
+        m = models.Model_Anderson_DD_1d(number_of_points=N, dis_param=dp, 
+                    periodic=False, bandwidth=1, prng=np.random.RandomState(sd))
+        ## TAKE ONLY CENTER OF BAND:
+        crange = np.arange(N//2 -cbandwidth//2, N//2 + cbandwidth//2)
+        ga = N*phys_functions.ga(m.eig_matrix[:,[crange]])
+        lo = sparsedl.mode_center(m.eig_matrix[:,crange])
+        order = lo.argsort()
+        tg[:] = ga[0][order]
+        loc[:] = lo[order]- N//2
+        ene[:] = (m.eig_vals[crange])[order]
+    
+    xr = np.arange(N)-N//2
 
-##
+    ax.plot(locs.flat,tga.flat,'.')
+    ax.plot(xr, phys_functions.ander_ga(N, lyap_gamma(1,dp, 0), xr), color='red')
+    ax.plot(xr, N*phys_functions.ander_ga(N, lyap_gamma(1,dp, 0), xr), ':',color='red')
+    ax.plot(xr, (1/lyap_gamma(1,dp))*phys_functions.ander_ga(N, lyap_gamma(1,dp, 0), xr),'--', color='red')
+    ax.set_yscale('log')
+    ax.set_title("W = {}, $\gamma$ = {:.2}, N = {}, $\gamma N$ = {:.2}".format(dp, lyap_gamma(1,dp), N, N*lyap_gamma(1,dp) ))
+    fig.savefig('plots/pta_gh_of_x_W{}.png'.format(dp))
+        
 def relevant_alm(mode, dis_param):
     N = mode.size
     x0 = np.abs(mode).argmax()-N/2.0+0.5

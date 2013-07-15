@@ -198,7 +198,7 @@ def strexp(x, a, b):
 def mean(x, y):
     """  Returns the mean of a ditribution with x as location and y as value
     """
-    return numpy.sum(x * y) / numpy.sum(y)
+    return numpy.sum(x * y, axis=0) / numpy.sum(y, axis=0)
 
 
 
@@ -327,8 +327,11 @@ def window_avg_mtrx(N, win_size=4):
     M = np.tri(N, k=win_size//2)*(np.tri(N, k=win_size//2).T)
     return ( M / M.sum(axis=0)).T
     
-### "Physical functions"
-
+def mode_center(modes):
+    """ return the estimated center of the modes """
+    #return np.average(np.arange(modes.shape[0]), axis=0, weights=abs(modes))
+    x = np.tile(np.arange(modes.shape[0]), [modes.shape[1],1]).T
+    return mean(x, abs(modes))
 
 ######### Mathematical aux functions
 def omega_d(d):
