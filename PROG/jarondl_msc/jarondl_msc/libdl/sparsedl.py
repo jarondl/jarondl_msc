@@ -331,7 +331,7 @@ def mode_center(modes):
     """ return the estimated center of the modes """
     #return np.average(np.arange(modes.shape[0]), axis=0, weights=abs(modes))
     x = np.tile(np.arange(modes.shape[0]), [modes.shape[1],1]).T
-    return mean(x, abs(modes))
+    return mean(x, abs(modes)**2)
 
 ######### Mathematical aux functions
 def omega_d(d):

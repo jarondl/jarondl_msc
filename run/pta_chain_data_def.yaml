@@ -132,6 +132,15 @@
       number_of_points : !!python/object/apply:numpy.arange    [2,1000]
       
 -
+### PTA of N wide and high (s=0.4)
+    npz_fname : 'data/pta_of_N_tall_{dis_param[0]}.npz'
+    args : ## Here we merge the previous args with the new dis_param
+      <<               : *multiseed_N
+      seed             :  !!python/object/apply:numpy.arange    [1,40]
+      dis_param        : [0.4,]
+      number_of_points : !!python/object/apply:numpy.arange    [2,1000]
+      
+-
 ### PTA of N wide (s=0.4)
     npz_fname : 'data/pta_of_N_wide_{dis_param[0]}.npz'
     args : ## Here we merge the previous args with the new dis_param

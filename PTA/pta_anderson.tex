@@ -1,0 +1,198 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  pta notes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[onecolumn,fleqn,longbibliography]{revtex4}
+
+% fonts
+\usepackage{latexsym}
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage{bm}
+\usepackage{wasysym}
+
+\usepackage{graphicx}
+
+\usepackage{color}
+% extra by jarondl
+
+\usepackage{array}
+\usepackage{float}%unfloats
+%\usepackage{multicol}
+\usepackage[caption=false]{subfig} %subcaption is not compat with revtex
+\usepackage[pdftitle={PTA},bookmarks]{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% NEW 
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\varphiJ}{\bm{\varphi}}
+\newcommand{\thetaJ}{\bm{\theta}}
+%\renewcommand{\includegraphics}[2][0]{FIGURE}
+\newcommand{\rmrk}[1]{\textcolor{red}{#1}}
+\newcommand{\Eq}[1]{\textcolor{blue}{Eq.\!\!~(\ref{#1})}} 
+\newcommand{\Fig}[1]{\textcolor{blue}{Fig.}\!\!~\ref{#1}}
+
+% math symbols I
+\newcommand{\sinc}{\mbox{sinc}}
+\newcommand{\const}{\mbox{const}}
+\newcommand{\trc}{\mbox{trace}}
+\newcommand{\intt}{\int\!\!\!\!\int }
+\newcommand{\ointt}{\int\!\!\!\!\int\!\!\!\!\!\circ\ }
+\newcommand{\ar}{\mathsf r}
+\newcommand{\im}{\mbox{Im}}
+\newcommand{\re}{\mbox{Re}}
+
+% math symbols II
+\newcommand{\eexp}{\mbox{e}^}
+\newcommand{\bra}{\left\langle}
+\newcommand{\ket}{\right\rangle}
+
+% Mass symbol
+\newcommand{\mass}{\mathsf{m}} 
+\newcommand{\rdisc}{\epsilon} 
+
+% more math commands
+\newcommand{\tbox}[1]{\mbox{\tiny #1}}
+\newcommand{\bmsf}[1]{\bm{\mathsf{#1}}} 
+\newcommand{\amatrix}[1]{\begin{matrix} #1 \end{matrix}} 
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+
+% equations
+\newcommand{\mylabel}[1]{\label{#1}} 
+\newcommand{\beq}{\begin{eqnarray}}
+\newcommand{\eeq}{\end{eqnarray}} 
+\newcommand{\be}[1]{\begin{eqnarray}\ifthenelse{#1=-1}{\nonumber}{\ifthenelse{#1=0}{}{\mylabel{e#1}}}}
+\newcommand{\ee}{\end{eqnarray}} 
+
+% arrangement
+\newcommand{\hide}[1]{}
+\newcommand{\drawline}{\begin{picture}(500,1)\line(1,0){500}\end{picture}}
+\newcommand{\bitem}{$\bullet$ \ \ \ }
+\newcommand{\Cn}[1]{\begin{center} #1 \end{center}}
+\newcommand{\mpg}[2][1.0\hsize]{\begin{minipage}[b]{#1}{#2}\end{minipage}}
+\newcommand{\mpgt}[2][1.0\hsize]{\begin{minipage}[t]{#1}{#2}\end{minipage}}
+
+
+%footnotemark:
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sections
+\newcommand{\sect}[1]
+{
+\addtocounter{section}{1} 
+\setcounter{subsection}{0}
+\ \\ 
+\pdfbookmark[2]{\thesection. \ #1}{sect.\thesection}
+{\Large\bf $=\!=\!=\!=\!=\!=\;$ [{\thesection}] \ #1}  
+\nopagebreak
+}
+
+
+% subections
+\newcommand{\subsect}[1]
+{
+\addtocounter{subsection}{1} 
+\ \\ 
+\pdfbookmark[2]{\ \ \ \ \thesection.\thesubsection. \ #1}{subsect.\thesection.\thesubsection}
+{\bf $=\!=\!=\!=\!=\!=\;$ [\thesection.\thesubsection] \ #1} 
+\nopagebreak
+}
+%%% fix numbering to be arabic:
+\renewcommand\thesection{\arabic{section}}
+\renewcommand\thesubsection{\arabic{subsection}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% extra commands by jarondl
+%% 
+\newcommand{\kket}[1]{\left| #1 \right\rangle }
+\newcommand{\bbra}[1]{\left\langle #1 \right| }
+
+\graphicspath{{figures/}}
+\begin{document}
+
+\title{PTA - Anderson}
+
+\author{YdL}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+\sect{Introduction}
+
+%%%%%%%%%%%%%%%
+\sect{Model}
+
+The model is a $1d$ chain, with constant hopping and random site energies.
+In site representation, 
+where $\kket{n}$ is site number $n$, the Hamiltonian is:
+\begin{align}
+    \mathcal{H} \ &= \ \sum_n^N \kket{n}\bbra{n} \varepsilon_n \ + \ \kket{n}\bbra{n+1}c \\
+    c  \ &= \ 1 \\
+    \varepsilon_n \ &\in \ \left[-\frac{W}{2} \ ,\  +\frac{W}{2} \right]
+\end{align}
+${c}$ is a constant that sets the energy scale, 
+and $\varepsilon_n$ is a random variable 
+\textbf{uniformly} distributed on the stated range. 
+The free parameters are therefore ${W}$ and ${N}$.
+
+%%%%%%%%%%%%%%%%%
+\sect{Localization length}
+
+The modes are localized, with localization length $\xi$. The more commonly used parameter is the corresponding Lyapunov exponent ${\gamma = \xi^{-1}}$. Strictly speaking, this is the $N\rightarrow\infty$ limit of $\gamma_N$. Anyway, the known result
+for this speccific model in the weak disorder limit is
+\begin{align*}
+    \gamma(E)  \ &= \ \frac{\left\langle \varepsilon^2\right\rangle}{2\cdot\left(4\cdot c^2 -E^2\right)} \ = \ \frac{W^2}{24\cdot\left(4\cdot c^2 -E^2\right)}
+\end{align*}
+
+
+%%%%%%%%%%%%%%%%%%%
+\sect{Calculating conductivity}
+
+%%%%%%%%%%%%%%%%%%%
+\subsect{S - matrix}
+
+In this formalism, we attach one tight-binding lead to site $1$, and another to site $N$, with coupling $\Gamma$. 
+Solving for the leads, we end with a transmission matrix :
+\begin{align}
+T \  &= \  \left\langle 1 \right |\frac{\Gamma v}{E-\mathcal{H}_{0} -(\Gamma/2)(E-iv)Q^\dagger Q}\left|N\right\rangle\\
+Q^\dagger Q \ &=\ \kket{1}\bbra{1} + \kket{N}\bbra{N} \\
+g(E,v)  \ &= \  T^2 
+\end{align}
+With ${E}$ and ${v}$ being the energy and velocity of
+the lead modes. From now on we assume ${\Gamma =1 }$. In this case the energy and velocity are:
+\begin{align}
+    E \ = \ -2c\cdot\cos(k) 
+    \qquad v  \ = \ 2c\cdot\sin(k) 
+\end{align}
+\rmrk{This $c$ is actually of the leads right? and 
+$k$ is quantized by the lead length?}
+
+The numerical calculation of this transmission is done
+by built-in numerical inversion of the matrix.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsect{The diagonal approximation}
+
+The diagonal approximation involves two steps. The
+first is using only the diagonal parts of $Q^\dagger Q$ in the basis that diagonalizes $\mathcal{H}_0$. 
+The second step is to sum squared absolute values instead
+of first summing up and then squaring.
+
+Denoting the $\alpha$ eigenmode of $\mathcal{H}_0$ by $\psi^\alpha_n$, with energy $\lambda_\alpha$, the expression we calculate is:
+\begin{align}
+g_h \ = \    \sum_\alpha \left| \frac{\psi_1^\alpha\psi_N^\alpha \Gamma v}{E-\lambda_\alpha - \frac{\Gamma}{2}(E-iv)\cdot\left(|\psi_1^\alpha|^2+|\psi_N^\alpha|^2\right)}  \right|^2
+\end{align}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsect{The diagonal approximation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{apsrev4-1}
+\bibliography{../bibliography/jarondl,../bibliography/custom-longbib}
+
+
+\end{document}

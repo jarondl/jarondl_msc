@@ -339,21 +339,28 @@ def plot_dispersion_of_N(run):
     N = ckg['number_of_points']
     g = ckg['g']
     da = -np.log(ckg['abs_g_diag_approx'])
-    gh = -np.log(ckg['heat_g'])
-    #gh = -np.log(ckg['heat_g'])
+    
     x = -np.log(g)
     x2 = -2*np.log(ckg['psi1psiN'])
     gamma = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0,0]
+    dp = ckg['dis_param'][0,0]
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, 2*plotdl.latex_height_inch])
-    fig.suptitle("$W={}$".format(ckg['dis_param'][0,0]))
     ax.plot(N[:,0], np.average(x,axis=1), label= r"$-\langle \ln(g)\rangle$")
     ax.plot(N[:,0], np.var(x,axis=1),  label=r"var$(\ln(g))$")
-    ax.plot(N[:,0], np.average(x2,axis=1), label=r"$-2\langle \ln(\psi_1\psi_N)\rangle$")
-    ax.plot(N[:,0], np.average(da,axis=1), label=r"$-\langle \ln(g_{DA})\rangle$")
-    ax.plot(N[:,0], np.average(gh,axis=1), label=r"$-\langle \ln(g_h)\rangle$")
+    #ax.plot(N[:,0], np.average(x2,axis=1), label=r"$-2\langle \ln(\psi_1\psi_N)\rangle$")
+    ax.plot(N[:,0], -np.log(np.average(g,axis=1)), label=r"$-\ln(\langle g\rangle)$")
+    ax.plot(N[:,0], -np.log(np.average(ckg['abs_g_diag_approx'],axis=1)), label=r"$-\ln(\langle g_{DA}\rangle)$")
+    ax.plot(N[:,0], -np.log(np.average(ckg['heat_g'],axis=1)), label=r"$- \ln(\langle g_h\rangle )$")
+
     ax.set_xlabel('N')
     ax.plot(N[:,0], 2*gamma*N[:,0],'--', color='black',label='$2\gamma N$')
+    ax.plot(N[:,0], gamma*N[:,0],':', color='black',label='$\gamma N$')
+    ax.plot(N[:,0], 0.5*gamma*N[:,0],':', color='black',label='$\gamma N$')
+    if gamma*N.max() > 1:
+        ax.axvline(gamma**(-1), color='gray')
     ax.legend(loc='upper left')
+    fig.suptitle("E = 0,   $W$ = {},   $\gamma^{{-1}}$ = {:5}".format(dp, gamma**(-1)))
+
     fig.savefig(run['fig_name'])
     plt.close()
     
@@ -441,6 +448,7 @@ def plot_gh_distribution(N=100, dp = 2.0, sds = np.arange(1000)):
     #tga_sum = np.nansum(tga,axis=1)
     tga_avg = np.average(tga, axis=1)
     ax.axvline(logavg(gg))
+    ax.axvline(np.average(gg), ls='--')
     ax.axvline(logavg(tga_avg), ls='-', color='red')
     ax.axvline(np.average(tga), ls='-', color='magenta')
     ax.axvline(logavg(tga[tga>1e-100]), ls=':', color='red')
