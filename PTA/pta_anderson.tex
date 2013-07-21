@@ -141,7 +141,8 @@ The free parameters are therefore ${W}$ and ${N}$.
 %%%%%%%%%%%%%%%%%
 \sect{Localization length}
 
-The modes are localized, with localization length $\xi$. The more commonly used parameter is the corresponding Lyapunov exponent ${\gamma = \xi^{-1}}$. Strictly speaking, this is the $N\rightarrow\infty$ limit of $\gamma_N$. Anyway, the known result
+The modes are localized, with localization length $\xi$. The more commonly used parameter is the corresponding Lyapunov exponent ${\gamma = \xi^{-1}}$. Strictly speaking, this is the $N\rightarrow\infty$ limit of $\gamma_N$. Anyway, the known result 
+\cite{deych_single-parameter_2001,kramer_localization:_1993,markos_numerical_2006}
 for this speccific model in the weak disorder limit is
 \begin{align*}
     \gamma(E)  \ &= \ \frac{\left\langle \varepsilon^2\right\rangle}{2\cdot\left(4\cdot c^2 -E^2\right)} \ = \ \frac{W^2}{24\cdot\left(4\cdot c^2 -E^2\right)}
@@ -184,12 +185,116 @@ of first summing up and then squaring.
 
 Denoting the $\alpha$ eigenmode of $\mathcal{H}_0$ by $\psi^\alpha_n$, with energy $\lambda_\alpha$, the expression we calculate is:
 \begin{align}
-g_h \ = \    \sum_\alpha \left| \frac{\psi_1^\alpha\psi_N^\alpha \Gamma v}{E-\lambda_\alpha - \frac{\Gamma}{2}(E-iv)\cdot\left(|\psi_1^\alpha|^2+|\psi_N^\alpha|^2\right)}  \right|^2
+g_{DA} \ = \    \sum_\alpha \left| \frac{\psi_1^\alpha\psi_N^\alpha \Gamma v}{E-\lambda_\alpha - \frac{\Gamma}{2}(E-iv)\cdot\left(|\psi_1^\alpha|^2+|\psi_N^\alpha|^2\right)}  \right|^2
+\end{align}
+
+Some approximation for this expression gives us:
+\begin{align}
+    g_a \ &\equiv \ \left[ \Gamma N \left(2 \frac{|\psi_1|^2|\psi_N|^2}{|\psi_1|^2 + |\psi_N|^2} \right)\right] \\
+    g(E) \ &= \ \textrm{Local average }\left[ g_a \right]
 \end{align}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsect{The diagonal approximation}
+\subsect{Heat conduction}
 
+\begin{align}
+    g_h \ &= \ \textrm{Global average }\left[ g_a \right]
+\end{align}
+This fits with the idea the the heat 
+conduction is an average over the electric conduction.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsect{Expected result for ${g}$}
+
+It is known that ${g}$ is not self-averaging, while
+${\ln(g)}$ is. The known result is:
+\begin{align}
+    \langle \ln(g)\rangle \ &= \ -2\gamma N\\
+    \textrm{var}(\ln(g)) \ &= \ 2\gamma N
+\end{align}
+
+Regarding ${g}$ itself it is claimed \cite{kramer_localization:_1993} that
+\begin{align}
+    \ln(\langle  g\rangle) \ &= \  \frac{1}{4}\langle \ln(g)\rangle = -\frac{1}{2}\gamma N
+\end{align}
+However if ${g}$ is log-normal, it follows that:
+\begin{align}
+    \langle g\rangle \ &= \ e^{\langle \ln(g)\rangle + \frac{1}{2}\textrm{var}(\ln(g))} = e^{-2\gamma N +\gamma N} \\
+    \ln(\langle  g\rangle) \ &= \ -\gamma N
+\end{align}
+\rmrk{I do not know the reason for this discrepancy}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{Numerical results}
+
+Here follows a set of figures, plotting ${\ln(g)}$  as a function of ${N}$ for several calculation methods. The difference between the figures is in ${W}$ and the range of ${N}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{${g}$ as a function of ${N}$ }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[H]
+\includegraphics{{{pta_gamma_tall_wide_of_N_0.4}}}
+\caption{${g}$ is caluclated using matrix inversion 
+as described above. ${g_{DA}}$ is the diagonal approximation,
+and ${g_H}$ is the heat conduction. Angled brackets denote 
+averaging (in this case over ${40}$ realizations). Note the
+differnce between regular average and log average. The vertical grey
+line is for ${\gamma^{-1}}$.}
+\end{figure}
+%%%%%%%%%%%%%%%
+\begin{figure}[H]
+\includegraphics{{{pta_gamma_wide_of_N_1.0}}}
+\end{figure}
+\begin{figure}[H]
+\includegraphics{{{pta_gamma_wide_of_N_2.0}}}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sect{dispersion of g}
+
+As the previous section showed, it is hard to find a "sweet spot" where
+the numerics and theory agree. On the theoretical view point,
+we want on the one hand to be in the strong localization regime,
+which means
+\begin{align}
+    \xi \ll N   \qquad \Leftrightarrow \qquad \gamma N \gg 1
+\end{align}
+On the other hand, the results assume
+\begin{align} \\
+W &\ll c =1\\
+    \xi &\gg 1 \qquad \Leftrightarrow \qquad \gamma \ll 1
+\end{align}
+Which means we need to $N$ to be rather large.
+On the numerical side, when matrix inversion, larger $N$ is
+exponentially slower, as well as less accurate.
+
+To check how the dispersion behaves for various configurations,
+we plot histograms of ${g_h}$ and ${g}$. In all of the following plots,
+the left is $g$ and the right is $g_h$. Above is log scale, and below regular. The solid black line is the expected gaussian form, the 
+dashed is a fitted gaussian. The green line is $2\gamma N$, red is $\gamma N$. ${\#}$ is the number of realizations. The histograms are
+normalized so that the sum is always ${1}$. The top three sets are with
+$w=0.4$, but differing number of sites. The next two sets are with
+$W=1.0$ and $W=2.0$, which is even larger than ${c}$, so perhaps 
+not relevant.
+
+
+\begin{figure}[H]
+\includegraphics{{{pta_disperse_s_0.4}}}
+\end{figure}
+\begin{figure}[H]
+\includegraphics{{{pta_disperse1600_s_0.4}}}
+\end{figure}
+\begin{figure}[H]
+\includegraphics{{{pta_disperse2000_s_0.4}}}
+\end{figure}
+\begin{figure}[H]
+\includegraphics{{{pta_disperse_s_1.0}}}
+\end{figure}
+\begin{figure}[H]
+\includegraphics{{{pta_disperse_s_2.0}}}
+\end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{apsrev4-1}
 \bibliography{../bibliography/jarondl,../bibliography/custom-longbib}

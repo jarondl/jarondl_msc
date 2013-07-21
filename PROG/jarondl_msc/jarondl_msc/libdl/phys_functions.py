@@ -96,7 +96,7 @@ def alter_diag_approx(eig_vals, c, k, eig_matrix):
     #return np.sum(np.conj(psi_1)*psi_N*gamma*velocity/a_inv)
     return np.sum((psi_1)*psi_N*velocity/a_inv)
     
-def diag_approx_abs(eig_vals, c, k, eig_matrix):
+def abs_g_diag_approx(eig_vals, c, k, eig_matrix):
     psi_1, psi_N = eig_matrix[0,:], eig_matrix[-1,:]
     energy, velocity = -2*c*np.cos(k), 2*c*np.sin(k)
     a_inv = energy - eig_vals - (1/2)*(energy - 1j*velocity)*(abs(psi_1)**2 + abs(psi_N)**2)

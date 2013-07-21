@@ -154,7 +154,7 @@
     npz_fname : 'data/pta_disperse_s_{dis_param[0]}.npz'
     args :  &many_realizations
       model_name       : [Anderson, ]
-      number_of_points : [200, ]
+      number_of_points : [800, ]
       bandwidth        : [1, ]
       dis_param        : [0.4, ]
       k                : [1.57, ]
@@ -164,7 +164,28 @@
     npz_fname : 'data/pta_disperse_s_{dis_param[0]}.npz'
     args :   
       <<                : *many_realizations
-      dis_param         : [1.6]
+      number_of_points : [400, ]
+      dis_param         : [1.0]
+-
+    npz_fname : 'data/pta_disperse2000_s_{dis_param[0]}.npz'
+    args :   
+      <<                : *many_realizations
+      number_of_points : [2000, ]
+      dis_param         : [0.4]
+      seed             : !!python/object/apply:numpy.arange    [1,1001]
+-
+    npz_fname : 'data/pta_disperse1600_s_{dis_param[0]}.npz'
+    args :   
+      <<                : *many_realizations
+      number_of_points : [1600, ]
+      dis_param         : [0.4]
+      seed             : !!python/object/apply:numpy.arange    [1,1001]
+-
+    npz_fname : 'data/pta_disperse_s_{dis_param[0]}.npz'
+    args :   
+      <<                : *many_realizations
+      number_of_points : [200, ]
+      dis_param         : [2.0]
 -
 ### PTA of k (s=0.4) dense
     npz_fname : 'data/pta_of_k_dense_{dis_param[0]}.npz'

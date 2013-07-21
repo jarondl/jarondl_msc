@@ -75,11 +75,7 @@ class Factory_Transmission_g(h5_dl.DataFactory):
         m = models.Model_Anderson_DD_1d(number_of_points=number_of_points,
                  bandwidth=bandwidth, dis_param=dis_param, periodic=False, prng = prng)
         g = abs(phys_functions.A_matrix_inv(m.rate_matrix,c,k))**2
-        ######################### TEMP #######################
-        #g = phys_functions.alternative_A_matrix_inv(m.rate_matrix,c,k)
-        #g = phys_functions.diag_approx_A_matrix_inv(m.rate_matrix,c,k, m.eig_matrix)
-        #g_diag_approx = abs(phys_functions.alter_diag_approx(m.eig_vals,c,k, m.eig_matrix))
-        abs_g_diag_approx = phys_functions.diag_approx_abs(m.eig_vals,c,k, m.eig_matrix)
+        abs_g_diag_approx = phys_functions.abs_g_diag_approx(m.eig_vals,c,k, m.eig_matrix)
         g_diag_approx = abs(phys_functions.alter_diag_approx(m.eig_vals,c,k, m.eig_matrix))**2
         psi_1, psi_N = (m.eig_matrix[0,:]), (m.eig_matrix[-1,:])
         heat_g = phys_functions.heat_g(psi_1, psi_N)
@@ -170,25 +166,18 @@ def plot_localization_length(ax, c, k, dis_param, n, x):
     """ Add the theoretical expected line for localization length"""
     E = 2*np.asarray(c)*np.cos(k)
     gamma_inf = lyap_gamma(c,dis_param, E)
-    #loc_length1 = 1/((np.cosh(n*gamma_inf))**2)
-    #loc_length2 = 1/(np.exp(n*gamma_inf)+1)
     loc_length3 = np.exp(-2*n*gamma_inf)
     if x.size == loc_length3.size :
         ax.autoscale(False)
         ax.plot(x, loc_length3,color='black', ls='--')
-        #ax.plot(x, loc_length2,color='purple', ls='--')
-        #ax.plot(x, loc_length3,color='cyan', ls='--')
-        #ax.autoscale(True)
 
 def calc_a_run(run):
     """ create data for a run ( a'run' is a yaml configuration segment)"""
     if run.get('N_dependance',False): ## light version's size is independent of N.
-        #pdb.set_trace()
         # if all N are equal, we should use N, otherwise use largest.
         N = np.max(run['args']['number_of_points'])
         r = Factory_thouless_psi(run['npz_fname'].format(**run['args']), N= N)
     else:
-        #pdb.set_trace()
         r = Factory_Transmission_g(run['npz_fname'].format(**run['args']))
     
     return r.create_if_missing(run['args'])
@@ -306,6 +295,62 @@ def plot_psi1_psi2(seed=0, abs_value=False):
     fig2.savefig("psi_times_psi2{}_0.3.png".format('_abs' if abs else ''))
     fig3.savefig("psi_heat_psi2{}_0.3.png".format('_abs' if abs else ''))
     
+def plot_histogram_with_norm_fit(ax, data, expected=None,color='blue'):
+    loc, scale = norm.fit(data)
+    xspace = np.linspace(min(data), max(data), 100)
+    ax.hist(data, bins=np.sqrt(data.size), normed=True, edgecolor='none', color=color)
+    
+    ax.plot(xspace, norm.pdf(xspace, loc, scale), 
+            color = 'black', ls="--", label=' $\mu = {:0.3}$,  $\sigma^2 = {:0.3}$'.format(loc,scale**2))
+    if expected is not None:
+        ax.plot(xspace, norm.pdf(xspace, expected[0], np.sqrt(expected[1])), 
+            color = 'black', ls='-', label=' $\mu = {:0.3}$,  $\sigma^2 = {:0.3}$'.format(expected[0],expected[1]))
+
+def plot_compare_dispersions(run):
+    npz = np.load(run['npz_fname'])
+    ckg = npz['nums']
+    N = ckg['number_of_points'][0]
+    dp = ckg['dis_param'][0]
+    gam = lyap_gamma(1,dp)
+    fig, ((ax1,ax2),(ax3,ax4))  = plt.subplots(nrows=2, ncols=2, 
+                figsize=[2*plotdl.latex_width_inch, 2*plotdl.latex_height_inch])
+                
+
+    lng = -np.log(abs(ckg['g']))
+    plot_histogram_with_norm_fit(ax1, lng, expected=(2*gam*N, 2*gam*N),color='blue')
+    #ax1.legend()
+    ax1.axvline((2*gam*N),color='green')
+    ln_heatg = -np.log(abs(ckg['heat_g']))
+    plot_histogram_with_norm_fit(ax2, ln_heatg,color='blue')
+    #ax2.legend()
+    ax2.autoscale(False)
+    ax2.axvline((gam*N),color='red')
+    ax2.axvline((2*gam*N),color='green')
+    ax2.axvline((0.5*gam*N),color='purple')
+
+    g = (abs(ckg['g']))
+    plot_histogram_with_norm_fit(ax3, g, color='blue')
+    
+    #ax3.legend()
+    heatg = (abs(ckg['heat_g']))
+    plot_histogram_with_norm_fit(ax4, heatg,color='blue')
+    ax4.autoscale(False)
+    ax4.axvline(np.exp(-gam*N),color='red')
+    ax4.axvline(np.exp(-2*gam*N),color='green')
+    #ax3.legend()
+    fig.suptitle("E = 0,  $W={}$  $N={}$    $\gamma^{{-1}}$ = {:5}    #={}".format(dp, N, gam**(-1), ckg.size))
+    ax1.set_xlabel('$-\ln(g)$')
+    ax2.set_xlabel('$-\ln(g_h)$')
+    ax3.set_xlabel('$g$')
+    ax4.set_xlabel('$g_h$')
+    for ax in ax1, ax2, ax3, ax4:
+        ax.xaxis.set_major_locator(MaxNLocator(4))
+        ax.yaxis.set_major_locator(MaxNLocator(4))
+    ### accomodate suptitle
+    fig.tight_layout(rect = (0,0,1,0.9))
+    fig.savefig(run['fig_name'])
+    plt.close() 
+    
 def plot_dispersion_g(run): ##(histograms)
     
     npz = np.load(run['npz_fname'])
@@ -316,7 +361,9 @@ def plot_dispersion_g(run): ##(histograms)
     gamma = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0]
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     gamma2N = gamma*2*N
+    #gamma2N = gamma*N
     lng = -np.log(g)
+    #lng = -np.log(ckg['heat_g'])
     #sig = lloc/(2*N)
     ax.hist(lng, bins=np.sqrt(len(ckg['g'])), normed=True, edgecolor='none')
     sig = gamma2N
@@ -329,7 +376,7 @@ def plot_dispersion_g(run): ##(histograms)
     ax.plot(g_space, gauss(g_space), ':' , color='red')
     ax.plot(g_space, gaussf, '--' , color='red')
     ax.set_xlabel(r'$x$')
-    fig.suptitle("$W={}$".format(ckg['dis_param'][0]))
+    fig.suptitle("E = 0,  $W={}$  $N={}$    $\gamma^{{-1}}$ = {:5}".format(ckg['dis_param'][0], N, gamma**(-1)))
     fig.savefig(run['fig_name'])
     plt.close()
     
@@ -337,8 +384,8 @@ def plot_dispersion_of_N(run):
     npz = np.load(run['npz_fname'])
     ckg = npz['nums']
     N = ckg['number_of_points']
-    g = ckg['g']
-    da = -np.log(ckg['abs_g_diag_approx'])
+    g = abs(ckg['g'])
+    da = -np.log(abs(ckg['abs_g_diag_approx']))
     
     x = -np.log(g)
     x2 = -2*np.log(ckg['psi1psiN'])
@@ -349,13 +396,13 @@ def plot_dispersion_of_N(run):
     ax.plot(N[:,0], np.var(x,axis=1),  label=r"var$(\ln(g))$")
     #ax.plot(N[:,0], np.average(x2,axis=1), label=r"$-2\langle \ln(\psi_1\psi_N)\rangle$")
     ax.plot(N[:,0], -np.log(np.average(g,axis=1)), label=r"$-\ln(\langle g\rangle)$")
-    ax.plot(N[:,0], -np.log(np.average(ckg['abs_g_diag_approx'],axis=1)), label=r"$-\ln(\langle g_{DA}\rangle)$")
-    ax.plot(N[:,0], -np.log(np.average(ckg['heat_g'],axis=1)), label=r"$- \ln(\langle g_h\rangle )$")
+    ax.plot(N[:,0], np.average(-np.log((abs(ckg['abs_g_diag_approx']))),axis=1), label=r"$-\ln(\langle g_{DA}\rangle)$")
+    ax.plot(N[:,0], -np.log(np.average(abs(ckg['heat_g']),axis=1)), label=r"$- \ln(\langle g_h\rangle )$")
 
     ax.set_xlabel('N')
     ax.plot(N[:,0], 2*gamma*N[:,0],'--', color='black',label='$2\gamma N$')
     ax.plot(N[:,0], gamma*N[:,0],':', color='black',label='$\gamma N$')
-    ax.plot(N[:,0], 0.5*gamma*N[:,0],':', color='black',label='$\gamma N$')
+    ax.plot(N[:,0], 0.5*gamma*N[:,0],'-.', color='black',label='$0.5\gamma N$')
     if gamma*N.max() > 1:
         ax.axvline(gamma**(-1), color='gray')
     ax.legend(loc='upper left')
@@ -364,32 +411,7 @@ def plot_dispersion_of_N(run):
     fig.savefig(run['fig_name'])
     plt.close()
     
-def plot_compare_g_of_N(run):
-    npz = np.load(run['npz_fname'])
-    ckg = npz['nums']
-    N = ckg['number_of_points'][:,0]
-    #avg = np.average(ckg['g'], axis=1)
-    lanavg = logavg(ckg['g'], axis=1)
-    #heat_g = N*logavg(lyap_gamma(ckg['c'],ckg['dis_param'])*ckg['heat_g'], axis=1)
-    heat_g = logavg(ckg['heat_g'], axis=1)
-    psi1psiN = logavg(ckg['psi1psiN'], axis=1)
-    #varlang = np.exp(np.var(np.log(ckg['g']), axis=1))
-    fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, 1.5*plotdl.latex_height_inch])
-    #ax.plot(N, avg, label="$g$")
-    ax.plot(N, lanavg, label=r"$g_{TYP}$")
-    ax.plot(N, heat_g, label=r"$g_H$")
-    ax.plot(N, psi1psiN**2, label=r"$|\psi_1\psi_N|^2$")
-    #ax.plot(N, varlang, label=r"$\exp(\langle ln g \rangle)$")
-    ckg0 = ckg[:,0]
-    ax.set_yscale('log')
-    ax.set_xlabel('N')
-    ax.autoscale(False)
-    plot_localization_length(ax,ckg0['c'],ckg0['k'],ckg0['dis_param'],N,N)
 
-    ax.legend(loc='lower left')
-    fig.savefig(run['fig_name'])
-    #ax.autoscale(True)
-    plt.close()
 
 def plot_da():
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
@@ -407,8 +429,8 @@ def plot_da():
 
 def plot_special_plot(run):
     options =  {'dispersion_of_N': plot_dispersion_of_N,
-                'dispersion_g'   : plot_dispersion_g,
-                'compare_g_of_N' : plot_compare_g_of_N}
+                #'dispersion_g'   : plot_dispersion_g}
+                'dispersion_g'  : plot_compare_dispersions}
     options.get(run['special_plot'])(run)
 
 
