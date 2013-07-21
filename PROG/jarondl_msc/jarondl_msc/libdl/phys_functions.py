@@ -102,6 +102,13 @@ def abs_g_diag_approx(eig_vals, c, k, eig_matrix):
     a_inv = energy - eig_vals - (1/2)*(energy - 1j*velocity)*(abs(psi_1)**2 + abs(psi_N)**2)
     #return np.sum(np.conj(psi_1)*psi_N*gamma*velocity/a_inv)
     return np.sum(abs((psi_1)*psi_N*velocity/a_inv)**2)
+    
+def abs_g_diag_approx_of_E(eig_vals, c, energy, eig_matrix):
+    psi_1, psi_N = eig_matrix[0,:], eig_matrix[-1,:]
+    velocity = 4*(c**2) - energy**2
+    a_inv = energy - eig_vals - (1/2)*(energy - 1j*velocity)*(abs(psi_1)**2 + abs(psi_N)**2)
+    #return np.sum(np.conj(psi_1)*psi_N*gamma*velocity/a_inv)
+    return np.sum(abs((psi_1)*psi_N*velocity/a_inv)**2)
 
 def heat_g(psi_1, psi_N):
     return np.nansum(2*(abs(psi_1)**2)*(abs(psi_N)**2) / ((abs(psi_1)**2) + (abs(psi_N)**2)))
@@ -112,7 +119,7 @@ def ga(eig_matrix):
     
 def ander_ga(N, gamma, x):
     """ Anderson expected ga"""
-    return 2*gamma*N*np.exp(-2*gamma*N)/np.cosh(4*gamma*x)
+    return 2*N*np.exp(-2*gamma*N)/np.cosh(4*gamma*x)
     
 def ga_cdf(gamma, N):
     ming = 2*gamma*N*np.exp(-2*gamma*N)/np.cosh(4*gamma*N)

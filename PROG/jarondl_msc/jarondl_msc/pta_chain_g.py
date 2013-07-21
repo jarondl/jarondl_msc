@@ -351,6 +351,8 @@ def plot_compare_dispersions(run):
     fig.savefig(run['fig_name'])
     plt.close() 
     
+
+    
 def plot_dispersion_g(run): ##(histograms)
     
     npz = np.load(run['npz_fname'])
@@ -385,27 +387,29 @@ def plot_dispersion_of_N(run):
     ckg = npz['nums']
     N = ckg['number_of_points']
     g = abs(ckg['g'])
-    da = -np.log(abs(ckg['abs_g_diag_approx']))
-    
-    x = -np.log(g)
-    x2 = -2*np.log(ckg['psi1psiN'])
+    da = abs(ckg['abs_g_diag_approx'])
+    gh = abs(ckg['heat_g'])    
     gamma = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0,0]
     dp = ckg['dis_param'][0,0]
+    
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, 2*plotdl.latex_height_inch])
-    ax.plot(N[:,0], np.average(x,axis=1), label= r"$-\langle \ln(g)\rangle$")
-    ax.plot(N[:,0], np.var(x,axis=1),  label=r"var$(\ln(g))$")
+    ax.plot(N[:,0], np.average(np.log(g),axis=1), label= r"$\langle \ln(g)\rangle$")
+    #ax.plot(N[:,0], np.var(x,axis=1),  label=r"var$(\ln(g))$")
     #ax.plot(N[:,0], np.average(x2,axis=1), label=r"$-2\langle \ln(\psi_1\psi_N)\rangle$")
-    ax.plot(N[:,0], -np.log(np.average(g,axis=1)), label=r"$-\ln(\langle g\rangle)$")
-    ax.plot(N[:,0], np.average(-np.log((abs(ckg['abs_g_diag_approx']))),axis=1), label=r"$-\ln(\langle g_{DA}\rangle)$")
-    ax.plot(N[:,0], -np.log(np.average(abs(ckg['heat_g']),axis=1)), label=r"$- \ln(\langle g_h\rangle )$")
+    ax.plot(N[:,0], np.log(np.average(g,axis=1)), label=r"$\ln(\langle g\rangle)$")
+    ax.plot(N[:,0], np.average(np.log(da),axis=1), label=r"$\langle\ln( g_{DA})\rangle$")
+    ax.plot(N[:,0], np.log(np.average(da,axis=1)), label=r"$\ln(\langle g_{DA}\rangle)$")
+    ax.plot(N[:,0], np.log(np.average(gh,axis=1)), label=r"$\ln(\langle g_h\rangle )$")
 
     ax.set_xlabel('N')
-    ax.plot(N[:,0], 2*gamma*N[:,0],'--', color='black',label='$2\gamma N$')
-    ax.plot(N[:,0], gamma*N[:,0],':', color='black',label='$\gamma N$')
-    ax.plot(N[:,0], 0.5*gamma*N[:,0],'-.', color='black',label='$0.5\gamma N$')
+    ax.set_ylabel('${\ln(g)}$')
+    ax.autoscale(False)
+    ax.plot(N[:,0], -2*gamma*N[:,0],'--', color='black',label='$-2\gamma N$')
+    ax.plot(N[:,0], -gamma*N[:,0],'-.', color='black',label='$-\gamma N$')
+    ax.plot(N[:,0], -0.5*gamma*N[:,0],':', color='black',label='$-0.5\gamma N$')
     if gamma*N.max() > 1:
         ax.axvline(gamma**(-1), color='gray')
-    ax.legend(loc='upper left')
+    ax.legend(loc='lower left')
     fig.suptitle("E = 0,   $W$ = {},   $\gamma^{{-1}}$ = {:5}".format(dp, gamma**(-1)))
 
     fig.savefig(run['fig_name'])
@@ -413,19 +417,29 @@ def plot_dispersion_of_N(run):
     
 
 
-def plot_da():
+def plot_da(N=800):
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     
-    mw = lambda w : models.Model_Anderson_DD_1d(number_of_points=400, bandwidth=1, periodic=False,
-                        prng  = np.random.RandomState(1), dis_param=w)
-    k_space = np.linspace(0.1,pi, 2000)
-    w_space = [0.1,0.4,0.8]
-    for w in w_space:
-        m = mw(w)
-        ada = [phys_functions.diag_approx_abs(m.eig_vals, 1, k, m.eig_matrix) for k in k_space]
-        print (ax.plot(k_space, ada))
-    
-    fig.savefig('plots/pta_da400.png')
+
+    mw = lambda w : models.Model_Anderson_DD_1d(number_of_points=N, bandwidth=1, periodic=False,
+                        prng  = np.random.RandomState(2), dis_param=w)
+    w = 0.4
+
+    m = mw(w)
+    e_space = np.linspace(m.eig_vals.min(), m.eig_vals.max(), 10000)
+    ada = [phys_functions.abs_g_diag_approx_of_E(m.eig_vals, 1, e, m.eig_matrix) for e in e_space]
+    ax.plot(e_space, ada, label='g_{DA}')
+    mga = phys_functions.ga(m.eig_matrix)
+    ax.plot(m.eig_vals, N*mga, label='$g_a$')
+    ax.set_xlabel('E')
+    fig.savefig('plots/pta_da800.png')
+    ax.plot(m.eig_vals, N*mga, 'g.',label='$g_a$')
+
+    ax.set_xlim(-0.5,+0.5)
+    fig.savefig('plots/pta_da800z.png')
+    ax.set_xlim(-0.2,+0.2)
+    fig.savefig('plots/pta_da800zz.png')
+
 
 def plot_special_plot(run):
     options =  {'dispersion_of_N': plot_dispersion_of_N,
