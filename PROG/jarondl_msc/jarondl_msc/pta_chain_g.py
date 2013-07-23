@@ -98,7 +98,7 @@ class Factory_psi1_psiN(h5_dl.DataFactory):
     
         g = abs(phys_functions.A_matrix_inv(m.rate_matrix, c, k))**2
         psi_1, psi_N = (m.eig_matrix[0,:]), (m.eig_matrix[-1,:])
-        return {'g': g, 'psi_1': psi_1, 'psi_N': psi_N}
+        return {'g': g, 'psi_1': psi_1, 'psi_N': psi_N , 'eig_vals' : m.eig_vals}
         
         
 class Factory_thouless_psi(Factory_psi1_psiN):
@@ -213,6 +213,52 @@ def plot_a_run(run, ax):
     ax.set_xlabel(x_var)
     ax.set_ylabel(y_var)
        
+def plot_gh_sum(N=800):
+    
+    fig, ax = plt.subplots(figsize=[2.5*plotdl.latex_width_inch, 3*plotdl.latex_height_inch])
+    
+    r = Factory_psi1_psiN( "pta_of_s_N{number_of_points[0]}.npz", N=N)
+    ckg = r.create_if_missing(dict(model_name= ["Anderson",], 
+                        number_of_points=[N,], bandwidth=[1,],
+                         dis_param=[0.4,],c=[1,], k=[1.57,], seed=np.arange(1,101)))
+                         
+    a1 = abs(ckg['psi_1'])**2
+    aN = abs(ckg['psi_N'])**2
+    ev = ckg['eig_vals']
+    aa = (a1+aN)/2
+    ga = 2*N*a1*aN/(a1+aN)
+    gda = 4 * aa * ga / ( ev**2 + 4*aa**2 )
+
+    avg_ga = np.nansum(ga, axis=1)
+    avg_gda = np.nansum(gda, axis=1)
+    #print(np.nansum(gda))
+    minx = min(min(avg_ga), min(avg_gda))
+    maxx = max(max(avg_ga), max(avg_gda))
+    xs = np.linspace(minx,maxx)
+    ax.plot(avg_ga, avg_gda, '.')
+    ax.set_xlabel(r'${  \sum N g_\alpha (E=0)   }$')
+    ax.set_ylabel(r'${  \sum g_{DA}(E=0) }$')
+    #plt.draw()
+    #ax.autoscale(False)
+    ax.plot(xs,xs)
+    fig.savefig('pta_ga_gda.png') 
+    #fig.close()
+    fig, ax = plt.subplots(figsize=[2.5*plotdl.latex_width_inch, 3*plotdl.latex_height_inch])
+    ax.plot(ev[0], ga[0])
+    ax.plot(ev[0], gda[0])
+    ax.set_yscale('log')
+    ax.set_ylim(1e-40,10)
+    ax.set_xlabel(r'${ \varepsilon_\alpha  }$')
+    ax.set_ylabel(r'${ g  }$')
+    fig.savefig('pta_ga_gda_of_e.png')
+    ax.cla()
+    ax.plot(ev.flat, ga.flat, '.')
+    ax.plot(ev.flat, gda.flat , '.')
+    ax.set_ylim(1e-40,10)
+    fig.savefig('pta_many_ga_gda_of_e.png')
+    
+    return ckg, ga, gda
+    
        
 def plot_gheat_g(seed=1):
     """ important since compares different g values """
