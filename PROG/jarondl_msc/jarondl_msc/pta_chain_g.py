@@ -225,9 +225,10 @@ def plot_gh_sum(N=800):
     a1 = abs(ckg['psi_1'])**2
     aN = abs(ckg['psi_N'])**2
     ev = ckg['eig_vals']
+    v = 2
     aa = (a1+aN)/2
     ga = 2*N*a1*aN/(a1+aN)
-    gda = 4 * aa * ga / ( ev**2 + 4*aa**2 )
+    gda = 4 * aa * ga / ( ev**2 + (2*aa)**2 )
 
     avg_ga = np.nansum(ga, axis=1)
     avg_gda = np.nansum(gda, axis=1)

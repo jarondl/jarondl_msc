@@ -9,6 +9,7 @@ import numpy as np
 import logging
 import time
 import decimal
+import glob
 
 import tables
 
@@ -227,4 +228,18 @@ def h5_create_if_missing(h5table, data_factory, factory_args):
         nr['date'] = t
         nr.append()
         h5table.flush()
+        
+        
+def file_selection(glob_pattern = 'data/*'):
+    """  A very dumb and simple file selection dialog """
+    while True:
+        files = glob.glob(glob_pattern)
+        print(list(enumerate(files)))
+        sel = raw_input('selection [number] or pattern, Q to quit : ')
+        if sel is 'Q':
+            return None
+        try:
+            return files[int(sel)]
+        except ValueError:
+            glob_pattern = sel
 
