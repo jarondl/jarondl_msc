@@ -26,21 +26,29 @@ An **alternative** is to install the package with pip. This will be explained la
 Using the code interactively 
 ------------------------------------
 In order to plot the PN as function of eigenvalue for a banded anderson model 
-:class:`Model_Anderson_DD_1d` ::
+:py:class:`jarondl_msc.models.Model_Anderson_DD_1d` ::
 
     ### either run 
     ipython --pylab
     ### or 
     python
     from pylab import *
-    
+   
 followed by::
-
+   
     from jarondl_msc import models
     m1 = models.Model_Anderson_DD_1d(number_of_points=1000,
                   bandwidth=1, dis_param=0.4, periodic=False)
     plot(m1.eig_vals, m1.PN)
+    
+.. plot::
 
+    from pylab import *
+    from jarondl_msc import models
+    m1 = models.Model_Anderson_DD_1d(number_of_points=1000,
+                  bandwidth=1, dis_param=0.4, periodic=False)
+    plot(m1.eig_vals, m1.PN)
+    
 
 Running all of the pta plots
 ----------------------------------

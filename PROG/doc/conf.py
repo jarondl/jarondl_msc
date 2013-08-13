@@ -25,7 +25,10 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.viewcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 
+    'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.viewcode',
+    'sphinx.ext.mathjax', 'matplotlib.sphinxext.plot_directive',
+    'sphinx.ext.inheritance_diagram', 'matplotlib.sphinxext.ipython_directive']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -226,3 +229,13 @@ autodoc_member_order='bysource'
 add_module_names=False
 
 autodoc_default_flags = ['members', 'undoc-members' ]
+
+inheritance_graph_attrs = dict(rankdir="LR", size='"10.0, 8.0 "', fontsize=10, ratio="compress")
+
+############### add inheritance graphs to all classes!
+def process_docstring(app, what, name, obj, options, lines):
+    if what is "class":
+        lines.append('.. inheritance-diagram:: {}'.format(name))
+        lines.append('   :parts: 1')
+def setup(app):
+    app.connect('autodoc-process-docstring', process_docstring)

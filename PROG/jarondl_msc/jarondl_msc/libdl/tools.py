@@ -10,6 +10,7 @@ import logging
 import time
 import decimal
 import glob
+from functools import wraps
 
 import tables
 
@@ -30,9 +31,14 @@ debug = logger.debug
 
 
 def lazyprop_old(fn):
-    """ based on http://stackoverflow.com/questions/3012421/python-lazy-property-decorator"""
+    """ Lazy property evaluator,
+    meaning the function gets calculated only once.
+    This version is the older one, but it is used
+    because it keeps the docstrings.
+    based on `http://stackoverflow.com/questions/3012421/python-lazy-property-decorator`"""
     attr_name = '_lazy_' + fn.__name__
     @property
+    @wraps(fn)
     def _lazyprop(self):
         if not hasattr(self, attr_name):
             setattr(self, attr_name, fn(self))
@@ -41,14 +47,14 @@ def lazyprop_old(fn):
     @_lazyprop.setter
     def _lazyprop(self, value):
         setattr(self, attr_name, value)
+
     return _lazyprop
     
-class lazyprop(object):
+class lazyprop_new(object):
     '''
     meant to be used for lazy evaluation of an object attribute.
     property should represent non-mutable data, as it replaces itself.
     '''
-
     def __init__(self,fget):
         self.fget = fget
         self.func_name = fget.__name__
@@ -59,8 +65,10 @@ class lazyprop(object):
         value = self.fget(obj)
         setattr(obj,self.func_name,value)
         return value
+        
     
-
+lazyprop=lazyprop_old
+#lazyprop=lazyprop_new
 
 
 def cached_get_key(function, filename, key='numerics', *args, **kwargs):

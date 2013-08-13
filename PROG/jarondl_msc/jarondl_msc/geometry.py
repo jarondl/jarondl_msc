@@ -92,7 +92,7 @@ def euclid(point1, point2):
     return np.sqrt( np.dot((point2-point1), (point2-point1)) )
 
 def distance_matrix(points, distance_function=euclid):
-    """  Create a distance matrix, where A_ij is |r_i-r_j|. ** SLOW **
+    """  Create a distance matrix, where :math:`A_{ij} = |r_i-r_j|`. ** SLOW **
          Points should be given as N dublets, or (Nx2) array.
          If no distance function is give, euclidean distance is used
     """

@@ -20,9 +20,10 @@ import scipy as sp
 from .libdl import sparsedl
 from .libdl import plotdl
 from geometry import Sample
-from sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum, lazyprop, omega_d
+from .libdl.sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum, omega_d
+from .libdl.tools import lazyprop
 from .libdl.plotdl import cummulative_plot, plt
-from .libdl.sparsedl import create_bloch_sample_1d
+
 
 ### Raise all float errors
 np.seterr(all='warn')
@@ -160,12 +161,7 @@ def sample_participation_number(ax, sample, epsilon=0.1):
 
 
 class ExpModel(object):
-    """ The current table of inheritance is:
-        
-      --+  ExpModel
-        +-+- ExpModel_1d
-          +--- ExpModel_Bloch_1d
-        +---
+    """ 
     """
     def __init__(self, sample, epsilon, basename="exp_{dimensions}d_{epsilon}",
                  bandwidth1d = None, periodic=True, convention=1, rseed=None, phi=0):
@@ -729,7 +725,12 @@ def plotf_distance_statistics(N=1000):
         plotdl.save_ax(ax, di['filename'])
         ax.cla()
         
-
+def create_bloch_sample_1d(N):
+    """ s
+    """
+    bloch = Sample(1)
+    bloch.points = np.linspace(0,1,N, endpoint=False)
+    return bloch
 
 def create_bloch_sample_2d(N):
     """ Create NxN 2d bloch sample.  (matrix size is N^4)
@@ -1460,7 +1461,9 @@ def all_plots(seed= 1, **kwargs):
         y = np.linspace(1.0/len(x),1,len(x))
         ar = np.arange(899)
         w = (ar%4==3 )*exp(-ar/10.0)
-        [a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
+        ## the replacement must be checked  
+        #[a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
+        [a] = curve_fit((lambda x,a : x+a),log(x),log(y),[0],w)
         plot_func(ax, lambda x: x*exp(a), model.xlim, label="{:3}".format(a), color= pl[0].get_color())
 
     ax.set_xscale('log')
@@ -1486,7 +1489,7 @@ def all_plots(seed= 1, **kwargs):
         y = np.linspace(1.0/len(x),1,len(x))
         ar = np.arange(899)
         w = (ar%4==3 )*exp(-ar/100.0)
-        [a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
+        [a] = curve_fit((lambda x,a : x+a),log(x),log(y),[0],w)
         plot_func(ax, lambda x: x*exp(a), model.xlim, label="{:3}".format(a), color= pl_color)
 
     ax.set_xscale('log')

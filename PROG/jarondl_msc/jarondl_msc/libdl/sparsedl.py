@@ -30,12 +30,6 @@ debug = logger.debug
 ##############  Create and manipulate matrices
 
 
-def create_bloch_sample_1d(N):
-    """ s
-    """
-    bloch = Sample(1)
-    bloch.points = np.linspace(0,1,N, endpoint=False)
-    return bloch
 
 def create_sparse_matrix(N, rates, b=1):
     """  Creates a sparse matrix out of the rates.
@@ -96,8 +90,8 @@ def permute_rows(mat):
     return retval
 
 def zero_sum(mat, tol=1E-12):
-    """  Set the diagonals of matrix, so the sum of each row eqauls zero, with
-            tolerance :param:`tol`.
+    """ Set the diagonals of matrix, so the sum of each row eqauls zero, with
+            tolerance :param:`tol` .
 
         :param mat: A symmetric 2d array.
         :type mat: numpy.ndarray

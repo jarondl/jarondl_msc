@@ -1,6 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" Survival and spreading for box distribution.  Anderson localization length focus
+""" 
+This module holds all of the models. Each model is described
+as a class, with several input parameters, and several available
+methods. Note that most models are inherited, meaning they add 
+parameters and methods to those of their "ancestors". **ONLY** extra 
+parameters are given.
+
+This is the inheritance diagram:
+
+.. inheritance-diagram:: jarondl_msc.models
+   :parts: 1
+
 """
 from __future__ import division
 
@@ -33,15 +44,26 @@ debug = logger.debug
      
      
      
-############ NetModel matrices
+############ NetModel matrices:parts: 1
 
 
 class NetModel(object):
-    """ NetModel
-        a network model, consisting mainly of a transition matrix,
-        and methods to produce eigenvalues, eigenvectors etc.
+    """ A network model, consisting mainly of a transition matrix,
+        and methods to produce eigenvalues, eigenvectors etc. **All models
+        inherit from this one**.
         This is different from sample, which holds geometric locations 
-        of the dots.
+        of the dots. The only necessary argument is the number of points,
+        the rest can be omitted as they have default values.
+        
+        :param number_of_points: :math:`N` - the number of points in the model
+        :param dis_param: The disorder parameter, in the ``PTA`` scope mostly
+                       calles :math:`W`, but was :math:`s` in previous work.
+        :param conserving: Should the sum of each row be set to 0?
+        :type conserving: boolean 
+        :param periodic: Should boundary conditions be periodic?
+        :type periodic: boolean
+        :param phi: The phase accumulated if indeed periodic
+        :param model_name: Used sometimes for presentation, not recommended.
     """
     def __init__(self, number_of_points, dis_param,conserving = False, prng=None, periodic=True, phi=0, model_name=None):
         """ rseed is the random seed to prepare RandomState"""
@@ -60,7 +82,7 @@ class NetModel(object):
         """  Return the rate matrix of the model. 
              This uses the inherited method sub_rate_matrix,
              and deals with boundary phase and conservativity.
-             if not conserving it leaves diagonal as is
+             if not conserving it leaves diagonal as is.
         """
         ex = self.sub_rate_matrix()
         if self.conserving:
@@ -69,23 +91,28 @@ class NetModel(object):
     
     @lazyprop
     def eig_vals(self):
-        """ should be used only if eig_matrix is not needed! """
+        """ Return the sorted eigenvalues. """
         return sparsedl.sorted_eigvalsh(self.rate_matrix)
 
     @lazyprop
     def eig_matrix(self):
+        """ return eigen matrix, with vectors sorted by eig_vals"""
         (self.eig_vals, w) = sparsedl.sorted_eigh(self.rate_matrix)
         return w
 
     @lazyprop
     def PN(self):
+        """ Participation number """
         return ((self.eig_matrix**(4)).sum(axis=0)**(-1))
 
         
         
 class GeoModel(NetModel):
     """ These models have geometrical dependency on points located
-        in space.
+        in space. The idea was to base all ``PTS`` work on this,
+        but currently nothing uses it.
+        
+        :param sample:  a :py:class:`jarondl_msc.geometry.Sample` instance.
     """
     def __init__(self, sample, *args, **kwargs):
         self.sample = sample
@@ -111,6 +138,12 @@ class GeoModel(NetModel):
 
 
 class NetModel_1d(NetModel):
+    """ A subclass for 1d models
+    
+    :param bandwidth: define the bandwidth. 1 is for strict 1d, 
+    and the default is that all links are non zero. (infinite bandwidth?)
+    """
+    
     def __init__(self, *args, **kwargs):
         self.bandwidth = kwargs.pop("bandwidth", None)
         super(NetModel_1d,self).__init__(*args, **kwargs)
@@ -222,7 +255,9 @@ def Model_Symmetric_Box_banded_1d_conservative(*args, **kwargs):
     return Model_Symmetric_Box_banded_1d(*args, conserving=True, **kwargs)
 
 class Model_Anderson_DD_1d(Bloch_Banded_1d):
-    """ diagonal Disorder """
+    r""" Diagonal Disorder 1d model, with uniform random values
+    in the range :math:`\left[-\frac{1}{2}W, +\frac{1}{2}W\right]`
+    """
     def disorder(self):
         return np.diagflat(self.prng.permutation(np.linspace(-0.5*self.dis_param, 0.5*self.dis_param, self.N)))
                 

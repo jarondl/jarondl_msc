@@ -12,8 +12,7 @@ from matplotlib import rc
 import numpy as np
 import scipy as sp
 
-from sparsedl import cvfit
-import plotdl
+from .libdl import plotdl
 #import sparsedl
 #import plotdl
 #from geometry import Sample
