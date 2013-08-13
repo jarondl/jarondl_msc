@@ -231,7 +231,11 @@ def get_LogNLocator(N = 6):
         LogNLocator.numticks = N
         return LogNLocator
         
-def close10():
-    for n in range(10):
-        plt.close()
-
+def mkdir_and_savefig(fig, fname):
+    """ this makes a directory for the figure if missing
+     create new directory if missing """
+    dname = os.path.dirname(run['fig_name'])
+    if  not os.path.isdir(dname):
+        os.makedirs(dname)
+    # save the file:
+    fig.savefig(fname)

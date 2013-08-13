@@ -74,6 +74,11 @@ class DataFactory(object):
             self.data = None
     def write_npz(self, args):
         new_hash = args_hash(args)
+        # create new directory if missing:
+        dname = os.path.dirname(self.npz_fname)
+        if  not os.path.isdir(dname):
+            os.makedirs(dname)
+        # save the file:
         self.npz = np.savez(self.npz_fname, nums=self.data, args_hash=new_hash)
         
     def read_existing(self):

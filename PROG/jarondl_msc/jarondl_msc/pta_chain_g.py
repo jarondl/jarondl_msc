@@ -39,7 +39,7 @@ from .libdl.phys_functions import lyap_gamma
 from .libdl.sparsedl import logavg
 from .libdl.tools import h5_create_if_missing, h5_get_first_rownum_by_args
 from .libdl.tools import ev_and_pn_class, ev_pn_g_class, c_k_g_class, ckg_dtype, ckg_psis_dtyper
-from .libdl.plotdl import plt, cummulative_plot, get_LogNLocator, s_cummulative_plot
+from .libdl.plotdl import plt, cummulative_plot, get_LogNLocator, s_cummulative_plot, mkdir_and_savefig
 from .banded_bloch_ev import theor_banded_ev, theor_banded_dev
 from .banded_bloch_ev import cached_get_sum_dos
 
@@ -242,7 +242,7 @@ def plot_gh_sum(N=800):
     #plt.draw()
     #ax.autoscale(False)
     ax.plot(xs,xs)
-    fig.savefig('pta_ga_gda.png') 
+    mkdir_and_savefig(fig, 'pta_ga_gda.png') 
     #fig.close()
     fig, ax = plt.subplots(figsize=[2.5*plotdl.latex_width_inch, 3*plotdl.latex_height_inch])
     ax.plot(ev[0], ga[0])
@@ -251,12 +251,12 @@ def plot_gh_sum(N=800):
     ax.set_ylim(1e-40,10)
     ax.set_xlabel(r'${ \varepsilon_\alpha  }$')
     ax.set_ylabel(r'${ g  }$')
-    fig.savefig('pta_ga_gda_of_e.png')
+    mkdir_and_savefig(fig, 'pta_ga_gda_of_e.png')
     ax.cla()
     ax.plot(ev.flat, ga.flat, '.')
     ax.plot(ev.flat, gda.flat , '.')
     ax.set_ylim(1e-40,10)
-    fig.savefig('pta_many_ga_gda_of_e.png')
+    mkdir_and_savefig(fig, 'pta_many_ga_gda_of_e.png')
     
     return ckg, ga, gda
     
@@ -284,7 +284,7 @@ def plot_gheat_g(seed=1):
         ax.plot(ck['dis_param'], abs(g),'+', color=c)
         ax.plot(ck['dis_param'], psi1psiN,'d', color=c)
     ax.set_xlabel('dis_param')
-    fig.savefig('pta_comparison_of_s_N400.png')
+    mkdir_and_savefig(fig, 'pta_comparison_of_s_N400.png')
     plt.close(fig)
     ## use last ck
     fig1, axes1  = plt.subplots(3,2,figsize=[2*plotdl.latex_width_inch, 3*plotdl.latex_height_inch],
@@ -303,7 +303,7 @@ def plot_gheat_g(seed=1):
     ax.legend(loc = 'upper right')
     ax.set_xlabel('dis_param')
     ax.set_ylabel('g')
-    fig.savefig('pta_real_imag_g_s_N400')
+    mkdir_and_savefig(fig, 'pta_real_imag_g_s_N400')
 
 def plot_psi1_psi2(seed=0, abs_value=False):
     fig1, axes1  = plt.subplots(3,2,figsize=[2*plotdl.latex_width_inch, 3*plotdl.latex_height_inch],
@@ -395,7 +395,7 @@ def plot_compare_dispersions(run):
         ax.yaxis.set_major_locator(MaxNLocator(4))
     ### accomodate suptitle
     fig.tight_layout(rect = (0,0,1,0.9))
-    fig.savefig(run['fig_name'])
+    mkdir_and_savefig(fig, run['fig_name'])
     plt.close() 
     
 
@@ -426,7 +426,7 @@ def plot_dispersion_g(run): ##(histograms)
     ax.plot(g_space, gaussf, '--' , color='red')
     ax.set_xlabel(r'$x$')
     fig.suptitle("E = 0,  $W={}$  $N={}$    $\gamma^{{-1}}$ = {:5}".format(ckg['dis_param'][0], N, gamma**(-1)))
-    fig.savefig(run['fig_name'])
+    mkdir_and_savefig(fig, run['fig_name'])
     plt.close()
     
 def plot_dispersion_of_N(run):
@@ -459,7 +459,7 @@ def plot_dispersion_of_N(run):
     ax.legend(loc='lower left')
     fig.suptitle("E = 0,   $W$ = {},   $\gamma^{{-1}}$ = {:5}".format(dp, gamma**(-1)))
 
-    fig.savefig(run['fig_name'])
+    mkdir_and_savefig(fig, run['fig_name'])
     plt.close()
     
 
@@ -479,13 +479,13 @@ def plot_da(N=800):
     mga = phys_functions.ga(m.eig_matrix)
     ax.plot(m.eig_vals, N*mga, label='$g_a$')
     ax.set_xlabel('E')
-    fig.savefig('plots/pta_da800.png')
+    mkdir_and_savefig(fig, 'plots/pta_da800.png')
     ax.plot(m.eig_vals, N*mga, 'g.',label='$g_a$')
 
     ax.set_xlim(-0.5,+0.5)
-    fig.savefig('plots/pta_da800z.png')
+    mkdir_and_savefig(fig, 'plots/pta_da800z.png')
     ax.set_xlim(-0.2,+0.2)
-    fig.savefig('plots/pta_da800zz.png')
+    mkdir_and_savefig(fig, 'plots/pta_da800zz.png')
 
 
 def plot_special_plot(run):
@@ -496,7 +496,7 @@ def plot_special_plot(run):
 
 
 
-def plot_gh_distribution(N=100, dp = 2.0, sds = np.arange(1000)):
+def plot_gh_distribution(N=100, dp = 2.0, sds = (1,2,3)):
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     cbandwidth = 20 #N #20
     tga = np.zeros([len(sds), cbandwidth])
@@ -543,10 +543,10 @@ def plot_gh_distribution(N=100, dp = 2.0, sds = np.arange(1000)):
     ax.set_ylim(1e-20, 1)
     ax.set_title("W = {}, $\gamma$ = {:.2}, N = {}".format(dp, lyap_gamma(1,dp), N))
     ax.xaxis.set_major_locator(LogLocator(numdecs=10))
-    fig.savefig('plots/pta_gh_dist.png')
+    mkdir_and_savefig(fig, 'plots/pta_gh_dist.png')
     #return ghs, theo
 
-def plot_gh_of_x(N=100, dp = 2.0, sds = np.arange(1000)):
+def plot_gh_of_x(N=100, dp = 2.0, sds = (1,2,3)):
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, plotdl.latex_height_inch])
     cbandwidth = 20 #N #20
     tga = np.zeros([len(sds), cbandwidth])
@@ -572,7 +572,7 @@ def plot_gh_of_x(N=100, dp = 2.0, sds = np.arange(1000)):
     ax.plot(xr, (1/lyap_gamma(1,dp))*phys_functions.ander_ga(N, lyap_gamma(1,dp, 0), xr),'--', color='red')
     ax.set_yscale('log')
     ax.set_title("W = {}, $\gamma$ = {:.2}, N = {}, $\gamma N$ = {:.2}".format(dp, lyap_gamma(1,dp), N, N*lyap_gamma(1,dp) ))
-    fig.savefig('plots/pta_gh_of_x_W{}.png'.format(dp))
+    mkdir_and_savefig(fig, 'plots/pta_gh_of_x_W{}.png'.format(dp))
         
 def relevant_alm(mode, dis_param):
     N = mode.size
@@ -604,7 +604,7 @@ def plot_all(open_file):
             plot_special_plot(run)
         else:
             plot_a_run(run, ax)
-            fig.savefig(run['fig_name'])
+            mkdir_and_savefig(fig, run['fig_name'])
             ax.cla()
     plt.close()
 

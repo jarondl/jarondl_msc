@@ -1,0 +1,178 @@
+###  Configuration file for jarondl_msc.pta_chain_g.
+########################################################################
+#########   PLOTS       ################################################
+########################################################################
+### These are plot runs. Each receives a npz files (created by the "data
+##  runs"  yaml file), and the x axis, y axis and other options if needed.
+
+---
+##
+-
+#### Plot sum over thouless curvature as function of phi, for debugging
+    npz_fname : data/pta_thouless2_0.001.npz
+    fig_name : plots/pta_thouless2_0.001.pdf
+    x_variable: phi
+    y_variable: thouless_sum
+    N_dependance: True
+-
+#### Change c, the hopping constant.
+    npz_fname : data/pta_of_c_0.npz
+    fig_name : plots/pta_of_c_0.pdf
+    x_variable: c
+    y_variable: g
+-
+#### change W with N = 100
+    npz_fname : data/pta_of_s_N100.npz
+    fig_name : plots/pta_of_s_N100.pdf
+    x_variable: dis_param
+    y_variable: g
+    average_over: seed
+-
+#### change W with N = 400
+    npz_fname : data/pta_of_s_N400.npz
+    fig_name : plots/pta_of_s_N400.pdf
+    x_variable: dis_param
+    y_variable : g
+    average_over: seed
+-
+#### change W with N = 400, and plot g_heat
+    npz_fname : data/pta_of_s_N400.npz
+    fig_name : plots/pta_heat_of_s_N400.pdf
+    x_variable: dis_param
+    y_variable: heat_g
+    average_over: seed
+-
+#### change W with N = 400, and plot psi1psiN
+    npz_fname : data/pta_of_s_N400.npz
+    fig_name : plots/pta_psi1psiN_of_s_N400.pdf
+    x_variable: dis_param
+    y_variable: psi1psiN
+    average_over: seed
+-
+#### change k , several realizations, with W = 0.4
+    npz_fname : data/pta_of_k_multiseed_0.4.npz
+    fig_name : plots/pta_of_k_multiseed_0.4.pdf
+    x_variable: k
+    y_variable: g
+    second_variable: seed
+-
+#### change k , several realizations, with W = 0.1
+    npz_fname : 'data/pta_of_k_multiseed_0.1.npz'
+    fig_name : 'plots/pta_of_k_multiseed_0.1.pdf'
+    x_variable: 'k'
+    y_variable: 'g'
+    second_variable: 'seed'
+-
+#### change k , average over realizations, with W = 0.1
+    npz_fname : 'data/pta_of_k_averaged_0.1.npz'
+    fig_name : 'plots/pta_of_k_averaged_0.1.pdf'
+    x_variable: 'k'
+    y_variable: 'g'
+    average_over: 'seed'
+-
+    npz_fname : 'data/pta_of_k_multiseed_0.3.npz'
+    fig_name : 'plots/pta_of_k_multiseed_0.3.pdf'
+    x_variable: 'k'
+    y_variable: 'g'
+    second_variable: 'seed'
+-
+    npz_fname : 'data/pta_of_k_multiseed_0.1.npz'
+    fig_name : 'plots/pta_heat_of_k_multiseed_0.1.pdf'
+    x_variable: 'k'
+    y_variable: 'heat_g'
+    second_variable: 'seed'
+-
+    npz_fname : data/pta_of_N_wide_0.4.npz
+    fig_name : plots/pta_of_N_averaged_0.4.pdf
+    x_variable: number_of_points
+    y_variable: g
+    average_over: seed
+-
+    npz_fname : 'data/pta_of_N_wide_2.0.npz'
+    fig_name : 'plots/pta_of_N_averaged_2.0.pdf'
+    x_variable: 'number_of_points'
+    y_variable: 'g'
+    average_over: 'seed'
+-
+    npz_fname : 'data/pta_of_N_averaged_0.4.npz'
+    fig_name : 'plots/pta_heat_of_N_averaged_0.4.pdf'
+    x_variable: 'number_of_points'
+    y_variable: 'heat_g'
+    average_over: 'seed'
+-
+    npz_fname : 'data/pta_of_N_averaged_0.4.npz'
+    fig_name : 'plots/pta_psi1psiN_of_N_averaged_0.4.pdf'
+    x_variable: 'number_of_points'
+    y_variable: 'psi1psiN'
+    average_over: 'seed'
+-
+    npz_fname : 'data/pta_of_N_averaged_0.1.npz'
+    fig_name : 'plots/pta_psi1psiN_of_N_averaged_0.1.pdf'
+    x_variable: 'number_of_points'
+    y_variable: 'psi1psiN'
+    average_over: 'seed'
+-
+    npz_fname : 'data/pta_of_N_averaged_0.4.npz'
+    fig_name : 'plots/pta_gamma_of_N_0.4.pdf'
+    special_plot : dispersion_of_N
+-
+    npz_fname : 'data/pta_of_N_wide_2.0.npz'
+    fig_name : 'plots/pta_gamma_wide_of_N_2.0.pdf'
+    special_plot : dispersion_of_N
+-
+    npz_fname : 'data/pta_of_N_wide_long_1.0.npz'
+    fig_name : 'plots/pta_gamma_wide_of_N_1.0.pdf'
+    special_plot : dispersion_of_N
+-
+    npz_fname : 'data/pta_of_N_wide_0.4.npz'
+    fig_name : 'plots/pta_gamma_wide_of_N_0.4.pdf'
+    special_plot : dispersion_of_N
+    
+## new kid in town
+-
+    npz_fname : data/pta_of_N_tall_0.4.npz
+    fig_name  : plots/pta_gamma_tall_wide_of_N_0.4.pdf
+    special_plot : dispersion_of_N
+-
+    npz_fname : 'data/pta_of_N_averaged_0.1.npz'
+    fig_name : 'plots/pta_gamma_of_N_0.1.pdf'
+    special_plot : dispersion_of_N
+    
+-
+    npz_fname : 'data/pta_disperse_s_0.4.npz'
+    fig_name  : 'plots/pta_disperse_s_0.4.pdf'
+    special_plot : dispersion_g
+-
+    npz_fname : 'data/pta_disperse2000_s_0.4.npz'
+    fig_name  : 'plots/pta_disperse2000_s_0.4.pdf'
+    special_plot : dispersion_g
+-
+    npz_fname : 'data/pta_disperse1600_s_0.4.npz'
+    fig_name  : 'plots/pta_disperse1600_s_0.4.pdf'
+    special_plot : dispersion_g
+-
+    npz_fname : 'data/pta_disperse_s_1.0.npz'
+    fig_name  : 'plots/pta_disperse_s_1.0.pdf'
+    special_plot : dispersion_g
+-
+    npz_fname : 'data/pta_disperse_s_2.0.npz'
+    fig_name  : 'plots/pta_disperse_s_2.0.pdf'
+    special_plot : dispersion_g
+
+
+#####  alternative g calculations
+-
+    npz_fname : data/pta_of_k_multiseed_0.4.npz
+    fig_name  : plots/pta_alter_g_0.4.pdf
+    x_variable : k
+    y_variable : abs_g_diag_approx
+-
+    npz_fname : data/pta_of_k_multiseed_0.1.npz
+    fig_name  : plots/pta_alter_g_0.1.pdf
+    x_variable : k
+    y_variable : abs_g_diag_approx
+-
+    npz_fname : data/pta_of_k_dense_0.4.npz
+    fig_name  : plots/pta_alter_g_dense_0.4.pdf
+    x_variable : k
+    y_variable : abs_g_diag_approx
