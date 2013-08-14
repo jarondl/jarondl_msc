@@ -12,6 +12,7 @@ To run the ``jarondl_msc`` package code, you'll need (in Fedora):
 This will allow the code to run, but the interactivity will be limited.
 I recommend using ipython  ( from the ``python-ipython`` package),
 but if you prefer a more graphic experience (Matlab-like) use ``spyder``.
+You can exist both environments by pressing :kbd:`Control-d` or typing ``exit()``
     
 Adding the package to the path
 -------------------------------------

@@ -10,6 +10,7 @@ Contents:
    module_ref
    
    libdl_ref
+   yaml_files
 
 Indices and tables
 ==================
