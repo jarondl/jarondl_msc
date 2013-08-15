@@ -8,7 +8,8 @@ from __future__ import division  # makes true division instead of integer divisi
 import numpy as np
 import logging
 
-from scipy import linalg
+from scipy import linalg, special
+from scipy.optimize import curve_fit
 
 
 ### Warn about all float errors
@@ -131,4 +132,23 @@ def lyap_gamma(c,s,E=0):
     c,s = np.asarray(c), np.asarray(s)
     return (s)**2/(24*(4*c**2-E**2))
     
+    
+
+def fit_diff_coef(eigen_values, d=1):
+    diffusive_fit_function =  lambda x, D: (omega_d(d)/d )* (x/(4*D*np.pi**2))**(d/2)
+    # We need to ignore first point
+    size = len(eigen_values) - 1 
+    x = -eigen_values[1:]
+    y = np.linspace(1.0/(size),1,size)
+    ar = np.arange(1,size+1)
+    #w = (ar%4==3 )*exp(-ar/3.0)
+    ### Trying to cheat less : 
+    w = ar*np.exp(-ar/4.0)
+    [D], _ = curve_fit(diffusive_fit_function, x, y, [1], w)
+    return D
+
+######### Mathematical aux functions
+def omega_d(d):
+    """ The d-dimensional solid angle """
+    return 2*np.pi**(d/2)/special.gamma(d/2)
 

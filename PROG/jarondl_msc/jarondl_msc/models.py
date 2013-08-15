@@ -22,9 +22,10 @@ import scipy as sp
 
 from numpy import exp
 from scipy import linalg
-from .libdl import sparsedl
+from .libdl import sparsedl, phys_functions
 from .libdl.sparsedl import (sorted_eigvalsh, banded_ones, periodic_banded_ones,
-           zero_sum, omega_d, pi_phasor,boundary_phasor)
+           zero_sum, pi_phasor,boundary_phasor)
+from .libdl.phys_functions import omega_d
 from .libdl.tools import lazyprop
 
 
@@ -155,25 +156,29 @@ class NetModel_1d(NetModel):
             return periodic_banded_ones(self.number_of_points, self.bandwidth, self.periodic)
     @lazyprop
     def new_resnet(self):
-        N = self.sample.number_of_points()
+        N = self.number_of_points
         shift = sparsedl.create_shift_matrix(N)
-        invex = np.linalg.pinv(self.ex)
+        invex = np.linalg.pinv(self.rate_matrix)
         retval =  (N//2)*(N//2)*(np.dot( (shift - np.eye(N)), invex)).trace()**(-1)/2
         return retval
 
     @lazyprop 
     def resnet3(self):
         """ Works only for periodic models at the moment! """ 
-        N = self.sample.number_of_points()
-        b = self.bandwidth1d
-        invex = np.linalg.pinv(self.ex)
+        N = self.number_of_points
+        b = self.bandwidth
+        invex = np.linalg.pinv(self.rate_matrix)
         I = np.zeros(N)
         #I[[0 + b, N//2 - b]] = [-1,1]  # We should apply the current as usual....
         I[[0, N//2]] = [-1,1]
         V = invex.dot(I)
-        debug("s = {0}, b={1} ".format(self.epsilon, b))
+        debug("s = {0}, b={1} ".format(self.dis_param, b))
         retval = (N//2 -2*b)*(V[0+b] - V[N//2-b])**(-1)/2.0
         return retval
+        
+    @lazyprop
+    def fit_diff_coef(self):
+        return phys_functions.fit_diff_coef(self.eig_vals, d=1)
 
 class GeoModel_1d(NetModel_1d,GeoModel):
 
@@ -307,15 +312,17 @@ class Model_Anderson_S_BD_1d(Model_Anderson_ROD_1d):
         m = self.base_matrix()
         dis = np.zeros_like(m)
         ## where is the band we want to disorder?
-        where_triband = np.triu(m)==1
+        where_triband = (np.triu(m)==1)
         l = where_triband.sum(axis=None)
         #dis1 = np.exp(-np.linspace(0, self.dis_param, l))+(exp(-self.dis_param)-1)/self.dis_param
         dis1 = np.exp(-np.linspace(0, self.dis_param, l))
-        dis[where_triband] = self.prng.permutation(dis1)
+        # I've added minus 1 because I want ONLY disorder
+        dis[where_triband] = self.prng.permutation(dis1) - 1
         dis += dis.T
         if self.semiconserving:
             sparsedl.zero_sum(dis)
-        return dis
+
+        return dis 
       
 
      

@@ -12,6 +12,7 @@ import os
 from numpy import random, pi, log10, sqrt,  exp, expm1, sort, eye, nanmin, nanmax, log, cos, sinc
 from scipy.special import gamma
 from scipy.optimize import curve_fit
+from scipy import optimize
 from matplotlib.ticker import FuncFormatter, MaxNLocator, LogLocator
 
 import numpy as np
@@ -20,9 +21,11 @@ import scipy as sp
 from .libdl import sparsedl
 from .libdl import plotdl
 from geometry import Sample
-from .libdl.sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum, omega_d
+from .libdl.sparsedl import sorted_eigvalsh, banded_ones, periodic_banded_ones, zero_sum
+from .libdl.phys_functions import omega_d
 from .libdl.tools import lazyprop
 from .libdl.plotdl import cummulative_plot, plt
+from . import models
 
 
 ### Raise all float errors
@@ -83,6 +86,23 @@ def plot_func(ax, func, xlim, **kwargs):
     #print(func_y)
     return ax.plot(func_space, func_y,  **kwargs)
 
+def _weighted_function(params, xdata, ydata, function, weights):
+    return weights*(function(xdata, *params) -ydata)
+
+
+def cvfit(f, xdata, ydata, p0, w=None):
+    """  Fit data to a function.
+
+    :param f: A function that accepts 1+len(p0) arguments, first one will be x
+    :param xdata: X values
+    :param ydata: Y values
+    :param p0: The initial guess, put [1, 1, 1, ..] if uncertain.
+
+    """
+    if w is None:
+        w = np.ones_like(xdata)
+    res = optimize.leastsq(_weighted_function, p0, args=(xdata, ydata, f, w))
+    return res[0]
 
 
 ####################   Sample Plots ################
@@ -247,24 +267,6 @@ class ExpModel(object):
         ev = -self.eigvals[1:]*exp(-convention/self.epsilon)
         return ax.plot(ev, PN,".", **kwargs)
 
-    @lazyprop
-    def fit_diff_coef(self):
-        fitN = self.sample.number_of_points() - 1
-        y = np.linspace(1.0/(fitN),1,fitN)
-        ar = np.arange(fitN)
-        #w = (ar%4==3 )*exp(-ar/3.0)
-        ### Trying to cheat less : 
-        w = ar*exp(-ar/4.0)
-        x = -self.eigvals[1:]
-        #prefactor  = sparsedl.cvfit((lambda x,a : x+a), log(x), log(y), [0],w)
-        #D = exp(-prefactor)/(2*pi)
-        ## Keep things simple:
-        D = curve_fit(self.diff_density(), x, y, [1], w)
-        return D
-    def diff_density(self):
-        """ The expected eigenvalue cummulative distribution for a diffusive system"""
-        d = self.sample.d
-        return lambda x, D: (omega_d(d)/d )* (x/(4*D*pi**2))**(d/2)
 
 
 class ExpModel_1d(ExpModel):
@@ -962,9 +964,11 @@ def get_D_fittings_logbox(s_space, b_space):
     s_grid, b_grid = np.meshgrid(np.asarray(s_space), np.asarray(b_space))
     bloch1d = create_bloch_sample_1d(1000)
     outprod = zip(s_grid.flat, b_grid.flat)
-    models = (ExpModel_Banded_Logbox(bloch1d, epsilon = s , bandwidth1d=b) for (s,b) in outprod)
+    #models = (ExpModel_Banded_Logbox(bloch1d, epsilon = s , bandwidth1d=b) for (s,b) in outprod)
+    mods = (models.Model_Anderson_S_BD_1d(1000, dis_param = 2*s ,
+          bandwidth=b, periodic=True, conserving=True) for (s,b) in outprod)
     two_type = [("fit",np.float64), ("new_resnet",np.float64), ("resnet3", np.float64)]
-    D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet, model.resnet3) for model in models), dtype = two_type, count=s_grid.size)
+    D_fits = np.fromiter(((model.fit_diff_coef, model.new_resnet, model.resnet3) for model in mods), dtype = two_type, count=s_grid.size)
     return D_fits.reshape(s_grid.shape)
 
 
@@ -1463,7 +1467,7 @@ def all_plots(seed= 1, **kwargs):
         w = (ar%4==3 )*exp(-ar/10.0)
         ## the replacement must be checked  
         #[a] = sparsedl.cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
-        [a] = curve_fit((lambda x,a : x+a),log(x),log(y),[0],w)
+        [a] = cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
         plot_func(ax, lambda x: x*exp(a), model.xlim, label="{:3}".format(a), color= pl[0].get_color())
 
     ax.set_xscale('log')
@@ -1489,7 +1493,7 @@ def all_plots(seed= 1, **kwargs):
         y = np.linspace(1.0/len(x),1,len(x))
         ar = np.arange(899)
         w = (ar%4==3 )*exp(-ar/100.0)
-        [a] = curve_fit((lambda x,a : x+a),log(x),log(y),[0],w)
+        [a] = cvfit((lambda x,a : x+a),log(x),log(y),[0],w)
         plot_func(ax, lambda x: x*exp(a), model.xlim, label="{:3}".format(a), color= pl_color)
 
     ax.set_xscale('log')
@@ -1564,7 +1568,7 @@ def article_plots(seed = 1 ):
         D = f["D"]
 
     except (OSError, IOError):
-
+        #pass # this doesnt work. commenting to try the rest
         # otherwise, get the data:
         b_space = np.arange(1,50)
         s_space = np.linspace(1E-4,10,98) # maybe the problem is just for one value?
@@ -1573,7 +1577,7 @@ def article_plots(seed = 1 ):
 
     ## now plot the plots
 
-    fig = plotdl.Figure()
+    fig = plt.Figure()
     plot_banded_resnet3(fig,D,s_space,b_space)
     plotdl.save_fig(fig, "ptsD_banded_Image", pad=0.4,size_factor = (1.2,1))
     fig.clf()

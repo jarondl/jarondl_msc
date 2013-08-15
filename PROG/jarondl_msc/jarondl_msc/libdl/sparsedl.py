@@ -327,7 +327,3 @@ def mode_center(modes):
     x = np.tile(np.arange(modes.shape[0]), [modes.shape[1],1]).T
     return mean(x, abs(modes)**2)
 
-######### Mathematical aux functions
-def omega_d(d):
-    """ The d-dimensional solid angle """
-    return 2*pi**(d/2)/special.gamma(d/2)
