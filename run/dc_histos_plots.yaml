@@ -1,0 +1,21 @@
+-
+    npz_fname : 'data/pta_disperse_s_0.4.npz'
+    fig_name  : 'plots/pta_disperse_s_0.4.pdf'
+    special_plot : dispersion_g
+-
+    npz_fname : 'data/pta_disperse2000_s_0.4.npz'
+    fig_name  : 'plots/pta_disperse2000_s_0.4.pdf'
+    special_plot : dispersion_g
+-
+    npz_fname : 'data/pta_disperse1600_s_0.4.npz'
+    fig_name  : 'plots/pta_disperse1600_s_0.4.pdf'
+    special_plot : dispersion_g
+-
+    npz_fname : 'data/pta_disperse_s_1.0.npz'
+    fig_name  : 'plots/pta_disperse_s_1.0.pdf'
+    special_plot : dispersion_g
+-
+    npz_fname : 'data/pta_disperse_s_2.0.npz'
+    fig_name  : 'plots/pta_disperse_s_2.0.pdf'
+    special_plot : dispersion_g
+

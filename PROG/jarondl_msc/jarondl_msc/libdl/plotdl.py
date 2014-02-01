@@ -234,7 +234,7 @@ def get_LogNLocator(N = 6):
 def mkdir_and_savefig(fig, fname):
     """ this makes a directory for the figure if missing
      create new directory if missing """
-    dname = os.path.dirname(run['fig_name'])
+    dname = os.path.dirname(fname)
     if  not os.path.isdir(dname):
         os.makedirs(dname)
     # save the file:

@@ -363,33 +363,32 @@ def plot_compare_dispersions(run):
                 figsize=[2*plotdl.latex_width_inch, 2*plotdl.latex_height_inch])
                 
 
-    lng = -np.log(abs(ckg['g']))
-    plot_histogram_with_norm_fit(ax1, lng, expected=(2*gam*N, 2*gam*N),color='blue')
-    #ax1.legend()
-    ax1.axvline((2*gam*N),color='green')
-    ln_heatg = -np.log(abs(ckg['heat_g']))
-    plot_histogram_with_norm_fit(ax2, ln_heatg,color='blue')
-    #ax2.legend()
-    ax2.autoscale(False)
-    ax2.axvline((gam*N),color='red')
-    ax2.axvline((2*gam*N),color='green')
-    ax2.axvline((0.5*gam*N),color='purple')
+    lng = np.log(abs(ckg['g']))
+    plot_histogram_with_norm_fit(ax4, lng, expected=(-2*gam*N, 2*gam*N),color='blue')
+    #ax4.legend()
+    ax4.axvline(-(2*gam*N),color='green')
+
+    ln_heatg = np.log(abs(ckg['heat_g']))
+    plot_histogram_with_norm_fit(ax3, ln_heatg,color='blue')
+    ax3.autoscale(False)
+    ax3.axvline(-(gam*N),color='red')
+    ax3.axvline(-(2*gam*N),color='green')
+    ax3.axvline(-(0.5*gam*N),color='purple')
 
     g = (abs(ckg['g']))
-    plot_histogram_with_norm_fit(ax3, g, color='blue')
+    plot_histogram_with_norm_fit(ax2, g, color='blue')
     
-    #ax3.legend()
     heatg = (abs(ckg['heat_g']))
-    plot_histogram_with_norm_fit(ax4, heatg,color='blue')
-    ax4.autoscale(False)
-    ax4.axvline(np.exp(-gam*N),color='red')
-    ax4.axvline(np.exp(-2*gam*N),color='green')
-    #ax3.legend()
+    plot_histogram_with_norm_fit(ax1, heatg,color='blue')
+    ax1.autoscale(False)
+    ax1.axvline(np.exp(-gam*N),color='red')
+    ax1.axvline(np.exp(-2*gam*N),color='green')
+
     fig.suptitle("E = 0,  $W={}$  $N={}$    $\gamma^{{-1}}$ = {:5}    #={}".format(dp, N, gam**(-1), ckg.size))
-    ax1.set_xlabel('$-\ln(g)$')
-    ax2.set_xlabel('$-\ln(g_h)$')
-    ax3.set_xlabel('$g$')
-    ax4.set_xlabel('$g_h$')
+    ax1.set_xlabel('$q$')
+    ax2.set_xlabel('$g$')
+    ax3.set_xlabel('$\ln(q)$')
+    ax4.set_xlabel('$\ln(g)$')
     for ax in ax1, ax2, ax3, ax4:
         ax.xaxis.set_major_locator(MaxNLocator(4))
         ax.yaxis.set_major_locator(MaxNLocator(4))
@@ -438,6 +437,7 @@ def plot_dispersion_of_N(run):
     gh = abs(ckg['heat_g'])    
     gamma = lyap_gamma(ckg['c'],ckg['dis_param'],E=0)[0,0]
     dp = ckg['dis_param'][0,0]
+    reals = ckg.shape[1]
     
     fig, ax  = plt.subplots(figsize=[2*plotdl.latex_width_inch, 2*plotdl.latex_height_inch])
     ax.plot(N[:,0], np.average(np.log(g),axis=1), label= r"$\langle \ln(g)\rangle$")
@@ -446,7 +446,7 @@ def plot_dispersion_of_N(run):
     ax.plot(N[:,0], np.log(np.average(g,axis=1)), label=r"$\ln(\langle g\rangle)$")
     ax.plot(N[:,0], np.average(np.log(da),axis=1), label=r"$\langle\ln( g_{DA})\rangle$")
     ax.plot(N[:,0], np.log(np.average(da,axis=1)), label=r"$\ln(\langle g_{DA}\rangle)$")
-    ax.plot(N[:,0], np.log(np.average(gh,axis=1)), label=r"$\ln(\langle g_h\rangle )$")
+    ax.plot(N[:,0], np.log(np.average(gh,axis=1)), label=r"$\ln(\langle q_\alpha\rangle )$")
 
     ax.set_xlabel('N')
     ax.set_ylabel('${\ln(g)}$')
@@ -457,7 +457,7 @@ def plot_dispersion_of_N(run):
     if gamma*N.max() > 1:
         ax.axvline(gamma**(-1), color='gray')
     ax.legend(loc='lower left')
-    fig.suptitle("E = 0,   $W$ = {},   $\gamma^{{-1}}$ = {:5}".format(dp, gamma**(-1)))
+    fig.suptitle("E = 0,   $W$ = {},   $\gamma^{{-1}}$ = {:5}, #={}".format(dp, gamma**(-1), reals))
 
     mkdir_and_savefig(fig, run['fig_name'])
     plt.close()

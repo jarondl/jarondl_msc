@@ -1,0 +1,19 @@
+-
+    npz_fname : 'data/pta_of_N_wide_2.0.npz'
+    fig_name : 'plots/pta_gamma_wide_of_N_2.0.pdf'
+    special_plot : dispersion_of_N
+-
+    npz_fname : 'data/pta_of_N_wide_long_1.0.npz'
+    fig_name : 'plots/pta_gamma_wide_of_N_1.0.pdf'
+    special_plot : dispersion_of_N
+-
+    npz_fname : 'data/pta_of_N_wide_0.4.npz'
+    fig_name : 'plots/pta_gamma_wide_of_N_0.4.pdf'
+    special_plot : dispersion_of_N
+    
+## new kid in town
+-
+    npz_fname : data/pta_of_N_tall_0.4.npz
+    fig_name  : plots/pta_gamma_tall_wide_of_N_0.4.pdf
+    special_plot : dispersion_of_N
+    

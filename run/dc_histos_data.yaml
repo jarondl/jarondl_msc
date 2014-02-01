@@ -1,0 +1,45 @@
+###  Configuration file for jarondl_msc.pta_chain_g.
+
+########################################################################
+####### DATA runs ######################################################
+########################################################################
+### Each item accepts args and a npz file name, and creates data.
+### if N_dependance is given and set to True, the dtype is N-dependent,
+###  which can make them very large.
+-
+### PTA dispersion (many realizations)
+    npz_fname : 'data/pta_disperse_s_{dis_param[0]}.npz'
+    args :  &many_realizations
+      model_name       : [Anderson, ]
+      number_of_points : [800, ]
+      bandwidth        : [1, ]
+      dis_param        : [0.4, ]
+      k                : [1.57, ]
+      c                : [1, ]
+      #seed             : !!python/object/apply:numpy.arange    [1,10001]
+      seed             : !!python/object/apply:numpy.arange    [1,10001]
+-
+    npz_fname : 'data/pta_disperse_s_{dis_param[0]}.npz'
+    args :   
+      <<                : *many_realizations
+      number_of_points : [400, ]
+      dis_param         : [1.0]
+-
+    npz_fname : 'data/pta_disperse2000_s_{dis_param[0]}.npz'
+    args :   
+      <<                : *many_realizations
+      number_of_points : [2000, ]
+      dis_param         : [0.4]
+-
+    npz_fname : 'data/pta_disperse1600_s_{dis_param[0]}.npz'
+    args :   
+      <<                : *many_realizations
+      number_of_points : [1600, ]
+      dis_param         : [0.4]
+-
+    npz_fname : 'data/pta_disperse_s_{dis_param[0]}.npz'
+    args :   
+      <<                : *many_realizations
+      number_of_points : [200, ]
+      dis_param         : [2.0]
+-
